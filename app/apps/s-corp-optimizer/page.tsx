@@ -3,6 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, Zap, ShieldCheck } from 'lucide-react';
+import SCorpOptimizer from '@/components/apps/SCorpOptimizer';
 
 export default function SCorpOptimizerPage() {
   const router = useRouter();
@@ -36,19 +37,11 @@ export default function SCorpOptimizerPage() {
         <div className="bg-amber-50 border border-amber-100 rounded-3xl p-8 mb-8">
           <h2 className="text-2xl font-black text-amber-900 mb-3">S-Corp Tax Optimizer</h2>
           <p className="text-amber-700 font-medium">
-            Calculate self-employment tax savings and find your ideal salary/distribution split. Optimize your S-Corp structure to minimize tax liability while staying compliant.
+            Calculate self-employment tax savings and find your ideal salary/distribution split. Optimize your S-Corp structure to minimize tax liability while staying compliant with IRS guidelines on reasonable compensation.
           </p>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-[2.5rem] p-12 shadow-sm">
-          <div className="text-center py-20">
-            <Zap className="text-slate-300 mx-auto mb-6" size={64} />
-            <h3 className="text-3xl font-black text-slate-900 mb-4">Coming Soon</h3>
-            <p className="text-slate-500 font-medium text-lg max-w-md mx-auto">
-              The S-Corp Tax Optimizer is currently under development. Check back soon for powerful tax optimization tools.
-            </p>
-          </div>
-        </div>
+        <SCorpOptimizer />
       </main>
 
       {/* FOOTER */}
