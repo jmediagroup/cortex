@@ -56,15 +56,23 @@ export default function Dashboard() {
   useEffect(() => {
     // Simulate loading
     setTimeout(() => {
-      // In a real app, you'd check authentication here
-      // For demo purposes, we'll assume user is logged in
-      setUser({ email: 'demo@example.com' });
-      setUserTier('free'); // In production, this would come from your database
+      // Read from localStorage for demo purposes
+      const demoUserStr = localStorage.getItem('demoUser');
+      if (demoUserStr) {
+        const demoUser = JSON.parse(demoUserStr);
+        setUser({ email: demoUser.email });
+        setUserTier(demoUser.tier);
+      } else {
+        // Fallback if no user in localStorage
+        setUser({ email: 'demo@example.com' });
+        setUserTier('free');
+      }
       setLoading(false);
     }, 500);
   }, []);
 
   const handleSignOut = () => {
+    localStorage.removeItem('demoUser');
     router.push('/');
   };
 

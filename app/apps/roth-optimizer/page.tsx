@@ -1,15 +1,22 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, TrendingUp, ShieldCheck } from 'lucide-react';
 import RothOptimizer from '@/components/apps/RothOptimizer';
 
 export default function RothOptimizerPage() {
   const router = useRouter();
+  const [isPro, setIsPro] = useState(false);
 
-  // Demo mode - in production this would come from auth context
-  const isPro = false; // Free tier for demo
+  // Read user tier from localStorage
+  useEffect(() => {
+    const demoUserStr = localStorage.getItem('demoUser');
+    if (demoUserStr) {
+      const demoUser = JSON.parse(demoUserStr);
+      setIsPro(demoUser.tier === 'pro');
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900">

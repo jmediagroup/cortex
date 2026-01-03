@@ -27,8 +27,17 @@ export default function AuthPage() {
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       if (isLogin) {
-        // Demo login - accept any credentials
+        // Demo login with test accounts
         if (email && password) {
+          // Store demo user info in localStorage
+          const demoUsers: Record<string, { tier: 'free' | 'pro' }> = {
+            'free@demo.com': { tier: 'free' },
+            'pro@demo.com': { tier: 'pro' }
+          };
+
+          const userTier = demoUsers[email.toLowerCase()]?.tier || 'free';
+          localStorage.setItem('demoUser', JSON.stringify({ email, tier: userTier }));
+
           router.push('/dashboard');
         } else {
           throw new Error('Please enter both email and password');
@@ -130,6 +139,23 @@ export default function AuthPage() {
           >
             {isLogin ? "New here? Create an account" : 'Already a member? Sign in'}
           </button>
+        </div>
+
+        {/* Demo Credentials Info */}
+        <div className="pt-6 border-t border-slate-100">
+          <p className="text-xs font-bold text-slate-400 uppercase text-center mb-3">Demo Accounts</p>
+          <div className="space-y-2 text-xs">
+            <div className="bg-slate-50 p-3 rounded-xl">
+              <p className="font-bold text-slate-600 mb-1">Free Tier:</p>
+              <p className="text-slate-500 font-medium">Email: <span className="text-slate-700">free@demo.com</span></p>
+              <p className="text-slate-500 font-medium">Password: <span className="text-slate-700">any password</span></p>
+            </div>
+            <div className="bg-indigo-50 p-3 rounded-xl border border-indigo-100">
+              <p className="font-bold text-indigo-700 mb-1">Pro Tier:</p>
+              <p className="text-indigo-600 font-medium">Email: <span className="text-indigo-800">pro@demo.com</span></p>
+              <p className="text-indigo-600 font-medium">Password: <span className="text-indigo-800">any password</span></p>
+            </div>
+          </div>
         </div>
 
         {/* Security Assurance */}
