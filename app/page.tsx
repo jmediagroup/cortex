@@ -7,13 +7,11 @@ import { Zap, TrendingUp, ShieldCheck, ArrowRight, BarChart3, PieChart } from 'l
  * LANDING PAGE (Root Route: /)
  * This is what users see when they first visit your domain.
  * It explains the value of Cortex and directs them to the Login/Register flow.
- * * NOTE: Switched to standard <a> tags for navigation to ensure 
- * compatibility across all build environments.
  */
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900">
-      
+
       {/* NAVIGATION */}
       <nav className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -26,8 +24,8 @@ export default function LandingPage() {
           <a href="/login" className="text-sm font-bold text-slate-600 hover:text-indigo-600 transition-colors">
             Sign In
           </a>
-          <a 
-            href="/login" 
+          <a
+            href="/login"
             className="bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-indigo-700 transition-all shadow-md active:scale-95"
           >
             Get Started
@@ -49,15 +47,15 @@ export default function LandingPage() {
             Stop guessing your tax strategy. Cortex uses advanced decumulation algorithms to maximize your portfolio longevity and minimize IRS liability.
           </p>
           <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
-            <a 
-              href="/login" 
+            <a
+              href="/login"
               className="w-full sm:w-auto bg-indigo-600 text-white px-10 py-5 rounded-2xl font-black text-lg hover:bg-indigo-700 transition-all shadow-xl hover:shadow-indigo-200 flex items-center justify-center gap-2 group"
             >
               Build Your Strategy
               <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
             </a>
-            <a 
-              href="/pricing" 
+            <a
+              href="/pricing"
               className="w-full sm:w-auto bg-white text-slate-600 border border-slate-200 px-10 py-5 rounded-2xl font-black text-lg hover:bg-slate-50 transition-all"
             >
               View Pricing
@@ -105,7 +103,7 @@ export default function LandingPage() {
             <h2 className="text-4xl font-black text-slate-900 mb-4 tracking-tight">Built for modern FI/RE</h2>
             <p className="text-slate-500 font-medium">Tools designed to solve the most complex drawdown problems.</p>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-8">
             {[
               { icon: <PieChart />, title: "Asset Allocation", text: "Visualize your taxable vs. tax-deferred mix across your entire retirement horizon." },

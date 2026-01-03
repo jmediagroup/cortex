@@ -1,21 +1,13 @@
 "use client";
 
-import React from 'react';
-/**
- * For your local Next.js project on Mac:
- * Use the '@' alias which points to the 'src' directory.
- * Ensure your tsconfig.json has: "paths": { "@/*": ["./src/*"] }
- * If the alias fails, the relative path from src/app/dashboard/page.tsx 
- * to src/context/AuthContext is ../../../context/AuthContext
- */
-import { useAuth } from '@/context/AuthContext';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
-  Zap, 
-  TrendingUp, 
-  Calculator, 
-  ShieldCheck, 
-  ArrowRight, 
+import {
+  Zap,
+  TrendingUp,
+  Calculator,
+  ShieldCheck,
+  ArrowRight,
   Lock,
   LogOut,
   User,
@@ -55,8 +47,26 @@ const APPS = [
 ];
 
 export default function Dashboard() {
-  const { user, profile, loading, signOut } = useAuth();
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<any>(null);
+  const [userTier, setUserTier] = useState<'free' | 'pro'>('free');
+
+  // Demo authentication check
+  useEffect(() => {
+    // Simulate loading
+    setTimeout(() => {
+      // In a real app, you'd check authentication here
+      // For demo purposes, we'll assume user is logged in
+      setUser({ email: 'demo@example.com' });
+      setUserTier('free'); // In production, this would come from your database
+      setLoading(false);
+    }, 500);
+  }, []);
+
+  const handleSignOut = () => {
+    router.push('/');
+  };
 
   // 1. LOADING STATE
   if (loading) return (
@@ -73,19 +83,16 @@ export default function Dashboard() {
     return null;
   }
 
-  // Determine user level from Supabase profile data
-  const userTier = profile?.tier || 'free';
-
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
-      
+
       {/* TOP NAVIGATION BAR */}
       <nav className="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-2">
           <div className="bg-indigo-600 p-1.5 rounded-lg text-white">
             <Zap size={20} fill="currentColor" />
           </div>
-          <span className="font-black text-xl tracking-tight">Finance<span className="text-indigo-600">Hub</span></span>
+          <span className="font-black text-xl tracking-tight">Cortex<span className="text-indigo-600">Hub</span></span>
         </div>
 
         <div className="flex items-center gap-6">
@@ -98,8 +105,8 @@ export default function Dashboard() {
               {userTier}
             </span>
           </div>
-          <button 
-            onClick={() => signOut()}
+          <button
+            onClick={handleSignOut}
             className="text-slate-400 hover:text-rose-500 transition-colors flex items-center gap-2 font-bold text-sm"
           >
             <LogOut size={20} />
@@ -119,14 +126,14 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {APPS.map((app) => {
             const isLocked = app.tier === 'pro' && userTier !== 'pro';
-            
+
             return (
-              <div 
+              <div
                 key={app.id}
                 onClick={() => !isLocked && router.push(app.path)}
                 className={`group relative bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm transition-all duration-300 ${
-                  isLocked 
-                  ? 'opacity-80 grayscale-[0.5] cursor-default' 
+                  isLocked
+                  ? 'opacity-80 grayscale-[0.5] cursor-default'
                   : 'hover:shadow-2xl hover:-translate-y-2 cursor-pointer border-indigo-100'
                 }`}
               >
@@ -168,16 +175,16 @@ export default function Dashboard() {
             <div className="absolute top-0 right-0 p-12 opacity-10 rotate-12">
               <Zap size={250} fill="currentColor" />
             </div>
-            
+
             <div className="relative z-10 max-w-2xl">
               <span className="bg-indigo-500/30 text-indigo-200 text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-full border border-indigo-500/50 mb-6 inline-block">
                 Premium Access
               </span>
-              <h3 className="text-4xl font-black mb-6 tracking-tight">Unlock the full power of FinanceHub</h3>
+              <h3 className="text-4xl font-black mb-6 tracking-tight">Unlock the full power of Cortex</h3>
               <p className="text-indigo-100 font-medium text-xl mb-10 leading-relaxed opacity-90">
                 Get unlimited access to the Roth Conversion Ladder, advanced tax modeling, and scenario saving.
               </p>
-              <button 
+              <button
                 onClick={() => router.push('/pricing')}
                 className="bg-white text-indigo-900 font-black px-10 py-5 rounded-2xl hover:bg-indigo-50 transition-all shadow-xl hover:scale-105 active:scale-95 text-lg"
               >
@@ -191,10 +198,10 @@ export default function Dashboard() {
       {/* FOOTER */}
       <footer className="max-w-6xl mx-auto px-6 py-12 border-t border-slate-200 mt-12 text-center text-slate-400 font-medium text-sm">
         <div className="flex items-center justify-center gap-6 mb-4">
-          <ArrowLeftRight size={16} /> 
+          <ArrowLeftRight size={16} />
           <span>Optimized Strategy & Drawdown Intelligence</span>
         </div>
-        &copy; {new Date().getFullYear()} FinanceHub SaaS. Built for mathematical wealth optimization.
+        &copy; {new Date().getFullYear()} Cortex SaaS. Built for mathematical wealth optimization.
       </footer>
     </div>
   );

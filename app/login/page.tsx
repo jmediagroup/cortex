@@ -1,16 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-/**
- * Using the '@/' alias to ensure consistent resolution across the project.
- * This points to src/lib/supabase.ts as defined in your tsconfig.json.
- */
-import { supabase } from '@/lib/supabase';
 import { Zap, Mail, Lock, ArrowRight, Loader2, ShieldCheck } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 /**
  * AUTHENTICATION PAGE
  * Handles both Sign In and Account Creation for the Cortex platform.
+ * Note: This is a demo version without Supabase integration.
  */
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -18,6 +15,7 @@ export default function AuthPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,47 +23,21 @@ export default function AuthPage() {
     setError(null);
 
     try {
+      // Simulate authentication delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
       if (isLogin) {
-        // Attempt Sign In with a 10-second timeout
-        const signInPromise = supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Login request timed out. Please check your credentials and try again.')), 10000)
-        );
-
-        const { error: signInError } = await Promise.race([
-          signInPromise,
-          timeoutPromise
-        ]) as any;
-
-        if (signInError) throw signInError;
-        
-        // Successful login redirects to dashboard
-        window.location.assign('/dashboard');
+        // Demo login - accept any credentials
+        if (email && password) {
+          router.push('/dashboard');
+        } else {
+          throw new Error('Please enter both email and password');
+        }
       } else {
-        // Attempt Sign Up with a 10-second timeout
-        const signUpPromise = supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/dashboard`,
-          },
-        });
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Sign up request timed out. Please try again.')), 10000)
-        );
-
-        const { error: signUpError } = await Promise.race([
-          signUpPromise,
-          timeoutPromise
-        ]) as any;
-
-        if (signUpError) throw signUpError;
-        
+        // Demo signup
         setLoading(false);
-        alert('Registration successful! Please check your email for a confirmation link.');
+        alert('Registration successful! In a production app, you would receive a confirmation email.');
+        setIsLogin(true);
       }
     } catch (err: any) {
       setError(err.message || 'An error occurred. Please try again.');
@@ -76,7 +48,7 @@ export default function AuthPage() {
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-900">
       <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-[3rem] shadow-2xl border border-slate-200">
-        
+
         {/* Branding Header */}
         <div className="text-center">
           <div className="mx-auto h-14 w-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg shadow-indigo-200 transition-transform hover:scale-105">
@@ -86,8 +58,8 @@ export default function AuthPage() {
             {isLogin ? 'Welcome Back' : 'Get Started'}
           </h2>
           <p className="text-slate-500 mt-2 font-medium text-sm">
-            {isLogin 
-              ? 'Access your mathematical strategy engine' 
+            {isLogin
+              ? 'Access your mathematical strategy engine'
               : 'Start optimizing your wealth with precision'}
           </p>
         </div>
@@ -99,7 +71,7 @@ export default function AuthPage() {
               {error}
             </div>
           )}
-          
+
           <div className="space-y-4">
             <div className="space-y-2">
               <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
