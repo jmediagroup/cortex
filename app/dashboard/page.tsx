@@ -11,38 +11,77 @@ import {
   Lock,
   LogOut,
   User,
-  ArrowLeftRight
+  ArrowLeftRight,
+  Car
 } from 'lucide-react';
 
 /**
  * APP DATA CONFIGURATION
  * This array defines the tools visible in the dashboard.
+ * Apps are organized by category for better navigation.
  * The 'tier' property determines if a user can launch the tool.
  */
-const APPS = [
+const APP_CATEGORIES = [
   {
-    id: 'compound-interest',
-    name: 'Compound Interest',
-    description: 'Visualize long-term wealth accumulation with custom contribution schedules.',
-    icon: <Calculator className="text-indigo-600" />,
-    tier: 'free',
-    path: '/apps/compound-interest'
+    id: 'personal-finance',
+    name: 'Personal Finance',
+    description: 'Tools for individual wealth building and investment planning',
+    apps: [
+      {
+        id: 'compound-interest',
+        name: 'Compound Interest',
+        description: 'Visualize long-term wealth accumulation with custom contribution schedules.',
+        icon: <Calculator className="text-indigo-600" />,
+        tier: 'free',
+        path: '/apps/compound-interest'
+      },
+      {
+        id: 'car-affordability',
+        name: 'Car Affordability Calculator',
+        description: 'Apply the 20/3/8 rule to determine how much car you can afford without breaking the bank.',
+        icon: <Car className="text-blue-600" />,
+        tier: 'free',
+        path: '/apps/car-affordability'
+      }
+    ]
   },
   {
-    id: 's-corp-optimizer',
-    name: 'S-Corp Optimizer',
-    description: 'Calculate self-employment tax savings and find your ideal salary/distribution split.',
-    icon: <Zap className="text-amber-500" />,
-    tier: 'free',
-    path: '/apps/s-corp-optimizer'
+    id: 'business-finance',
+    name: 'Business Finance',
+    description: 'Optimize your business structure and tax strategy',
+    apps: [
+      {
+        id: 's-corp-optimizer',
+        name: 'S-Corp Optimizer',
+        description: 'Calculate self-employment tax savings and find your ideal salary/distribution split.',
+        icon: <Zap className="text-amber-500" />,
+        tier: 'free',
+        path: '/apps/s-corp-optimizer'
+      }
+    ]
   },
   {
-    id: 'roth-optimizer',
-    name: 'Roth Conversion Ladder',
-    description: 'Strategic optimization of traditional to roth conversions to eliminate future tax spikes.',
-    icon: <TrendingUp className="text-emerald-500" />,
-    tier: 'pro',
-    path: '/apps/roth-optimizer'
+    id: 'retirement',
+    name: 'Retirement',
+    description: 'Advanced retirement planning and tax optimization strategies',
+    apps: [
+      {
+        id: 'roth-optimizer',
+        name: 'Roth Conversion Ladder',
+        description: 'Strategic optimization of traditional to roth conversions to eliminate future tax spikes.',
+        icon: <TrendingUp className="text-emerald-500" />,
+        tier: 'pro',
+        path: '/apps/roth-optimizer'
+      },
+      {
+        id: 'retirement-strategy',
+        name: 'Retirement Strategy Engine',
+        description: 'Comprehensive drawdown simulation with RMDs, conversions, and Social Security optimization.',
+        icon: <TrendingUp className="text-purple-500" />,
+        tier: 'free',
+        path: '/apps/retirement-strategy'
+      }
+    ]
   }
 ];
 
@@ -130,51 +169,64 @@ export default function Dashboard() {
           <p className="text-slate-500 font-medium text-lg">Select a tool to begin your financial analysis.</p>
         </div>
 
-        {/* APPS GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {APPS.map((app) => {
-            const isLocked = app.tier === 'pro' && userTier !== 'pro';
-
-            return (
-              <div
-                key={app.id}
-                onClick={() => !isLocked && router.push(app.path)}
-                className={`group relative bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm transition-all duration-300 ${
-                  isLocked
-                  ? 'opacity-80 grayscale-[0.5] cursor-default'
-                  : 'hover:shadow-2xl hover:-translate-y-2 cursor-pointer border-indigo-100'
-                }`}
-              >
-                <div className="mb-6 flex justify-between items-start">
-                  <div className={`p-4 rounded-2xl transition-colors ${isLocked ? 'bg-slate-100' : 'bg-slate-50 group-hover:bg-indigo-50'}`}>
-                    {app.icon}
-                  </div>
-                  {app.tier === 'pro' && (
-                    <span className={`flex items-center gap-1 text-[10px] font-black uppercase px-3 py-1.5 rounded-xl ${
-                      isLocked ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-indigo-100 text-indigo-700 border border-indigo-200'
-                    }`}>
-                      {isLocked ? <Lock size={10} /> : <ShieldCheck size={10} />}
-                      {app.tier}
-                    </span>
-                  )}
-                </div>
-
-                <h3 className="text-2xl font-black mb-3 text-slate-800 tracking-tight">{app.name}</h3>
-                <p className="text-sm text-slate-500 font-medium leading-relaxed mb-8">
-                  {app.description}
-                </p>
-
-                <div className="flex items-center justify-between mt-auto">
-                  <span className={`text-sm font-black flex items-center gap-2 transition-all ${
-                    isLocked ? 'text-slate-400' : 'text-indigo-600 group-hover:gap-3'
-                  }`}>
-                    {isLocked ? 'Locked (Pro Feature)' : 'Launch Application'}
-                    {!isLocked && <ArrowRight size={18} />}
-                  </span>
-                </div>
+        {/* GROUPED APPS BY CATEGORY */}
+        <div className="space-y-12">
+          {APP_CATEGORIES.map((category) => (
+            <div key={category.id}>
+              {/* Category Header */}
+              <div className="mb-6">
+                <h3 className="text-2xl font-black text-slate-800 mb-1 tracking-tight">{category.name}</h3>
+                <p className="text-sm text-slate-500 font-medium">{category.description}</p>
               </div>
-            );
-          })}
+
+              {/* Apps Grid for this Category */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {category.apps.map((app) => {
+                  const isLocked = app.tier === 'pro' && userTier !== 'pro';
+
+                  return (
+                    <div
+                      key={app.id}
+                      onClick={() => !isLocked && router.push(app.path)}
+                      className={`group relative bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm transition-all duration-300 ${
+                        isLocked
+                        ? 'opacity-80 grayscale-[0.5] cursor-default'
+                        : 'hover:shadow-2xl hover:-translate-y-2 cursor-pointer border-indigo-100'
+                      }`}
+                    >
+                      <div className="mb-6 flex justify-between items-start">
+                        <div className={`p-4 rounded-2xl transition-colors ${isLocked ? 'bg-slate-100' : 'bg-slate-50 group-hover:bg-indigo-50'}`}>
+                          {app.icon}
+                        </div>
+                        {app.tier === 'pro' && (
+                          <span className={`flex items-center gap-1 text-[10px] font-black uppercase px-3 py-1.5 rounded-xl ${
+                            isLocked ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-indigo-100 text-indigo-700 border border-indigo-200'
+                          }`}>
+                            {isLocked ? <Lock size={10} /> : <ShieldCheck size={10} />}
+                            {app.tier}
+                          </span>
+                        )}
+                      </div>
+
+                      <h3 className="text-2xl font-black mb-3 text-slate-800 tracking-tight">{app.name}</h3>
+                      <p className="text-sm text-slate-500 font-medium leading-relaxed mb-8">
+                        {app.description}
+                      </p>
+
+                      <div className="flex items-center justify-between mt-auto">
+                        <span className={`text-sm font-black flex items-center gap-2 transition-all ${
+                          isLocked ? 'text-slate-400' : 'text-indigo-600 group-hover:gap-3'
+                        }`}>
+                          {isLocked ? 'Locked (Pro Feature)' : 'Launch Application'}
+                          {!isLocked && <ArrowRight size={18} />}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* PRO UPGRADE CALL-TO-ACTION */}
