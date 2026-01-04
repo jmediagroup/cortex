@@ -29,7 +29,7 @@ export default function RetirementStrategyPage() {
         .eq('id', session.user.id)
         .single();
 
-      if (userData) {
+      if (userData && userData.tier) {
         setIsPro(userData.tier === 'pro');
       }
       setLoading(false);
