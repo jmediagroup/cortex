@@ -3,9 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, TrendingUp, ShieldCheck } from 'lucide-react';
-import RetirementStrategyEngine from '@/components/apps/RetirementStrategyEngine';
+import SCorpInvestmentOptimizer from '@/components/apps/SCorpInvestmentOptimizer';
 
-export default function RetirementStrategyPage() {
+export default function SCorpInvestmentPage() {
   const router = useRouter();
   const [isPro, setIsPro] = useState(false);
 
@@ -32,8 +32,8 @@ export default function RetirementStrategyPage() {
           </button>
           <div className="h-6 w-px bg-slate-200" />
           <div className="flex items-center gap-2">
-            <TrendingUp className="text-purple-500" size={20} />
-            <span className="font-black text-xl tracking-tight">Retirement Strategy Engine</span>
+            <TrendingUp className="text-emerald-600" size={20} />
+            <span className="font-black text-xl tracking-tight">S-Corp Investment Optimizer</span>
           </div>
         </div>
         <div className="flex items-center gap-2 text-emerald-600 bg-emerald-50 px-4 py-2 rounded-full border border-emerald-100">
@@ -44,14 +44,16 @@ export default function RetirementStrategyPage() {
 
       {/* MAIN CONTENT */}
       <main className="max-w-7xl mx-auto px-6 py-12">
-        <div className="bg-purple-50 border border-purple-100 rounded-3xl p-8 mb-8">
-          <h2 className="text-2xl font-black text-purple-900 mb-3">Retirement Drawdown Strategy</h2>
-          <p className="text-purple-700 font-medium">
-            Comprehensive simulation of retirement portfolio withdrawals with RMD calculations, Roth conversion ladder optimization, and Social Security integration. Model multiple withdrawal strategies and stress-test against market volatility.
+        <div className="bg-emerald-50 border border-emerald-100 rounded-3xl p-8 mb-8">
+          <h2 className="text-2xl font-black text-emerald-900 mb-3">S-Corp Investment Strategy (2026 Limits)</h2>
+          <p className="text-emerald-700 font-medium">
+            As an S-Corp owner, maximize your retirement savings through strategic allocation across employee deferrals,
+            company matching, IRA contributions, and HSA. This optimizer uses 2026 IRS limits to calculate your optimal
+            investment strategy and 30-year wealth projection with tax savings.
           </p>
         </div>
 
-        <RetirementStrategyEngine
+        <SCorpInvestmentOptimizer
           isPro={isPro}
           onUpgrade={() => router.push('/pricing')}
         />

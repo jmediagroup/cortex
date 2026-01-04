@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, BarChart, Bar, Area, AreaChart
 } from 'recharts';
 import {
   TrendingDown,
@@ -14,7 +14,9 @@ import {
   ArrowLeftRight,
   TrendingUp,
   History,
-  Lock
+  Lock,
+  Calendar,
+  DollarSign
 } from 'lucide-react';
 
 // 2024 Federal Brackets for Single Filer (Simplified)
@@ -152,6 +154,7 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
       });
 
       yr.taxes = calculateTaxes(taxableIncome);
+      yr.taxableIncome = taxableIncome;
       if (balances.taxable >= yr.taxes) {
         balances.taxable -= yr.taxes;
       } else {
@@ -173,7 +176,7 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
     return data;
   };
 
-  const { activeSim, baselineSim, stats } = useMemo(() => {
+  const { activeSim, baselineSim, stats, conversionYears } = useMemo(() => {
     const activeData = runSimulation(inputs, true);
     const baselineData = runSimulation(inputs, false);
 
@@ -183,9 +186,21 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
     const activeTax = activeData.reduce((acc, curr) => acc + curr.taxes, 0);
     const baseTax = baselineData.reduce((acc, curr) => acc + curr.taxes, 0);
 
+    // Extract conversion years for the action plan
+    const conversions = activeData
+      .filter(d => d.conversion > 0)
+      .map(d => ({
+        age: d.age,
+        year: d.year,
+        amount: d.conversion,
+        taxableIncome: d.taxableIncome,
+        taxes: d.taxes
+      }));
+
     return {
       activeSim: activeData,
       baselineSim: baselineData,
+      conversionYears: conversions,
       stats: {
         activeLegacy: activeLast.totalBalance,
         baseLegacy: baseLast.totalBalance,
@@ -291,7 +306,15 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Retire Age</label>
-                <input type="number" name="retirementAge" value={inputs.retirementAge} onChange={handleInputChange} className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold" />
+                <input
+                  type="number"
+                  name="retirementAge"
+                  value={inputs.retirementAge}
+                  onChange={handleInputChange}
+                  min="55"
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold"
+                />
+                <p className="text-[9px] text-slate-400 mt-1">Min: 55</p>
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Annual Spend</label>
@@ -333,6 +356,83 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
 
         {/* Main Analytics */}
         <main className="lg:col-span-8 space-y-6">
+          {/* Conversion Action Plan */}
+          {conversionYears.length > 0 && (
+            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-200 rounded-[2.5rem] p-8">
+              <div className="flex items-center gap-3 mb-6">
+                <Calendar className="text-emerald-600" size={28} />
+                <div>
+                  <h3 className="text-xl font-black text-emerald-900">Your Conversion Action Plan</h3>
+                  <p className="text-sm text-emerald-700 font-medium">Year-by-year conversion strategy to implement</p>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                {conversionYears.slice(0, 10).map((conv, idx) => (
+                  <div key={idx} className="bg-white rounded-2xl p-4 border-2 border-emerald-100 flex items-center justify-between hover:border-emerald-300 transition-colors">
+                    <div className="flex items-center gap-4">
+                      <div className="bg-emerald-100 text-emerald-700 font-black text-sm rounded-xl px-3 py-2 min-w-[80px] text-center">
+                        Age {conv.age}
+                      </div>
+                      <div>
+                        <div className="font-black text-slate-900">Convert ${conv.amount.toLocaleString()}</div>
+                        <div className="text-xs text-slate-500 font-medium">
+                          Taxable income: ${Math.round(conv.taxableIncome).toLocaleString()} • Tax owed: ${Math.round(conv.taxes).toLocaleString()}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xs font-bold text-emerald-600">{conv.year}</div>
+                    </div>
+                  </div>
+                ))}
+                {conversionYears.length > 10 && (
+                  <p className="text-xs text-slate-500 text-center font-medium pt-2">
+                    + {conversionYears.length - 10} more years of conversions
+                  </p>
+                )}
+              </div>
+
+              <div className="mt-6 p-4 bg-white rounded-2xl border-2 border-blue-100">
+                <div className="flex items-start gap-2">
+                  <Info className="text-blue-600 mt-0.5" size={16} />
+                  <div className="text-xs text-blue-900 font-medium">
+                    <strong className="font-black">How to implement:</strong> Each year listed above, convert the specified amount from your Traditional IRA/401(k) to your Roth IRA.
+                    You'll pay taxes on the conversion that year, but all future growth and withdrawals will be tax-free. Make sure to have cash available to pay the taxes from your taxable account.
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Conversion Timeline Visualization */}
+          {conversionYears.length > 0 && (
+            <div className="bg-white rounded-[2.5rem] p-8 border-2 border-slate-200 shadow-sm">
+              <h3 className="text-sm font-black text-slate-500 uppercase tracking-widest mb-4">Annual Conversion Amounts</h3>
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={conversionYears}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <XAxis
+                    dataKey="age"
+                    stroke="#94a3b8"
+                    tick={{ fontSize: 11 }}
+                    label={{ value: 'Age', position: 'insideBottom', offset: -5, fontSize: 11 }}
+                  />
+                  <YAxis
+                    stroke="#94a3b8"
+                    tick={{ fontSize: 11 }}
+                    tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+                  />
+                  <Tooltip
+                    formatter={(v) => `$${Number(v).toLocaleString()}`}
+                    contentStyle={{ borderRadius: '12px', border: '2px solid #e2e8f0' }}
+                  />
+                  <Bar dataKey="amount" fill="#10b981" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+
           {/* Comparison Metrics */}
           {inputs.showComparison && isPro && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in slide-in-from-bottom-2">
@@ -353,97 +453,41 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
             </div>
           )}
 
-          {/* Performance Over Time */}
-          <div className="bg-white p-8 rounded-[3rem] border border-slate-200 shadow-sm relative overflow-hidden">
-            <h3 className="text-xl font-black text-slate-800 mb-8 flex items-center gap-2">
-              <History className="text-indigo-500" /> Portfolio Value Comparison
-            </h3>
-            <div className="h-[400px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={activeSim.map((d, i) => ({
-                  age: d.age,
-                  optimized: d.totalBalance,
-                  baseline: baselineSim[i].totalBalance
-                }))}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                  <XAxis dataKey="age" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 11, fontWeight: 'bold'}} />
-                  <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 11, fontWeight: 'bold'}} tickFormatter={v => `$${(v/1000000).toFixed(1)}M`} />
-                  <Tooltip contentStyle={{borderRadius: '24px', border: 'none', boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.25)'}} formatter={(v) => `$${Math.round(Number(v) || 0).toLocaleString()}`}/>
+          {/* Portfolio Balance Over Time */}
+          <div className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm">
+            <h3 className="text-sm font-black text-slate-400 uppercase mb-4 tracking-widest">Portfolio Balance Over Time</h3>
+            <ResponsiveContainer width="100%" height={350}>
+              <LineChart data={activeSim}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                <XAxis dataKey="age" stroke="#94a3b8" tick={{ fontSize: 11 }} />
+                <YAxis stroke="#94a3b8" tick={{ fontSize: 11 }} tickFormatter={(v) => `$${(v / 1000000).toFixed(1)}M`} />
+                <Tooltip formatter={(v) => `$${Number(v).toLocaleString()}`} contentStyle={{ borderRadius: '12px', border: '2px solid #e2e8f0' }} />
+                <Legend />
+                <Line type="monotone" dataKey="totalBalance" stroke="#4f46e5" strokeWidth={3} name="Total Portfolio" dot={false} />
+                {inputs.showComparison && isPro && (
+                  <Line type="monotone" dataKey="totalBalance" data={baselineSim} stroke="#94a3b8" strokeWidth={2} strokeDasharray="5 5" name="Without Conversion" dot={false} />
+                )}
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Tax Comparison Over Time */}
+          {inputs.showComparison && isPro && (
+            <div className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm">
+              <h3 className="text-sm font-black text-slate-400 uppercase mb-4 tracking-widest">Annual Tax Burden</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <AreaChart data={activeSim}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <XAxis dataKey="age" stroke="#94a3b8" tick={{ fontSize: 11 }} />
+                  <YAxis stroke="#94a3b8" tick={{ fontSize: 11 }} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
+                  <Tooltip formatter={(v) => `$${Number(v).toLocaleString()}`} contentStyle={{ borderRadius: '12px', border: '2px solid #e2e8f0' }} />
                   <Legend />
-                  <Line type="monotone" dataKey="optimized" stroke="#4f46e5" strokeWidth={4} dot={false} name="Current Strategy" />
-                  {isPro && <Line type="monotone" dataKey="baseline" stroke="#94a3b8" strokeWidth={2} strokeDasharray="5 5" dot={false} name="Standard (No Ladder)" />}
-                </LineChart>
+                  <Area type="monotone" dataKey="taxes" stroke="#10b981" fill="#10b981" fillOpacity={0.3} name="With Conversion Ladder" />
+                  <Area type="monotone" dataKey="taxes" data={baselineSim} stroke="#ef4444" fill="#ef4444" fillOpacity={0.2} name="Without Conversion" />
+                </AreaChart>
               </ResponsiveContainer>
             </div>
-
-            {!isPro && (
-              <div className="absolute inset-0 bg-white/40 backdrop-blur-[2px] flex items-center justify-center">
-                <div className="bg-white p-6 rounded-3xl shadow-2xl border border-slate-200 text-center max-w-xs relative z-20">
-                  <div className="w-12 h-12 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <Lock size={24} />
-                  </div>
-                  <h4 className="font-black text-slate-800 mb-2">Comparison Locked</h4>
-                  <p className="text-xs text-slate-500 font-medium mb-6">Upgrade to Pro to see how your strategy compares to doing nothing.</p>
-                  <button
-                    onClick={onUpgrade}
-                    className="w-full bg-indigo-600 text-white font-black py-3 rounded-xl hover:bg-indigo-700 transition-colors shadow-lg"
-                  >
-                    Unlock Comparison
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Strategic Comparison Verdict */}
-          <div className="bg-indigo-900 p-10 rounded-[4rem] text-white shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-8 opacity-10">
-              <ArrowLeftRight size={120} />
-            </div>
-            <h3 className="text-2xl font-black mb-8 relative z-10">Strategic Insights</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10">
-              <div>
-                <p className="text-indigo-300 font-black text-xs uppercase tracking-widest mb-4">Standard Logic</p>
-                <ul className="space-y-3">
-                  <li className="flex gap-3 text-sm font-medium opacity-80">
-                    <div className="bg-indigo-800 p-1 rounded h-fit mt-1 text-rose-400"><TrendingUp size={12}/></div>
-                    RMDs are projected to force you into a {TAX_BRACKETS[2].label} or higher bracket later.
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <p className="text-emerald-400 font-black text-xs uppercase tracking-widest mb-4">Active Strategy</p>
-                <ul className="space-y-3">
-                  <li className="flex gap-3 text-sm font-medium">
-                    <div className="bg-emerald-800 p-1 rounded h-fit mt-1 text-emerald-400"><TrendingDown size={12}/></div>
-                    You are {inputs.manualConvAmount > 0 ? "partially" : "not"} currently optimizing for bracket efficiency.
-                  </li>
-                </ul>
-              </div>
-            </div>
-            <div className="mt-12 pt-8 border-t border-indigo-800 flex flex-col md:flex-row justify-between items-center gap-4">
-              <div className="text-center md:text-left">
-                <p className="text-indigo-400 font-black text-xs uppercase mb-1 tracking-widest">Net Result</p>
-                <p className="text-3xl font-black">
-                  {isPro ? (
-                    stats.legacyDelta > 0 ? (
-                      <><span className="text-emerald-400">+${Math.round(stats.legacyDelta/1000).toLocaleString()}k</span> Efficiency Gain</>
-                    ) : (
-                      <><span className="text-rose-400">Neutral</span> Result</>
-                    )
-                  ) : (
-                    <span className="text-indigo-300 opacity-50">Pro Logic Needed</span>
-                  )}
-                </p>
-              </div>
-              <button
-                onClick={() => !isPro ? onUpgrade?.() : setInputs(p => ({...p, targetBracketIndex: p.targetBracketIndex === 1 ? 2 : 1}))}
-                className="bg-indigo-600 hover:bg-indigo-500 text-white font-black px-8 py-4 rounded-3xl transition-all shadow-lg text-sm uppercase tracking-widest"
-              >
-                {!isPro ? "Upgrade to Unlock" : "Switch Target Bracket"}
-              </button>
-            </div>
-          </div>
+          )}
         </main>
       </div>
     </div>

@@ -57,6 +57,14 @@ const APP_CATEGORIES = [
         icon: <Zap className="text-amber-500" />,
         tier: 'free',
         path: '/apps/s-corp-optimizer'
+      },
+      {
+        id: 's-corp-investment',
+        name: 'S-Corp Investment Optimizer',
+        description: 'Maximize retirement contributions across Solo 401(k), IRA, HSA, and brokerage accounts with 2026 limits.',
+        icon: <TrendingUp className="text-emerald-600" />,
+        tier: 'pro',
+        path: '/apps/s-corp-investment'
       }
     ]
   },
