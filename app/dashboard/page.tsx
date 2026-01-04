@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { createBrowserClient } from '@/lib/supabase/client';
 import {
   Zap,
   TrendingUp,
@@ -11,7 +12,8 @@ import {
   Lock,
   LogOut,
   User,
-  ArrowLeftRight
+  ArrowLeftRight,
+  Car
 } from 'lucide-react';
 
 /**
@@ -20,6 +22,30 @@ import {
  * The 'tier' property determines if a user can launch the tool.
  */
 const APPS = [
+  {
+    id: 'car-affordability',
+    name: 'Car Affordability',
+    description: 'Calculate how much car you can afford using the 20/3/8 rule.',
+    icon: <Car className="text-indigo-600" />,
+    tier: 'free',
+    path: '/apps/car-affordability'
+  },
+  {
+    id: 's-corp-investment',
+    name: 'S-Corp Investment Optimizer',
+    description: 'Maximize retirement savings through strategic allocation across employee deferrals and company matching.',
+    icon: <TrendingUp className="text-emerald-600" />,
+    tier: 'free',
+    path: '/apps/s-corp-investment'
+  },
+  {
+    id: 'retirement-strategy',
+    name: 'Retirement Strategy Engine',
+    description: 'Comprehensive simulation of retirement portfolio withdrawals with RMD calculations.',
+    icon: <TrendingUp className="text-purple-500" />,
+    tier: 'free',
+    path: '/apps/retirement-strategy'
+  },
   {
     id: 'compound-interest',
     name: 'Compound Interest',
@@ -48,23 +74,42 @@ const APPS = [
 
 export default function Dashboard() {
   const router = useRouter();
+  const supabase = createBrowserClient();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [userTier, setUserTier] = useState<'free' | 'pro'>('free');
 
-  // Demo authentication check
+  // Real authentication check
   useEffect(() => {
-    // Simulate loading
-    setTimeout(() => {
-      // In a real app, you'd check authentication here
-      // For demo purposes, we'll assume user is logged in
-      setUser({ email: 'demo@example.com' });
-      setUserTier('free'); // In production, this would come from your database
-      setLoading(false);
-    }, 500);
-  }, []);
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
 
-  const handleSignOut = () => {
+      if (!session) {
+        router.push('/login');
+        return;
+      }
+
+      setUser(session.user);
+
+      // Fetch user tier from database
+      const { data: userData } = await supabase
+        .from('users')
+        .select('tier')
+        .eq('id', session.user.id)
+        .single() as { data: { tier: 'free' | 'pro' } | null };
+
+      if (userData?.tier) {
+        setUserTier(userData.tier);
+      }
+
+      setLoading(false);
+    };
+
+    checkAuth();
+  }, [router, supabase]);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
     router.push('/');
   };
 

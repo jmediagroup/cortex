@@ -1,14 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Zap, Mail, Lock, ArrowRight, Loader2, ShieldCheck } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { createBrowserClient } from '@/lib/supabase/client';
 
-/**
- * AUTHENTICATION PAGE
- * Handles both Sign In and Account Creation for the Cortex platform.
- * Note: This is a demo version without Supabase integration.
- */
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
@@ -16,6 +12,20 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const supabase = createBrowserClient();
+
+  // Check if user is already logged in
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const redirect = searchParams.get('redirect') || '/dashboard';
+        router.push(redirect);
+      }
+    };
+    checkSession();
+  }, [router, searchParams, supabase]);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,23 +33,60 @@ export default function AuthPage() {
     setError(null);
 
     try {
-      // Simulate authentication delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
       if (isLogin) {
-        // Demo login - accept any credentials
-        if (email && password) {
-          router.push('/dashboard');
-        } else {
-          throw new Error('Please enter both email and password');
+        // Sign in existing user
+        const { data, error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (signInError) {
+          throw signInError;
+        }
+
+        if (data.session) {
+          // Redirect to original destination or dashboard
+          const redirect = searchParams.get('redirect') || '/dashboard';
+          router.push(redirect);
         }
       } else {
-        // Demo signup
-        setLoading(false);
-        alert('Registration successful! In a production app, you would receive a confirmation email.');
-        setIsLogin(true);
+        // Sign up new user
+        const { data, error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/dashboard`,
+          },
+        });
+
+        if (signUpError) {
+          throw signUpError;
+        }
+
+        if (data.user) {
+          // Create user record in users table with free tier
+          const { error: insertError } = await supabase
+            .from('users')
+            .insert({
+              id: data.user.id,
+              email: data.user.email,
+              tier: 'free',
+            });
+
+          if (insertError && insertError.code !== '23505') { // Ignore duplicate key errors
+            console.error('Error creating user record:', insertError);
+          }
+
+          // Show success message
+          setError(null);
+          setLoading(false);
+          alert('Account created! Please check your email to confirm your account.');
+          setIsLogin(true);
+          setPassword('');
+        }
       }
     } catch (err: any) {
+      console.error('Auth error:', err);
       setError(err.message || 'An error occurred. Please try again.');
       setLoading(false);
     }
@@ -103,6 +150,7 @@ export default function AuthPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 placeholder:text-slate-300"
                   placeholder="••••••••"
+                  minLength={6}
                 />
               </div>
             </div>
