@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { createBrowserClient } from '@/lib/supabase/client';
+import type { User as SupabaseUser } from '@supabase/supabase-js';
 import {
   Zap,
   TrendingUp,
@@ -95,31 +97,59 @@ const APP_CATEGORIES = [
 
 export default function Dashboard() {
   const router = useRouter();
+  const supabase = createBrowserClient();
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
   const [userTier, setUserTier] = useState<'free' | 'pro'>('free');
 
-  // Demo authentication check
+  // Supabase authentication check
   useEffect(() => {
-    // Simulate loading
-    setTimeout(() => {
-      // Read from localStorage for demo purposes
-      const demoUserStr = localStorage.getItem('demoUser');
-      if (demoUserStr) {
-        const demoUser = JSON.parse(demoUserStr);
-        setUser({ email: demoUser.email });
-        setUserTier(demoUser.tier);
-      } else {
-        // Fallback if no user in localStorage
-        setUser({ email: 'demo@example.com' });
-        setUserTier('free');
-      }
-      setLoading(false);
-    }, 500);
-  }, []);
+    const checkAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
 
-  const handleSignOut = () => {
-    localStorage.removeItem('demoUser');
+        if (!session) {
+          router.push('/login');
+          return;
+        }
+
+        setUser(session.user);
+
+        // Fetch user tier from database
+        const { data: userData, error } = await supabase
+          .from('users')
+          .select('tier')
+          .eq('id', session.user.id)
+          .single();
+
+        if (error) {
+          console.error('Error fetching user data:', error);
+          setUserTier('free');
+        } else {
+          setUserTier(userData.tier);
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+        router.push('/login');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuth();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        router.push('/login');
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [router, supabase]);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
     router.push('/');
   };
 

@@ -3,11 +3,12 @@
 import React, { useState } from 'react';
 import { Zap, Mail, Lock, ArrowRight, Loader2, ShieldCheck } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { createBrowserClient } from '@/lib/supabase/client';
 
 /**
  * AUTHENTICATION PAGE
  * Handles both Sign In and Account Creation for the Cortex platform.
- * Note: This is a demo version without Supabase integration.
+ * Integrated with Supabase authentication.
  */
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -15,38 +16,51 @@ export default function AuthPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
   const router = useRouter();
+  const supabase = createBrowserClient();
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setMessage(null);
 
     try {
-      // Simulate authentication delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
       if (isLogin) {
-        // Demo login with test accounts
-        if (email && password) {
-          // Store demo user info in localStorage
-          const demoUsers: Record<string, { tier: 'free' | 'pro' }> = {
-            'free@demo.com': { tier: 'free' },
-            'pro@demo.com': { tier: 'pro' }
-          };
+        // Sign in with Supabase
+        const { data, error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
 
-          const userTier = demoUsers[email.toLowerCase()]?.tier || 'free';
-          localStorage.setItem('demoUser', JSON.stringify({ email, tier: userTier }));
+        if (signInError) throw signInError;
 
+        if (data.session) {
           router.push('/dashboard');
-        } else {
-          throw new Error('Please enter both email and password');
+          router.refresh();
         }
       } else {
-        // Demo signup
-        setLoading(false);
-        alert('Registration successful! In a production app, you would receive a confirmation email.');
-        setIsLogin(true);
+        // Sign up with Supabase
+        const { data, error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/auth/callback`,
+          },
+        });
+
+        if (signUpError) throw signUpError;
+
+        if (data.session) {
+          // Auto-login after signup
+          router.push('/dashboard');
+          router.refresh();
+        } else {
+          // Email confirmation required
+          setMessage('Check your email for the confirmation link!');
+          setLoading(false);
+        }
       }
     } catch (err: any) {
       setError(err.message || 'An error occurred. Please try again.');
@@ -78,6 +92,12 @@ export default function AuthPage() {
           {error && (
             <div className="bg-rose-50 text-rose-600 p-4 rounded-2xl text-sm font-bold border border-rose-100 animate-in fade-in slide-in-from-top-1">
               {error}
+            </div>
+          )}
+
+          {message && (
+            <div className="bg-emerald-50 text-emerald-600 p-4 rounded-2xl text-sm font-bold border border-emerald-100 animate-in fade-in slide-in-from-top-1">
+              {message}
             </div>
           )}
 
@@ -139,23 +159,6 @@ export default function AuthPage() {
           >
             {isLogin ? "New here? Create an account" : 'Already a member? Sign in'}
           </button>
-        </div>
-
-        {/* Demo Credentials Info */}
-        <div className="pt-6 border-t border-slate-100">
-          <p className="text-xs font-bold text-slate-400 uppercase text-center mb-3">Demo Accounts</p>
-          <div className="space-y-2 text-xs">
-            <div className="bg-slate-50 p-3 rounded-xl">
-              <p className="font-bold text-slate-600 mb-1">Free Tier:</p>
-              <p className="text-slate-500 font-medium">Email: <span className="text-slate-700">free@demo.com</span></p>
-              <p className="text-slate-500 font-medium">Password: <span className="text-slate-700">any password</span></p>
-            </div>
-            <div className="bg-indigo-50 p-3 rounded-xl border border-indigo-100">
-              <p className="font-bold text-indigo-700 mb-1">Pro Tier:</p>
-              <p className="text-indigo-600 font-medium">Email: <span className="text-indigo-800">pro@demo.com</span></p>
-              <p className="text-indigo-600 font-medium">Password: <span className="text-indigo-800">any password</span></p>
-            </div>
-          </div>
         </div>
 
         {/* Security Assurance */}

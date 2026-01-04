@@ -4,19 +4,46 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, TrendingUp, ShieldCheck } from 'lucide-react';
 import RothOptimizer from '@/components/apps/RothOptimizer';
+import { createBrowserClient } from '@/lib/supabase/client';
 
 export default function RothOptimizerPage() {
   const router = useRouter();
+  const supabase = createBrowserClient();
   const [isPro, setIsPro] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  // Read user tier from localStorage
+  // Read user tier from Supabase
   useEffect(() => {
-    const demoUserStr = localStorage.getItem('demoUser');
-    if (demoUserStr) {
-      const demoUser = JSON.parse(demoUserStr);
-      setIsPro(demoUser.tier === 'pro');
-    }
-  }, []);
+    const checkUserTier = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session) {
+        router.push('/login');
+        return;
+      }
+
+      const { data: userData } = await supabase
+        .from('users')
+        .select('tier')
+        .eq('id', session.user.id)
+        .single();
+
+      if (userData) {
+        setIsPro(userData.tier === 'pro');
+      }
+      setLoading(false);
+    };
+
+    checkUserTier();
+  }, [router, supabase]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
