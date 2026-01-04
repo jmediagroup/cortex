@@ -27,9 +27,9 @@ export default function SCorpInvestmentPage() {
         .from('users')
         .select('tier')
         .eq('id', session.user.id)
-        .single();
+        .single() as { data: { tier: 'free' | 'pro' } | null };
 
-      if (userData && userData.tier) {
+      if (userData?.tier) {
         setIsPro(userData.tier === 'pro');
       }
       setLoading(false);
