@@ -27,7 +27,7 @@ export async function createCheckoutSession(
 
   // Create checkout session with metadata on both session and subscription
   const session = await stripe.checkout.sessions.create({
-    customer: finalCustomerId,
+    customer: finalCustomerId as string,
     mode: 'subscription',
     payment_method_types: ['card'],
     line_items: [
