@@ -4,19 +4,48 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, TrendingUp, ShieldCheck } from 'lucide-react';
 import RetirementStrategyEngine from '@/components/apps/RetirementStrategyEngine';
+import { createBrowserClient } from '@/lib/supabase/client';
 
 export default function RetirementStrategyPage() {
   const router = useRouter();
+  const supabase = createBrowserClient();
   const [isPro, setIsPro] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  // Read user tier from localStorage
+  // Fetch user tier from database
   useEffect(() => {
-    const demoUserStr = localStorage.getItem('demoUser');
-    if (demoUserStr) {
-      const demoUser = JSON.parse(demoUserStr);
-      setIsPro(demoUser.tier === 'pro');
-    }
-  }, []);
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session) {
+        router.push('/login');
+        return;
+      }
+
+      // Fetch user tier from database
+      const { data: userData } = await supabase
+        .from('users')
+        .select('tier')
+        .eq('id', session.user.id)
+        .single() as { data: { tier: 'free' | 'pro' } | null };
+
+      if (userData?.tier) {
+        setIsPro(userData.tier === 'pro');
+      }
+
+      setLoading(false);
+    };
+
+    checkAuth();
+  }, [router, supabase]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900">

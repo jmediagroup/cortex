@@ -15,13 +15,15 @@ import {
   ArrowLeftRight,
   Car,
   ChevronDown,
-  Settings
+  Settings,
+  Filter
 } from 'lucide-react';
 
 /**
  * APP DATA CONFIGURATION
  * This array defines the tools visible in the dashboard.
  * The 'tier' property determines if a user can launch the tool.
+ * The 'category' property allows filtering apps by type.
  */
 const APPS = [
   {
@@ -30,6 +32,7 @@ const APPS = [
     description: 'Calculate how much car you can afford using the 20/3/8 rule.',
     icon: <Car className="text-indigo-600" />,
     tier: 'free',
+    category: 'Personal Finance',
     path: '/apps/car-affordability'
   },
   {
@@ -38,6 +41,7 @@ const APPS = [
     description: 'Visualize long-term wealth accumulation with custom contribution schedules and compound growth.',
     icon: <Calculator className="text-indigo-600" />,
     tier: 'free',
+    category: 'Personal Finance',
     path: '/apps/compound-interest'
   },
   {
@@ -46,6 +50,7 @@ const APPS = [
     description: 'Calculate self-employment tax savings and find your ideal salary/distribution split.',
     icon: <Zap className="text-amber-500" />,
     tier: 'free',
+    category: 'Business',
     path: '/apps/s-corp-optimizer'
   },
   {
@@ -54,6 +59,7 @@ const APPS = [
     description: 'Maximize retirement savings through strategic allocation across employee deferrals and company matching.',
     icon: <TrendingUp className="text-emerald-600" />,
     tier: 'free',
+    category: 'Business',
     path: '/apps/s-corp-investment'
   },
   {
@@ -62,6 +68,7 @@ const APPS = [
     description: 'Comprehensive simulation of retirement portfolio withdrawals with RMD calculations.',
     icon: <TrendingUp className="text-purple-500" />,
     tier: 'free',
+    category: 'Retirement',
     path: '/apps/retirement-strategy'
   },
   {
@@ -70,6 +77,7 @@ const APPS = [
     description: 'Strategic optimization of traditional to Roth conversions to eliminate future tax spikes.',
     icon: <TrendingUp className="text-emerald-500" />,
     tier: 'pro',
+    category: 'Retirement',
     path: '/apps/roth-optimizer'
   }
 ];
@@ -81,6 +89,7 @@ export default function Dashboard() {
   const [user, setUser] = useState<any>(null);
   const [userTier, setUserTier] = useState<'free' | 'pro'>('free');
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
 
   // Real authentication check
   useEffect(() => {
@@ -115,6 +124,14 @@ export default function Dashboard() {
     await supabase.auth.signOut();
     router.push('/');
   };
+
+  // Get unique categories for filter buttons
+  const categories = ['All', ...Array.from(new Set(APPS.map(app => app.category)))];
+
+  // Filter apps based on selected category
+  const filteredApps = selectedCategory === 'All'
+    ? APPS
+    : APPS.filter(app => app.category === selectedCategory);
 
   // 1. LOADING STATE
   if (loading) return (
@@ -220,9 +237,30 @@ export default function Dashboard() {
           <p className="text-slate-500 font-medium text-lg">Select a tool to begin your financial analysis.</p>
         </div>
 
+        {/* CATEGORY FILTERS */}
+        <div className="mb-8 flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-2 text-slate-600">
+            <Filter size={18} />
+            <span className="text-sm font-black uppercase tracking-wide">Filter:</span>
+          </div>
+          {categories.map((category) => (
+            <button
+              key={category}
+              onClick={() => setSelectedCategory(category)}
+              className={`px-4 py-2 rounded-xl font-bold text-sm transition-all ${
+                selectedCategory === category
+                  ? 'bg-indigo-600 text-white shadow-lg'
+                  : 'bg-white text-slate-600 border border-slate-200 hover:border-indigo-300 hover:text-indigo-600'
+              }`}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+
         {/* APPS GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {APPS.map((app) => {
+          {filteredApps.map((app) => {
             const isLocked = app.tier === 'pro' && userTier !== 'pro';
 
             return (

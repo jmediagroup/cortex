@@ -28,6 +28,8 @@ export default function AccountPage() {
   // Form state
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [birthDate, setBirthDate] = useState('');
+  const [gender, setGender] = useState<'male' | 'female' | 'prefer_not_to_say' | ''>('');
 
   // UI state
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -50,14 +52,16 @@ export default function AccountPage() {
       // Fetch user profile data
       const { data: userData } = await supabase
         .from('users')
-        .select('tier, first_name, last_name')
+        .select('tier, first_name, last_name, birth_date, gender')
         .eq('id', session.user.id)
-        .single() as { data: { tier: 'free' | 'pro'; first_name?: string; last_name?: string } | null };
+        .single() as { data: { tier: 'free' | 'pro'; first_name?: string; last_name?: string; birth_date?: string; gender?: 'male' | 'female' | 'prefer_not_to_say' } | null };
 
       if (userData) {
         setUserTier(userData.tier);
         setFirstName(userData.first_name || '');
         setLastName(userData.last_name || '');
+        setBirthDate(userData.birth_date || '');
+        setGender(userData.gender || '');
       }
 
       setLoading(false);
@@ -65,6 +69,19 @@ export default function AccountPage() {
 
     loadUserData();
   }, [router, supabase]);
+
+  // Calculate age from birth date
+  const calculateAge = (birthDateString: string): number | null => {
+    if (!birthDateString) return null;
+    const today = new Date();
+    const birthDate = new Date(birthDateString);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  };
 
   // Save profile changes
   const handleSaveProfile = async () => {
@@ -78,6 +95,8 @@ export default function AccountPage() {
         .update as any)({
           first_name: firstName,
           last_name: lastName,
+          birth_date: birthDate || null,
+          gender: gender || null,
           updated_at: new Date().toISOString(),
         })
         .eq('id', user.id);
@@ -266,6 +285,41 @@ export default function AccountPage() {
                   placeholder="Enter last name"
                   className="w-full border border-slate-200 rounded-xl px-4 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-wide">
+                  Birth Date
+                </label>
+                <input
+                  type="date"
+                  value={birthDate}
+                  onChange={(e) => setBirthDate(e.target.value)}
+                  className="w-full border border-slate-200 rounded-xl px-4 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                />
+                {birthDate && calculateAge(birthDate) !== null && (
+                  <p className="text-xs text-slate-500 mt-2 font-medium">
+                    Age: {calculateAge(birthDate)} years
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-wide">
+                  Gender
+                </label>
+                <select
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value as 'male' | 'female' | 'prefer_not_to_say' | '')}
+                  className="w-full border border-slate-200 rounded-xl px-4 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white"
+                >
+                  <option value="">Select gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="prefer_not_to_say">Prefer not to say</option>
+                </select>
               </div>
             </div>
 
