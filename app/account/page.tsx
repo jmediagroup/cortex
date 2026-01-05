@@ -100,7 +100,7 @@ export default function AccountPage() {
   };
 
   const handleDowngradeToFree = async () => {
-    if (!confirm('Are you sure you want to downgrade to the Free tier? You will lose access to Pro features.')) {
+    if (!confirm('Are you sure you want to downgrade to the Free tier? This will cancel your subscription and you will lose access to Pro features.')) {
       return;
     }
 
@@ -109,19 +109,24 @@ export default function AccountPage() {
     setErrorMessage('');
 
     try {
-      const { error } = await (supabase
-        .from('users')
-        .update as any)({
-          tier: 'free',
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', user.id);
+      // Call API to cancel Stripe subscription
+      const response = await fetch('/api/cancel-subscription', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: user.id }),
+      });
 
-      if (error) throw error;
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to cancel subscription');
+      }
 
       setUserTier('free');
-      setSuccessMessage('Successfully downgraded to Free tier');
-      setTimeout(() => setSuccessMessage(''), 3000);
+      setSuccessMessage('Successfully downgraded to Free tier. Your subscription has been canceled.');
+      setTimeout(() => setSuccessMessage(''), 5000);
     } catch (error: any) {
       setErrorMessage(error.message || 'Failed to downgrade tier');
       setTimeout(() => setErrorMessage(''), 5000);
