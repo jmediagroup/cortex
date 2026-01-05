@@ -244,6 +244,93 @@ Then update `lib/supabase/client.ts` to import the generated types instead of th
 
 ---
 
+## 🔗 Supabase Email Redirect Configuration
+
+### Issue: Email verification redirects to localhost instead of production domain
+
+When users verify their email, Supabase redirects them to `localhost:3000` instead of your production domain. This needs to be configured in Supabase.
+
+**Fix:**
+
+1. Go to your Supabase project dashboard
+2. Navigate to **Authentication** → **URL Configuration**
+3. Update the following settings:
+
+   - **Site URL:** `https://cortex.vip` (your production domain)
+   - **Redirect URLs:** Add the following (one per line):
+     ```
+     https://cortex.vip/**
+     https://cortex.vip/dashboard
+     http://localhost:3000/**
+     http://localhost:3000/dashboard
+     ```
+
+4. Save the changes
+
+**Alternative: Configure in code**
+
+If you need different redirect URLs for development vs. production, you can also update the signup code to use an environment variable:
+
+```typescript
+// In app/login/page.tsx
+emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/dashboard`,
+```
+
+Then add to your Vercel environment variables:
+```
+NEXT_PUBLIC_APP_URL=https://cortex.vip
+```
+
+---
+
+## 📱 Missing Apps
+
+The dashboard currently references 6 apps, but only 3 exist in the codebase:
+
+**✅ Existing Apps:**
+- `/apps/compound-interest`
+- `/apps/s-corp-optimizer`
+- `/apps/roth-optimizer`
+
+**❌ Missing Apps (referenced in dashboard but not created):**
+- `/apps/car-affordability`
+- `/apps/s-corp-investment`
+- `/apps/retirement-strategy`
+
+**Recommended Actions:**
+
+1. **Short-term fix:** Remove the missing apps from the dashboard configuration
+   - Edit `app/dashboard/page.tsx`
+   - Remove or comment out the APPS entries for the missing apps
+
+2. **Long-term fix:** Create the missing app pages
+   - These apps were likely deleted or never committed to git
+   - You'll need to recreate them or restore from backups
+
+**To remove missing apps from dashboard now:**
+
+Edit `app/dashboard/page.tsx` and remove these entries from the APPS array:
+```typescript
+// Remove these:
+{
+  id: 'car-affordability',
+  name: 'Car Affordability',
+  // ...
+},
+{
+  id: 's-corp-investment',
+  name: 'S-Corp Investment Optimizer',
+  // ...
+},
+{
+  id: 'retirement-strategy',
+  name: 'Retirement Strategy Engine',
+  // ...
+},
+```
+
+---
+
 ## 📞 Support & Resources
 
 - **Next.js Docs:** https://nextjs.org/docs

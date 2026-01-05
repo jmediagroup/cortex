@@ -23,33 +23,9 @@ import {
  */
 const APPS = [
   {
-    id: 'car-affordability',
-    name: 'Car Affordability',
-    description: 'Calculate how much car you can afford using the 20/3/8 rule.',
-    icon: <Car className="text-indigo-600" />,
-    tier: 'free',
-    path: '/apps/car-affordability'
-  },
-  {
-    id: 's-corp-investment',
-    name: 'S-Corp Investment Optimizer',
-    description: 'Maximize retirement savings through strategic allocation across employee deferrals and company matching.',
-    icon: <TrendingUp className="text-emerald-600" />,
-    tier: 'free',
-    path: '/apps/s-corp-investment'
-  },
-  {
-    id: 'retirement-strategy',
-    name: 'Retirement Strategy Engine',
-    description: 'Comprehensive simulation of retirement portfolio withdrawals with RMD calculations.',
-    icon: <TrendingUp className="text-purple-500" />,
-    tier: 'free',
-    path: '/apps/retirement-strategy'
-  },
-  {
     id: 'compound-interest',
-    name: 'Compound Interest',
-    description: 'Visualize long-term wealth accumulation with custom contribution schedules.',
+    name: 'Compound Interest Calculator',
+    description: 'Visualize long-term wealth accumulation with custom contribution schedules and compound growth.',
     icon: <Calculator className="text-indigo-600" />,
     tier: 'free',
     path: '/apps/compound-interest'
@@ -65,7 +41,7 @@ const APPS = [
   {
     id: 'roth-optimizer',
     name: 'Roth Conversion Ladder',
-    description: 'Strategic optimization of traditional to roth conversions to eliminate future tax spikes.',
+    description: 'Strategic optimization of traditional to Roth conversions to eliminate future tax spikes.',
     icon: <TrendingUp className="text-emerald-500" />,
     tier: 'pro',
     path: '/apps/roth-optimizer'
