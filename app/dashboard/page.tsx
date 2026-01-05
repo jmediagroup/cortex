@@ -13,7 +13,9 @@ import {
   LogOut,
   User,
   ArrowLeftRight,
-  Car
+  Car,
+  ChevronDown,
+  Settings
 } from 'lucide-react';
 
 /**
@@ -78,6 +80,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [userTier, setUserTier] = useState<'free' | 'pro'>('free');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   // Real authentication check
   useEffect(() => {
@@ -140,8 +143,11 @@ export default function Dashboard() {
           <span className="font-black text-xl tracking-tight">Cortex<span className="text-indigo-600">Hub</span></span>
         </div>
 
-        <div className="flex items-center gap-6">
-          <div className="hidden md:flex items-center gap-3 px-4 py-2 bg-slate-100 rounded-full border border-slate-200">
+        <div className="flex items-center gap-6 relative">
+          <button
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            className="hidden md:flex items-center gap-3 px-4 py-2 bg-slate-100 rounded-full border border-slate-200 hover:bg-slate-200 transition-colors"
+          >
             <User size={16} className="text-slate-500" />
             <span className="text-sm font-bold text-slate-700">{user.email}</span>
             <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-md ${
@@ -149,13 +155,60 @@ export default function Dashboard() {
             }`}>
               {userTier}
             </span>
-          </div>
+            <ChevronDown size={16} className={`text-slate-500 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
+          </button>
+
+          {/* Dropdown Menu */}
+          {dropdownOpen && (
+            <>
+              <div
+                className="fixed inset-0 z-40"
+                onClick={() => setDropdownOpen(false)}
+              />
+              <div className="absolute top-full right-0 mt-2 w-64 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 overflow-hidden">
+                <div className="p-4 border-b border-slate-100 bg-slate-50">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-indigo-600 p-2 rounded-full">
+                      <User size={16} className="text-white" />
+                    </div>
+                    <div className="flex-1 overflow-hidden">
+                      <p className="text-sm font-bold text-slate-700 truncate">{user.email}</p>
+                      <p className="text-xs text-slate-500 uppercase font-black">{userTier} Plan</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="py-2">
+                  <button
+                    onClick={() => {
+                      setDropdownOpen(false);
+                      router.push('/account');
+                    }}
+                    className="w-full px-4 py-3 text-left hover:bg-slate-50 transition-colors flex items-center gap-3 font-medium text-slate-700"
+                  >
+                    <Settings size={16} className="text-slate-500" />
+                    My Account
+                  </button>
+                  <button
+                    onClick={() => {
+                      setDropdownOpen(false);
+                      handleSignOut();
+                    }}
+                    className="w-full px-4 py-3 text-left hover:bg-rose-50 transition-colors flex items-center gap-3 font-medium text-rose-600"
+                  >
+                    <LogOut size={16} />
+                    Sign Out
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Mobile Sign Out Button */}
           <button
             onClick={handleSignOut}
-            className="text-slate-400 hover:text-rose-500 transition-colors flex items-center gap-2 font-bold text-sm"
+            className="md:hidden text-slate-400 hover:text-rose-500 transition-colors flex items-center gap-2 font-bold text-sm"
           >
             <LogOut size={20} />
-            <span className="hidden md:inline">Sign Out</span>
           </button>
         </div>
       </nav>
