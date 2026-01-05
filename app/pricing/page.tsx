@@ -12,12 +12,11 @@ const PRICING_PLANS = [
     period: 'forever',
     description: 'Get started with essential financial tools',
     features: [
-      'Car Affordability Calculator',
-      'S-Corp Optimizer',
       'Compound Interest Calculator',
-      'S-Corp Investment Optimizer',
-      'Retirement Strategy Engine',
-      'Basic support',
+      'S-Corp Optimizer',
+      'Basic financial modeling',
+      'Community support',
+      'No credit card required',
     ],
     cta: 'Get Started',
     tier: 'free',
@@ -25,7 +24,7 @@ const PRICING_PLANS = [
   },
   {
     name: 'Pro',
-    price: '$29',
+    price: '$9',
     period: 'per month',
     description: 'Unlock advanced optimization tools',
     features: [
@@ -38,7 +37,7 @@ const PRICING_PLANS = [
     ],
     cta: 'Upgrade to Pro',
     tier: 'pro',
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID || 'price_PLACEHOLDER', // Replace with actual Stripe Price ID
+    priceId: process.env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PRICE_ID || 'price_PLACEHOLDER',
     highlighted: true,
   },
 ];
