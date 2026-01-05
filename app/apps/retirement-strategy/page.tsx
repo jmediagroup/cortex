@@ -3,47 +3,20 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, TrendingUp, ShieldCheck } from 'lucide-react';
-import RothOptimizer from '@/components/apps/RothOptimizer';
-import { createBrowserClient } from '@/lib/supabase/client';
+import RetirementStrategyEngine from '@/components/apps/RetirementStrategyEngine';
 
-export default function RothOptimizerPage() {
+export default function RetirementStrategyPage() {
   const router = useRouter();
-  const supabase = createBrowserClient();
   const [isPro, setIsPro] = useState(false);
-  const [loading, setLoading] = useState(true);
 
-  // Read user tier from Supabase
+  // Read user tier from localStorage
   useEffect(() => {
-    const checkUserTier = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-
-      if (!session) {
-        router.push('/login');
-        return;
-      }
-
-      const { data: userData } = await supabase
-        .from('users')
-        .select('tier')
-        .eq('id', session.user.id)
-        .single() as { data: { tier: 'free' | 'pro' } | null };
-
-      if (userData) {
-        setIsPro(userData.tier === 'pro');
-      }
-      setLoading(false);
-    };
-
-    checkUserTier();
-  }, [router, supabase]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-      </div>
-    );
-  }
+    const demoUserStr = localStorage.getItem('demoUser');
+    if (demoUserStr) {
+      const demoUser = JSON.parse(demoUserStr);
+      setIsPro(demoUser.tier === 'pro');
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
@@ -59,8 +32,8 @@ export default function RothOptimizerPage() {
           </button>
           <div className="h-6 w-px bg-slate-200" />
           <div className="flex items-center gap-2">
-            <TrendingUp className="text-emerald-500" size={20} />
-            <span className="font-black text-xl tracking-tight">Roth Conversion Ladder</span>
+            <TrendingUp className="text-purple-500" size={20} />
+            <span className="font-black text-xl tracking-tight">Retirement Strategy Engine</span>
           </div>
         </div>
         <div className="flex items-center gap-2 text-emerald-600 bg-emerald-50 px-4 py-2 rounded-full border border-emerald-100">
@@ -71,14 +44,14 @@ export default function RothOptimizerPage() {
 
       {/* MAIN CONTENT */}
       <main className="max-w-7xl mx-auto px-6 py-12">
-        <div className="bg-emerald-50 border border-emerald-100 rounded-3xl p-8 mb-8">
-          <h2 className="text-2xl font-black text-emerald-900 mb-3">Roth Conversion Ladder Optimizer</h2>
-          <p className="text-emerald-700 font-medium">
-            Strategic optimization of traditional to Roth conversions to eliminate future tax spikes. Use our advanced algorithms to determine the optimal conversion amount to stay in low tax brackets and maximize portfolio longevity.
+        <div className="bg-purple-50 border border-purple-100 rounded-3xl p-8 mb-8">
+          <h2 className="text-2xl font-black text-purple-900 mb-3">Retirement Drawdown Strategy</h2>
+          <p className="text-purple-700 font-medium">
+            Comprehensive simulation of retirement portfolio withdrawals with RMD calculations, Roth conversion ladder optimization, and Social Security integration. Model multiple withdrawal strategies and stress-test against market volatility.
           </p>
         </div>
 
-        <RothOptimizer
+        <RetirementStrategyEngine
           isPro={isPro}
           onUpgrade={() => router.push('/pricing')}
         />

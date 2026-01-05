@@ -23,6 +23,14 @@ import {
  */
 const APPS = [
   {
+    id: 'car-affordability',
+    name: 'Car Affordability',
+    description: 'Calculate how much car you can afford using the 20/3/8 rule.',
+    icon: <Car className="text-indigo-600" />,
+    tier: 'free',
+    path: '/apps/car-affordability'
+  },
+  {
     id: 'compound-interest',
     name: 'Compound Interest Calculator',
     description: 'Visualize long-term wealth accumulation with custom contribution schedules and compound growth.',
@@ -37,6 +45,22 @@ const APPS = [
     icon: <Zap className="text-amber-500" />,
     tier: 'free',
     path: '/apps/s-corp-optimizer'
+  },
+  {
+    id: 's-corp-investment',
+    name: 'S-Corp Investment Optimizer',
+    description: 'Maximize retirement savings through strategic allocation across employee deferrals and company matching.',
+    icon: <TrendingUp className="text-emerald-600" />,
+    tier: 'free',
+    path: '/apps/s-corp-investment'
+  },
+  {
+    id: 'retirement-strategy',
+    name: 'Retirement Strategy Engine',
+    description: 'Comprehensive simulation of retirement portfolio withdrawals with RMD calculations.',
+    icon: <TrendingUp className="text-purple-500" />,
+    tier: 'free',
+    path: '/apps/retirement-strategy'
   },
   {
     id: 'roth-optimizer',

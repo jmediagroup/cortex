@@ -3,47 +3,20 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, TrendingUp, ShieldCheck } from 'lucide-react';
-import RothOptimizer from '@/components/apps/RothOptimizer';
-import { createBrowserClient } from '@/lib/supabase/client';
+import SCorpInvestmentOptimizer from '@/components/apps/SCorpInvestmentOptimizer';
 
-export default function RothOptimizerPage() {
+export default function SCorpInvestmentPage() {
   const router = useRouter();
-  const supabase = createBrowserClient();
   const [isPro, setIsPro] = useState(false);
-  const [loading, setLoading] = useState(true);
 
-  // Read user tier from Supabase
+  // Read user tier from localStorage
   useEffect(() => {
-    const checkUserTier = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-
-      if (!session) {
-        router.push('/login');
-        return;
-      }
-
-      const { data: userData } = await supabase
-        .from('users')
-        .select('tier')
-        .eq('id', session.user.id)
-        .single() as { data: { tier: 'free' | 'pro' } | null };
-
-      if (userData) {
-        setIsPro(userData.tier === 'pro');
-      }
-      setLoading(false);
-    };
-
-    checkUserTier();
-  }, [router, supabase]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-      </div>
-    );
-  }
+    const demoUserStr = localStorage.getItem('demoUser');
+    if (demoUserStr) {
+      const demoUser = JSON.parse(demoUserStr);
+      setIsPro(demoUser.tier === 'pro');
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
@@ -59,8 +32,8 @@ export default function RothOptimizerPage() {
           </button>
           <div className="h-6 w-px bg-slate-200" />
           <div className="flex items-center gap-2">
-            <TrendingUp className="text-emerald-500" size={20} />
-            <span className="font-black text-xl tracking-tight">Roth Conversion Ladder</span>
+            <TrendingUp className="text-emerald-600" size={20} />
+            <span className="font-black text-xl tracking-tight">S-Corp Investment Optimizer</span>
           </div>
         </div>
         <div className="flex items-center gap-2 text-emerald-600 bg-emerald-50 px-4 py-2 rounded-full border border-emerald-100">
@@ -72,13 +45,15 @@ export default function RothOptimizerPage() {
       {/* MAIN CONTENT */}
       <main className="max-w-7xl mx-auto px-6 py-12">
         <div className="bg-emerald-50 border border-emerald-100 rounded-3xl p-8 mb-8">
-          <h2 className="text-2xl font-black text-emerald-900 mb-3">Roth Conversion Ladder Optimizer</h2>
+          <h2 className="text-2xl font-black text-emerald-900 mb-3">S-Corp Investment Strategy (2026 Limits)</h2>
           <p className="text-emerald-700 font-medium">
-            Strategic optimization of traditional to Roth conversions to eliminate future tax spikes. Use our advanced algorithms to determine the optimal conversion amount to stay in low tax brackets and maximize portfolio longevity.
+            As an S-Corp owner, maximize your retirement savings through strategic allocation across employee deferrals,
+            company matching, IRA contributions, and HSA. This optimizer uses 2026 IRS limits to calculate your optimal
+            investment strategy and 30-year wealth projection with tax savings.
           </p>
         </div>
 
-        <RothOptimizer
+        <SCorpInvestmentOptimizer
           isPro={isPro}
           onUpgrade={() => router.push('/pricing')}
         />
