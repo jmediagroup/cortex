@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { Zap, Mail, Lock, ArrowRight, Loader2, ShieldCheck } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createBrowserClient } from '@/lib/supabase/client';
 
-export default function AuthPage() {
+function AuthForm() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -65,9 +65,9 @@ export default function AuthPage() {
 
         if (data.user) {
           // Create user record in users table with free tier
-          const { error: insertError } = await supabase
+          const { error: insertError } = await (supabase
             .from('users')
-            .insert([{
+            .insert as any)([{
               id: data.user.id,
               email: data.user.email || '',
               tier: 'free',
@@ -187,5 +187,17 @@ export default function AuthPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AuthPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    }>
+      <AuthForm />
+    </Suspense>
   );
 }

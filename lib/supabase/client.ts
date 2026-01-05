@@ -1,5 +1,5 @@
 import { createBrowserClient as createClient } from '@supabase/ssr';
-import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import { createClient as createSupabaseClient, SupabaseClient } from '@supabase/supabase-js';
 
 export type Database = {
   public: {
@@ -48,9 +48,14 @@ export const createBrowserClient = () => {
 };
 
 // Server-side Supabase client with service role (for API routes)
-export const createServiceClient = () => {
+export const createServiceClient = (): SupabaseClient<Database> => {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
-  return createSupabaseClient<Database>(supabaseUrl, supabaseServiceKey);
+  return createSupabaseClient<Database>(supabaseUrl, supabaseServiceKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  });
 };

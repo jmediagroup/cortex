@@ -2,11 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import Stripe from 'stripe';
 import { stripe } from '@/lib/stripe/server';
-import { createServiceClient } from '@/lib/supabase/client';
+import { createServiceClient, type Database } from '@/lib/supabase/client';
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
-  const signature = headers().get('stripe-signature');
+  const headersList = await headers();
+  const signature = headersList.get('stripe-signature');
 
   if (!signature) {
     return NextResponse.json({ error: 'No signature' }, { status: 400 });
@@ -40,9 +41,9 @@ export async function POST(request: NextRequest) {
           break;
         }
 
-        await supabase
+        await (supabase
           .from('users')
-          .update({
+          .update as any)({
             tier: subscription.status === 'active' ? 'pro' : 'free',
             stripe_customer_id: customerId,
             stripe_subscription_id: subscription.id,
@@ -63,9 +64,9 @@ export async function POST(request: NextRequest) {
           break;
         }
 
-        await supabase
+        await (supabase
           .from('users')
-          .update({
+          .update as any)({
             tier: 'free',
             subscription_status: 'canceled',
             updated_at: new Date().toISOString(),
@@ -88,9 +89,9 @@ export async function POST(request: NextRequest) {
         const subscriptionId = session.subscription as string;
         const subscription = await stripe.subscriptions.retrieve(subscriptionId);
 
-        await supabase
+        await (supabase
           .from('users')
-          .update({
+          .update as any)({
             tier: 'pro',
             stripe_customer_id: session.customer as string,
             stripe_subscription_id: subscriptionId,
