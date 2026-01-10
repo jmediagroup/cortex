@@ -3,6 +3,32 @@ import { headers } from 'next/headers';
 import Stripe from 'stripe';
 import { stripe } from '@/lib/stripe/server';
 import { createServiceClient, type Database } from '@/lib/supabase/client';
+import { type Tier } from '@/lib/access-control';
+
+// Map Stripe price IDs to tier names
+function getPriceIdToTierMap(): Record<string, Tier> {
+  return {
+    // Finance Pro (monthly and annual)
+    [process.env.NEXT_PUBLIC_STRIPE_FINANCE_PRO_MONTHLY_PRICE_ID!]: 'finance_pro',
+    [process.env.NEXT_PUBLIC_STRIPE_FINANCE_PRO_ANNUAL_PRICE_ID!]: 'finance_pro',
+
+    // Elite (monthly and annual)
+    [process.env.NEXT_PUBLIC_STRIPE_ELITE_MONTHLY_PRICE_ID!]: 'elite',
+    [process.env.NEXT_PUBLIC_STRIPE_ELITE_ANNUAL_PRICE_ID!]: 'elite',
+
+    // Legacy (maps to finance_pro for backward compatibility)
+    [process.env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PRICE_ID!]: 'finance_pro',
+  };
+}
+
+// Determine tier from a Stripe subscription
+function getTierFromSubscription(subscription: Stripe.Subscription): Tier {
+  const priceId = subscription.items.data[0]?.price.id;
+  if (!priceId) return 'free';
+
+  const priceToTierMap = getPriceIdToTierMap();
+  return priceToTierMap[priceId] || 'free';
+}
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
@@ -53,10 +79,15 @@ export async function POST(request: NextRequest) {
           break;
         }
 
+        // Determine tier from subscription price ID
+        const tier = subscription.status === 'active' ? getTierFromSubscription(subscription) : 'free';
+
+        console.log(`[Webhook] Determined tier: ${tier} for subscription ${subscription.id}`);
+
         const { data, error } = await (supabase
           .from('users')
           .update as any)({
-            tier: subscription.status === 'active' ? 'pro' : 'free',
+            tier,
             stripe_customer_id: customerId,
             stripe_subscription_id: subscription.id,
             subscription_status: subscription.status,
@@ -67,7 +98,7 @@ export async function POST(request: NextRequest) {
         if (error) {
           console.error('[Webhook] Database update failed:', error);
         } else {
-          console.log('[Webhook] Successfully updated user tier for userId:', userId);
+          console.log(`[Webhook] Successfully updated user tier to ${tier} for userId:`, userId);
         }
 
         break;
@@ -126,10 +157,15 @@ export async function POST(request: NextRequest) {
           status: subscription.status
         });
 
-        const { data, error } = await (supabase
+        // Determine tier from subscription price ID
+        const tier = getTierFromSubscription(subscription);
+
+        console.log(`[Webhook] Determined tier: ${tier} from checkout session`);
+
+        const { data, error} = await (supabase
           .from('users')
           .update as any)({
-            tier: 'pro',
+            tier,
             stripe_customer_id: session.customer as string,
             stripe_subscription_id: subscriptionId,
             subscription_status: subscription.status,
@@ -140,7 +176,7 @@ export async function POST(request: NextRequest) {
         if (error) {
           console.error('[Webhook] Database update failed:', error);
         } else {
-          console.log('[Webhook] Successfully updated user tier to pro for userId:', userId);
+          console.log(`[Webhook] Successfully updated user tier to ${tier} for userId:`, userId);
         }
 
         break;

@@ -39,8 +39,16 @@ export function isValidUUID(uuid: string): boolean {
  */
 export function isAllowedPriceId(priceId: string): boolean {
   const allowedPriceIds = [
+    // Finance Pro
+    process.env.NEXT_PUBLIC_STRIPE_FINANCE_PRO_MONTHLY_PRICE_ID,
+    process.env.NEXT_PUBLIC_STRIPE_FINANCE_PRO_ANNUAL_PRICE_ID,
+
+    // Elite
+    process.env.NEXT_PUBLIC_STRIPE_ELITE_MONTHLY_PRICE_ID,
+    process.env.NEXT_PUBLIC_STRIPE_ELITE_ANNUAL_PRICE_ID,
+
+    // Legacy
     process.env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PRICE_ID,
-    // Add more price IDs here as needed (e.g., annual plans)
   ].filter(Boolean);
 
   return allowedPriceIds.includes(priceId);

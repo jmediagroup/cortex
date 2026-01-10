@@ -15,6 +15,7 @@ import {
   XCircle,
   Zap
 } from 'lucide-react';
+import { getTierDisplayName, getTierColor, type Tier } from '@/lib/access-control';
 
 export default function AccountPage() {
   const router = useRouter();
@@ -23,7 +24,7 @@ export default function AccountPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [user, setUser] = useState<any>(null);
-  const [userTier, setUserTier] = useState<'free' | 'pro'>('free');
+  const [userTier, setUserTier] = useState<Tier>('free');
 
   // Form state
   const [firstName, setFirstName] = useState('');
@@ -54,7 +55,7 @@ export default function AccountPage() {
         .from('users')
         .select('tier, first_name, last_name, birth_date, gender')
         .eq('id', session.user.id)
-        .single() as { data: { tier: 'free' | 'pro'; first_name?: string; last_name?: string; birth_date?: string; gender?: 'male' | 'female' | 'prefer_not_to_say' } | null };
+        .single() as { data: { tier: Tier; first_name?: string; last_name?: string; birth_date?: string; gender?: 'male' | 'female' | 'prefer_not_to_say' } | null };
 
       if (userData) {
         setUserTier(userData.tier);
@@ -337,8 +338,8 @@ export default function AccountPage() {
         {/* Subscription Management Section */}
         <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-8 mb-8">
           <div className="flex items-center gap-3 mb-6">
-            <div className={`p-3 rounded-2xl ${userTier === 'pro' ? 'bg-indigo-100' : 'bg-slate-100'}`}>
-              {userTier === 'pro' ? (
+            <div className={`p-3 rounded-2xl ${userTier !== 'free' ? 'bg-indigo-100' : 'bg-slate-100'}`}>
+              {userTier !== 'free' ? (
                 <TrendingUp className="text-indigo-600" size={24} />
               ) : (
                 <TrendingDown className="text-slate-500" size={24} />
@@ -354,14 +355,10 @@ export default function AccountPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-slate-500 font-bold uppercase tracking-wide mb-1">Current Plan</p>
-                <p className="text-3xl font-black text-slate-900 uppercase">{userTier}</p>
+                <p className="text-3xl font-black text-slate-900 uppercase">{getTierDisplayName(userTier)}</p>
               </div>
-              <div className={`px-4 py-2 rounded-xl font-black text-sm ${
-                userTier === 'pro'
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-slate-300 text-slate-600'
-              }`}>
-                {userTier === 'pro' ? '$9/month' : '$0/month'}
+              <div className={`px-4 py-2 rounded-xl font-black text-sm bg-${getTierColor(userTier)}-600 text-white`}>
+                {userTier === 'elite' ? '$29/month' : userTier === 'finance_pro' ? '$9/month' : '$0/month'}
               </div>
             </div>
           </div>
@@ -372,7 +369,7 @@ export default function AccountPage() {
               className="w-full flex items-center justify-center gap-2 bg-indigo-600 text-white font-black px-6 py-4 rounded-xl hover:bg-indigo-700 transition-colors"
             >
               <TrendingUp size={20} />
-              Upgrade to Pro
+              View Plans
             </button>
           ) : (
             <button
@@ -381,7 +378,7 @@ export default function AccountPage() {
               className="w-full flex items-center justify-center gap-2 bg-slate-200 text-slate-700 font-black px-6 py-4 rounded-xl hover:bg-slate-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <TrendingDown size={20} />
-              {saving ? 'Processing...' : 'Downgrade to Free'}
+              {saving ? 'Processing...' : 'Cancel Subscription'}
             </button>
           )}
         </div>

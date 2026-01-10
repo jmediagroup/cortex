@@ -18,6 +18,7 @@ import {
   Settings,
   Filter
 } from 'lucide-react';
+import { hasAppAccess, getTierDisplayName, type Tier } from '@/lib/access-control';
 
 /**
  * APP DATA CONFIGURATION
@@ -31,7 +32,8 @@ const APPS = [
     name: 'Car Affordability',
     description: 'Calculate how much car you can afford using the 20/3/8 rule.',
     icon: <Car className="text-indigo-600" />,
-    tier: 'free',
+    tier: 'free' as const,
+    sector: 'finance' as const,
     category: 'Personal Finance',
     path: '/apps/car-affordability'
   },
@@ -40,7 +42,8 @@ const APPS = [
     name: 'Compound Interest Calculator',
     description: 'Visualize long-term wealth accumulation with custom contribution schedules and compound growth.',
     icon: <Calculator className="text-indigo-600" />,
-    tier: 'free',
+    tier: 'free' as const,
+    sector: 'finance' as const,
     category: 'Personal Finance',
     path: '/apps/compound-interest'
   },
@@ -49,7 +52,8 @@ const APPS = [
     name: 'S-Corp Optimizer',
     description: 'Calculate self-employment tax savings and find your ideal salary/distribution split.',
     icon: <Zap className="text-amber-500" />,
-    tier: 'free',
+    tier: 'free' as const,
+    sector: 'finance' as const,
     category: 'Business',
     path: '/apps/s-corp-optimizer'
   },
@@ -58,7 +62,8 @@ const APPS = [
     name: 'S-Corp Investment Optimizer',
     description: 'Maximize retirement savings through strategic allocation across employee deferrals and company matching.',
     icon: <TrendingUp className="text-emerald-600" />,
-    tier: 'free',
+    tier: 'free' as const,
+    sector: 'finance' as const,
     category: 'Business',
     path: '/apps/s-corp-investment'
   },
@@ -67,7 +72,8 @@ const APPS = [
     name: 'Retirement Strategy Engine',
     description: 'Comprehensive simulation of retirement portfolio withdrawals with RMD calculations.',
     icon: <TrendingUp className="text-purple-500" />,
-    tier: 'free',
+    tier: 'free' as const,
+    sector: 'finance' as const,
     category: 'Retirement',
     path: '/apps/retirement-strategy'
   },
@@ -76,7 +82,8 @@ const APPS = [
     name: 'Roth Conversion Ladder',
     description: 'Strategic optimization of traditional to Roth conversions to eliminate future tax spikes.',
     icon: <TrendingUp className="text-emerald-500" />,
-    tier: 'pro',
+    tier: 'pro' as const,
+    sector: 'finance' as const,
     category: 'Retirement',
     path: '/apps/roth-optimizer'
   }
@@ -87,7 +94,7 @@ export default function Dashboard() {
   const supabase = createBrowserClient();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
-  const [userTier, setUserTier] = useState<'free' | 'pro'>('free');
+  const [userTier, setUserTier] = useState<Tier>('free');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
 
@@ -108,7 +115,7 @@ export default function Dashboard() {
         .from('users')
         .select('tier')
         .eq('id', session.user.id)
-        .single() as { data: { tier: 'free' | 'pro' } | null };
+        .single() as { data: { tier: Tier } | null };
 
       if (userData?.tier) {
         setUserTier(userData.tier);
@@ -168,9 +175,9 @@ export default function Dashboard() {
             <User size={16} className="text-slate-500" />
             <span className="text-sm font-bold text-slate-700">{user.email}</span>
             <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-md ${
-              userTier === 'pro' ? 'bg-indigo-600 text-white' : 'bg-slate-300 text-slate-600'
+              userTier === 'elite' ? 'bg-purple-600 text-white' : userTier === 'finance_pro' ? 'bg-indigo-600 text-white' : 'bg-slate-300 text-slate-600'
             }`}>
-              {userTier}
+              {getTierDisplayName(userTier)}
             </span>
             <ChevronDown size={16} className={`text-slate-500 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
           </button>
@@ -261,7 +268,7 @@ export default function Dashboard() {
         {/* APPS GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredApps.map((app) => {
-            const isLocked = app.tier === 'pro' && userTier !== 'pro';
+            const isLocked = !hasAppAccess(app, userTier);
 
             return (
               <div
@@ -305,8 +312,8 @@ export default function Dashboard() {
           })}
         </div>
 
-        {/* PRO UPGRADE CALL-TO-ACTION */}
-        {userTier !== 'pro' && (
+        {/* ELITE UPGRADE CALL-TO-ACTION */}
+        {userTier !== 'elite' && (
           <div className="mt-20 bg-indigo-900 rounded-[3.5rem] p-12 text-white overflow-hidden relative shadow-2xl border border-indigo-800">
             <div className="absolute top-0 right-0 p-12 opacity-10 rotate-12">
               <Zap size={250} fill="currentColor" />
@@ -316,9 +323,13 @@ export default function Dashboard() {
               <span className="bg-indigo-500/30 text-indigo-200 text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-full border border-indigo-500/50 mb-6 inline-block">
                 Premium Access
               </span>
-              <h3 className="text-4xl font-black mb-6 tracking-tight">Unlock the full power of Cortex</h3>
+              <h3 className="text-4xl font-black mb-6 tracking-tight">
+                {userTier === 'free' ? 'Unlock Pro Financial Tools' : 'Upgrade to Elite - All Sectors'}
+              </h3>
               <p className="text-indigo-100 font-medium text-xl mb-10 leading-relaxed opacity-90">
-                Get unlimited access to the Roth Conversion Ladder, advanced tax modeling, and scenario saving.
+                {userTier === 'free'
+                  ? 'Get access to advanced Finance tools including Roth Conversion optimization, auto-optimize features, and more.'
+                  : 'Access pro features across ALL current and future sectors. Health, Education, and more coming soon!'}
               </p>
               <button
                 onClick={() => router.push('/pricing')}

@@ -8,7 +8,7 @@ export type Database = {
         Row: {
           id: string;
           email: string;
-          tier: 'free' | 'pro';
+          tier: 'free' | 'finance_pro' | 'elite';
           first_name?: string | null;
           last_name?: string | null;
           birth_date?: string | null;
@@ -22,7 +22,7 @@ export type Database = {
         Insert: {
           id: string;
           email: string;
-          tier?: 'free' | 'pro';
+          tier?: 'free' | 'finance_pro' | 'elite';
           first_name?: string | null;
           last_name?: string | null;
           birth_date?: string | null;
@@ -36,7 +36,7 @@ export type Database = {
         Update: {
           id?: string;
           email?: string;
-          tier?: 'free' | 'pro';
+          tier?: 'free' | 'finance_pro' | 'elite';
           first_name?: string | null;
           last_name?: string | null;
           birth_date?: string | null;

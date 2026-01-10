@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ChevronLeft, TrendingUp, ShieldCheck } from 'lucide-react';
 import RothOptimizer from '@/components/apps/RothOptimizer';
 import { createBrowserClient } from '@/lib/supabase/client';
+import { hasProAccess, type Tier } from '@/lib/access-control';
 
 export default function RothOptimizerPage() {
   const router = useRouter();
@@ -26,10 +27,10 @@ export default function RothOptimizerPage() {
         .from('users')
         .select('tier')
         .eq('id', session.user.id)
-        .single() as { data: { tier: 'free' | 'pro' } | null };
+        .single() as { data: { tier: Tier } | null };
 
       if (userData) {
-        setIsPro(userData.tier === 'pro');
+        setIsPro(hasProAccess('finance', userData.tier));
       }
       setLoading(false);
     };
