@@ -170,36 +170,77 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade }: Geog
   }
 
   const SliderField = ({ label, icon: Icon, value, onChange, min = 0, max = 100, suffix = "" }: SliderFieldProps) => {
-    const percentage = ((value - min) / (max - min)) * 100;
+    // Determine step size based on the range
+    const getStep = () => {
+      const range = max - min;
+      if (range > 100000) return 5000;
+      if (range > 10000) return 1000;
+      if (range > 1000) return 100;
+      if (range > 100) return 10;
+      return 1;
+    };
+
+    const step = getStep();
+
+    const handleIncrement = () => {
+      const newValue = Math.min(value + step, max);
+      onChange(newValue);
+    };
+
+    const handleDecrement = () => {
+      const newValue = Math.max(value - step, min);
+      onChange(newValue);
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = parseInt(e.target.value.replace(/,/g, '')) || min;
+      if (newValue >= min && newValue <= max) {
+        onChange(newValue);
+      }
+    };
 
     return (
       <div className="mb-6 group">
         <div className="flex justify-between items-center mb-2">
-          <label className="text-sm font-semibold text-slate-700 flex items-center gap-2 group-hover:text-indigo-600 transition-colors">
+          <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
             {Icon && <Icon size={16} className="text-indigo-500" />}
             {label}
           </label>
-          <span className="text-sm font-bold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full tabular-nums">
-            {value.toLocaleString()}{suffix}
-          </span>
         </div>
-        <div className="relative flex items-center py-3">
-          <input
-            type="range"
-            min={min}
-            max={max}
-            value={value}
-            onMouseDown={() => setIsDragging(true)}
-            onMouseUp={() => setIsDragging(false)}
-            onMouseLeave={() => setIsDragging(false)}
-            onTouchStart={() => setIsDragging(true)}
-            onTouchEnd={() => setIsDragging(false)}
-            onChange={(e) => onChange(parseInt(e.target.value))}
-            style={{
-              background: `linear-gradient(to right, #4f46e5 ${percentage}%, #e2e8f0 ${percentage}%)`
-            }}
-            className="w-full h-3 rounded-lg appearance-none cursor-grab active:cursor-grabbing accent-indigo-600 bg-slate-200 slider-thumb-custom focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
-          />
+        <div className="relative flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleDecrement}
+            disabled={value <= min}
+            className="flex-shrink-0 w-10 h-10 rounded-lg border-2 border-slate-200 bg-white hover:bg-slate-50 hover:border-indigo-300 active:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center font-bold text-slate-600 hover:text-indigo-600"
+          >
+            −
+          </button>
+          <div className="flex-1 relative">
+            <input
+              type="text"
+              value={value.toLocaleString()}
+              onChange={handleInputChange}
+              className="w-full px-4 py-2.5 text-center font-bold text-lg rounded-lg border-2 border-slate-200 bg-slate-50 hover:bg-white hover:border-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all tabular-nums"
+            />
+            {suffix && (
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-slate-400 pointer-events-none">
+                {suffix}
+              </span>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={handleIncrement}
+            disabled={value >= max}
+            className="flex-shrink-0 w-10 h-10 rounded-lg border-2 border-slate-200 bg-white hover:bg-slate-50 hover:border-indigo-300 active:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center font-bold text-slate-600 hover:text-indigo-600"
+          >
+            +
+          </button>
+        </div>
+        <div className="mt-1.5 flex justify-between text-xs text-slate-400 font-medium">
+          <span>Min: {min.toLocaleString()}</span>
+          <span>Max: {max.toLocaleString()}</span>
         </div>
       </div>
     );
@@ -240,72 +281,6 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade }: Geog
 
   return (
     <div className="space-y-8">
-      <style>{`
-        /* Enhanced slider thumb styling for better interaction */
-        .slider-thumb-custom {
-          position: relative;
-        }
-
-        .slider-thumb-custom::-webkit-slider-thumb {
-          -webkit-appearance: none;
-          appearance: none;
-          width: 24px;
-          height: 24px;
-          background: #ffffff;
-          border: 3px solid #4f46e5;
-          border-radius: 50%;
-          cursor: grab;
-          box-shadow: 0 2px 12px rgba(79, 70, 229, 0.3), 0 1px 3px rgba(0, 0, 0, 0.1);
-          transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-          margin-top: -9px;
-        }
-
-        .slider-thumb-custom::-moz-range-thumb {
-          width: 24px;
-          height: 24px;
-          background: #ffffff;
-          border: 3px solid #4f46e5;
-          border-radius: 50%;
-          cursor: grab;
-          box-shadow: 0 2px 12px rgba(79, 70, 229, 0.3), 0 1px 3px rgba(0, 0, 0, 0.1);
-          transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-          border: none;
-        }
-
-        .slider-thumb-custom:hover::-webkit-slider-thumb {
-          transform: scale(1.1);
-          box-shadow: 0 4px 16px rgba(79, 70, 229, 0.4), 0 2px 6px rgba(0, 0, 0, 0.15);
-        }
-
-        .slider-thumb-custom:hover::-moz-range-thumb {
-          transform: scale(1.1);
-          box-shadow: 0 4px 16px rgba(79, 70, 229, 0.4), 0 2px 6px rgba(0, 0, 0, 0.15);
-        }
-
-        .slider-thumb-custom:active::-webkit-slider-thumb {
-          cursor: grabbing;
-          transform: scale(1.15);
-          box-shadow: 0 0 0 10px rgba(79, 70, 229, 0.1), 0 4px 20px rgba(79, 70, 229, 0.5);
-          border-width: 4px;
-        }
-
-        .slider-thumb-custom:active::-moz-range-thumb {
-          cursor: grabbing;
-          transform: scale(1.15);
-          box-shadow: 0 0 0 10px rgba(79, 70, 229, 0.1), 0 4px 20px rgba(79, 70, 229, 0.5);
-          border-width: 4px;
-        }
-
-        /* Increase hit area for better mobile/touch interaction */
-        .slider-thumb-custom::-webkit-slider-thumb::before {
-          content: '';
-          position: absolute;
-          top: -10px;
-          left: -10px;
-          right: -10px;
-          bottom: -10px;
-        }
-      `}</style>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Controls Panel */}
