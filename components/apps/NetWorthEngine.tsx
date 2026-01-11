@@ -200,12 +200,13 @@ export default function NetWorthEngine() {
 
   // --- Components ---
 
-  const InputField = ({ label, value, onChange, type = "text", prefix = "" }: {
+  const InputField = ({ label, value, onChange, type = "text", prefix = "", disabled = false }: {
     label: string;
     value: number | string;
     onChange: (value: string) => void;
     type?: string;
     prefix?: string;
+    disabled?: boolean;
   }) => (
     <div className="flex flex-col space-y-1 w-full">
       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{label}</label>
@@ -214,9 +215,10 @@ export default function NetWorthEngine() {
         <input
           type={type}
           inputMode="decimal"
-          value={value}
+          value={String(value)}
           onChange={(e) => onChange(e.target.value)}
-          className={`w-full ${prefix ? 'pl-7' : 'px-3'} pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+          disabled={disabled}
+          className={`w-full ${prefix ? 'pl-7' : 'px-3'} pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none disabled:opacity-50 disabled:cursor-not-allowed`}
         />
       </div>
     </div>
@@ -412,6 +414,7 @@ export default function NetWorthEngine() {
                           prefix="$"
                           value={asset.value}
                           onChange={(val) => updateNode('asset', asset.id, 'value', val)}
+                          disabled={asset.submitted}
                         />
                         <div className="flex flex-col space-y-1 min-w-[85px]">
                           <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Type</label>
@@ -502,6 +505,7 @@ export default function NetWorthEngine() {
                           prefix="$"
                           value={lib.value}
                           onChange={(val) => updateNode('liability', lib.id, 'value', val)}
+                          disabled={lib.submitted}
                         />
                         <div className="flex gap-4">
                           <InputField
@@ -509,12 +513,14 @@ export default function NetWorthEngine() {
                             prefix="%"
                             value={lib.rate}
                             onChange={(val) => updateNode('liability', lib.id, 'rate', val)}
+                            disabled={lib.submitted}
                           />
                           <InputField
                             label="Term (Yrs)"
                             prefix="T"
                             value={lib.term}
                             onChange={(val) => updateNode('liability', lib.id, 'term', val)}
+                            disabled={lib.submitted}
                           />
                         </div>
                       </div>

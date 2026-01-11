@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Input Test</title>
+</head>
+<body>
+  <h1>Test Input Behavior</h1>
+  <p>Current value: <span id="display"></span></p>
+  <input
+    type="text"
+    id="test-input"
+    inputmode="decimal"
+    placeholder="Type numbers here"
+  />
+
+  <script>
+    const input = document.getElementById('test-input');
+    const display = document.getElementById('display');
+    let value = '';
+
+    input.addEventListener('input', (e) => {
+      value = e.target.value;
+      display.textContent = value;
+      console.log('Value:', value);
+    });
+  </script>
+</body>
+</html>
