@@ -76,12 +76,19 @@ const Tooltip = ({ content, children }: { content: string; children: React.React
   const handleMouseEnter = () => {
     if (triggerRef.current) {
       const rect = triggerRef.current.getBoundingClientRect();
+      const scrollY = window.scrollY || window.pageYOffset;
+      const scrollX = window.scrollX || window.pageXOffset;
+
       setPosition({
-        top: rect.top + window.scrollY,
-        left: rect.left + rect.width / 2 + window.scrollX
+        top: rect.top + scrollY,
+        left: rect.left + rect.width / 2 + scrollX
       });
+      setIsVisible(true);
     }
-    setIsVisible(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsVisible(false);
   };
 
   return (
@@ -89,24 +96,31 @@ const Tooltip = ({ content, children }: { content: string; children: React.React
       <div
         ref={triggerRef}
         onMouseEnter={handleMouseEnter}
-        onMouseLeave={() => setIsVisible(false)}
-        className="cursor-help"
+        onMouseLeave={handleMouseLeave}
+        className="cursor-help inline-flex items-center"
       >
         {children}
       </div>
       {isVisible && (
         <div
-          className="fixed -translate-x-1/2 -translate-y-full mb-2 px-3 py-2 bg-white text-slate-900 text-xs rounded-lg shadow-2xl w-64 pointer-events-none border-2 border-slate-200"
+          className="fixed px-3 py-2 bg-white text-slate-900 text-xs rounded-lg shadow-2xl w-64 pointer-events-none border-2 border-slate-200 leading-relaxed"
           style={{
             top: `${position.top - 8}px`,
             left: `${position.left}px`,
+            transform: 'translate(-50%, -100%)',
             zIndex: 9999
           }}
         >
-          <div className="relative">
-            {content}
-            <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-white"></div>
-          </div>
+          {content}
+          <div
+            className="absolute border-4 border-transparent border-t-white"
+            style={{
+              top: '100%',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              marginTop: '-4px'
+            }}
+          />
         </div>
       )}
     </div>
