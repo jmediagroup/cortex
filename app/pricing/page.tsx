@@ -38,7 +38,6 @@ const PRICING_PLANS = [
       'Full access to all Cortex Finance tools',
       'Advanced scenarios and comparisons',
       'Deeper projections and strategy modeling',
-      'Roth Conversion Optimizer',
       'S-Corp tools and tax modeling',
       'Priority support',
     ],

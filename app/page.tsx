@@ -166,11 +166,6 @@ export default function LandingPage() {
                 icon: <Scale />,
                 title: "S-Corp vs Sole Proprietorship",
                 description: "Compare business structures and understand the tax implications of each choice."
-              },
-              {
-                icon: <TrendingUp />,
-                title: "Roth Conversion Optimizer",
-                description: "Calculate optimal Roth conversion amounts to minimize lifetime tax liability."
               }
             ].map((tool, i) => (
               <div

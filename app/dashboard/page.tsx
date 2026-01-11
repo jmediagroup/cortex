@@ -76,16 +76,6 @@ const APPS = [
     sector: 'finance' as const,
     category: 'Retirement',
     path: '/apps/retirement-strategy'
-  },
-  {
-    id: 'roth-optimizer',
-    name: 'Roth Conversion Ladder',
-    description: 'Strategic optimization of traditional to Roth conversions to eliminate future tax spikes.',
-    icon: <TrendingUp className="text-emerald-500" />,
-    tier: 'pro' as const,
-    sector: 'finance' as const,
-    category: 'Retirement',
-    path: '/apps/roth-optimizer'
   }
 ];
 
@@ -280,18 +270,10 @@ export default function Dashboard() {
                   : 'hover:shadow-2xl hover:-translate-y-2 cursor-pointer border-indigo-100'
                 }`}
               >
-                <div className="mb-6 flex justify-between items-start">
+                <div className="mb-6">
                   <div className={`p-4 rounded-2xl transition-colors ${isLocked ? 'bg-slate-100' : 'bg-slate-50 group-hover:bg-indigo-50'}`}>
                     {app.icon}
                   </div>
-                  {app.tier === 'pro' && (
-                    <span className={`flex items-center gap-1 text-[10px] font-black uppercase px-3 py-1.5 rounded-xl ${
-                      isLocked ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-indigo-100 text-indigo-700 border border-indigo-200'
-                    }`}>
-                      {isLocked ? <Lock size={10} /> : <ShieldCheck size={10} />}
-                      {app.tier}
-                    </span>
-                  )}
                 </div>
 
                 <h3 className="text-2xl font-black mb-3 text-slate-800 tracking-tight">{app.name}</h3>
