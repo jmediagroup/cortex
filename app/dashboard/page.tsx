@@ -19,7 +19,8 @@ import {
   Filter,
   Landmark,
   TrendingDown,
-  MapPin
+  MapPin,
+  Compass
 } from 'lucide-react';
 import { hasAppAccess, getTierDisplayName, type Tier } from '@/lib/access-control';
 
@@ -109,6 +110,16 @@ const APPS = [
     sector: 'finance' as const,
     category: 'Personal Finance',
     path: '/apps/geographic-arbitrage'
+  },
+  {
+    id: 'net-worth',
+    name: 'Net Worth Engine',
+    description: 'Track assets and liabilities, analyze liquidity and momentum, identify leverage points, and visualize your financial trajectory.',
+    icon: <Compass className="text-indigo-600" />,
+    tier: 'free' as const,
+    sector: 'finance' as const,
+    category: 'Personal Finance',
+    path: '/apps/net-worth'
   }
 ];
 
