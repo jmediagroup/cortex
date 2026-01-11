@@ -51,6 +51,7 @@ interface Asset {
   confidence: number;
   liquid: boolean;
   note?: string;
+  submitted?: boolean;
 }
 
 interface Liability {
@@ -60,6 +61,7 @@ interface Liability {
   value: number | string;
   rate: number | string;
   term: number | string;
+  submitted?: boolean;
 }
 
 export default function NetWorthEngine() {
@@ -82,7 +84,8 @@ export default function NetWorthEngine() {
       value: '',
       confidence: 1,
       liquid: preset.liquid,
-      note: preset.note || ''
+      note: preset.note || '',
+      submitted: false
     };
     setAssets(prev => [...prev, newAsset]);
     setShowAssetMenu(false);
@@ -96,6 +99,7 @@ export default function NetWorthEngine() {
       value: '',
       rate: preset.rate.toString(),
       term: preset.term.toString(),
+      submitted: false
     };
     setLiabilities(prev => [...prev, newLiability]);
     setShowLibMenu(false);
@@ -114,22 +118,32 @@ export default function NetWorthEngine() {
     }
   };
 
-  const normalizeValue = (type: 'asset' | 'liability', id: string, field: string) => {
+  const submitNode = (type: 'asset' | 'liability', id: string) => {
     if (type === 'asset') {
       setAssets(prev => prev.map(a => {
         if (a.id === id) {
-          const currentValue = a[field as keyof Asset];
-          const numValue = parseFloat(String(currentValue));
-          return { ...a, [field]: isNaN(numValue) ? 0 : numValue };
+          const numValue = parseFloat(String(a.value));
+          return {
+            ...a,
+            value: isNaN(numValue) ? 0 : numValue,
+            submitted: true
+          };
         }
         return a;
       }));
     } else {
       setLiabilities(prev => prev.map(l => {
         if (l.id === id) {
-          const currentValue = l[field as keyof Liability];
-          const numValue = parseFloat(String(currentValue));
-          return { ...l, [field]: isNaN(numValue) ? 0 : numValue };
+          const numValue = parseFloat(String(l.value));
+          const numRate = parseFloat(String(l.rate));
+          const numTerm = parseFloat(String(l.term));
+          return {
+            ...l,
+            value: isNaN(numValue) ? 0 : numValue,
+            rate: isNaN(numRate) ? 0 : numRate,
+            term: isNaN(numTerm) ? 0 : numTerm,
+            submitted: true
+          };
         }
         return l;
       }));
@@ -139,11 +153,14 @@ export default function NetWorthEngine() {
   // --- Calculations ---
 
   const metrics = useMemo(() => {
-    const totalAssets = assets.reduce((sum, a) => sum + (Number(a.value) || 0), 0);
-    const totalLiabilities = liabilities.reduce((sum, l) => sum + (Number(l.value) || 0), 0);
+    const submittedAssets = assets.filter(a => a.submitted);
+    const submittedLiabilities = liabilities.filter(l => l.submitted);
+
+    const totalAssets = submittedAssets.reduce((sum, a) => sum + (Number(a.value) || 0), 0);
+    const totalLiabilities = submittedLiabilities.reduce((sum, l) => sum + (Number(l.value) || 0), 0);
     const netWorth = totalAssets - totalLiabilities;
 
-    const liquidAssets = assets.filter(a => a.liquid).reduce((sum, a) => sum + (Number(a.value) || 0), 0);
+    const liquidAssets = submittedAssets.filter(a => a.liquid).reduce((sum, a) => sum + (Number(a.value) || 0), 0);
     const liquidityRatio = totalAssets > 0 ? liquidAssets / totalAssets : 0;
 
     const annualAssetGrowth = totalAssets * (growthRate / 100);
@@ -160,10 +177,10 @@ export default function NetWorthEngine() {
     if (monthsOfRunway > 24) optionality = 'High';
     if (monthsOfRunway < 6) optionality = 'Low';
 
-    const highInterestDebts = liabilities.filter(l => Number(l.rate) >= 7 && Number(l.value) > 0)
+    const highInterestDebts = submittedLiabilities.filter(l => Number(l.rate) >= 7 && Number(l.value) > 0)
       .sort((a, b) => Number(b.rate) - Number(a.rate));
 
-    const shortTermDebts = liabilities.filter(l => Number(l.term) <= 3 && Number(l.value) > 0)
+    const shortTermDebts = submittedLiabilities.filter(l => Number(l.term) <= 3 && Number(l.value) > 0)
       .sort((a, b) => Number(a.term) - Number(b.term));
 
     return {
@@ -177,17 +194,16 @@ export default function NetWorthEngine() {
       momentumScore,
       highInterestDebts,
       shortTermDebts,
-      complexity: (assets.length + liabilities.length) > 12 ? 'High' : (assets.length + liabilities.length) > 6 ? 'Moderate' : 'Low'
+      complexity: (submittedAssets.length + submittedLiabilities.length) > 12 ? 'High' : (submittedAssets.length + submittedLiabilities.length) > 6 ? 'Moderate' : 'Low'
     };
   }, [assets, liabilities, monthlySavings, growthRate]);
 
   // --- Components ---
 
-  const InputField = ({ label, value, onChange, onBlur, type = "text", prefix = "" }: {
+  const InputField = ({ label, value, onChange, type = "text", prefix = "" }: {
     label: string;
     value: number | string;
     onChange: (value: string) => void;
-    onBlur?: () => void;
     type?: string;
     prefix?: string;
   }) => (
@@ -200,7 +216,6 @@ export default function NetWorthEngine() {
           inputMode="decimal"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          onBlur={onBlur}
           className={`w-full ${prefix ? 'pl-7' : 'px-3'} pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
         />
       </div>
@@ -365,19 +380,29 @@ export default function NetWorthEngine() {
                     </div>
                   )}
                   {assets.map((asset) => (
-                    <div key={asset.id} className="group relative bg-white p-4 rounded-2xl border border-slate-100 shadow-sm space-y-3 transition-all hover:border-indigo-300 hover:shadow-md">
+                    <div key={asset.id} className={`group relative p-4 rounded-2xl border shadow-sm space-y-3 transition-all ${
+                      asset.submitted
+                        ? 'bg-white border-slate-100 hover:border-indigo-300 hover:shadow-md'
+                        : 'bg-indigo-50/30 border-indigo-200 border-2'
+                    }`}>
                       <button
                         onClick={() => removeNode('asset', asset.id)}
-                        className="absolute top-4 right-4 text-slate-300 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-all p-1"
+                        className="absolute top-4 right-4 text-slate-300 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-all p-1 z-10"
                       >
                         <Trash2 size={16} />
                       </button>
+                      {!asset.submitted && (
+                        <div className="absolute top-2 right-2 text-[9px] font-black text-indigo-600 bg-indigo-100 px-2 py-0.5 rounded-full border border-indigo-200 uppercase tracking-widest">
+                          Draft
+                        </div>
+                      )}
                       <div className="flex flex-col">
                         <input
                           type="text"
                           value={asset.label}
                           onChange={(e) => updateNode('asset', asset.id, 'label', e.target.value)}
                           className="w-full bg-transparent font-bold text-slate-800 text-sm border-b border-transparent focus:border-indigo-300 outline-none pb-1 transition-colors"
+                          disabled={asset.submitted}
                         />
                         {asset.note && <span className="text-[10px] text-slate-400 italic mt-0.5">{asset.note}</span>}
                       </div>
@@ -387,7 +412,6 @@ export default function NetWorthEngine() {
                           prefix="$"
                           value={asset.value}
                           onChange={(val) => updateNode('asset', asset.id, 'value', val)}
-                          onBlur={() => normalizeValue('asset', asset.id, 'value')}
                         />
                         <div className="flex flex-col space-y-1 min-w-[85px]">
                           <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Type</label>
@@ -395,12 +419,21 @@ export default function NetWorthEngine() {
                             value={asset.liquid ? "liquid" : "illiquid"}
                             onChange={(e) => updateNode('asset', asset.id, 'liquid', e.target.value === "liquid")}
                             className="w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                            disabled={asset.submitted}
                           >
                             <option value="liquid">Liquid</option>
                             <option value="illiquid">Illiquid</option>
                           </select>
                         </div>
                       </div>
+                      {!asset.submitted && (
+                        <button
+                          onClick={() => submitNode('asset', asset.id)}
+                          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs py-2 px-4 rounded-lg transition-all uppercase tracking-widest shadow-sm hover:shadow-md"
+                        >
+                          Add to Analysis
+                        </button>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -440,18 +473,28 @@ export default function NetWorthEngine() {
                     </div>
                   )}
                   {liabilities.map((lib) => (
-                    <div key={lib.id} className="group relative bg-white p-4 rounded-2xl border border-slate-100 shadow-sm space-y-3 transition-all hover:border-rose-300 hover:shadow-md">
+                    <div key={lib.id} className={`group relative p-4 rounded-2xl border shadow-sm space-y-3 transition-all ${
+                      lib.submitted
+                        ? 'bg-white border-slate-100 hover:border-rose-300 hover:shadow-md'
+                        : 'bg-rose-50/30 border-rose-200 border-2'
+                    }`}>
                       <button
                         onClick={() => removeNode('liability', lib.id)}
-                        className="absolute top-4 right-4 text-slate-300 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-all p-1"
+                        className="absolute top-4 right-4 text-slate-300 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-all p-1 z-10"
                       >
                         <Trash2 size={16} />
                       </button>
+                      {!lib.submitted && (
+                        <div className="absolute top-2 right-2 text-[9px] font-black text-rose-600 bg-rose-100 px-2 py-0.5 rounded-full border border-rose-200 uppercase tracking-widest">
+                          Draft
+                        </div>
+                      )}
                       <input
                         type="text"
                         value={lib.label}
                         onChange={(e) => updateNode('liability', lib.id, 'label', e.target.value)}
                         className="w-full bg-transparent font-bold text-slate-800 text-sm border-b border-transparent focus:border-rose-300 outline-none pb-1"
+                        disabled={lib.submitted}
                       />
                       <div className="space-y-4">
                         <InputField
@@ -459,7 +502,6 @@ export default function NetWorthEngine() {
                           prefix="$"
                           value={lib.value}
                           onChange={(val) => updateNode('liability', lib.id, 'value', val)}
-                          onBlur={() => normalizeValue('liability', lib.id, 'value')}
                         />
                         <div className="flex gap-4">
                           <InputField
@@ -467,17 +509,23 @@ export default function NetWorthEngine() {
                             prefix="%"
                             value={lib.rate}
                             onChange={(val) => updateNode('liability', lib.id, 'rate', val)}
-                            onBlur={() => normalizeValue('liability', lib.id, 'rate')}
                           />
                           <InputField
                             label="Term (Yrs)"
                             prefix="T"
                             value={lib.term}
                             onChange={(val) => updateNode('liability', lib.id, 'term', val)}
-                            onBlur={() => normalizeValue('liability', lib.id, 'term')}
                           />
                         </div>
                       </div>
+                      {!lib.submitted && (
+                        <button
+                          onClick={() => submitNode('liability', lib.id)}
+                          className="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs py-2 px-4 rounded-lg transition-all uppercase tracking-widest shadow-sm hover:shadow-md"
+                        >
+                          Add to Analysis
+                        </button>
+                      )}
                     </div>
                   ))}
                 </div>
