@@ -684,7 +684,7 @@ export default function NetWorthEngine() {
             )}
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
