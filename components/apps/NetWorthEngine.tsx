@@ -161,7 +161,7 @@ export default function NetWorthEngine() {
 
   // --- Components ---
 
-  const InputField = ({ label, value, onChange, type = "number", prefix = "" }: {
+  const InputField = ({ label, value, onChange, type = "text", prefix = "" }: {
     label: string;
     value: number | string;
     onChange: (value: string) => void;
@@ -174,9 +174,10 @@ export default function NetWorthEngine() {
         {prefix && <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-mono">{prefix}</span>}
         <input
           type={type}
+          inputMode="decimal"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className={`w-full ${prefix ? 'pl-7' : 'px-3'} pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none`}
+          className={`w-full ${prefix ? 'pl-7' : 'px-3'} pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
         />
       </div>
     </div>
