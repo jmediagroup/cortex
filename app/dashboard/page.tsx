@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createBrowserClient } from '@/lib/supabase/client';
 import {
-  Zap,
+  Brain,
   TrendingUp,
   Calculator,
   ShieldCheck,
@@ -51,7 +51,7 @@ const APPS = [
     id: 's-corp-optimizer',
     name: 'S-Corp Optimizer',
     description: 'Calculate self-employment tax savings and find your ideal salary/distribution split.',
-    icon: <Zap className="text-amber-500" />,
+    icon: <Calculator className="text-amber-500" />,
     tier: 'free' as const,
     sector: 'finance' as const,
     category: 'Business',
@@ -160,12 +160,12 @@ export default function Dashboard() {
 
       {/* TOP NAVIGATION BAR */}
       <nav className="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between sticky top-0 z-50">
-        <div className="flex items-center gap-2">
+        <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <div className="bg-indigo-600 p-1.5 rounded-lg text-white">
-            <Zap size={20} fill="currentColor" />
+            <Brain size={20} />
           </div>
-          <span className="font-black text-xl tracking-tight">Cortex<span className="text-indigo-600">Hub</span></span>
-        </div>
+          <span className="font-black text-xl tracking-tight">Cortex</span>
+        </a>
 
         <div className="flex items-center gap-6 relative">
           <button
@@ -316,7 +316,7 @@ export default function Dashboard() {
         {userTier !== 'elite' && (
           <div className="mt-20 bg-indigo-900 rounded-[3.5rem] p-12 text-white overflow-hidden relative shadow-2xl border border-indigo-800">
             <div className="absolute top-0 right-0 p-12 opacity-10 rotate-12">
-              <Zap size={250} fill="currentColor" />
+              <Brain size={250} fill="currentColor" />
             </div>
 
             <div className="relative z-10 max-w-2xl">
