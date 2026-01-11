@@ -326,8 +326,31 @@ const App = () => {
   const hasProFeatures = hasProAccess('finance', userTier);
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 font-sans p-4 md:p-8">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+      {/* TOP NAVIGATION */}
+      <nav className="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between sticky top-0 z-50 shadow-sm">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => router.push('/dashboard')}
+            className="flex items-center gap-2 text-slate-600 hover:text-indigo-600 transition-colors font-bold"
+          >
+            <ArrowRightLeft size={20} />
+            <span>Back to Dashboard</span>
+          </button>
+          <div className="h-6 w-px bg-slate-200" />
+          <div className="flex items-center gap-2">
+            <BrainCircuit className="text-indigo-600" size={20} />
+            <span className="font-black text-xl tracking-tight">Budget System</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 text-emerald-600 bg-emerald-50 px-4 py-2 rounded-full border border-emerald-100">
+          <ShieldCheck size={14} />
+          <span className="text-[10px] font-black uppercase tracking-widest">Verified Session</span>
+        </div>
+      </nav>
+
+      <div className="max-w-6xl mx-auto p-4 md:p-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
         {/* Sidebar / Controls */}
         <aside className="lg:col-span-4 space-y-6">
@@ -703,6 +726,8 @@ const App = () => {
           </div>
         </div>
       )}
+      </div>
+      </div>
     </div>
   );
 };
