@@ -114,6 +114,28 @@ export default function NetWorthEngine() {
     }
   };
 
+  const normalizeValue = (type: 'asset' | 'liability', id: string, field: string) => {
+    if (type === 'asset') {
+      setAssets(prev => prev.map(a => {
+        if (a.id === id) {
+          const currentValue = a[field as keyof Asset];
+          const numValue = parseFloat(String(currentValue));
+          return { ...a, [field]: isNaN(numValue) ? 0 : numValue };
+        }
+        return a;
+      }));
+    } else {
+      setLiabilities(prev => prev.map(l => {
+        if (l.id === id) {
+          const currentValue = l[field as keyof Liability];
+          const numValue = parseFloat(String(currentValue));
+          return { ...l, [field]: isNaN(numValue) ? 0 : numValue };
+        }
+        return l;
+      }));
+    }
+  };
+
   // --- Calculations ---
 
   const metrics = useMemo(() => {
@@ -161,10 +183,11 @@ export default function NetWorthEngine() {
 
   // --- Components ---
 
-  const InputField = ({ label, value, onChange, type = "text", prefix = "" }: {
+  const InputField = ({ label, value, onChange, onBlur, type = "text", prefix = "" }: {
     label: string;
     value: number | string;
     onChange: (value: string) => void;
+    onBlur?: () => void;
     type?: string;
     prefix?: string;
   }) => (
@@ -177,6 +200,7 @@ export default function NetWorthEngine() {
           inputMode="decimal"
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          onBlur={onBlur}
           className={`w-full ${prefix ? 'pl-7' : 'px-3'} pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
         />
       </div>
@@ -358,7 +382,13 @@ export default function NetWorthEngine() {
                         {asset.note && <span className="text-[10px] text-slate-400 italic mt-0.5">{asset.note}</span>}
                       </div>
                       <div className="flex gap-4">
-                        <InputField label="Value" prefix="$" value={asset.value} onChange={(val) => updateNode('asset', asset.id, 'value', val)} />
+                        <InputField
+                          label="Value"
+                          prefix="$"
+                          value={asset.value}
+                          onChange={(val) => updateNode('asset', asset.id, 'value', val)}
+                          onBlur={() => normalizeValue('asset', asset.id, 'value')}
+                        />
                         <div className="flex flex-col space-y-1 min-w-[85px]">
                           <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Type</label>
                           <select
@@ -424,10 +454,28 @@ export default function NetWorthEngine() {
                         className="w-full bg-transparent font-bold text-slate-800 text-sm border-b border-transparent focus:border-rose-300 outline-none pb-1"
                       />
                       <div className="space-y-4">
-                        <InputField label="Balance" prefix="$" value={lib.value} onChange={(val) => updateNode('liability', lib.id, 'value', val)} />
+                        <InputField
+                          label="Balance"
+                          prefix="$"
+                          value={lib.value}
+                          onChange={(val) => updateNode('liability', lib.id, 'value', val)}
+                          onBlur={() => normalizeValue('liability', lib.id, 'value')}
+                        />
                         <div className="flex gap-4">
-                          <InputField label="Rate" prefix="%" value={lib.rate} onChange={(val) => updateNode('liability', lib.id, 'rate', val)} />
-                          <InputField label="Term (Yrs)" prefix="T" value={lib.term} onChange={(val) => updateNode('liability', lib.id, 'term', val)} />
+                          <InputField
+                            label="Rate"
+                            prefix="%"
+                            value={lib.rate}
+                            onChange={(val) => updateNode('liability', lib.id, 'rate', val)}
+                            onBlur={() => normalizeValue('liability', lib.id, 'rate')}
+                          />
+                          <InputField
+                            label="Term (Yrs)"
+                            prefix="T"
+                            value={lib.term}
+                            onChange={(val) => updateNode('liability', lib.id, 'term', val)}
+                            onBlur={() => normalizeValue('liability', lib.id, 'term')}
+                          />
                         </div>
                       </div>
                     </div>
