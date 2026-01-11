@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createBrowserClient } from '@/lib/supabase/client';
 import {
-  Zap,
+  Brain,
   TrendingUp,
   Calculator,
   ShieldCheck,
@@ -160,12 +160,12 @@ export default function Dashboard() {
 
       {/* TOP NAVIGATION BAR */}
       <nav className="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between sticky top-0 z-50">
-        <div className="flex items-center gap-2">
+        <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <div className="bg-indigo-600 p-1.5 rounded-lg text-white">
-            <Zap size={20} fill="currentColor" />
+            <Brain size={20} />
           </div>
-          <span className="font-black text-xl tracking-tight">Cortex<span className="text-indigo-600">Hub</span></span>
-        </div>
+          <span className="font-black text-xl tracking-tight">Cortex</span>
+        </a>
 
         <div className="flex items-center gap-6 relative">
           <button
