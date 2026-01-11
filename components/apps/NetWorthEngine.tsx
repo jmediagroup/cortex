@@ -64,6 +64,66 @@ interface Liability {
   submitted?: boolean;
 }
 
+// --- Components ---
+
+const InputField = ({ label, value, onChange, type = "text", prefix = "", disabled = false }: {
+  label: string;
+  value: number | string;
+  onChange: (value: string) => void;
+  type?: string;
+  prefix?: string;
+  disabled?: boolean;
+}) => (
+  <div className="flex flex-col space-y-1 w-full">
+    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{label}</label>
+    <div className="relative group/input">
+      {prefix && <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-mono">{prefix}</span>}
+      <input
+        type={type}
+        inputMode="decimal"
+        value={String(value)}
+        onChange={(e) => onChange(e.target.value)}
+        disabled={disabled}
+        className={`w-full ${prefix ? 'pl-7' : 'px-3'} pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none disabled:opacity-50 disabled:cursor-not-allowed`}
+      />
+    </div>
+  </div>
+);
+
+const DropdownMenu = ({ presets, onSelect, type, title }: {
+  presets: typeof ASSET_PRESETS | typeof LIABILITY_PRESETS;
+  onSelect: (preset: any) => void;
+  type: 'asset' | 'liability';
+  title: string;
+}) => (
+  <div className="absolute right-0 top-12 w-full z-50 bg-white border border-slate-200 shadow-2xl rounded-xl p-2 animate-in fade-in zoom-in duration-150 origin-top-right">
+    <p className="text-[10px] font-bold text-slate-400 uppercase p-2 border-b border-slate-50">{title}</p>
+    <div className="max-h-72 overflow-y-auto scrollbar-hide py-1">
+      {presets.map((preset: any) => (
+        <button
+          key={preset.label}
+          onClick={() => onSelect(preset)}
+          className={`w-full text-left text-xs p-2.5 rounded-lg transition-all flex justify-between items-center group ${type === 'asset' ? 'hover:bg-indigo-50 hover:text-indigo-700' : 'hover:bg-rose-50 hover:text-rose-700'}`}
+        >
+          <div>
+            <span className="font-semibold">{preset.label}</span>
+            {preset.note && <p className="text-[9px] text-slate-400 group-hover:text-indigo-400 italic font-medium">{preset.note}</p>}
+          </div>
+          {type === 'asset' ? (
+            <span className={`text-[8px] px-1.5 py-0.5 rounded border font-bold ${(preset as typeof ASSET_PRESETS[0]).liquid ? 'border-emerald-100 bg-emerald-50 text-emerald-600' : 'border-slate-100 bg-slate-50 text-slate-500'}`}>
+              {(preset as typeof ASSET_PRESETS[0]).liquid ? 'LIQUID' : 'ILLIQUID'}
+            </span>
+          ) : (
+            <span className="text-[9px] text-slate-400 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-100 font-mono">
+              {(preset as typeof LIABILITY_PRESETS[0]).rate}% / {(preset as typeof LIABILITY_PRESETS[0]).term}Y
+            </span>
+          )}
+        </button>
+      ))}
+    </div>
+  </div>
+);
+
 export default function NetWorthEngine() {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [liabilities, setLiabilities] = useState<Liability[]>([]);
@@ -197,66 +257,6 @@ export default function NetWorthEngine() {
       complexity: (submittedAssets.length + submittedLiabilities.length) > 12 ? 'High' : (submittedAssets.length + submittedLiabilities.length) > 6 ? 'Moderate' : 'Low'
     };
   }, [assets, liabilities, monthlySavings, growthRate]);
-
-  // --- Components ---
-
-  const InputField = ({ label, value, onChange, type = "text", prefix = "", disabled = false }: {
-    label: string;
-    value: number | string;
-    onChange: (value: string) => void;
-    type?: string;
-    prefix?: string;
-    disabled?: boolean;
-  }) => (
-    <div className="flex flex-col space-y-1 w-full">
-      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{label}</label>
-      <div className="relative group/input">
-        {prefix && <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-mono">{prefix}</span>}
-        <input
-          type={type}
-          inputMode="decimal"
-          value={String(value)}
-          onChange={(e) => onChange(e.target.value)}
-          disabled={disabled}
-          className={`w-full ${prefix ? 'pl-7' : 'px-3'} pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none disabled:opacity-50 disabled:cursor-not-allowed`}
-        />
-      </div>
-    </div>
-  );
-
-  const DropdownMenu = ({ presets, onSelect, type, title }: {
-    presets: typeof ASSET_PRESETS | typeof LIABILITY_PRESETS;
-    onSelect: (preset: any) => void;
-    type: 'asset' | 'liability';
-    title: string;
-  }) => (
-    <div className="absolute right-0 top-12 w-full z-50 bg-white border border-slate-200 shadow-2xl rounded-xl p-2 animate-in fade-in zoom-in duration-150 origin-top-right">
-      <p className="text-[10px] font-bold text-slate-400 uppercase p-2 border-b border-slate-50">{title}</p>
-      <div className="max-h-72 overflow-y-auto scrollbar-hide py-1">
-        {presets.map((preset: any) => (
-          <button
-            key={preset.label}
-            onClick={() => onSelect(preset)}
-            className={`w-full text-left text-xs p-2.5 rounded-lg transition-all flex justify-between items-center group ${type === 'asset' ? 'hover:bg-indigo-50 hover:text-indigo-700' : 'hover:bg-rose-50 hover:text-rose-700'}`}
-          >
-            <div>
-              <span className="font-semibold">{preset.label}</span>
-              {preset.note && <p className="text-[9px] text-slate-400 group-hover:text-indigo-400 italic font-medium">{preset.note}</p>}
-            </div>
-            {type === 'asset' ? (
-              <span className={`text-[8px] px-1.5 py-0.5 rounded border font-bold ${(preset as typeof ASSET_PRESETS[0]).liquid ? 'border-emerald-100 bg-emerald-50 text-emerald-600' : 'border-slate-100 bg-slate-50 text-slate-500'}`}>
-                {(preset as typeof ASSET_PRESETS[0]).liquid ? 'LIQUID' : 'ILLIQUID'}
-              </span>
-            ) : (
-              <span className="text-[9px] text-slate-400 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-100 font-mono">
-                {(preset as typeof LIABILITY_PRESETS[0]).rate}% / {(preset as typeof LIABILITY_PRESETS[0]).term}Y
-              </span>
-            )}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
 
   return (
     <div className="space-y-8">
