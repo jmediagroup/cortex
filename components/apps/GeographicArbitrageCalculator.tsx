@@ -29,7 +29,7 @@ interface GeographicArbitrageCalculatorProps {
   onUpgrade?: () => void;
 }
 
-// Comprehensive Data for all 50 State Capitals + Major Hubs + DC
+// Comprehensive Data for all 50 State Capitals + Major Hubs + DC + Custom Cities
 const LOCATION_PRESETS: Record<string, LocationData> = {
   "Montgomery, AL": { taxRate: 0.05, colIndex: 0.85, housingBase: 1250, note: "Alabama Capital. High affordability in the Deep South." },
   "Juneau, AK": { taxRate: 0.0, colIndex: 1.3, housingBase: 2100, note: "Alaska Capital. 0% income tax but high cost of goods/services." },
@@ -43,7 +43,7 @@ const LOCATION_PRESETS: Record<string, LocationData> = {
   "Dover, DE": { taxRate: 0.05, colIndex: 1.0, housingBase: 1600, note: "Delaware Capital. Moderate tax and no sales tax." },
   "Washington, D.C.": { taxRate: 0.085, colIndex: 1.7, housingBase: 2800, note: "U.S. Capital. High income tax brackets and extreme housing costs. Major outflow hub." },
   "Tallahassee, FL": { taxRate: 0.0, colIndex: 1.0, housingBase: 1750, note: "Florida Capital. 0% state income tax. Lower costs than Miami." },
-  "Miami, FL": { taxRate: 0.0, colIndex: 1.2, housingBase: 2400, note: "Benchmark Hub. 0% state income tax. High housing Inflow pressure." },
+  "Miami, FL": { taxRate: 0.0, colIndex: 1.2, housingBase: 2400, note: "Major Metro Hub. 0% state income tax. Significant housing demand and international appeal." },
   "Atlanta, GA": { taxRate: 0.054, colIndex: 1.0, housingBase: 1900, note: "Georgia Capital. Major Inflow Hub. Corporate center with moderate housing." },
   "Honolulu, HI": { taxRate: 0.0825, colIndex: 1.8, housingBase: 3100, note: "Hawaii Capital. Extremely high COL and housing burden." },
   "Boise, ID": { taxRate: 0.058, colIndex: 1.05, housingBase: 2000, note: "Idaho Capital. High recent Inflow from West Coast. Rising housing." },
@@ -69,6 +69,7 @@ const LOCATION_PRESETS: Record<string, LocationData> = {
   "Albany, NY": { taxRate: 0.065, colIndex: 1.05, housingBase: 1600, note: "NY State Capital. Progressive tax system. Moderate COL." },
   "New York, NY": { taxRate: 0.10, colIndex: 1.9, housingBase: 3800, note: "Benchmark Hub. Highest tax drag (City + State). Max Outflow risk." },
   "Raleigh, NC": { taxRate: 0.045, colIndex: 0.95, housingBase: 1750, note: "North Carolina Capital. Flat tax and Research Triangle growth." },
+  "Wilmington, NC": { taxRate: 0.045, colIndex: 0.95, housingBase: 1650, note: "Coastal Destination. Favorable flat tax (4.5%) and high appeal for remote workers/retirees." },
   "Bismarck, ND": { taxRate: 0.025, colIndex: 0.9, housingBase: 1300, note: "North Dakota Capital. Very low state tax and stable economy." },
   "Columbus, OH": { taxRate: 0.035, colIndex: 0.95, housingBase: 1650, note: "Ohio Capital. Rapidly growing tech/corporate hub." },
   "Oklahoma City, OK": { taxRate: 0.0475, colIndex: 0.88, housingBase: 1400, note: "Oklahoma Capital. Rapidly growing with low cost of operations." },
@@ -82,6 +83,8 @@ const LOCATION_PRESETS: Record<string, LocationData> = {
   "Salt Lake City, UT": { taxRate: 0.0485, colIndex: 1.1, housingBase: 2100, note: "Utah Capital. Flat tax and high Inflow (Silicon Slopes)." },
   "Montpelier, VT": { taxRate: 0.068, colIndex: 1.1, housingBase: 1750, note: "Vermont Capital. High tax burden but high social safety net." },
   "Richmond, VA": { taxRate: 0.0575, colIndex: 1.0, housingBase: 1850, note: "Virginia Capital. Moderate progressive tax and historical stability." },
+  "Alexandria, VA": { taxRate: 0.0575, colIndex: 1.5, housingBase: 2600, note: "D.C. Outflow Hub. High COL and housing demand with proximity to the federal core." },
+  "Arlington, VA": { taxRate: 0.0575, colIndex: 1.6, housingBase: 2800, note: "Tech/Defense Hub. High housing pressure and urban amenities next to D.C." },
   "Olympia, WA": { taxRate: 0.0, colIndex: 1.15, housingBase: 2000, note: "Washington Capital. 0% state income tax. Moderate housing pressure." },
   "Seattle, WA": { taxRate: 0.0, colIndex: 1.5, housingBase: 2700, note: "Washington Benchmark. 0% tax, high cost of living index." },
   "Charleston, WV": { taxRate: 0.051, colIndex: 0.8, housingBase: 1100, note: "West Virginia Capital. Extremely low housing costs. High arbitrage." },
@@ -170,7 +173,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade }: Geog
     const percentage = ((value - min) / (max - min)) * 100;
 
     return (
-      <div className="mb-6 group touch-none">
+      <div className="mb-6 group">
         <div className="flex justify-between items-center mb-2">
           <label className="text-sm font-semibold text-slate-700 flex items-center gap-2 group-hover:text-indigo-600 transition-colors">
             {Icon && <Icon size={16} className="text-indigo-500" />}
@@ -180,7 +183,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade }: Geog
             {value.toLocaleString()}{suffix}
           </span>
         </div>
-        <div className="relative flex items-center h-8">
+        <div className="relative flex items-center py-3">
           <input
             type="range"
             min={min}
@@ -188,13 +191,14 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade }: Geog
             value={value}
             onMouseDown={() => setIsDragging(true)}
             onMouseUp={() => setIsDragging(false)}
+            onMouseLeave={() => setIsDragging(false)}
             onTouchStart={() => setIsDragging(true)}
             onTouchEnd={() => setIsDragging(false)}
             onChange={(e) => onChange(parseInt(e.target.value))}
             style={{
               background: `linear-gradient(to right, #4f46e5 ${percentage}%, #e2e8f0 ${percentage}%)`
             }}
-            className="w-full h-2 rounded-lg appearance-none cursor-pointer accent-indigo-600 transition-all bg-slate-200 slider-thumb-custom focus:outline-none"
+            className="w-full h-3 rounded-lg appearance-none cursor-grab active:cursor-grabbing accent-indigo-600 bg-slate-200 slider-thumb-custom focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
           />
         </div>
       </div>
@@ -237,34 +241,69 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade }: Geog
   return (
     <div className="space-y-8">
       <style>{`
+        /* Enhanced slider thumb styling for better interaction */
+        .slider-thumb-custom {
+          position: relative;
+        }
+
         .slider-thumb-custom::-webkit-slider-thumb {
           -webkit-appearance: none;
           appearance: none;
-          width: 20px;
-          height: 20px;
+          width: 24px;
+          height: 24px;
           background: #ffffff;
-          border: 2px solid #4f46e5;
+          border: 3px solid #4f46e5;
           border-radius: 50%;
-          cursor: pointer;
-          box-shadow: 0 2px 8px rgba(79, 70, 229, 0.2);
-          transition: transform 0.1s ease, box-shadow 0.1s ease;
+          cursor: grab;
+          box-shadow: 0 2px 12px rgba(79, 70, 229, 0.3), 0 1px 3px rgba(0, 0, 0, 0.1);
+          transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+          margin-top: -9px;
         }
+
         .slider-thumb-custom::-moz-range-thumb {
-          width: 20px;
-          height: 20px;
+          width: 24px;
+          height: 24px;
           background: #ffffff;
-          border: 2px solid #4f46e5;
+          border: 3px solid #4f46e5;
           border-radius: 50%;
-          cursor: pointer;
-          box-shadow: 0 2px 8px rgba(79, 70, 229, 0.2);
+          cursor: grab;
+          box-shadow: 0 2px 12px rgba(79, 70, 229, 0.3), 0 1px 3px rgba(0, 0, 0, 0.1);
+          transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+          border: none;
         }
-        .slider-thumb-custom::-webkit-slider-thumb:active {
-          transform: scale(1.25);
-          box-shadow: 0 0 0 8px rgba(79, 70, 229, 0.1);
+
+        .slider-thumb-custom:hover::-webkit-slider-thumb {
+          transform: scale(1.1);
+          box-shadow: 0 4px 16px rgba(79, 70, 229, 0.4), 0 2px 6px rgba(0, 0, 0, 0.15);
         }
-        .slider-thumb-custom::-moz-range-thumb:active {
-          transform: scale(1.25);
-          box-shadow: 0 0 0 8px rgba(79, 70, 229, 0.1);
+
+        .slider-thumb-custom:hover::-moz-range-thumb {
+          transform: scale(1.1);
+          box-shadow: 0 4px 16px rgba(79, 70, 229, 0.4), 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .slider-thumb-custom:active::-webkit-slider-thumb {
+          cursor: grabbing;
+          transform: scale(1.15);
+          box-shadow: 0 0 0 10px rgba(79, 70, 229, 0.1), 0 4px 20px rgba(79, 70, 229, 0.5);
+          border-width: 4px;
+        }
+
+        .slider-thumb-custom:active::-moz-range-thumb {
+          cursor: grabbing;
+          transform: scale(1.15);
+          box-shadow: 0 0 0 10px rgba(79, 70, 229, 0.1), 0 4px 20px rgba(79, 70, 229, 0.5);
+          border-width: 4px;
+        }
+
+        /* Increase hit area for better mobile/touch interaction */
+        .slider-thumb-custom::-webkit-slider-thumb::before {
+          content: '';
+          position: absolute;
+          top: -10px;
+          left: -10px;
+          right: -10px;
+          bottom: -10px;
         }
       `}</style>
 
