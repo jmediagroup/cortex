@@ -15,7 +15,11 @@ import {
   Compass,
   Check,
   Lock,
-  Sparkles
+  Sparkles,
+  Landmark,
+  TrendingDown,
+  MapPin,
+  Wallet
 } from 'lucide-react';
 
 /**
@@ -164,8 +168,33 @@ export default function LandingPage() {
               },
               {
                 icon: <Scale />,
-                title: "S-Corp vs Sole Proprietorship",
-                description: "Compare business structures and understand the tax implications of each choice."
+                title: "S-Corp Optimizer",
+                description: "Calculate self-employment tax savings and find your ideal salary/distribution split."
+              },
+              {
+                icon: <Landmark />,
+                title: "Rent vs Buy Reality Engine",
+                description: "Compare renting vs buying with opportunity cost, maintenance drag, mobility risk, and tax treatment."
+              },
+              {
+                icon: <TrendingDown />,
+                title: "Debt Paydown Strategy Optimizer",
+                description: "Compare avalanche vs snowball strategies with psychological weighting and opportunity cost analysis."
+              },
+              {
+                icon: <MapPin />,
+                title: "Geographic Arbitrage Calculator",
+                description: "Calculate wealth-building potential by comparing income, taxes, and cost of living across all 50 U.S. states."
+              },
+              {
+                icon: <Compass />,
+                title: "Net Worth Engine",
+                description: "Track assets and liabilities, analyze liquidity and momentum, and visualize your financial trajectory."
+              },
+              {
+                icon: <Wallet />,
+                title: "Household Budgeting System",
+                description: "Allocate resources under constraints with AI-powered optimization, tension metrics, and flexibility analysis."
               }
             ].map((tool, i) => (
               <div

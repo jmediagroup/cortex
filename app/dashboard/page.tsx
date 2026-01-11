@@ -20,7 +20,8 @@ import {
   Landmark,
   TrendingDown,
   MapPin,
-  Compass
+  Compass,
+  Wallet
 } from 'lucide-react';
 import { hasAppAccess, getTierDisplayName, type Tier } from '@/lib/access-control';
 
@@ -120,6 +121,16 @@ const APPS = [
     sector: 'finance' as const,
     category: 'Personal Finance',
     path: '/apps/net-worth'
+  },
+  {
+    id: 'budget',
+    name: 'Household Budgeting System',
+    description: 'Allocate resources under constraints with AI-powered optimization, tension metrics, and flexibility analysis.',
+    icon: <Wallet className="text-indigo-600" />,
+    tier: 'free' as const,
+    sector: 'finance' as const,
+    category: 'Personal Finance',
+    path: '/apps/budget'
   }
 ];
 
