@@ -76,11 +76,9 @@ const Tooltip = ({ content, children }: { content: string; children: React.React
   const handleMouseEnter = () => {
     if (triggerRef.current) {
       const rect = triggerRef.current.getBoundingClientRect();
-      const scrollY = window.scrollY || window.pageYOffset;
-      const scrollX = window.scrollX || window.pageXOffset;
 
       // Tooltip height estimate (with padding and content)
-      const tooltipHeight = 100; // Conservative estimate
+      const tooltipHeight = 120;
       const spaceAbove = rect.top;
       const spaceBelow = window.innerHeight - rect.bottom;
 
@@ -88,8 +86,8 @@ const Tooltip = ({ content, children }: { content: string; children: React.React
       const showBelow = spaceAbove < tooltipHeight && spaceBelow > spaceAbove;
 
       setPosition({
-        top: rect.top + scrollY,
-        left: rect.left + rect.width / 2 + scrollX,
+        top: rect.top,
+        left: rect.left + rect.width / 2,
         showBelow
       });
       setIsVisible(true);
