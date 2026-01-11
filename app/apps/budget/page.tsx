@@ -105,7 +105,7 @@ const App = () => {
 
   const totalAllocated = useMemo(() =>
     Object.values(allocations).reduce((sum, val) => {
-      const numVal = typeof val === 'string' ? parseFloat(val) || 0 : val;
+      const numVal: number = typeof val === 'string' ? parseFloat(val) || 0 : val;
       return sum + numVal;
     }, 0)
   , [allocations]);
