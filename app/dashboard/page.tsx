@@ -51,7 +51,7 @@ const APPS = [
     id: 's-corp-optimizer',
     name: 'S-Corp Optimizer',
     description: 'Calculate self-employment tax savings and find your ideal salary/distribution split.',
-    icon: <Zap className="text-amber-500" />,
+    icon: <Calculator className="text-amber-500" />,
     tier: 'free' as const,
     sector: 'finance' as const,
     category: 'Business',
