@@ -11,7 +11,9 @@ import {
   Activity,
   Maximize2,
   Trash2,
-  Plus
+  Plus,
+  Info,
+  HelpCircle
 } from 'lucide-react';
 
 /**
@@ -65,6 +67,30 @@ interface Liability {
 }
 
 // --- Components ---
+
+const Tooltip = ({ content, children }: { content: string; children: React.ReactNode }) => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  return (
+    <div className="relative inline-block">
+      <div
+        onMouseEnter={() => setIsVisible(true)}
+        onMouseLeave={() => setIsVisible(false)}
+        className="cursor-help"
+      >
+        {children}
+      </div>
+      {isVisible && (
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-slate-900 text-white text-xs rounded-lg shadow-xl z-50 w-64 pointer-events-none">
+          <div className="relative">
+            {content}
+            <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900"></div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const InputField = ({ label, value, onChange, type = "text", prefix = "", disabled = false }: {
   label: string;
@@ -263,7 +289,12 @@ export default function NetWorthEngine() {
       {/* Top Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm transition-all hover:shadow-md">
-          <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest block mb-2">Current Position</span>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest">Current Position</span>
+            <Tooltip content="Your net worth is the total value of everything you own (assets) minus everything you owe (liabilities). It's a snapshot of your financial health right now.">
+              <Info size={14} className="text-slate-400 hover:text-indigo-600 transition-colors" />
+            </Tooltip>
+          </div>
           <div className="text-3xl font-black text-slate-900 mb-6 tracking-tight">
             ${metrics.netWorth.toLocaleString(undefined, { maximumFractionDigits: 0 })}
           </div>
@@ -283,7 +314,12 @@ export default function NetWorthEngine() {
           <div className="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity">
             <TrendingUp size={72} className="stroke-[1.5]" />
           </div>
-          <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest block mb-2 text-left">System Momentum</span>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest text-left">System Momentum</span>
+            <Tooltip content="Momentum shows if your wealth is growing, stable, or declining. It combines your asset growth rate (from investments) and monthly savings. 'Improving' means strong growth, 'Stable' means modest growth, 'Fragile' means slow growth, 'Reversing' means declining.">
+              <Info size={14} className="text-slate-400 hover:text-indigo-600 transition-colors" />
+            </Tooltip>
+          </div>
           <div className="text-3xl font-black text-slate-900 mb-6 tracking-tight">
             {metrics.momentumStatus}
           </div>
@@ -299,7 +335,12 @@ export default function NetWorthEngine() {
         </div>
 
         <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition-all">
-          <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest block mb-2">Optionality</span>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest">Optionality</span>
+            <Tooltip content="Optionality measures your financial flexibility and ability to handle emergencies. It's based on how much liquid cash you have relative to your debts. High = strong safety net, Moderate = decent buffer, Low = vulnerable to shocks.">
+              <Info size={14} className="text-slate-400 hover:text-indigo-600 transition-colors" />
+            </Tooltip>
+          </div>
           <div className="text-3xl font-black text-slate-900 mb-6 tracking-tight">
             {metrics.optionality}
           </div>
@@ -344,6 +385,9 @@ export default function NetWorthEngine() {
               <h2 className="font-bold text-slate-800 flex items-center gap-2 tracking-tight">
                 <Layers size={18} className="text-indigo-500" />
                 System Nodes
+                <Tooltip content="Add your financial accounts here. Assets are things you own (cash, investments, property). Liabilities are debts you owe (loans, credit cards). Only submitted items are included in calculations.">
+                  <HelpCircle size={16} className="text-slate-400 hover:text-indigo-600 transition-colors" />
+                </Tooltip>
               </h2>
             </div>
 
@@ -545,6 +589,9 @@ export default function NetWorthEngine() {
             <h3 className="font-bold mb-6 flex items-center gap-2 tracking-tight">
               <Activity size={18} className="text-indigo-400" />
               Dynamic Forces
+              <Tooltip content="These inputs affect your momentum and trajectory calculations. Monthly Savings is how much you add to assets each month. Asset Growth Velocity is the expected annual growth rate of your investments (e.g., 7% for stock market average).">
+                <HelpCircle size={16} className="text-slate-400 hover:text-indigo-400 transition-colors" />
+              </Tooltip>
             </h3>
             <div className="space-y-8">
               <div className="space-y-3">
@@ -603,7 +650,12 @@ export default function NetWorthEngine() {
                       </svg>
                       <div className="absolute inset-0 flex flex-col items-center justify-center">
                         <span className="text-4xl font-black tracking-tighter">{(metrics.liquidityRatio * 100).toFixed(0)}%</span>
-                        <span className="text-[10px] uppercase font-bold text-slate-400 tracking-widest mt-1">Liquidity Index</span>
+                        <div className="flex items-center gap-1 mt-1">
+                          <span className="text-[10px] uppercase font-bold text-slate-400 tracking-widest">Liquidity Index</span>
+                          <Tooltip content="The percentage of your total assets that are liquid (easily accessible cash). Higher is better - it means you can access your wealth without selling long-term investments. Aim for at least 25%.">
+                            <Info size={12} className="text-slate-400 hover:text-indigo-600 transition-colors" />
+                          </Tooltip>
+                        </div>
                       </div>
                     </div>
 
