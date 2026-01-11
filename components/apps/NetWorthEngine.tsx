@@ -47,7 +47,7 @@ interface Asset {
   id: string;
   category: string;
   label: string;
-  value: number;
+  value: number | string;
   confidence: number;
   liquid: boolean;
   note?: string;
@@ -57,9 +57,9 @@ interface Liability {
   id: string;
   category: string;
   label: string;
-  value: number;
-  rate: number;
-  term: number;
+  value: number | string;
+  rate: number | string;
+  term: number | string;
 }
 
 export default function NetWorthEngine() {
@@ -79,7 +79,7 @@ export default function NetWorthEngine() {
       id: crypto.randomUUID(),
       category: preset.category,
       label: preset.label,
-      value: 0,
+      value: '',
       confidence: 1,
       liquid: preset.liquid,
       note: preset.note || ''
@@ -93,9 +93,9 @@ export default function NetWorthEngine() {
       id: crypto.randomUUID(),
       category: preset.category,
       label: preset.label,
-      value: 0,
-      rate: preset.rate,
-      term: preset.term,
+      value: '',
+      rate: preset.rate.toString(),
+      term: preset.term.toString(),
     };
     setLiabilities(prev => [...prev, newLiability]);
     setShowLibMenu(false);
@@ -139,10 +139,10 @@ export default function NetWorthEngine() {
     if (monthsOfRunway < 6) optionality = 'Low';
 
     const highInterestDebts = liabilities.filter(l => Number(l.rate) >= 7 && Number(l.value) > 0)
-      .sort((a, b) => b.rate - a.rate);
+      .sort((a, b) => Number(b.rate) - Number(a.rate));
 
     const shortTermDebts = liabilities.filter(l => Number(l.term) <= 3 && Number(l.value) > 0)
-      .sort((a, b) => a.term - b.term);
+      .sort((a, b) => Number(a.term) - Number(b.term));
 
     return {
       totalAssets,
