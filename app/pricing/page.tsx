@@ -12,16 +12,16 @@ const PRICING_PLANS = [
     price: '$0',
     annualPrice: null,
     period: 'forever',
-    description: 'Get started with essential financial tools',
+    description: 'For exploration and curiosity',
     features: [
-      'Car Affordability Calculator',
+      'Access to core calculators',
       'Compound Interest Calculator',
-      'S-Corp Tax Optimizer',
-      'S-Corp Investment Optimizer',
-      'Retirement Strategy Engine',
+      'Car Affordability Calculator',
+      'Limited scenarios and projections',
+      'Ideal for learning',
       'Community support',
     ],
-    cta: 'Get Started',
+    cta: 'Start Free',
     tier: 'free' as const,
     sector: null,
     priceId: null,
@@ -33,16 +33,16 @@ const PRICING_PLANS = [
     annualPrice: '$90',
     period: 'per month',
     annualSavings: 'Save $18/year',
-    description: 'Unlock advanced Finance optimization tools',
+    description: 'For people who want precision around money',
     features: [
-      'Everything in Free',
-      'Roth Conversion Ladder Optimizer',
-      'Auto-Optimize tax features',
-      'Advanced tax modeling',
-      'Scenario saving & comparison',
+      'Full access to all Cortex Finance tools',
+      'Advanced scenarios and comparisons',
+      'Deeper projections and strategy modeling',
+      'Roth Conversion Optimizer',
+      'S-Corp tools and tax modeling',
       'Priority support',
     ],
-    cta: 'Upgrade to Finance Pro',
+    cta: 'Get Finance Pro',
     tier: 'finance_pro' as const,
     sector: 'finance' as const,
     priceId: process.env.NEXT_PUBLIC_STRIPE_FINANCE_PRO_MONTHLY_PRICE_ID || 'price_PLACEHOLDER',
@@ -56,16 +56,16 @@ const PRICING_PLANS = [
     annualPrice: '$290',
     period: 'per month',
     annualSavings: 'Save $58/year',
-    description: 'Pro access across ALL sectors',
+    description: 'For people who want a thinking system',
     features: [
-      'Everything in Finance Pro',
-      'Pro access to ALL current sectors',
+      'Unlocks all current and future apps',
+      'Access across Finance, Health, Education',
+      'Life planning tools as they launch',
       'Pro access to ALL future sectors',
-      'Health, Education & more coming soon',
       'Premium priority support',
       'Early access to new features',
     ],
-    cta: 'Upgrade to Elite',
+    cta: 'Get Elite',
     tier: 'elite' as const,
     sector: null,
     priceId: process.env.NEXT_PUBLIC_STRIPE_ELITE_MONTHLY_PRICE_ID || 'price_PLACEHOLDER',
@@ -174,10 +174,10 @@ export default function PricingPage() {
         {/* HEADER */}
         <div className="text-center mb-16">
           <h1 className="text-5xl md:text-6xl font-black text-slate-900 mb-6 tracking-tight">
-            Choose Your Plan
+            Simple, Honest Pricing
           </h1>
           <p className="text-xl text-slate-600 font-medium max-w-2xl mx-auto mb-8">
-            Start free, upgrade to unlock advanced tools in Finance, or go Elite for everything across all sectors.
+            Choose the plan that matches where you are today. Start free, upgrade when precision matters, or unlock everything with Elite.
           </p>
 
           {/* BILLING TOGGLE */}
@@ -320,11 +320,21 @@ export default function PricingPage() {
             Contact Sales
           </button>
         </div>
+
+        {/* VALUE PROPOSITION */}
+        <div className="mt-16 text-center">
+          <p className="text-lg text-slate-600 font-medium mb-4">
+            Elite is for people who understand one thing:
+          </p>
+          <p className="text-3xl font-black text-slate-900">
+            Clarity compounds.
+          </p>
+        </div>
       </main>
 
       {/* FOOTER */}
       <footer className="max-w-7xl mx-auto px-6 py-12 text-center text-slate-400 font-medium text-sm">
-        &copy; {new Date().getFullYear()} Cortex Financial Technology. All rights reserved.
+        &copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.
       </footer>
     </div>
   );
