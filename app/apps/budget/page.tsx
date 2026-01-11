@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   BarChart3,
   ShieldCheck,
@@ -14,8 +15,11 @@ import {
   Lock,
   BrainCircuit,
   Settings2,
-  AlertCircle
+  AlertCircle,
+  Crown
 } from 'lucide-react';
+import { createBrowserClient } from '@/lib/supabase/client';
+import { hasProAccess, type Tier } from '@/lib/access-control';
 
 // --- Constants & Defaults ---
 const CATEGORIES = {
@@ -45,11 +49,16 @@ const TAX_MODES = {
 };
 
 const App = () => {
+  const router = useRouter();
+  const supabase = createBrowserClient();
+
   // --- State ---
-  const [grossIncome, setGrossIncome] = useState(8000);
+  const [loading, setLoading] = useState(true);
+  const [userTier, setUserTier] = useState<Tier>('free');
+  const [grossIncome, setGrossIncome] = useState<number | string>(8000);
   const [taxMode, setTaxMode] = useState('baseline');
   const [allocations, setAllocations] = useState(() => {
-    const initial: Record<string, number> = {};
+    const initial: Record<string, number | string> = {};
     Object.values(CATEGORIES).flat().forEach(cat => {
       initial[cat.id] = cat.initial;
     });
@@ -59,23 +68,64 @@ const App = () => {
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [optimizationLog, setOptimizationLog] = useState<string | null>(null);
   const [showOptimizer, setShowOptimizer] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
+  // Check auth and tier
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session) {
+        router.push('/login');
+        return;
+      }
+
+      // Fetch user tier
+      const { data: userData } = await supabase
+        .from('users')
+        .select('tier')
+        .eq('id', session.user.id)
+        .single() as { data: { tier: Tier } | null };
+
+      if (userData?.tier) {
+        setUserTier(userData.tier);
+      }
+
+      setLoading(false);
+    };
+
+    checkAuth();
+  }, [router, supabase]);
 
   // --- Calculations ---
   const taxRate = TAX_MODES[taxMode as keyof typeof TAX_MODES].rate;
-  const taxDrag = grossIncome * taxRate;
-  const takeHomePay = grossIncome - taxDrag;
+  const grossIncomeNum = typeof grossIncome === 'string' ? parseFloat(grossIncome) || 0 : grossIncome;
+  const taxDrag = grossIncomeNum * taxRate;
+  const takeHomePay = grossIncomeNum - taxDrag;
 
   const totalAllocated = useMemo(() =>
-    Object.values(allocations).reduce((sum, val) => sum + val, 0)
+    Object.values(allocations).reduce((sum, val) => {
+      const numVal = typeof val === 'string' ? parseFloat(val) || 0 : val;
+      return sum + numVal;
+    }, 0)
   , [allocations]);
 
   const remaining = takeHomePay - totalAllocated;
   const multiplier = viewMode === 'annual' ? 12 : 1;
 
   // Analysis Metrics
-  const fixedTotal = CATEGORIES.fixed.reduce((sum, cat) => sum + allocations[cat.id], 0);
-  const flexibleTotal = CATEGORIES.flexible.reduce((sum, cat) => sum + allocations[cat.id], 0);
-  const futureTotal = CATEGORIES.future.reduce((sum, cat) => sum + allocations[cat.id], 0);
+  const fixedTotal = CATEGORIES.fixed.reduce((sum, cat) => {
+    const val = allocations[cat.id];
+    return sum + (typeof val === 'string' ? parseFloat(val) || 0 : val);
+  }, 0);
+  const flexibleTotal = CATEGORIES.flexible.reduce((sum, cat) => {
+    const val = allocations[cat.id];
+    return sum + (typeof val === 'string' ? parseFloat(val) || 0 : val);
+  }, 0);
+  const futureTotal = CATEGORIES.future.reduce((sum, cat) => {
+    const val = allocations[cat.id];
+    return sum + (typeof val === 'string' ? parseFloat(val) || 0 : val);
+  }, 0);
 
   const flexibilityIndex = Math.max(0, Math.min(100, ((takeHomePay - fixedTotal) / takeHomePay) * 100));
 
@@ -95,64 +145,113 @@ const App = () => {
 
   // --- Handlers ---
   const handleAllocationChange = (id: string, value: string) => {
-    const numValue = Math.max(0, parseInt(value) || 0);
+    // Allow empty string or partial input during typing
+    if (value === '') {
+      setAllocations(prev => ({ ...prev, [id]: '' as any }));
+      return;
+    }
+
+    // Store as-is to allow typing, validation happens on blur
+    const numValue = parseFloat(value);
+    if (!isNaN(numValue) && numValue >= 0) {
+      setAllocations(prev => ({ ...prev, [id]: value as any }));
+    }
+  };
+
+  const handleAllocationBlur = (id: string) => {
+    // Convert to number on blur, defaulting to 0 if invalid
+    const currentValue = allocations[id];
+    const numValue = typeof currentValue === 'string'
+      ? Math.max(0, parseFloat(currentValue) || 0)
+      : Math.max(0, currentValue);
     setAllocations(prev => ({ ...prev, [id]: numValue }));
   };
 
-  const autoOptimize = async (goal: string) => {
-    setIsOptimizing(true);
-
-    // Check for API key in environment variables
-    const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY || "";
-
-    if (!apiKey) {
-      alert("Please configure NEXT_PUBLIC_GEMINI_API_KEY in your environment variables to use auto-optimization.");
-      setIsOptimizing(false);
+  const autoOptimize = (goal: string) => {
+    // Check if user has pro access
+    if (!hasProAccess('finance', userTier)) {
+      setShowUpgradeModal(true);
       setShowOptimizer(false);
       return;
     }
 
-    const systemPrompt = `You are the Cortex Budgeting Engine AI.
-    Analyze the user's budget and suggest a rebalance based on the goal: ${goal}.
-    Return a JSON object with:
-    1. "allocations": mapping of category IDs to new values.
-    2. "reasoning": a short explanation of why changes were made.
+    setIsOptimizing(true);
 
-    Rules:
-    - Never touch 'fixed' costs (housing, insurance, debt, utilities).
-    - Respect the total Take-Home Pay: ${takeHomePay}.
-    - The sum of all new allocations + slack must equal Take-Home Pay.
-    - Be logical and emotionally neutral.`;
+    // Simulate processing delay for better UX
+    setTimeout(() => {
+      const newAllocations = { ...allocations };
+      let reasoning = '';
 
-    const userQuery = JSON.stringify({
-      current_allocations: allocations,
-      take_home: takeHomePay,
-      categories: CATEGORIES
-    });
+      // Get numeric values for calculations
+      const getCurrentValue = (id: string) => {
+        const val = allocations[id];
+        return typeof val === 'string' ? parseFloat(val) || 0 : val;
+      };
 
-    try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: userQuery }] }],
-          systemInstruction: { parts: [{ text: systemPrompt }] },
-          generationConfig: { responseMimeType: "application/json" }
-        })
+      if (goal === 'Maximize Monthly Slack') {
+        // Strategy: Minimize flexible spending, maximize unallocated funds
+        // Reduce dining, personal, and sinking funds
+        newAllocations.dining = Math.max(150, getCurrentValue('dining') * 0.6);
+        newAllocations.personal = Math.max(100, getCurrentValue('personal') * 0.6);
+        newAllocations.sinking = Math.max(100, getCurrentValue('sinking') * 0.5);
+        newAllocations.groceries = Math.max(400, getCurrentValue('groceries') * 0.85);
+
+        reasoning = "Reduced discretionary spending (dining, personal) by 40% and sinking funds by 50% to maximize available monthly cash flow. This creates breathing room for unexpected expenses.";
+      }
+      else if (goal === 'Maximize Future Savings') {
+        // Strategy: Aggressive future allocation
+        const currentFlexible = getCurrentValue('groceries') + getCurrentValue('dining') +
+                                getCurrentValue('transport') + getCurrentValue('personal');
+        const savings = currentFlexible * 0.25; // Take 25% from flexible
+
+        newAllocations.dining = Math.max(150, getCurrentValue('dining') * 0.7);
+        newAllocations.personal = Math.max(80, getCurrentValue('personal') * 0.6);
+        newAllocations.transport = Math.max(150, getCurrentValue('transport') * 0.85);
+
+        // Allocate to investing and emergency
+        newAllocations.investing = getCurrentValue('investing') + (savings * 0.6);
+        newAllocations.emergency = getCurrentValue('emergency') + (savings * 0.4);
+
+        reasoning = "Reduced flexible spending to redirect 25% toward future goals. 60% allocated to investing for wealth building, 40% to emergency buffer for resilience. This prioritizes long-term financial security.";
+      }
+      else if (goal === 'Minimize Fragility') {
+        // Strategy: Balance across all categories, boost emergency fund
+        const targetEmergency = takeHomePay * 0.15; // 15% to emergency
+        const targetInvesting = takeHomePay * 0.12; // 12% to investing
+        const targetSinking = takeHomePay * 0.08; // 8% to sinking
+
+        // Calculate total fixed (don't change these)
+        const totalFixed = fixedTotal;
+
+        // Calculate remaining after fixed and desired future allocations
+        const remainingForFlexible = takeHomePay - totalFixed - targetEmergency - targetInvesting - targetSinking;
+
+        // Distribute flexible proportionally
+        const flexibleRatio = remainingForFlexible / flexibleTotal;
+
+        newAllocations.groceries = Math.max(400, getCurrentValue('groceries') * flexibleRatio);
+        newAllocations.dining = Math.max(150, getCurrentValue('dining') * flexibleRatio);
+        newAllocations.transport = Math.max(150, getCurrentValue('transport') * flexibleRatio);
+        newAllocations.personal = Math.max(100, getCurrentValue('personal') * flexibleRatio);
+
+        newAllocations.emergency = targetEmergency;
+        newAllocations.investing = targetInvesting;
+        newAllocations.sinking = targetSinking;
+
+        reasoning = "Rebalanced to achieve systemic stability: 15% to emergency buffer, 12% to investing, 8% to sinking funds. Flexible spending proportionally adjusted to maintain livability while building resilience across all categories.";
+      }
+
+      // Round all values to 2 decimal places
+      Object.keys(newAllocations).forEach(key => {
+        const val = newAllocations[key];
+        newAllocations[key] = typeof val === 'string' ? parseFloat(val) : Math.round(val * 100) / 100;
       });
 
-      const result = await response.json();
-      const suggestion = JSON.parse(result.candidates[0].content.parts[0].text);
-
-      setAllocations(prev => ({ ...prev, ...suggestion.allocations }));
-      setOptimizationLog(suggestion.reasoning);
-    } catch (error) {
-      console.error("Optimization failed", error);
-      alert("Optimization failed. Please check the console for details.");
-    } finally {
+      setAllocations(newAllocations);
+      setOptimizationLog(reasoning);
       setIsOptimizing(false);
       setShowOptimizer(false);
-    }
+    }, 1500);
   };
 
   // --- Sub-Components ---
@@ -169,36 +268,62 @@ const App = () => {
         {title}
       </h3>
       <div className="space-y-4">
-        {cats.map(cat => (
-          <div key={cat.id} className="group">
-            <div className="flex justify-between items-center mb-1">
-              <label className="text-sm font-medium text-slate-700">{cat.label}</label>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-slate-400">
-                  {viewMode === 'annual' ? '/yr' : '/mo'}
-                </span>
-                <input
-                  type="number"
-                  value={allocations[cat.id] * multiplier}
-                  onChange={(e) => handleAllocationChange(cat.id, String(Number(e.target.value) / multiplier))}
-                  className="w-24 text-right bg-transparent border-b border-transparent group-hover:border-slate-200 focus:border-indigo-500 focus:outline-none transition-all text-sm font-mono"
-                />
+        {cats.map(cat => {
+          const currentValue = allocations[cat.id];
+          const numValue = typeof currentValue === 'string' ? parseFloat(currentValue) || 0 : currentValue;
+          const displayValue = viewMode === 'annual'
+            ? (typeof currentValue === 'string' && currentValue !== ''
+                ? String((parseFloat(currentValue) || 0) * 12)
+                : numValue * 12)
+            : currentValue;
+
+          return (
+            <div key={cat.id} className="group">
+              <div className="flex justify-between items-center">
+                <label className="text-sm font-medium text-slate-700">{cat.label}</label>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-slate-400">
+                    {viewMode === 'annual' ? '/yr' : '/mo'}
+                  </span>
+                  <div className="relative">
+                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-xs">$</span>
+                    <input
+                      type="text"
+                      inputMode="decimal"
+                      value={displayValue}
+                      onChange={(e) => {
+                        const inputValue = e.target.value.replace(/[^0-9.]/g, '');
+                        const monthlyValue = viewMode === 'annual'
+                          ? (inputValue === '' ? '' : String(parseFloat(inputValue) / 12))
+                          : inputValue;
+                        handleAllocationChange(cat.id, monthlyValue);
+                      }}
+                      onBlur={() => handleAllocationBlur(cat.id)}
+                      className="w-28 pl-5 pr-2 py-1.5 text-right bg-slate-50 border border-slate-200 rounded-lg text-sm font-mono focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
-            <input
-              type="range"
-              min="0"
-              max={takeHomePay}
-              step="10"
-              value={allocations[cat.id]}
-              onChange={(e) => handleAllocationChange(cat.id, e.target.value)}
-              className="w-full h-1 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-indigo-600"
-            />
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <p className="text-slate-600 font-medium">Loading Budget System...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const hasProFeatures = hasProAccess('finance', userTier);
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-900 font-sans p-4 md:p-8">
@@ -225,10 +350,20 @@ const App = () => {
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">$</span>
                   <input
-                    type="number"
+                    type="text"
+                    inputMode="decimal"
                     value={grossIncome}
-                    onChange={(e) => setGrossIncome(Number(e.target.value))}
-                    className="w-full pl-7 pr-4 py-2 bg-slate-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none font-mono"
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^0-9.]/g, '');
+                      setGrossIncome(value);
+                    }}
+                    onBlur={() => {
+                      const numValue = typeof grossIncome === 'string'
+                        ? Math.max(0, parseFloat(grossIncome) || 0)
+                        : Math.max(0, grossIncome);
+                      setGrossIncome(numValue);
+                    }}
+                    className="w-full pl-7 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                 </div>
               </div>
@@ -326,24 +461,46 @@ const App = () => {
           </section>
 
           {/* Pro Feature: Auto-Optimize */}
-          <div className="relative overflow-hidden p-6 rounded-2xl bg-indigo-900 text-white shadow-xl shadow-indigo-100">
+          <div className={`relative overflow-hidden p-6 rounded-2xl shadow-xl ${hasProFeatures ? 'bg-indigo-900 shadow-indigo-100' : 'bg-slate-200'} text-white`}>
             <div className="relative z-10">
               <div className="flex items-center gap-2 mb-2">
-                <Zap size={16} className="text-indigo-300" />
-                <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-300">Financial Pro</span>
+                {hasProFeatures ? (
+                  <>
+                    <Zap size={16} className="text-indigo-300" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-300">Financial Pro</span>
+                  </>
+                ) : (
+                  <>
+                    <Lock size={16} className="text-slate-500" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Pro Feature</span>
+                  </>
+                )}
               </div>
-              <h3 className="text-lg font-bold mb-2">Auto-Optimize (Cortex Mode)</h3>
-              <p className="text-xs text-indigo-100 mb-4 leading-relaxed opacity-80">
+              <h3 className={`text-lg font-bold mb-2 ${hasProFeatures ? 'text-white' : 'text-slate-700'}`}>
+                Auto-Optimize (Cortex Mode)
+              </h3>
+              <p className={`text-xs mb-4 leading-relaxed ${hasProFeatures ? 'text-indigo-100 opacity-80' : 'text-slate-600'}`}>
                 A constraint-aware engine that rebalances your system based on human priorities.
               </p>
               <button
-                onClick={() => setShowOptimizer(true)}
-                className="w-full py-2 bg-indigo-500 hover:bg-indigo-400 transition-colors rounded-lg text-sm font-bold flex items-center justify-center gap-2"
+                onClick={() => hasProFeatures ? setShowOptimizer(true) : setShowUpgradeModal(true)}
+                className={`w-full py-2 transition-colors rounded-lg text-sm font-bold flex items-center justify-center gap-2 ${
+                  hasProFeatures
+                    ? 'bg-indigo-500 hover:bg-indigo-400'
+                    : 'bg-amber-500 hover:bg-amber-400 text-white'
+                }`}
               >
-                Launch Optimizer
+                {hasProFeatures ? (
+                  <>Launch Optimizer</>
+                ) : (
+                  <>
+                    <Crown size={16} />
+                    Upgrade to Access
+                  </>
+                )}
               </button>
             </div>
-            <Zap className="absolute -right-4 -bottom-4 text-indigo-800 opacity-20" size={120} />
+            <Zap className={`absolute -right-4 -bottom-4 opacity-20 ${hasProFeatures ? 'text-indigo-800' : 'text-slate-400'}`} size={120} />
           </div>
 
           {optimizationLog && (
@@ -470,6 +627,79 @@ const App = () => {
                 <p className="text-[10px] text-slate-400 uppercase tracking-widest mt-1">Cortex Engine v2.5</p>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Upgrade Modal */}
+      {showUpgradeModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl">
+            <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-8 text-white">
+              <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-4">
+                <Crown size={32} />
+              </div>
+              <h2 className="text-2xl font-black mb-2">Unlock Auto-Optimize</h2>
+              <p className="text-indigo-100 text-sm font-medium">
+                Advanced budget optimization requires Finance Pro or Elite tier.
+              </p>
+            </div>
+
+            <div className="p-8">
+              <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-6 mb-6">
+                <h3 className="text-sm font-bold text-indigo-900 mb-3 flex items-center gap-2">
+                  <Zap size={16} />
+                  What You Get with Pro:
+                </h3>
+                <ul className="space-y-2 text-sm text-indigo-800">
+                  <li className="flex items-start gap-2">
+                    <span className="text-indigo-500 mt-0.5">•</span>
+                    <span><strong>Smart Optimization:</strong> 3 constraint-aware strategies that respect your fixed costs</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-indigo-500 mt-0.5">•</span>
+                    <span><strong>Instant Rebalancing:</strong> Maximize slack, future savings, or minimize fragility</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-indigo-500 mt-0.5">•</span>
+                    <span><strong>Explainable Logic:</strong> Clear reasoning for every recommendation</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-indigo-500 mt-0.5">•</span>
+                    <span><strong>All Pro Finance Tools:</strong> Access advanced features across all finance apps</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="border-2 border-indigo-200 rounded-2xl p-4 text-center">
+                  <p className="text-xs text-slate-500 mb-1">Finance Pro</p>
+                  <p className="text-3xl font-black text-indigo-600">$9</p>
+                  <p className="text-xs text-slate-500">/month</p>
+                </div>
+                <div className="border-2 border-purple-200 rounded-2xl p-4 text-center bg-gradient-to-br from-purple-50 to-indigo-50">
+                  <p className="text-xs text-purple-600 font-bold mb-1">Elite (Best Value)</p>
+                  <p className="text-3xl font-black text-purple-600">$29</p>
+                  <p className="text-xs text-slate-500">/month</p>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowUpgradeModal(false)}
+                  className="flex-1 py-3 px-4 rounded-xl border-2 border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition-colors"
+                >
+                  Maybe Later
+                </button>
+                <button
+                  onClick={() => router.push('/pricing')}
+                  className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg flex items-center justify-center gap-2"
+                >
+                  <Crown size={18} />
+                  Upgrade Now
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
