@@ -70,7 +70,7 @@ interface Liability {
 
 const Tooltip = ({ content, children }: { content: string; children: React.ReactNode }) => {
   const [isVisible, setIsVisible] = useState(false);
-  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const [position, setPosition] = useState({ top: 0, left: 0, showBelow: false });
   const triggerRef = React.useRef<HTMLDivElement>(null);
 
   const handleMouseEnter = () => {
@@ -79,9 +79,18 @@ const Tooltip = ({ content, children }: { content: string; children: React.React
       const scrollY = window.scrollY || window.pageYOffset;
       const scrollX = window.scrollX || window.pageXOffset;
 
+      // Tooltip height estimate (with padding and content)
+      const tooltipHeight = 100; // Conservative estimate
+      const spaceAbove = rect.top;
+      const spaceBelow = window.innerHeight - rect.bottom;
+
+      // Show below if there's not enough space above
+      const showBelow = spaceAbove < tooltipHeight && spaceBelow > spaceAbove;
+
       setPosition({
         top: rect.top + scrollY,
-        left: rect.left + rect.width / 2 + scrollX
+        left: rect.left + rect.width / 2 + scrollX,
+        showBelow
       });
       setIsVisible(true);
     }
@@ -105,20 +114,22 @@ const Tooltip = ({ content, children }: { content: string; children: React.React
         <div
           className="fixed px-3 py-2 bg-white text-slate-900 text-xs rounded-lg shadow-2xl w-64 pointer-events-none border-2 border-slate-200 leading-relaxed"
           style={{
-            top: `${position.top - 8}px`,
+            top: position.showBelow ? `${position.top + 24}px` : `${position.top - 8}px`,
             left: `${position.left}px`,
-            transform: 'translate(-50%, -100%)',
+            transform: position.showBelow ? 'translate(-50%, 0)' : 'translate(-50%, -100%)',
             zIndex: 9999
           }}
         >
           {content}
           <div
-            className="absolute border-4 border-transparent border-t-white"
+            className="absolute border-4 border-transparent"
             style={{
-              top: '100%',
+              top: position.showBelow ? '-8px' : '100%',
               left: '50%',
               transform: 'translateX(-50%)',
-              marginTop: '-4px'
+              borderTopColor: position.showBelow ? 'transparent' : 'white',
+              borderBottomColor: position.showBelow ? 'white' : 'transparent',
+              marginTop: position.showBelow ? '0' : '-4px'
             }}
           />
         </div>
