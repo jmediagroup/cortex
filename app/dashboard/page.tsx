@@ -17,7 +17,9 @@ import {
   ChevronDown,
   Settings,
   Filter,
-  Landmark
+  Landmark,
+  TrendingDown,
+  MapPin
 } from 'lucide-react';
 import { hasAppAccess, getTierDisplayName, type Tier } from '@/lib/access-control';
 
@@ -87,6 +89,26 @@ const APPS = [
     sector: 'finance' as const,
     category: 'Personal Finance',
     path: '/apps/rent-vs-buy'
+  },
+  {
+    id: 'debt-paydown',
+    name: 'Debt Paydown Strategy Optimizer',
+    description: 'Compare avalanche vs snowball vs hybrid debt paydown strategies with psychological weighting and opportunity cost analysis.',
+    icon: <TrendingDown className="text-indigo-600" />,
+    tier: 'free' as const,
+    sector: 'finance' as const,
+    category: 'Personal Finance',
+    path: '/apps/debt-paydown'
+  },
+  {
+    id: 'geographic-arbitrage',
+    name: 'Geographic Arbitrage Calculator',
+    description: 'Calculate wealth-building potential by comparing income, taxes, and cost of living across all 50 U.S. state capitals and major hubs.',
+    icon: <MapPin className="text-indigo-600" />,
+    tier: 'free' as const,
+    sector: 'finance' as const,
+    category: 'Personal Finance',
+    path: '/apps/geographic-arbitrage'
   }
 ];
 
