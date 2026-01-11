@@ -16,7 +16,8 @@ import {
   Car,
   ChevronDown,
   Settings,
-  Filter
+  Filter,
+  Landmark
 } from 'lucide-react';
 import { hasAppAccess, getTierDisplayName, type Tier } from '@/lib/access-control';
 
@@ -76,6 +77,16 @@ const APPS = [
     sector: 'finance' as const,
     category: 'Retirement',
     path: '/apps/retirement-strategy'
+  },
+  {
+    id: 'rent-vs-buy',
+    name: 'Rent vs Buy Reality Engine',
+    description: 'Compare renting vs buying with real-world factors: opportunity cost, maintenance drag, mobility risk, and tax treatment.',
+    icon: <Landmark className="text-indigo-600" />,
+    tier: 'free' as const,
+    sector: 'finance' as const,
+    category: 'Personal Finance',
+    path: '/apps/rent-vs-buy'
   }
 ];
 
