@@ -29,12 +29,12 @@ export default function LandingPage() {
 
       {/* NAVIGATION */}
       <nav className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="bg-indigo-600 p-1.5 rounded-lg text-white">
-            <Zap size={20} fill="currentColor" />
+        <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <div className="bg-indigo-600 p-1 rounded text-white">
+            <Brain size={14} />
           </div>
-          <span className="font-black text-2xl tracking-tight">Cortex</span>
-        </div>
+          <span className="font-black text-slate-900">Cortex</span>
+        </a>
         <div className="flex items-center gap-4">
           <a href="/login" className="text-sm font-bold text-slate-600 hover:text-indigo-600 transition-colors">
             Sign In
@@ -145,38 +145,32 @@ export default function LandingPage() {
               {
                 icon: <Calculator />,
                 title: "Compound Interest Calculator",
-                description: "See how your money grows over time with different contribution strategies and rates.",
-                tier: "free"
+                description: "See how your money grows over time with different contribution strategies and rates."
               },
               {
                 icon: <Building2 />,
                 title: "S-Corp Investment Optimizer",
-                description: "Maximize retirement contributions while optimizing your S-Corp owner compensation.",
-                tier: "pro"
+                description: "Maximize retirement contributions while optimizing your S-Corp owner compensation."
               },
               {
                 icon: <TrendingUp />,
                 title: "Retirement Strategy Engine",
-                description: "Advanced decumulation planning with Roth conversions, tax optimization, and sequence risk analysis.",
-                tier: "pro"
+                description: "Advanced decumulation planning with Roth conversions, tax optimization, and sequence risk analysis."
               },
               {
                 icon: <Car />,
                 title: "Car Affordability Calculator",
-                description: "Understand the true cost of vehicle ownership including depreciation and opportunity cost.",
-                tier: "free"
+                description: "Understand the true cost of vehicle ownership including depreciation and opportunity cost."
               },
               {
                 icon: <Scale />,
                 title: "S-Corp vs Sole Proprietorship",
-                description: "Compare business structures and understand the tax implications of each choice.",
-                tier: "pro"
+                description: "Compare business structures and understand the tax implications of each choice."
               },
               {
                 icon: <TrendingUp />,
                 title: "Roth Conversion Optimizer",
-                description: "Calculate optimal Roth conversion amounts to minimize lifetime tax liability.",
-                tier: "pro"
+                description: "Calculate optimal Roth conversion amounts to minimize lifetime tax liability."
               }
             ].map((tool, i) => (
               <div
@@ -186,28 +180,24 @@ export default function LandingPage() {
                 <div className="bg-indigo-50 text-indigo-600 p-4 rounded-2xl w-fit mb-6 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
                   {tool.icon}
                 </div>
-                <div className="mb-4">
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <h4 className="text-lg font-black text-slate-800">{tool.title}</h4>
-                    {tool.tier === "free" && (
-                      <span className="text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 whitespace-nowrap">
-                        Free
-                      </span>
-                    )}
-                  </div>
+                <div>
+                  <h4 className="text-lg font-black text-slate-800 mb-2">{tool.title}</h4>
                   <p className="text-slate-500 font-medium leading-relaxed text-sm">
                     {tool.description}
                   </p>
                 </div>
-                <a
-                  href="/login"
-                  className="inline-flex items-center gap-1 text-indigo-600 font-bold text-sm hover:gap-2 transition-all"
-                >
-                  Try it free
-                  <ArrowRight size={14} />
-                </a>
               </div>
             ))}
+          </div>
+
+          <div className="text-center mb-12">
+            <a
+              href="/login"
+              className="inline-flex items-center gap-2 bg-indigo-600 text-white px-10 py-5 rounded-2xl font-black text-lg hover:bg-indigo-700 transition-all shadow-xl hover:shadow-indigo-200 group"
+            >
+              Try it free
+              <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+            </a>
           </div>
 
           <div className="bg-slate-50 p-8 rounded-[2.5rem] border border-slate-200 text-center">
