@@ -104,8 +104,8 @@ const App = () => {
   const takeHomePay = grossIncomeNum - taxDrag;
 
   const totalAllocated = useMemo(() =>
-    Object.values(allocations).reduce((sum, val) => {
-      const numVal: number = typeof val === 'string' ? parseFloat(val) || 0 : val;
+    Object.values(allocations).reduce((sum: number, val) => {
+      const numVal = typeof val === 'string' ? (parseFloat(val) || 0) : (val as number);
       return sum + numVal;
     }, 0)
   , [allocations]);
