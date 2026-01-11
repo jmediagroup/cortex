@@ -96,7 +96,7 @@ const Tooltip = ({ content, children }: { content: string; children: React.React
       </div>
       {isVisible && (
         <div
-          className="fixed -translate-x-1/2 -translate-y-full mb-2 px-3 py-2 bg-slate-900 text-white text-xs rounded-lg shadow-xl w-64 pointer-events-none"
+          className="fixed -translate-x-1/2 -translate-y-full mb-2 px-3 py-2 bg-white text-slate-900 text-xs rounded-lg shadow-2xl w-64 pointer-events-none border-2 border-slate-200"
           style={{
             top: `${position.top - 8}px`,
             left: `${position.left}px`,
@@ -105,7 +105,7 @@ const Tooltip = ({ content, children }: { content: string; children: React.React
         >
           <div className="relative">
             {content}
-            <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900"></div>
+            <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-white"></div>
           </div>
         </div>
       )}
