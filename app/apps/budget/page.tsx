@@ -598,7 +598,7 @@ const App = () => {
             </div>
           </div>
         </main>
-      </div>
+        </div>
 
       {/* Optimization Modal */}
       {showOptimizer && (
@@ -726,7 +726,6 @@ const App = () => {
           </div>
         </div>
       )}
-      </div>
       </div>
     </div>
   );
