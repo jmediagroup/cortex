@@ -127,6 +127,7 @@ const App = () => {
 
   // --- State ---
   const [loading, setLoading] = useState(true);
+  const [hasSession, setHasSession] = useState(false);
   const [userTier, setUserTier] = useState<Tier>('free');
   const [grossIncome, setGrossIncome] = useState<number | string>(8000);
   const [taxMode, setTaxMode] = useState('baseline');
@@ -147,6 +148,7 @@ const App = () => {
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
+      setHasSession(!!session);
 
       if (session) {
         // Fetch user tier if logged in
@@ -368,7 +370,7 @@ const App = () => {
       </nav>
 
       <div className="max-w-6xl mx-auto p-4 md:p-8">
-        {userTier === 'free' && (
+        {!hasSession && (
           <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl p-8 mb-8 text-white shadow-xl">
             <div className="flex items-start justify-between gap-6">
               <div className="flex-1">

@@ -12,12 +12,13 @@ export default function RetirementStrategyPage() {
   const supabase = createBrowserClient();
   const [isPro, setIsPro] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [userTier, setUserTier] = useState<Tier>('free');
+  const [hasSession, setHasSession] = useState(false);
 
   // Fetch user tier from database (optional - no redirect)
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
+      setHasSession(!!session);
 
       if (session) {
         // Fetch user tier from database if logged in
@@ -28,7 +29,6 @@ export default function RetirementStrategyPage() {
           .single() as { data: { tier: Tier } | null };
 
         if (userData?.tier) {
-          setUserTier(userData.tier);
           setIsPro(hasProAccess('finance', userData.tier));
         }
       }
@@ -73,7 +73,7 @@ export default function RetirementStrategyPage() {
 
       {/* MAIN CONTENT */}
       <main className="max-w-7xl mx-auto px-6 py-12">
-        {userTier === 'free' && (
+        {!hasSession && (
           <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl p-8 mb-8 text-white shadow-xl">
             <div className="flex items-start justify-between gap-6">
               <div className="flex-1">
