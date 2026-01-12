@@ -24,6 +24,7 @@ import {
   Wallet
 } from 'lucide-react';
 import { hasAppAccess, getTierDisplayName, type Tier } from '@/lib/access-control';
+import { trackEvent } from '@/lib/analytics';
 
 /**
  * APP DATA CONFIGURATION
@@ -166,6 +167,9 @@ export default function Dashboard() {
         setUserTier(userData.tier);
       }
 
+      // Track dashboard visit
+      trackEvent('dashboard_visit');
+
       setLoading(false);
     };
 
@@ -173,6 +177,9 @@ export default function Dashboard() {
   }, [router, supabase]);
 
   const handleSignOut = async () => {
+    // Track logout
+    await trackEvent('user_logout', {}, true);
+
     await supabase.auth.signOut();
     router.push('/');
   };
@@ -318,7 +325,16 @@ export default function Dashboard() {
             return (
               <div
                 key={app.id}
-                onClick={() => !isLocked && router.push(app.path)}
+                onClick={() => {
+                  if (!isLocked) {
+                    trackEvent('app_opened', {
+                      app_name: app.name,
+                      app_id: app.id,
+                      app_category: app.category,
+                    });
+                    router.push(app.path);
+                  }
+                }}
                 className={`group relative bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm transition-all duration-300 ${
                   isLocked
                   ? 'opacity-80 grayscale-[0.5] cursor-default'

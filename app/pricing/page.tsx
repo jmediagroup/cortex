@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { Brain, Check, ArrowRight, Loader2, ShieldCheck, Sparkles } from 'lucide-react';
 import { type Tier } from '@/lib/access-control';
+import { trackEvent } from '@/lib/analytics';
 
 const PRICING_PLANS = [
   {
@@ -101,6 +102,9 @@ export default function PricingPage() {
           setUserTier(userData.tier);
         }
       }
+
+      // Track pricing page view
+      trackEvent('pricing_page_view');
     };
 
     checkAuth();
@@ -141,12 +145,24 @@ export default function PricingPage() {
       }
 
       if (data.url) {
+        // Track checkout initiation
+        await trackEvent('subscription_upgrade', {
+          new_tier: tier,
+          billing_period: billingPeriod,
+        }, true);
+
         window.location.href = data.url;
       }
     } catch (error: any) {
       console.error('Checkout error:', error);
       alert(error.message || 'Failed to start checkout. Please try again.');
       setLoading(null);
+
+      // Track error
+      await trackEvent('error_occurred', {
+        error_message: error.message,
+        context: 'checkout',
+      }, true);
     }
   };
 

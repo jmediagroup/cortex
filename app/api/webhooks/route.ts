@@ -4,6 +4,7 @@ import Stripe from 'stripe';
 import { stripe } from '@/lib/stripe/server';
 import { createServiceClient, type Database } from '@/lib/supabase/client';
 import { type Tier } from '@/lib/access-control';
+import { trackServerEvent } from '@/lib/analytics-server';
 
 // Map Stripe price IDs to tier names
 function getPriceIdToTierMap(): Record<string, Tier> {
@@ -99,6 +100,15 @@ export async function POST(request: NextRequest) {
           console.error('[Webhook] Database update failed:', error);
         } else {
           console.log(`[Webhook] Successfully updated user tier to ${tier} for userId:`, userId);
+
+          // Track subscription upgrade event
+          if (event.type === 'customer.subscription.created' || subscription.status === 'active') {
+            await trackServerEvent(userId, 'subscription_upgrade', {
+              new_tier: tier,
+              subscription_id: subscription.id,
+              subscription_status: subscription.status,
+            });
+          }
         }
 
         break;
@@ -113,6 +123,8 @@ export async function POST(request: NextRequest) {
           break;
         }
 
+        const oldTier = getTierFromSubscription(subscription);
+
         await (supabase
           .from('users')
           .update as any)({
@@ -121,6 +133,13 @@ export async function POST(request: NextRequest) {
             updated_at: new Date().toISOString(),
           })
           .eq('id', userId);
+
+        // Track subscription cancellation
+        await trackServerEvent(userId, 'subscription_cancel', {
+          old_tier: oldTier,
+          new_tier: 'free',
+          subscription_id: subscription.id,
+        });
 
         break;
       }
@@ -177,6 +196,14 @@ export async function POST(request: NextRequest) {
           console.error('[Webhook] Database update failed:', error);
         } else {
           console.log(`[Webhook] Successfully updated user tier to ${tier} for userId:`, userId);
+
+          // Track successful checkout/upgrade
+          await trackServerEvent(userId, 'subscription_upgrade', {
+            new_tier: tier,
+            subscription_id: subscriptionId,
+            subscription_status: subscription.status,
+            checkout_session_id: session.id,
+          });
         }
 
         break;

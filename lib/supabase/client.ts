@@ -47,6 +47,36 @@ export type Database = {
           updated_at?: string;
         };
       };
+      events: {
+        Row: {
+          id: number;
+          user_id: string | null;
+          session_id: string | null;
+          event_type: string;
+          event_data: Record<string, any> | null;
+          page_url: string | null;
+          user_agent: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: never;
+          user_id?: string | null;
+          session_id?: string | null;
+          event_type: string;
+          event_data?: Record<string, any> | null;
+          page_url?: string | null;
+          user_agent?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          user_id?: string | null;
+          session_id?: string | null;
+          event_type?: string;
+          event_data?: Record<string, any> | null;
+          page_url?: string | null;
+          user_agent?: string | null;
+        };
+      };
     };
   };
 };

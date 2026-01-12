@@ -4,6 +4,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { Zap, Mail, Lock, ArrowRight, Loader2, ShieldCheck } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createBrowserClient } from '@/lib/supabase/client';
+import { trackEvent } from '@/lib/analytics';
 
 function AuthForm() {
   const [isLogin, setIsLogin] = useState(true);
@@ -45,6 +46,9 @@ function AuthForm() {
         }
 
         if (data.session) {
+          // Track login event
+          await trackEvent('user_login', {}, true);
+
           // Redirect to original destination or dashboard
           const redirect = searchParams.get('redirect') || '/dashboard';
           router.push(redirect);
@@ -77,6 +81,9 @@ function AuthForm() {
             console.error('Error creating user record:', insertError);
           }
 
+          // Track signup event
+          await trackEvent('user_signup', { tier: 'free' }, true);
+
           // Show success message
           setError(null);
           setLoading(false);
@@ -89,6 +96,13 @@ function AuthForm() {
       console.error('Auth error:', err);
       setError(err.message || 'An error occurred. Please try again.');
       setLoading(false);
+
+      // Track error
+      await trackEvent('error_occurred', {
+        error_message: err.message,
+        error_code: err.code || 'unknown',
+        context: isLogin ? 'login' : 'signup',
+      }, true);
     }
   };
 
