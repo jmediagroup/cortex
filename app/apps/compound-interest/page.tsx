@@ -5,19 +5,37 @@ import { useRouter } from 'next/navigation';
 import { ChevronLeft, Calculator, ShieldCheck, Sparkles, Lock } from 'lucide-react';
 import CompoundInterest from '@/components/apps/CompoundInterest';
 import { createBrowserClient } from '@/lib/supabase/client';
+import { hasProAccess, type Tier } from '@/lib/access-control';
 
 export default function CompoundInterestPage() {
   const router = useRouter();
   const supabase = createBrowserClient();
   const [hasSession, setHasSession] = useState<boolean | null>(null);
+  const [isPro, setIsPro] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const checkSession = async () => {
+    const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setHasSession(!!session);
+
+      if (session) {
+        // Fetch user tier from database if logged in
+        const { data: userData } = await supabase
+          .from('users')
+          .select('tier')
+          .eq('id', session.user.id)
+          .single() as { data: { tier: Tier } | null };
+
+        if (userData?.tier) {
+          setIsPro(hasProAccess('finance', userData.tier));
+        }
+      }
+
+      setLoading(false);
     };
-    checkSession();
-  }, [supabase]);
+    checkAuth();
+  }, [router, supabase]);
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
@@ -101,7 +119,7 @@ export default function CompoundInterestPage() {
           </p>
         </div>
 
-        <CompoundInterest />
+        <CompoundInterest isPro={isPro} onUpgrade={() => router.push('/pricing')} />
       </main>
 
       {/* FOOTER */}
