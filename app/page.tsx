@@ -171,7 +171,8 @@ export default function LandingPage() {
                 icon: <Building2 />,
                 title: "S-Corp Investment Optimizer",
                 description: "Maximize retirement contributions while optimizing your S-Corp owner compensation.",
-                isFree: false
+                isFree: true,
+                link: "/apps/s-corp-investment"
               },
               {
                 icon: <Car />,

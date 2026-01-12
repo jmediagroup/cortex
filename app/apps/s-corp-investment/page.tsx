@@ -4,19 +4,48 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, TrendingUp, ShieldCheck } from 'lucide-react';
 import SCorpInvestmentOptimizer from '@/components/apps/SCorpInvestmentOptimizer';
+import { createBrowserClient } from '@/lib/supabase/client';
+import { hasProAccess, type Tier } from '@/lib/access-control';
 
 export default function SCorpInvestmentPage() {
   const router = useRouter();
+  const supabase = createBrowserClient();
   const [isPro, setIsPro] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [userTier, setUserTier] = useState<Tier>('free');
 
-  // Read user tier from localStorage
+  // Fetch user tier from database (optional - no redirect)
   useEffect(() => {
-    const demoUserStr = localStorage.getItem('demoUser');
-    if (demoUserStr) {
-      const demoUser = JSON.parse(demoUserStr);
-      setIsPro(demoUser.tier === 'pro');
-    }
-  }, []);
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (session) {
+        // Fetch user tier from database if logged in
+        const { data: userData } = await supabase
+          .from('users')
+          .select('tier')
+          .eq('id', session.user.id)
+          .single() as { data: { tier: Tier } | null };
+
+        if (userData?.tier) {
+          setUserTier(userData.tier);
+          setIsPro(hasProAccess('finance', userData.tier));
+        }
+      }
+
+      setLoading(false);
+    };
+
+    checkAuth();
+  }, [router, supabase]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
