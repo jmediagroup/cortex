@@ -434,7 +434,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade }: DebtPaydownOp
                 <div className="pt-2">
                   <div className="text-xs font-bold text-slate-400 uppercase mb-2">Psychological Momentum Plan</div>
                   <div className="flex flex-wrap gap-2">
-                    {debts.sort((a,b) => a.balance - b.balance).map((d, i) => (
+                    {debts.map((d, i) => (
                       <div key={d.id} className="text-[10px] px-2 py-1 bg-slate-100 rounded-md border border-slate-200">
                         {i+1}. {d.name}
                       </div>

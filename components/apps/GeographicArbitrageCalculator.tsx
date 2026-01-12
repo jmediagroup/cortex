@@ -292,7 +292,32 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade }: Geog
             </h2>
             <LocationSelector label="Source Geography" value={currentLoc} onChange={setCurrentLoc} />
             <LocationSelector label="Target Geography" value={targetLoc} onChange={setTargetLoc} />
-            <SliderField label="Current Gross Salary" icon={DollarSign} value={annualIncome} onChange={setAnnualIncome} min={40000} max={500000} />
+
+            <div className="mb-6">
+              <label className="text-sm font-semibold text-slate-700 flex items-center gap-2 mb-2">
+                <DollarSign size={16} className="text-indigo-500" />
+                Current Gross Salary
+              </label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">$</span>
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  value={annualIncome.toLocaleString()}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/[^0-9]/g, '');
+                    const numValue = parseInt(value) || 40000;
+                    setAnnualIncome(Math.min(Math.max(numValue, 40000), 500000));
+                  }}
+                  className="w-full pl-7 pr-4 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                />
+              </div>
+              <div className="mt-1.5 flex justify-between text-xs text-slate-400 font-medium">
+                <span>Min: 40,000</span>
+                <span>Max: 500,000</span>
+              </div>
+            </div>
+
             <SliderField label="Retention Ratio" icon={ArrowRightLeft} value={incomeAdjustment} onChange={setIncomeAdjustment} min={50} max={150} suffix="%" />
           </section>
 

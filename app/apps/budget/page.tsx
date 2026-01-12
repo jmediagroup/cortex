@@ -277,6 +277,9 @@ const App = () => {
                 : numValue * 12)
             : currentValue;
 
+          const isAnnual = viewMode === 'annual';
+          const monthlyValue = typeof currentValue === 'string' ? currentValue : String(numValue);
+
           return (
             <div key={cat.id} className="group">
               <div className="flex justify-between items-center">
@@ -290,13 +293,13 @@ const App = () => {
                     <input
                       type="text"
                       inputMode="decimal"
-                      value={displayValue}
+                      value={isAnnual ? (monthlyValue === '' ? '' : String((parseFloat(monthlyValue) || 0) * 12)) : monthlyValue}
                       onChange={(e) => {
                         const inputValue = e.target.value.replace(/[^0-9.]/g, '');
-                        const monthlyValue = viewMode === 'annual'
-                          ? (inputValue === '' ? '' : String(parseFloat(inputValue) / 12))
+                        const monthlyVal = isAnnual
+                          ? (inputValue === '' ? '' : String((parseFloat(inputValue) || 0) / 12))
                           : inputValue;
-                        handleAllocationChange(cat.id, monthlyValue);
+                        handleAllocationChange(cat.id, monthlyVal);
                       }}
                       onBlur={() => handleAllocationBlur(cat.id)}
                       className="w-28 pl-5 pr-2 py-1.5 text-right bg-slate-50 border border-slate-200 rounded-lg text-sm font-mono focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
