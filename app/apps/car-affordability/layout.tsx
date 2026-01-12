@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     title: 'Car Affordability Calculator - 20/3/8 Rule Auto Loan Tool',
     description: 'Calculate how much car you can afford using the 20/3/8 rule with depreciation analysis.',
     type: 'website',
-    url: 'https://cortex.io/apps/car-affordability',
+    url: 'https://cortex.vip/apps/car-affordability',
     images: [{
       url: '/og-car.png',
       width: 1200,
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     images: ['/og-car.png'],
   },
   alternates: {
-    canonical: 'https://cortex.io/apps/car-affordability',
+    canonical: 'https://cortex.vip/apps/car-affordability',
   },
 };
 

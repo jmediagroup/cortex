@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://cortex.io'),
+  metadataBase: new URL('https://cortex.vip'),
   title: {
     default: "Cortex - Financial Decision Tools & Budget Planning Software",
     template: "%s | Cortex"
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://cortex.io',
+    url: 'https://cortex.vip',
     siteName: 'Cortex - Tools for Long-Term Thinking',
     title: 'Cortex - Financial Decision Tools & Budget Planning Software',
     description: 'Free online financial calculators and budget planning tools. Make smarter money decisions with Cortex.',

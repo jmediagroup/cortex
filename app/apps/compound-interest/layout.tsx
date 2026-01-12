@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     title: 'Compound Interest Calculator - Free Investment Growth Tool',
     description: 'Calculate compound interest and visualize long-term wealth growth with custom contributions.',
     type: 'website',
-    url: 'https://cortex.io/apps/compound-interest',
+    url: 'https://cortex.vip/apps/compound-interest',
     images: [{
       url: '/og-compound-interest.png',
       width: 1200,
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     images: ['/og-compound-interest.png'],
   },
   alternates: {
-    canonical: 'https://cortex.io/apps/compound-interest',
+    canonical: 'https://cortex.vip/apps/compound-interest',
   },
 };
 

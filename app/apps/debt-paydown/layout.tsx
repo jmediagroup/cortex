@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     title: 'Debt Payoff Calculator - Avalanche vs Snowball Method',
     description: 'Compare debt paydown strategies with psychological weighting and opportunity cost analysis.',
     type: 'website',
-    url: 'https://cortex.io/apps/debt-paydown',
+    url: 'https://cortex.vip/apps/debt-paydown',
     images: [{
       url: '/og-debt.png',
       width: 1200,
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     images: ['/og-debt.png'],
   },
   alternates: {
-    canonical: 'https://cortex.io/apps/debt-paydown',
+    canonical: 'https://cortex.vip/apps/debt-paydown',
   },
 };
 

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     title: 'Geographic Arbitrage Calculator - Cost of Living Comparison',
     description: 'Compare income, taxes, and cost of living across all 50 U.S. states.',
     type: 'website',
-    url: 'https://cortex.io/apps/geographic-arbitrage',
+    url: 'https://cortex.vip/apps/geographic-arbitrage',
     images: [{
       url: '/og-geo-arbitrage.png',
       width: 1200,
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     images: ['/og-geo-arbitrage.png'],
   },
   alternates: {
-    canonical: 'https://cortex.io/apps/geographic-arbitrage',
+    canonical: 'https://cortex.vip/apps/geographic-arbitrage',
   },
 };
 

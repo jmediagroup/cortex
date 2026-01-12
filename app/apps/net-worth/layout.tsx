@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     title: 'Net Worth Calculator & Wealth Tracker - Free Financial Tool',
     description: 'Track your net worth, assets, and liabilities. Analyze liquidity and visualize your financial trajectory.',
     type: 'website',
-    url: 'https://cortex.io/apps/net-worth',
+    url: 'https://cortex.vip/apps/net-worth',
     images: [{
       url: '/og-net-worth.png',
       width: 1200,
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     images: ['/og-net-worth.png'],
   },
   alternates: {
-    canonical: 'https://cortex.io/apps/net-worth',
+    canonical: 'https://cortex.vip/apps/net-worth',
   },
 };
 

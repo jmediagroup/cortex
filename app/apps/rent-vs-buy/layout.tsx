@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     title: 'Rent vs Buy Calculator - Home Ownership Cost Comparison',
     description: 'Compare renting vs buying a home with opportunity cost, maintenance, and tax factors.',
     type: 'website',
-    url: 'https://cortex.io/apps/rent-vs-buy',
+    url: 'https://cortex.vip/apps/rent-vs-buy',
     images: [{
       url: '/og-rent-vs-buy.png',
       width: 1200,
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     images: ['/og-rent-vs-buy.png'],
   },
   alternates: {
-    canonical: 'https://cortex.io/apps/rent-vs-buy',
+    canonical: 'https://cortex.vip/apps/rent-vs-buy',
   },
 };
 

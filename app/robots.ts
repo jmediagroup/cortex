@@ -6,9 +6,9 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/api/', '/login', '/account'],
+        disallow: ['/api/', '/account', '/dashboard'],
       },
     ],
-    sitemap: 'https://cortex.io/sitemap.xml',
+    sitemap: 'https://cortex.vip/sitemap.xml',
   };
 }

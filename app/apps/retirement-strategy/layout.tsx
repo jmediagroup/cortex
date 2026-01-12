@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     title: 'Retirement Planning Calculator - Withdrawal Strategy Optimizer',
     description: 'Advanced retirement calculator with RMD calculations and Roth conversion planning.',
     type: 'website',
-    url: 'https://cortex.io/apps/retirement-strategy',
+    url: 'https://cortex.vip/apps/retirement-strategy',
     images: [{
       url: '/og-retirement.png',
       width: 1200,
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     images: ['/og-retirement.png'],
   },
   alternates: {
-    canonical: 'https://cortex.io/apps/retirement-strategy',
+    canonical: 'https://cortex.vip/apps/retirement-strategy',
   },
 };
 

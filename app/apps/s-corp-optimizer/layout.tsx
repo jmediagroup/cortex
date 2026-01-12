@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     title: 'S-Corp Tax Calculator - Self-Employment Tax Savings Tool',
     description: 'Calculate S-Corp tax savings and find your ideal salary/distribution split.',
     type: 'website',
-    url: 'https://cortex.io/apps/s-corp-optimizer',
+    url: 'https://cortex.vip/apps/s-corp-optimizer',
     images: [{
       url: '/og-s-corp.png',
       width: 1200,
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     images: ['/og-s-corp.png'],
   },
   alternates: {
-    canonical: 'https://cortex.io/apps/s-corp-optimizer',
+    canonical: 'https://cortex.vip/apps/s-corp-optimizer',
   },
 };
 

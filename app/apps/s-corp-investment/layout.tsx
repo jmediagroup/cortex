@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     title: 'S-Corp Retirement Contribution Calculator - 401k Optimizer',
     description: 'Maximize retirement savings through S-Corp contributions and profit sharing.',
     type: 'website',
-    url: 'https://cortex.io/apps/s-corp-investment',
+    url: 'https://cortex.vip/apps/s-corp-investment',
     images: [{
       url: '/og-s-corp-investment.png',
       width: 1200,
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     images: ['/og-s-corp-investment.png'],
   },
   alternates: {
-    canonical: 'https://cortex.io/apps/s-corp-investment',
+    canonical: 'https://cortex.vip/apps/s-corp-investment',
   },
 };
 
