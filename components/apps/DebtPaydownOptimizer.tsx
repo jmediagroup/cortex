@@ -56,6 +56,8 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade }: DebtPaydownOp
   ]);
 
   const [monthlyBudget, setMonthlyBudget] = useState(1200);
+  const [monthlyIncome, setMonthlyIncome] = useState(5000);
+  const [age, setAge] = useState<number | null>(null);
   const [investmentRate, setInvestmentRate] = useState(7);
   const [taxRate, setTaxRate] = useState(25);
   const [psychologicalWeight, setPsychologicalWeight] = useState(50); // 0 = Pure Math, 100 = Pure Motivation
@@ -218,8 +220,8 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade }: DebtPaydownOp
 
     // 5. Debt-to-Income Improvement
     const totalDebt = debts.reduce((sum, d) => sum + d.balance, 0);
-    const estimatedIncome = monthlyBudget * 3; // Rough heuristic
-    const initialDTI = (totalDebt / (estimatedIncome * 12)) * 100;
+    const annualIncome = monthlyIncome * 12;
+    const initialDTI = (totalDebt / annualIncome) * 100;
     const targetDTI = 30; // Industry standard
     const monthsToTargetDTI = Math.ceil((initialDTI - targetDTI) * paydownMonths / initialDTI);
 
@@ -252,7 +254,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade }: DebtPaydownOp
       lowRateDebts: lowRateDebts.length,
       highRateDebts2: highRateDebts2.length
     };
-  }, [isPro, debts, monthlyBudget, investmentRate, results, taxRate]);
+  }, [isPro, debts, monthlyBudget, monthlyIncome, investmentRate, results, taxRate]);
 
   return (
     <div className="space-y-8">
@@ -341,6 +343,34 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade }: DebtPaydownOp
             </h2>
 
             <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-bold text-slate-400 uppercase">Monthly Income ($)</label>
+                  <input
+                    type="number"
+                    value={monthlyIncome}
+                    onChange={(e) => setMonthlyIncome(parseFloat(e.target.value) || 0)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 mt-1 outline-none focus:ring-2 focus:ring-indigo-500/20"
+                  />
+                  <p className="text-[10px] text-slate-400 mt-1 italic">
+                    Used for debt-to-income calculations
+                  </p>
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-400 uppercase">Age (Optional)</label>
+                  <input
+                    type="number"
+                    value={age || ''}
+                    placeholder="e.g. 35"
+                    onChange={(e) => setAge(e.target.value ? parseInt(e.target.value) : null)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 mt-1 outline-none focus:ring-2 focus:ring-indigo-500/20"
+                  />
+                  <p className="text-[10px] text-slate-400 mt-1 italic">
+                    Enables life-stage recommendations
+                  </p>
+                </div>
+              </div>
+
               <div>
                 <div className="flex justify-between text-sm mb-2">
                   <span className="text-slate-600 font-medium">Monthly Paydown Budget</span>
@@ -593,6 +623,73 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade }: DebtPaydownOp
             </div>
           </div>
 
+          {/* Life-Stage Strategic Context */}
+          {age && (
+            <div className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-[3rem] p-10 text-white shadow-xl">
+              <div className="flex items-start gap-4">
+                <div className="bg-white/20 p-3 rounded-2xl backdrop-blur-sm">
+                  <Brain size={32} />
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-2xl font-black mb-3">Life-Stage Strategic Context</h4>
+                  {age < 35 && (
+                    <>
+                      <p className="text-amber-50 font-medium text-lg leading-relaxed mb-4">
+                        At age {age}, you have significant time for compound growth. Your ${debts.reduce((sum, d) => sum + d.balance, 0).toLocaleString()} debt load requires a careful balance.
+                      </p>
+                      <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                        <h5 className="font-black mb-3">Early-Career Opportunity Cost</h5>
+                        <p className="text-amber-50 text-sm font-medium leading-relaxed">
+                          {debts.filter(d => d.rate < investmentRate).length > 0 ? (
+                            <>You have {debts.filter(d => d.rate < investmentRate).length} debt(s) with rates below {investmentRate}%. Every dollar of extra payment on these debts costs you decades of compound growth. With {results.avalanche.months} months to debt-freedom, investing your ${monthlyBudget - debts.reduce((s, d) => s + d.minPayment, 0)}/month surplus could become ${(opportunityAnalysis.investmentValue * 2).toLocaleString()} by retirement (age 65). Don't sacrifice 30+ years of market returns to rush debt payoff.</>
+                          ) : (
+                            <>Your debts all exceed {investmentRate}% returns. At your age, eliminating these high-cost debts creates a guaranteed return better than the market. Clear your ${debts.filter(d => d.rate >= investmentRate).map(d => `${d.name} (${d.rate.toFixed(1)}%)`).join(', ')} aggressively, then redirect that ${monthlyBudget}/month into index funds for maximum compound growth over your {65 - age} working years remaining.</>
+                          )}
+                        </p>
+                      </div>
+                    </>
+                  )}
+                  {age >= 35 && age < 50 && (
+                    <>
+                      <p className="text-amber-50 font-medium text-lg leading-relaxed mb-4">
+                        At age {age}, you're in peak earning years. Your ${debts.reduce((sum, d) => sum + d.balance, 0).toLocaleString()} debt requires strategic balance between freedom and growth.
+                      </p>
+                      <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                        <h5 className="font-black mb-3">Mid-Career Dual Strategy</h5>
+                        <p className="text-amber-50 text-sm font-medium leading-relaxed">
+                          {debts.filter(d => d.rate >= investmentRate).length > 0 && debts.filter(d => d.rate < investmentRate).length > 0 ? (
+                            <>Your debt portfolio splits perfectly for a hybrid approach: crush your {debts.filter(d => d.rate >= investmentRate).map(d => `${d.name} ($${d.balance.toLocaleString()} at ${d.rate.toFixed(1)}%)`).join(' and ')} with aggressive payments while paying minimums on your {debts.filter(d => d.rate < investmentRate).map(d => d.name).join(' and ')}. This captures both debt-freedom momentum AND compound growth over your {65 - age} years until retirement. Your current ${monthlyBudget}/month strategy hits debt-free in {results.hybrid.months} months.</>
+                          ) : debts.filter(d => d.rate >= investmentRate).length > 0 ? (
+                            <>All your debts exceed market returns. Focus on aggressive payoff of your ${debts[0].name} (highest balance: $${debts.reduce((max, d) => d.balance > max.balance ? d : max, debts[0]).balance.toLocaleString()}) first. At your career stage, eliminating debt creates financial flexibility for life changes while still leaving {65 - age} years for retirement investing after payoff.</>
+                          ) : (
+                            <>All your debts are below {investmentRate}% returns. At age {age}, you have {65 - age} years until traditional retirement. Paying minimums and investing the ${monthlyBudget - debts.reduce((s, d) => s + d.minPayment, 0)}/month difference captures market growth while maintaining liquidity for career moves, home upgrades, or family needs.</>
+                          )}
+                        </p>
+                      </div>
+                    </>
+                  )}
+                  {age >= 50 && (
+                    <>
+                      <p className="text-amber-50 font-medium text-lg leading-relaxed mb-4">
+                        At age {age}, entering retirement with ${debts.reduce((sum, d) => sum + d.balance, 0).toLocaleString()} debt creates risk. Certainty matters more than optimal returns.
+                      </p>
+                      <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                        <h5 className="font-black mb-3">Pre-Retirement Risk Reduction</h5>
+                        <p className="text-amber-50 text-sm font-medium leading-relaxed">
+                          {results.avalanche.months < (65 - age) * 12 ? (
+                            <>Your current ${monthlyBudget}/month budget eliminates all debt in {results.avalanche.months} months (age {age + Math.floor(results.avalanche.months / 12)}). This gets you debt-free before retirement with {(65 - age) * 12 - results.avalanche.months} months to shift focus entirely to retirement savings. Priority: clear your ${debts.reduce((max, d) => d.rate > max.rate ? d : max, debts[0]).name} at ${debts.reduce((max, d) => d.rate > max.rate ? d : max, debts[0]).rate.toFixed(1)}% first—this ${debts.reduce((max, d) => d.rate > max.rate ? d : max, debts[0]).balance.toLocaleString()} balance costs you ${((debts.reduce((max, d) => d.rate > max.rate ? d : max, debts[0]).balance * debts.reduce((max, d) => d.rate > max.rate ? d : max, debts[0]).rate / 100) / 12).toFixed(0)}/month in interest you can't afford on fixed retirement income.</>
+                          ) : (
+                            <>Your timeline to debt-freedom ({results.avalanche.months} months) extends past age 65. You need to increase your paydown budget or accept carrying your ${debts.filter(d => d.rate < 5).map(d => d.name).join(' and ')} into retirement. If increasing payments isn't possible, focus ruthlessly on eliminating your ${debts.filter(d => d.rate >= 8).length} high-rate debt(s) before retirement, then refinance or manage the low-rate remainder with pension/Social Security income.</>
+                          )}
+                        </p>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Investment vs Paydown Showdown */}
           <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-[3rem] p-10 text-white shadow-xl">
             <div className="flex items-start gap-4 mb-6">
@@ -602,7 +699,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade }: DebtPaydownOp
               <div className="flex-1">
                 <h4 className="text-2xl font-black mb-3">The Math You Need to See</h4>
                 <p className="text-indigo-50 font-medium text-lg leading-relaxed mb-6">
-                  Should you pay extra on debt or invest the difference? Here's what the numbers say:
+                  Based on your ${debts.reduce((sum, d) => sum + d.balance, 0).toLocaleString()} total debt across {debts.length} account{debts.length !== 1 ? 's' : ''}, should you pay extra or invest the difference?
                 </p>
                 <div className="grid md:grid-cols-2 gap-6 mb-6">
                   <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
@@ -634,7 +731,18 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade }: DebtPaydownOp
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
               <p className="text-sm font-black text-indigo-100 mb-2">CORTEX INSIGHT</p>
               <p className="font-medium text-white">
-                Paying extra $500/mo on your 3.5% mortgage costs $67,000 in 10-year opportunity cost. Better: min payment + index funds until debt-to-income &lt; 30%.
+                {(() => {
+                  const lowestRateDebt = debts.reduce((min, d) => d.rate < min.rate ? d : min, debts[0]);
+                  const highestBalanceDebt = debts.reduce((max, d) => d.balance > max.balance ? d : max, debts[0]);
+                  const totalDebt = debts.reduce((sum, d) => sum + d.balance, 0);
+                  const dti = (totalDebt / (monthlyIncome * 12)) * 100;
+
+                  if (lowestRateDebt.rate < investmentRate) {
+                    return `Your ${lowestRateDebt.name} at ${lowestRateDebt.rate.toFixed(1)}% costs less than ${investmentRate}% market returns. Paying extra on this debt sacrifices potential wealth growth. Better strategy: minimum payment + invest difference until DTI < 30% (currently ${dti.toFixed(0)}%).`;
+                  } else {
+                    return `Your ${highestBalanceDebt.name} balance of $${highestBalanceDebt.balance.toLocaleString()} at ${highestBalanceDebt.rate.toFixed(1)}% is bleeding ${((highestBalanceDebt.balance * highestBalanceDebt.rate / 100) / 12).toFixed(0)}/month in interest. This debt rate exceeds ${investmentRate}% returns—aggressive paydown guaranteed to outperform the market.`;
+                  }
+                })()}
               </p>
             </div>
           </div>
@@ -689,11 +797,52 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade }: DebtPaydownOp
               <div className="flex-1">
                 <h4 className="text-2xl font-black mb-3">Hybrid Strategy: Best of Both Worlds</h4>
                 <p className="text-purple-50 font-medium text-lg leading-relaxed mb-6">
-                  Don't choose between debt freedom and wealth building. Do both strategically:
+                  Based on your {debts.length} debts totaling ${debts.reduce((sum, d) => sum + d.balance, 0).toLocaleString()}, here's your tactical split:
                 </p>
                 <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 mb-6">
-                  <h5 className="font-black mb-4 text-lg">Your Custom Strategy</h5>
-                  <p className="text-purple-50 mb-4">{opportunityAnalysis.recommendedStrategy}</p>
+                  <h5 className="font-black mb-4 text-lg">Your Debt-Specific Action Plan</h5>
+                  <div className="space-y-4 mb-4">
+                    {debts.filter(d => {
+                      const effectiveRate = d.isTaxDeductible ? d.rate * (1 - taxRate / 100) : d.rate;
+                      return effectiveRate >= investmentRate;
+                    }).length > 0 && (
+                      <div className="bg-red-500/20 backdrop-blur-sm rounded-xl p-4 border border-red-300/30">
+                        <p className="text-xs font-black text-red-100 mb-2">🔥 AGGRESSIVE PAYDOWN ZONE</p>
+                        {debts.filter(d => {
+                          const effectiveRate = d.isTaxDeductible ? d.rate * (1 - taxRate / 100) : d.rate;
+                          return effectiveRate >= investmentRate;
+                        }).map(d => {
+                          const effectiveRate = d.isTaxDeductible ? d.rate * (1 - taxRate / 100) : d.rate;
+                          const monthlyInterest = (d.balance * (d.rate / 100)) / 12;
+                          return (
+                            <p key={d.id} className="text-white text-sm font-medium mb-2">
+                              • <strong>{d.name}</strong>: ${d.balance.toLocaleString()} @ {d.rate.toFixed(1)}% {d.isTaxDeductible && `(${effectiveRate.toFixed(1)}% after tax)`} — bleeding ${monthlyInterest.toFixed(0)}/month. This rate beats {investmentRate}% market returns. Every extra dollar here is guaranteed profit.
+                            </p>
+                          );
+                        })}
+                      </div>
+                    )}
+                    {debts.filter(d => {
+                      const effectiveRate = d.isTaxDeductible ? d.rate * (1 - taxRate / 100) : d.rate;
+                      return effectiveRate < investmentRate;
+                    }).length > 0 && (
+                      <div className="bg-green-500/20 backdrop-blur-sm rounded-xl p-4 border border-green-300/30">
+                        <p className="text-xs font-black text-green-100 mb-2">💰 MINIMUM PAYMENT + INVEST ZONE</p>
+                        {debts.filter(d => {
+                          const effectiveRate = d.isTaxDeductible ? d.rate * (1 - taxRate / 100) : d.rate;
+                          return effectiveRate < investmentRate;
+                        }).map(d => {
+                          const effectiveRate = d.isTaxDeductible ? d.rate * (1 - taxRate / 100) : d.rate;
+                          const opportunityCost = (d.balance * ((investmentRate - effectiveRate) / 100)) / 12;
+                          return (
+                            <p key={d.id} className="text-white text-sm font-medium mb-2">
+                              • <strong>{d.name}</strong>: ${d.balance.toLocaleString()} @ {d.rate.toFixed(1)}% {d.isTaxDeductible && `(${effectiveRate.toFixed(1)}% after tax)`} — costs ${opportunityCost.toFixed(0)}/month LESS than {investmentRate}% returns. Pay ${d.minPayment} minimum, invest the rest.
+                            </p>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <p className="text-purple-100 text-xs mb-1">High-Rate Debts (Pay Aggressive)</p>
@@ -725,8 +874,8 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade }: DebtPaydownOp
                     <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
                       <h6 className="font-bold text-sm mb-2">Refinance Opportunity Alert</h6>
                       <p className="text-purple-50 text-sm">
-                        You have {opportunityAnalysis.highRateDebts} high-rate debt(s). Refinancing could save you{' '}
-                        <span className="font-black">${Math.round(opportunityAnalysis.refinanceSavings).toLocaleString()}</span> in interest.
+                        Your {debts.filter(d => d.rate > 8).map(d => `${d.name} (${d.rate.toFixed(1)}%)`).join(', ')} {debts.filter(d => d.rate > 8).length === 1 ? 'is' : 'are'} bleeding at high rates. Refinancing {debts.filter(d => d.rate > 8).length === 1 ? 'this' : 'these'} to ~5% could save you{' '}
+                        <span className="font-black">${Math.round(opportunityAnalysis.refinanceSavings).toLocaleString()}</span> in interest over {results.avalanche.months} months. Check personal loan consolidation or balance transfer offers.
                       </p>
                     </div>
                   )}
@@ -736,7 +885,24 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade }: DebtPaydownOp
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
               <p className="text-sm font-black text-purple-100 mb-2">CORTEX INSIGHT</p>
               <p className="font-medium text-white">
-                The hybrid approach gives you debt reduction momentum PLUS wealth accumulation. You're not choosing between financial goals—you're optimizing across them.
+                {(() => {
+                  const highRateDebt = debts.find(d => {
+                    const effectiveRate = d.isTaxDeductible ? d.rate * (1 - taxRate / 100) : d.rate;
+                    return effectiveRate >= investmentRate;
+                  });
+                  const lowRateDebt = debts.find(d => {
+                    const effectiveRate = d.isTaxDeductible ? d.rate * (1 - taxRate / 100) : d.rate;
+                    return effectiveRate < investmentRate;
+                  });
+
+                  if (highRateDebt && lowRateDebt) {
+                    return `Your ${highRateDebt.name} at ${highRateDebt.rate.toFixed(1)}% bleeds wealth while your ${lowRateDebt.name} at ${lowRateDebt.rate.toFixed(1)}% costs less than market returns. Crush the ${highRateDebt.name} with your full ${monthlyBudget}/month, then shift to the hybrid model. This captures both debt-freedom momentum AND compound growth.`;
+                  } else if (highRateDebt) {
+                    return `All ${debts.length} of your debts exceed ${investmentRate}% market returns. With a combined balance of $${debts.reduce((sum, d) => sum + d.balance, 0).toLocaleString()}, aggressive paydown is your guaranteed best return. No hybrid needed—pure debt elimination wins here.`;
+                  } else {
+                    return `None of your ${debts.length} debts justify aggressive paydown over investing. Your total $${debts.reduce((sum, d) => sum + d.balance, 0).toLocaleString()} balance at sub-${investmentRate}% rates is "cheap debt." Pay minimums, invest the ${monthlyBudget - debts.reduce((s, d) => s + d.minPayment, 0)}/month difference, and let compound interest do the heavy lifting.`;
+                  }
+                })()}
               </p>
             </div>
           </div>
@@ -750,7 +916,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade }: DebtPaydownOp
               <div className="flex-1">
                 <h4 className="text-2xl font-black text-slate-900 mb-3">Debt-to-Income Trajectory</h4>
                 <p className="text-slate-600 font-medium text-lg leading-relaxed mb-6">
-                  Lenders look at your debt-to-income ratio. Here's your path to financial optionality:
+                  With ${debts.reduce((sum, d) => sum + d.balance, 0).toLocaleString()} debt and ${monthlyIncome.toLocaleString()}/month income, here's your DTI path to financial optionality:
                 </p>
                 <div className="grid md:grid-cols-3 gap-6">
                   <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100">
