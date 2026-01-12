@@ -48,6 +48,78 @@ const TAX_MODES = {
   optimistic: { label: 'Optimistic', rate: 0.22 }
 };
 
+// Category Group Component (moved outside to prevent recreation on each render)
+const CategoryGroup = ({
+  title,
+  cats,
+  type,
+  viewMode,
+  allocations,
+  handleAllocationChange,
+  handleAllocationBlur
+}: {
+  title: string;
+  cats: Array<{ id: string; label: string; initial: number }>;
+  type: 'fixed' | 'flexible' | 'future';
+  viewMode: 'monthly' | 'annual';
+  allocations: Record<string, number | string>;
+  handleAllocationChange: (id: string, value: string) => void;
+  handleAllocationBlur: (id: string, isAnnualMode: boolean) => void;
+}) => (
+  <div className="mb-8">
+    <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4 flex items-center gap-2">
+      {type === 'fixed' && <Lock size={14} />}
+      {type === 'flexible' && <RefreshCcw size={14} />}
+      {type === 'future' && <TrendingUp size={14} />}
+      {title}
+    </h3>
+    <div className="space-y-4">
+      {cats.map(cat => {
+        const currentValue = allocations[cat.id];
+        const isAnnual = viewMode === 'annual';
+
+        // Calculate display value
+        let displayValue: string;
+        if (typeof currentValue === 'string') {
+          // User is currently typing - show the raw value they're entering
+          displayValue = currentValue;
+        } else {
+          // Stored number - convert monthly to annual if needed for display
+          displayValue = isAnnual ? String(currentValue * 12) : String(currentValue);
+        }
+
+        return (
+          <div key={cat.id} className="group">
+            <div className="flex justify-between items-center">
+              <label className="text-sm font-medium text-slate-700">{cat.label}</label>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-slate-400">
+                  {viewMode === 'annual' ? '/yr' : '/mo'}
+                </span>
+                <div className="relative">
+                  <span className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-xs">$</span>
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    value={displayValue}
+                    onChange={(e) => {
+                      const inputValue = e.target.value.replace(/[^0-9.]/g, '');
+                      // Store the value as the user types (don't convert yet)
+                      handleAllocationChange(cat.id, inputValue);
+                    }}
+                    onBlur={() => handleAllocationBlur(cat.id, isAnnual)}
+                    className="w-28 pl-5 pr-2 py-1.5 text-right bg-slate-50 border border-slate-200 rounded-lg text-sm font-mono focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+);
+
 const App = () => {
   const router = useRouter();
   const supabase = createBrowserClient();
@@ -258,66 +330,6 @@ const App = () => {
       setShowOptimizer(false);
     }, 1500);
   };
-
-  // --- Sub-Components ---
-  const CategoryGroup = ({ title, cats, type }: {
-    title: string;
-    cats: Array<{ id: string; label: string; initial: number }>;
-    type: 'fixed' | 'flexible' | 'future'
-  }) => (
-    <div className="mb-8">
-      <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4 flex items-center gap-2">
-        {type === 'fixed' && <Lock size={14} />}
-        {type === 'flexible' && <RefreshCcw size={14} />}
-        {type === 'future' && <TrendingUp size={14} />}
-        {title}
-      </h3>
-      <div className="space-y-4">
-        {cats.map(cat => {
-          const currentValue = allocations[cat.id];
-          const isAnnual = viewMode === 'annual';
-
-          // Calculate display value
-          let displayValue: string;
-          if (typeof currentValue === 'string') {
-            // User is currently typing - show the raw value they're entering
-            displayValue = currentValue;
-          } else {
-            // Stored number - convert monthly to annual if needed for display
-            displayValue = isAnnual ? String(currentValue * 12) : String(currentValue);
-          }
-
-          return (
-            <div key={cat.id} className="group">
-              <div className="flex justify-between items-center">
-                <label className="text-sm font-medium text-slate-700">{cat.label}</label>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-slate-400">
-                    {viewMode === 'annual' ? '/yr' : '/mo'}
-                  </span>
-                  <div className="relative">
-                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-xs">$</span>
-                    <input
-                      type="text"
-                      inputMode="decimal"
-                      value={displayValue}
-                      onChange={(e) => {
-                        const inputValue = e.target.value.replace(/[^0-9.]/g, '');
-                        // Store the value as the user types (don't convert yet)
-                        handleAllocationChange(cat.id, inputValue);
-                      }}
-                      onBlur={() => handleAllocationBlur(cat.id, isAnnual)}
-                      className="w-28 pl-5 pr-2 py-1.5 text-right bg-slate-50 border border-slate-200 rounded-lg text-sm font-mono focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
 
   // Loading state
   if (loading) {
@@ -576,11 +588,35 @@ const App = () => {
 
             <div className="grid md:grid-cols-2 gap-x-12">
               <div>
-                <CategoryGroup title="Fixed Commitments" cats={CATEGORIES.fixed} type="fixed" />
-                <CategoryGroup title="Flexible Living" cats={CATEGORIES.flexible} type="flexible" />
+                <CategoryGroup
+                  title="Fixed Commitments"
+                  cats={CATEGORIES.fixed}
+                  type="fixed"
+                  viewMode={viewMode}
+                  allocations={allocations}
+                  handleAllocationChange={handleAllocationChange}
+                  handleAllocationBlur={handleAllocationBlur}
+                />
+                <CategoryGroup
+                  title="Flexible Living"
+                  cats={CATEGORIES.flexible}
+                  type="flexible"
+                  viewMode={viewMode}
+                  allocations={allocations}
+                  handleAllocationChange={handleAllocationChange}
+                  handleAllocationBlur={handleAllocationBlur}
+                />
               </div>
               <div>
-                <CategoryGroup title="Future Commitments" cats={CATEGORIES.future} type="future" />
+                <CategoryGroup
+                  title="Future Commitments"
+                  cats={CATEGORIES.future}
+                  type="future"
+                  viewMode={viewMode}
+                  allocations={allocations}
+                  handleAllocationChange={handleAllocationChange}
+                  handleAllocationBlur={handleAllocationBlur}
+                />
 
                 {/* Summary View */}
                 <div className="mt-12 p-6 bg-slate-50 rounded-2xl border border-slate-100 space-y-4">
