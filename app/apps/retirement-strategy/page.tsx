@@ -13,25 +13,22 @@ export default function RetirementStrategyPage() {
   const [isPro, setIsPro] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Fetch user tier from database
+  // Fetch user tier from database (optional - no redirect)
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
 
-      if (!session) {
-        router.push('/login');
-        return;
-      }
+      if (session) {
+        // Fetch user tier from database if logged in
+        const { data: userData } = await supabase
+          .from('users')
+          .select('tier')
+          .eq('id', session.user.id)
+          .single() as { data: { tier: Tier } | null };
 
-      // Fetch user tier from database
-      const { data: userData } = await supabase
-        .from('users')
-        .select('tier')
-        .eq('id', session.user.id)
-        .single() as { data: { tier: Tier } | null };
-
-      if (userData?.tier) {
-        setIsPro(hasProAccess('finance', userData.tier));
+        if (userData?.tier) {
+          setIsPro(hasProAccess('finance', userData.tier));
+        }
       }
 
       setLoading(false);

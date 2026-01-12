@@ -22,30 +22,30 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 0.9,
     },
-    // Financial Calculators
-    {
-      url: `${baseUrl}/apps/budget`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/apps/net-worth`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
+    // Financial Calculators (Top 3 are public)
     {
       url: `${baseUrl}/apps/compound-interest`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
-      priority: 0.9,
+      priority: 1.0, // Public - highest priority
+    },
+    {
+      url: `${baseUrl}/apps/budget`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 1.0, // Public - highest priority
     },
     {
       url: `${baseUrl}/apps/retirement-strategy`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
-      priority: 0.9,
+      priority: 1.0, // Public - highest priority
+    },
+    {
+      url: `${baseUrl}/apps/net-worth`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
     },
     {
       url: `${baseUrl}/apps/s-corp-optimizer`,

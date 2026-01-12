@@ -142,25 +142,22 @@ const App = () => {
   const [showOptimizer, setShowOptimizer] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
-  // Check auth and tier
+  // Check auth and tier (optional - no redirect)
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
 
-      if (!session) {
-        router.push('/login');
-        return;
-      }
+      if (session) {
+        // Fetch user tier if logged in
+        const { data: userData } = await supabase
+          .from('users')
+          .select('tier')
+          .eq('id', session.user.id)
+          .single() as { data: { tier: Tier } | null };
 
-      // Fetch user tier
-      const { data: userData } = await supabase
-        .from('users')
-        .select('tier')
-        .eq('id', session.user.id)
-        .single() as { data: { tier: Tier } | null };
-
-      if (userData?.tier) {
-        setUserTier(userData.tier);
+        if (userData?.tier) {
+          setUserTier(userData.tier);
+        }
       }
 
       setLoading(false);

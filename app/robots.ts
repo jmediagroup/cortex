@@ -5,7 +5,12 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: '*',
-        allow: '/',
+        allow: [
+          '/',
+          '/apps/compound-interest',
+          '/apps/budget',
+          '/apps/retirement-strategy',
+        ],
         disallow: ['/api/', '/account', '/dashboard'],
       },
     ],
