@@ -16,7 +16,8 @@ import {
   BrainCircuit,
   Settings2,
   AlertCircle,
-  Crown
+  Crown,
+  Sparkles
 } from 'lucide-react';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
@@ -367,6 +368,55 @@ const App = () => {
       </nav>
 
       <div className="max-w-6xl mx-auto p-4 md:p-8">
+        {userTier === 'free' && (
+          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl p-8 mb-8 text-white shadow-xl">
+            <div className="flex items-start justify-between gap-6">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-3">
+                  <Sparkles size={24} />
+                  <h3 className="text-2xl font-black">Unlock 7 More Financial Calculators</h3>
+                </div>
+                <p className="text-indigo-100 font-medium mb-4">
+                  Create a free account to access our complete suite of financial tools: Net Worth Tracker, Debt Paydown Optimizer, S-Corp calculators, and more.
+                </p>
+                <div className="flex flex-wrap items-center gap-4">
+                  <button
+                    onClick={() => router.push('/login')}
+                    className="bg-white text-indigo-600 px-6 py-3 rounded-xl font-bold hover:bg-indigo-50 transition-all shadow-md"
+                  >
+                    Create Free Account
+                  </button>
+                  <button
+                    onClick={() => router.push('/pricing')}
+                    className="text-white border-2 border-white px-6 py-3 rounded-xl font-bold hover:bg-white/10 transition-all"
+                  >
+                    View All Tools
+                  </button>
+                </div>
+              </div>
+              <div className="hidden lg:block">
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                  <div className="space-y-3 text-sm">
+                    <div className="flex items-center gap-2">
+                      <Lock size={14} className="text-indigo-200" />
+                      <span className="text-indigo-50 font-semibold">Net Worth Tracker</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Lock size={14} className="text-indigo-200" />
+                      <span className="text-indigo-50 font-semibold">Debt Paydown</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Lock size={14} className="text-indigo-200" />
+                      <span className="text-indigo-50 font-semibold">S-Corp Optimizer</span>
+                    </div>
+                    <div className="text-indigo-200 text-xs font-bold mt-3">+ 4 more tools</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
         {/* Sidebar / Controls */}

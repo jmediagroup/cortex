@@ -149,66 +149,93 @@ export default function LandingPage() {
               {
                 icon: <Calculator />,
                 title: "Compound Interest Calculator",
-                description: "See how your money grows over time with different contribution strategies and rates."
-              },
-              {
-                icon: <Building2 />,
-                title: "S-Corp Investment Optimizer",
-                description: "Maximize retirement contributions while optimizing your S-Corp owner compensation."
-              },
-              {
-                icon: <TrendingUp />,
-                title: "Retirement Strategy Engine",
-                description: "Advanced decumulation planning with Roth conversions, tax optimization, and sequence risk analysis."
-              },
-              {
-                icon: <Car />,
-                title: "Car Affordability Calculator",
-                description: "Understand the true cost of vehicle ownership including depreciation and opportunity cost."
-              },
-              {
-                icon: <Scale />,
-                title: "S-Corp Optimizer",
-                description: "Calculate self-employment tax savings and find your ideal salary/distribution split."
-              },
-              {
-                icon: <Landmark />,
-                title: "Rent vs Buy Reality Engine",
-                description: "Compare renting vs buying with opportunity cost, maintenance drag, mobility risk, and tax treatment."
-              },
-              {
-                icon: <TrendingDown />,
-                title: "Debt Paydown Strategy Optimizer",
-                description: "Compare avalanche vs snowball strategies with psychological weighting and opportunity cost analysis."
-              },
-              {
-                icon: <MapPin />,
-                title: "Geographic Arbitrage Calculator",
-                description: "Calculate wealth-building potential by comparing income, taxes, and cost of living across all 50 U.S. states."
-              },
-              {
-                icon: <Compass />,
-                title: "Net Worth Engine",
-                description: "Track assets and liabilities, analyze liquidity and momentum, and visualize your financial trajectory."
+                description: "See how your money grows over time with different contribution strategies and rates.",
+                isFree: true,
+                link: "/apps/compound-interest"
               },
               {
                 icon: <Wallet />,
                 title: "Household Budgeting System",
-                description: "Allocate resources under constraints with AI-powered optimization, tension metrics, and flexibility analysis."
+                description: "Allocate resources under constraints with AI-powered optimization, tension metrics, and flexibility analysis.",
+                isFree: true,
+                link: "/apps/budget"
+              },
+              {
+                icon: <TrendingUp />,
+                title: "Retirement Strategy Engine",
+                description: "Advanced decumulation planning with Roth conversions, tax optimization, and sequence risk analysis.",
+                isFree: true,
+                link: "/apps/retirement-strategy"
+              },
+              {
+                icon: <Building2 />,
+                title: "S-Corp Investment Optimizer",
+                description: "Maximize retirement contributions while optimizing your S-Corp owner compensation.",
+                isFree: false
+              },
+              {
+                icon: <Car />,
+                title: "Car Affordability Calculator",
+                description: "Understand the true cost of vehicle ownership including depreciation and opportunity cost.",
+                isFree: false
+              },
+              {
+                icon: <Scale />,
+                title: "S-Corp Optimizer",
+                description: "Calculate self-employment tax savings and find your ideal salary/distribution split.",
+                isFree: false
+              },
+              {
+                icon: <Landmark />,
+                title: "Rent vs Buy Reality Engine",
+                description: "Compare renting vs buying with opportunity cost, maintenance drag, mobility risk, and tax treatment.",
+                isFree: false
+              },
+              {
+                icon: <TrendingDown />,
+                title: "Debt Paydown Strategy Optimizer",
+                description: "Compare avalanche vs snowball strategies with psychological weighting and opportunity cost analysis.",
+                isFree: false
+              },
+              {
+                icon: <MapPin />,
+                title: "Geographic Arbitrage Calculator",
+                description: "Calculate wealth-building potential by comparing income, taxes, and cost of living across all 50 U.S. states.",
+                isFree: false
+              },
+              {
+                icon: <Compass />,
+                title: "Net Worth Engine",
+                description: "Track assets and liabilities, analyze liquidity and momentum, and visualize your financial trajectory.",
+                isFree: false
               }
             ].map((tool, i) => (
               <div
                 key={i}
-                className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm hover:-translate-y-2 hover:shadow-xl transition-all duration-300 group"
+                className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm hover:-translate-y-2 hover:shadow-xl transition-all duration-300 group relative"
               >
+                {tool.isFree && (
+                  <div className="absolute -top-3 -right-3 bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider shadow-lg">
+                    Free
+                  </div>
+                )}
                 <div className="bg-indigo-50 text-indigo-600 p-4 rounded-2xl w-fit mb-6 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
                   {tool.icon}
                 </div>
                 <div>
                   <h4 className="text-lg font-black text-slate-800 mb-2">{tool.title}</h4>
-                  <p className="text-slate-500 font-medium leading-relaxed text-sm">
+                  <p className="text-slate-500 font-medium leading-relaxed text-sm mb-4">
                     {tool.description}
                   </p>
+                  {tool.isFree && tool.link && (
+                    <a
+                      href={tool.link}
+                      className="inline-flex items-center gap-1.5 text-indigo-600 font-bold text-sm hover:gap-2 transition-all"
+                    >
+                      Try for Free
+                      <ArrowRight size={14} />
+                    </a>
+                  )}
                 </div>
               </div>
             ))}
