@@ -96,7 +96,7 @@ const LOCATION_PRESETS: Record<string, LocationData> = {
 export default function GeographicArbitrageCalculator({ isPro, onUpgrade }: GeographicArbitrageCalculatorProps) {
   const [currentLoc, setCurrentLoc] = useState("San Francisco, CA");
   const [targetLoc, setTargetLoc] = useState("Austin, TX");
-  const [annualIncome, setAnnualIncome] = useState(150000);
+  const [annualIncome, setAnnualIncome] = useState<number | string>(150000);
   const [incomeAdjustment, setIncomeAdjustment] = useState(100);
   const [investmentReturn, setInvestmentReturn] = useState(7);
   const [years, setYears] = useState(20);
@@ -123,12 +123,13 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade }: Geog
     });
   }, []);
 
-  const calculateMetrics = (locKey: string, income: number) => {
+  const calculateMetrics = (locKey: string, income: number | string) => {
+    const incomeNum = typeof income === 'string' ? parseFloat(income) || 0 : income;
     const loc = LOCATION_PRESETS[locKey];
     const fedTax = 0.22;
     const stateTax = loc.taxRate;
-    const totalTax = income * (fedTax + stateTax);
-    const takeHome = income - totalTax;
+    const totalTax = incomeNum * (fedTax + stateTax);
+    const takeHome = incomeNum - totalTax;
     const housingCost = loc.housingBase * (lifestyle.housing / 50) * 12;
     const dailyCosts = (1500 * loc.colIndex) * (1 + (lifestyle.dining + lifestyle.transit + lifestyle.discretionary) / 150) * 12;
     const totalExpenses = housingCost + dailyCosts;
@@ -137,7 +138,10 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade }: Geog
   };
 
   const currentMetrics = useMemo(() => calculateMetrics(currentLoc, annualIncome), [currentLoc, annualIncome, lifestyle]);
-  const targetMetrics = useMemo(() => calculateMetrics(targetLoc, annualIncome * (incomeAdjustment / 100)), [targetLoc, annualIncome, incomeAdjustment, lifestyle]);
+  const targetMetrics = useMemo(() => {
+    const incomeNum = typeof annualIncome === 'string' ? parseFloat(annualIncome) || 0 : annualIncome;
+    return calculateMetrics(targetLoc, incomeNum * (incomeAdjustment / 100));
+  }, [targetLoc, annualIncome, incomeAdjustment, lifestyle]);
 
   const savingsDelta = targetMetrics.netSavings - currentMetrics.netSavings;
 
@@ -303,18 +307,26 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade }: Geog
                 <input
                   type="text"
                   inputMode="decimal"
-                  value={annualIncome.toLocaleString()}
+                  value={typeof annualIncome === 'string' ? annualIncome : annualIncome.toLocaleString()}
                   onChange={(e) => {
                     const value = e.target.value.replace(/[^0-9]/g, '');
-                    const numValue = parseInt(value) || 40000;
-                    setAnnualIncome(Math.min(Math.max(numValue, 40000), 500000));
+                    if (value === '') {
+                      setAnnualIncome('');
+                    } else {
+                      setAnnualIncome(value);
+                    }
+                  }}
+                  onBlur={() => {
+                    const numValue = typeof annualIncome === 'string'
+                      ? Math.max(40000, parseFloat(annualIncome) || 40000)
+                      : Math.max(40000, annualIncome);
+                    setAnnualIncome(numValue);
                   }}
                   className="w-full pl-7 pr-4 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
               </div>
-              <div className="mt-1.5 flex justify-between text-xs text-slate-400 font-medium">
+              <div className="mt-1.5 text-xs text-slate-400 font-medium">
                 <span>Min: 40,000</span>
-                <span>Max: 500,000</span>
               </div>
             </div>
 

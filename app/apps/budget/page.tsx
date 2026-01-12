@@ -158,12 +158,17 @@ const App = () => {
     }
   };
 
-  const handleAllocationBlur = (id: string) => {
+  const handleAllocationBlur = (id: string, isAnnualMode: boolean) => {
     // Convert to number on blur, defaulting to 0 if invalid
     const currentValue = allocations[id];
-    const numValue = typeof currentValue === 'string'
-      ? Math.max(0, parseFloat(currentValue) || 0)
-      : Math.max(0, currentValue);
+    let numValue: number;
+    if (typeof currentValue === 'string') {
+      const parsed = parseFloat(currentValue) || 0;
+      // If we're in annual mode, the user typed an annual value, so convert to monthly for storage
+      numValue = isAnnualMode ? Math.max(0, parsed / 12) : Math.max(0, parsed);
+    } else {
+      numValue = Math.max(0, currentValue);
+    }
     setAllocations(prev => ({ ...prev, [id]: numValue }));
   };
 
@@ -270,15 +275,17 @@ const App = () => {
       <div className="space-y-4">
         {cats.map(cat => {
           const currentValue = allocations[cat.id];
-          const numValue = typeof currentValue === 'string' ? parseFloat(currentValue) || 0 : currentValue;
-          const displayValue = viewMode === 'annual'
-            ? (typeof currentValue === 'string' && currentValue !== ''
-                ? String((parseFloat(currentValue) || 0) * 12)
-                : numValue * 12)
-            : currentValue;
-
           const isAnnual = viewMode === 'annual';
-          const monthlyValue = typeof currentValue === 'string' ? currentValue : String(numValue);
+
+          // Calculate display value
+          let displayValue: string;
+          if (typeof currentValue === 'string') {
+            // User is currently typing - show the raw value they're entering
+            displayValue = currentValue;
+          } else {
+            // Stored number - convert monthly to annual if needed for display
+            displayValue = isAnnual ? String(currentValue * 12) : String(currentValue);
+          }
 
           return (
             <div key={cat.id} className="group">
@@ -293,15 +300,13 @@ const App = () => {
                     <input
                       type="text"
                       inputMode="decimal"
-                      value={isAnnual ? (monthlyValue === '' ? '' : String((parseFloat(monthlyValue) || 0) * 12)) : monthlyValue}
+                      value={displayValue}
                       onChange={(e) => {
                         const inputValue = e.target.value.replace(/[^0-9.]/g, '');
-                        const monthlyVal = isAnnual
-                          ? (inputValue === '' ? '' : String((parseFloat(inputValue) || 0) / 12))
-                          : inputValue;
-                        handleAllocationChange(cat.id, monthlyVal);
+                        // Store the value as the user types (don't convert yet)
+                        handleAllocationChange(cat.id, inputValue);
                       }}
-                      onBlur={() => handleAllocationBlur(cat.id)}
+                      onBlur={() => handleAllocationBlur(cat.id, isAnnual)}
                       className="w-28 pl-5 pr-2 py-1.5 text-right bg-slate-50 border border-slate-200 rounded-lg text-sm font-mono focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                   </div>
