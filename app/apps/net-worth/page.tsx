@@ -5,10 +5,12 @@ import { useRouter } from 'next/navigation';
 import { ChevronLeft, Compass, ShieldCheck } from 'lucide-react';
 import NetWorthEngine from '@/components/apps/NetWorthEngine';
 import { createBrowserClient } from '@/lib/supabase/client';
+import { hasProAccess, type Tier } from '@/lib/access-control';
 
 export default function NetWorthPage() {
   const router = useRouter();
   const supabase = createBrowserClient();
+  const [isPro, setIsPro] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -17,6 +19,16 @@ export default function NetWorthPage() {
       if (!session) {
         router.push('/login');
         return;
+      }
+
+      const { data: userData } = await supabase
+        .from('users')
+        .select('tier')
+        .eq('id', session.user.id)
+        .single() as { data: { tier: Tier } | null };
+
+      if (userData?.tier) {
+        setIsPro(hasProAccess('finance', userData.tier));
       }
       setLoading(false);
     };
@@ -85,7 +97,7 @@ export default function NetWorthPage() {
           </div>
         </div>
 
-        <NetWorthEngine />
+        <NetWorthEngine isPro={isPro} onUpgrade={() => router.push('/pricing')} />
       </main>
 
       {/* FOOTER */}

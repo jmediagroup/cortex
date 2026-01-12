@@ -13,7 +13,10 @@ import {
   Trash2,
   Plus,
   Info,
-  HelpCircle
+  HelpCircle,
+  Lock,
+  Gauge,
+  AlertTriangle
 } from 'lucide-react';
 
 /**
@@ -194,7 +197,12 @@ const DropdownMenu = ({ presets, onSelect, type, title }: {
   </div>
 );
 
-export default function NetWorthEngine() {
+interface NetWorthEngineProps {
+  isPro?: boolean;
+  onUpgrade?: () => void;
+}
+
+export default function NetWorthEngine({ isPro, onUpgrade }: NetWorthEngineProps = {}) {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [liabilities, setLiabilities] = useState<Liability[]>([]);
   const [monthlySavings, setMonthlySavings] = useState(0);
@@ -327,6 +335,67 @@ export default function NetWorthEngine() {
       complexity: (submittedAssets.length + submittedLiabilities.length) > 12 ? 'High' : (submittedAssets.length + submittedLiabilities.length) > 6 ? 'Moderate' : 'Low'
     };
   }, [assets, liabilities, monthlySavings, growthRate]);
+
+  // PRO FEATURE: Momentum Intelligence
+  const momentumIntelligence = useMemo(() => {
+    if (!isPro) return null;
+
+    const submittedAssets = assets.filter(a => a.submitted);
+    const submittedLiabilities = liabilities.filter(l => l.submitted);
+
+    // 1. Velocity Breakdown - What drives momentum?
+    const assetGrowthContribution = metrics.totalAssets * (growthRate / 100);
+    const savingsContribution = monthlySavings * 12;
+    const totalMomentum = assetGrowthContribution + savingsContribution;
+    const growthPercentage = totalMomentum > 0 ? (assetGrowthContribution / totalMomentum) * 100 : 0;
+    const savingsPercentage = totalMomentum > 0 ? (savingsContribution / totalMomentum) * 100 : 0;
+
+    // 2. Trajectory Acceleration - What happens if you increase savings 20%?
+    const acceleratedSavings = monthlySavings * 1.2;
+    const acceleratedMomentum = assetGrowthContribution + (acceleratedSavings * 12);
+    const accelerationGain = acceleratedMomentum - totalMomentum;
+
+    // 3. Debt Drag Analysis - How much is debt slowing you down?
+    const debtPayments = submittedLiabilities.reduce((sum, l) => {
+      // Rough monthly payment estimation
+      const rate = Number(l.rate) / 100 / 12;
+      const term = Number(l.term) * 12;
+      const balance = Number(l.value);
+      const payment = balance > 0 && term > 0 ? (balance * rate * Math.pow(1 + rate, term)) / (Math.pow(1 + rate, term) - 1) : 0;
+      return sum + (isFinite(payment) ? payment : 0);
+    }, 0);
+    const annualDebtDrag = debtPayments * 12;
+    const momentumWithoutDebt = totalMomentum + annualDebtDrag;
+    const debtDragPercentage = momentumWithoutDebt > 0 ? (annualDebtDrag / momentumWithoutDebt) * 100 : 0;
+
+    // 4. Tipping Point Analysis - When does growth exceed savings?
+    const tippingPointNetWorth = (monthlySavings * 12) / (growthRate / 100);
+    const yearsToTippingPoint = metrics.totalAssets > 0
+      ? Math.max(0, (tippingPointNetWorth - metrics.totalAssets) / (monthlySavings * 12))
+      : tippingPointNetWorth / (monthlySavings * 12);
+
+    // 5. Liquid vs Illiquid Allocation Risk
+    const idealLiquidRatio = 0.25; // 25% liquid is generally safe
+    const liquidityGap = idealLiquidRatio - metrics.liquidityRatio;
+    const liquidityRisk = Math.abs(liquidityGap) > 0.1 ? 'High' : Math.abs(liquidityGap) > 0.05 ? 'Moderate' : 'Low';
+
+    return {
+      assetGrowthContribution,
+      savingsContribution,
+      totalMomentum,
+      growthPercentage,
+      savingsPercentage,
+      acceleratedSavings,
+      accelerationGain,
+      debtPayments,
+      annualDebtDrag,
+      debtDragPercentage,
+      tippingPointNetWorth,
+      yearsToTippingPoint,
+      liquidityGap,
+      liquidityRisk
+    };
+  }, [isPro, assets, liabilities, metrics, monthlySavings, growthRate]);
 
   return (
     <div className="space-y-8">
@@ -884,6 +953,210 @@ export default function NetWorthEngine() {
           </div>
         </div>
       </div>
+
+      {/* PRO FEATURES SECTION */}
+      {!isPro && (
+        <div className="bg-gradient-to-br from-purple-600 via-indigo-600 to-blue-600 rounded-3xl p-8 shadow-2xl shadow-indigo-300/50 text-white relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+          <div className="relative">
+            <div className="flex items-start justify-between gap-6">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                    <Gauge size={24} className="text-white" />
+                  </div>
+                  <h3 className="text-2xl font-black">Momentum Intelligence</h3>
+                </div>
+                <p className="text-white/90 text-base font-medium mb-6 leading-relaxed">
+                  Understand the hidden drivers of your net worth trajectory. Decompose velocity into growth vs savings, quantify debt drag,
+                  calculate acceleration opportunities, and discover your tipping point where compound growth overtakes active savings.
+                </p>
+                <div className="flex flex-wrap gap-3 mb-6">
+                  <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-xl text-sm font-bold border border-white/30">
+                    Velocity Decomposition
+                  </div>
+                  <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-xl text-sm font-bold border border-white/30">
+                    Debt Drag Analysis
+                  </div>
+                  <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-xl text-sm font-bold border border-white/30">
+                    Tipping Point Calculator
+                  </div>
+                </div>
+                <button
+                  onClick={onUpgrade}
+                  className="bg-white text-indigo-600 px-8 py-4 rounded-2xl font-black text-lg hover:bg-indigo-50 transition-all shadow-xl hover:shadow-2xl hover:scale-105 active:scale-100"
+                >
+                  Upgrade to Pro
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {momentumIntelligence && (
+        <div className="space-y-8">
+          <div className="bg-gradient-to-br from-indigo-50 to-purple-50 border-2 border-indigo-100 rounded-3xl p-8 shadow-lg">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center">
+                <Gauge size={20} className="text-white" />
+              </div>
+              <h3 className="text-xl font-black text-indigo-900">Velocity Decomposition</h3>
+            </div>
+            <p className="text-indigo-700 font-medium mb-6 leading-relaxed">
+              Your net worth momentum comes from two sources: asset growth (investments compounding) and active savings (cash you add).
+              Understanding this split reveals whether you're in the "accumulation phase" or the "compound phase."
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div className="bg-white rounded-2xl p-6 border border-indigo-100">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Asset Growth</p>
+                  <p className="text-sm font-bold text-indigo-600">{momentumIntelligence.growthPercentage.toFixed(0)}%</p>
+                </div>
+                <p className="text-3xl font-black text-indigo-600 mb-2">${Math.round(momentumIntelligence.assetGrowthContribution).toLocaleString()}</p>
+                <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                  <div className="h-full bg-indigo-500" style={{ width: `${momentumIntelligence.growthPercentage}%` }}></div>
+                </div>
+              </div>
+              <div className="bg-white rounded-2xl p-6 border border-purple-100">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Active Savings</p>
+                  <p className="text-sm font-bold text-purple-600">{momentumIntelligence.savingsPercentage.toFixed(0)}%</p>
+                </div>
+                <p className="text-3xl font-black text-purple-600 mb-2">${Math.round(momentumIntelligence.savingsContribution).toLocaleString()}</p>
+                <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                  <div className="h-full bg-purple-500" style={{ width: `${momentumIntelligence.savingsPercentage}%` }}></div>
+                </div>
+              </div>
+            </div>
+            <div className="bg-indigo-600 rounded-2xl p-5 text-white">
+              <div className="flex items-start gap-3">
+                <Zap size={18} className="flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-black text-xs uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
+                  <p className="text-indigo-100 text-sm font-medium leading-relaxed">
+                    {momentumIntelligence.growthPercentage > 50
+                      ? `You've entered the compound phase: ${momentumIntelligence.growthPercentage.toFixed(0)}% of momentum comes from asset growth. Your money works harder than you do.`
+                      : `You're in accumulation phase: ${momentumIntelligence.savingsPercentage.toFixed(0)}% of momentum comes from active savings. Focus on increasing income and savings rate.`}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-100 rounded-3xl p-8 shadow-lg">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center">
+                  <TrendingUp size={20} className="text-white" />
+                </div>
+                <h3 className="text-xl font-black text-emerald-900">Trajectory Acceleration</h3>
+              </div>
+              <p className="text-emerald-700 font-medium mb-6 leading-relaxed">
+                What if you increased your monthly savings by 20%? This shows the compounding impact of marginal improvements
+                to your savings rate.
+              </p>
+              <div className="bg-white rounded-2xl p-6 border border-emerald-100 mb-5">
+                <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-2">Additional Annual Momentum</p>
+                <p className="text-4xl font-black text-emerald-600 mb-3">+${Math.round(momentumIntelligence.accelerationGain).toLocaleString()}</p>
+                <p className="text-sm text-slate-600 font-medium">
+                  By increasing savings from ${monthlySavings.toLocaleString()}/mo to ${Math.round(momentumIntelligence.acceleratedSavings).toLocaleString()}/mo
+                </p>
+              </div>
+              <div className="bg-emerald-600 rounded-2xl p-5 text-white">
+                <div className="flex items-start gap-3">
+                  <Zap size={18} className="flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-black text-xs uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
+                    <p className="text-emerald-100 text-sm font-medium leading-relaxed">
+                      Over 10 years, this acceleration compounds to approximately ${Math.round(momentumIntelligence.accelerationGain * 12.5).toLocaleString()} in extra wealth.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-rose-50 to-orange-50 border-2 border-rose-100 rounded-3xl p-8 shadow-lg">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-rose-600 rounded-xl flex items-center justify-center">
+                  <AlertTriangle size={20} className="text-white" />
+                </div>
+                <h3 className="text-xl font-black text-rose-900">Debt Drag Analysis</h3>
+              </div>
+              <p className="text-rose-700 font-medium mb-6 leading-relaxed">
+                Your debt payments create a "drag coefficient" on momentum. This quantifies how much faster you'd accelerate
+                if those obligations disappeared.
+              </p>
+              <div className="bg-white rounded-2xl p-6 border border-rose-100 mb-5">
+                <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-2">Annual Debt Drag</p>
+                <p className="text-4xl font-black text-rose-600 mb-3">${Math.round(momentumIntelligence.annualDebtDrag).toLocaleString()}</p>
+                <p className="text-sm text-slate-600 font-medium">
+                  Represents {momentumIntelligence.debtDragPercentage.toFixed(1)}% of potential momentum
+                </p>
+              </div>
+              <div className="bg-rose-600 rounded-2xl p-5 text-white">
+                <div className="flex items-start gap-3">
+                  <Zap size={18} className="flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-black text-xs uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
+                    <p className="text-rose-100 text-sm font-medium leading-relaxed">
+                      {momentumIntelligence.debtDragPercentage > 30
+                        ? `Debt is creating significant drag (${momentumIntelligence.debtDragPercentage.toFixed(0)}%). Aggressive paydown could unlock substantial acceleration.`
+                        : `Debt drag is manageable (${momentumIntelligence.debtDragPercentage.toFixed(0)}%). Focus on increasing income and savings rate.`}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-br from-purple-50 to-indigo-50 border-2 border-purple-100 rounded-3xl p-8 shadow-lg">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-purple-600 rounded-xl flex items-center justify-center">
+                <Target size={20} className="text-white" />
+              </div>
+              <h3 className="text-xl font-black text-purple-900">Tipping Point Analysis</h3>
+            </div>
+            <p className="text-purple-700 font-medium mb-6 leading-relaxed">
+              The "tipping point" is the net worth level where your asset growth equals your annual savings. Beyond this threshold,
+              compound growth does the heavy lifting while you focus on other life priorities.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div className="bg-white rounded-2xl p-6 border border-purple-100">
+                <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-2">Tipping Point Net Worth</p>
+                <p className="text-4xl font-black text-purple-600 mb-2">${Math.round(momentumIntelligence.tippingPointNetWorth).toLocaleString()}</p>
+                <p className="text-sm text-slate-600 font-medium">
+                  Where {growthRate}% growth = ${(monthlySavings * 12).toLocaleString()}/year savings
+                </p>
+              </div>
+              <div className="bg-white rounded-2xl p-6 border border-purple-100">
+                <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-2">Years to Tipping Point</p>
+                <p className="text-4xl font-black text-purple-600 mb-2">
+                  {momentumIntelligence.yearsToTippingPoint < 100
+                    ? `${momentumIntelligence.yearsToTippingPoint.toFixed(1)} years`
+                    : '—'}
+                </p>
+                <p className="text-sm text-slate-600 font-medium">
+                  At current savings rate of ${monthlySavings.toLocaleString()}/mo
+                </p>
+              </div>
+            </div>
+            <div className="bg-purple-600 rounded-2xl p-5 text-white">
+              <div className="flex items-start gap-3">
+                <Zap size={18} className="flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-black text-xs uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
+                  <p className="text-purple-100 text-sm font-medium leading-relaxed">
+                    {metrics.totalAssets >= momentumIntelligence.tippingPointNetWorth
+                      ? `Congratulations: You've crossed the tipping point. Asset growth now exceeds your annual savings. Your wealth compounds faster than you can manually add to it.`
+                      : `You need ${Math.round((momentumIntelligence.tippingPointNetWorth - metrics.totalAssets) / (monthlySavings * 12)).toFixed(1)} more years of disciplined saving to reach the tipping point. After that, compound growth takes over.`}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -14,7 +14,11 @@ import {
   Info,
   DollarSign,
   Briefcase,
-  Wallet
+  Wallet,
+  Lock,
+  Zap,
+  TrendingDown,
+  Plane
 } from 'lucide-react';
 
 interface LocationData {
@@ -144,6 +148,58 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade }: Geog
   }, [targetLoc, annualIncome, incomeAdjustment, lifestyle]);
 
   const savingsDelta = targetMetrics.netSavings - currentMetrics.netSavings;
+
+  // PRO FEATURE: Multi-City Wealth Accelerator
+  const multiCityAnalysis = useMemo(() => {
+    if (!isPro) return null;
+
+    const incomeNum = typeof annualIncome === 'string' ? parseFloat(annualIncome) || 0 : annualIncome;
+
+    // 1. Top 5 Arbitrage Destinations
+    const destinations = Object.keys(LOCATION_PRESETS)
+      .filter(loc => loc !== currentLoc)
+      .map(loc => {
+        const metrics = calculateMetrics(loc, incomeNum * (incomeAdjustment / 100));
+        const delta = metrics.netSavings - currentMetrics.netSavings;
+        return { location: loc, delta, netSavings: metrics.netSavings };
+      })
+      .sort((a, b) => b.delta - a.delta)
+      .slice(0, 5);
+
+    // 2. Tax Migration Windfall (comparing current vs optimal state tax)
+    const currentLoc_data = LOCATION_PRESETS[currentLoc];
+    const zeroTaxStates = Object.entries(LOCATION_PRESETS).filter(([_, data]) => data.taxRate === 0);
+    const avgZeroTaxCOL = zeroTaxStates.reduce((sum, [_, data]) => sum + data.colIndex, 0) / zeroTaxStates.length;
+    const taxSavings = incomeNum * currentLoc_data.taxRate;
+    const yearlyTaxWindfall = taxSavings;
+
+    // 3. Career Mobility Premium
+    // Assumption: staying in expensive locations may boost salary trajectory by 5-10% over 10 years
+    const mobilityPenalty = incomeNum * 0.07 * years; // 7% cumulative salary trajectory loss
+    const mobilityPremium = savingsDelta * years - mobilityPenalty;
+
+    // 4. Lifestyle Downgrade Risk Score
+    // Calculate how much lifestyle is being compressed (lower = more compression)
+    const lifestyleScore = Math.round(
+      ((lifestyle.housing + lifestyle.dining + lifestyle.transit + lifestyle.discretionary) / 4) *
+      (targetMetrics.netSavings / Math.max(1, currentMetrics.netSavings))
+    );
+
+    // 5. Compounding Leverage - How much extra wealth from arbitrage savings invested
+    let compoundedArbitrageWealth = 0;
+    const r = 1 + (investmentReturn / 100);
+    for (let i = 0; i < years; i++) {
+      compoundedArbitrageWealth = (compoundedArbitrageWealth + savingsDelta) * r;
+    }
+
+    return {
+      destinations,
+      yearlyTaxWindfall,
+      mobilityPremium,
+      lifestyleScore,
+      compoundedArbitrageWealth
+    };
+  }, [isPro, currentLoc, annualIncome, incomeAdjustment, currentMetrics, savingsDelta, lifestyle, years, investmentReturn]);
 
   const projectionData = useMemo(() => {
     let currentWealth = 0;
@@ -479,6 +535,211 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade }: Geog
               </div>
             </div>
           </div>
+
+          {/* PRO FEATURES SECTION */}
+          {!isPro && (
+            <div className="bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500 rounded-3xl p-8 shadow-2xl shadow-orange-200/50 text-white relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+              <div className="relative">
+                <div className="flex items-start justify-between gap-6">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                        <Zap size={24} className="text-white" />
+                      </div>
+                      <h3 className="text-2xl font-black">Multi-City Wealth Accelerator</h3>
+                    </div>
+                    <p className="text-white/90 text-base font-medium mb-6 leading-relaxed">
+                      Unlock the full power of geographic arbitrage. See your top 5 destinations ranked by wealth acceleration,
+                      calculate tax migration windfalls, quantify career mobility trade-offs, and discover compounding leverage opportunities.
+                    </p>
+                    <div className="flex flex-wrap gap-3 mb-6">
+                      <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-xl text-sm font-bold border border-white/30">
+                        Top 5 Arbitrage Destinations
+                      </div>
+                      <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-xl text-sm font-bold border border-white/30">
+                        Tax Migration Analysis
+                      </div>
+                      <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-xl text-sm font-bold border border-white/30">
+                        Career Mobility Premium
+                      </div>
+                    </div>
+                    <button
+                      onClick={onUpgrade}
+                      className="bg-white text-orange-600 px-8 py-4 rounded-2xl font-black text-lg hover:bg-orange-50 transition-all shadow-xl hover:shadow-2xl hover:scale-105 active:scale-100"
+                    >
+                      Upgrade to Pro
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {multiCityAnalysis && (
+            <div className="space-y-8">
+              <div className="bg-gradient-to-br from-purple-50 to-indigo-50 border-2 border-indigo-100 rounded-3xl p-8 shadow-lg">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center">
+                    <Plane size={20} className="text-white" />
+                  </div>
+                  <h3 className="text-xl font-black text-indigo-900">Top 5 Arbitrage Destinations</h3>
+                </div>
+                <p className="text-indigo-700 font-medium mb-6 leading-relaxed">
+                  These cities maximize your savings delta while accounting for adjusted income, cost of living, and tax structures.
+                  Each represents an optimized wealth acceleration opportunity.
+                </p>
+                <div className="space-y-3">
+                  {multiCityAnalysis.destinations.map((dest, idx) => (
+                    <div key={idx} className="bg-white rounded-2xl p-5 border border-indigo-100 flex items-center justify-between group hover:border-indigo-300 transition-all">
+                      <div className="flex items-center gap-4">
+                        <div className="w-8 h-8 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center font-black text-sm">
+                          {idx + 1}
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-slate-800">{dest.location}</h4>
+                          <p className="text-xs text-slate-500 font-medium">Net Savings: ${Math.round(dest.netSavings).toLocaleString()}/year</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-1">Delta</p>
+                        <p className="text-2xl font-black text-emerald-600">+${Math.round(dest.delta).toLocaleString()}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-6 bg-indigo-600 rounded-2xl p-5 text-white">
+                  <div className="flex items-start gap-3">
+                    <Zap size={20} className="flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-black text-sm uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
+                      <p className="text-indigo-100 text-sm font-medium leading-relaxed">
+                        The #1 destination delivers ${Math.round(multiCityAnalysis.destinations[0].delta).toLocaleString()} more in annual savings than your current location.
+                        Over {years} years, this compounds to ${Math.round(multiCityAnalysis.compoundedArbitrageWealth - projectionData[projectionData.length - 1].current).toLocaleString()} in extra wealth.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="bg-gradient-to-br from-teal-50 to-emerald-50 border-2 border-emerald-100 rounded-3xl p-8 shadow-lg">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center">
+                      <DollarSign size={20} className="text-white" />
+                    </div>
+                    <h3 className="text-xl font-black text-emerald-900">Tax Migration Windfall</h3>
+                  </div>
+                  <p className="text-emerald-700 font-medium mb-6 leading-relaxed">
+                    Quantifies the pure state income tax savings by moving to a lower-tax jurisdiction. This is money that would
+                    otherwise evaporate to state coffers.
+                  </p>
+                  <div className="bg-white rounded-2xl p-6 border border-emerald-100 mb-5">
+                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-2">Annual Tax Savings</p>
+                    <p className="text-4xl font-black text-emerald-600 mb-3">${Math.round(multiCityAnalysis.yearlyTaxWindfall).toLocaleString()}</p>
+                    <p className="text-sm text-slate-600 font-medium">
+                      Current state tax rate: <span className="font-bold text-slate-800">{(LOCATION_PRESETS[currentLoc].taxRate * 100).toFixed(1)}%</span>
+                    </p>
+                  </div>
+                  <div className="bg-emerald-600 rounded-2xl p-5 text-white">
+                    <div className="flex items-start gap-3">
+                      <Zap size={18} className="flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-black text-xs uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
+                        <p className="text-emerald-100 text-sm font-medium leading-relaxed">
+                          Moving to a zero-tax state like Texas, Florida, or Nevada would save you ${Math.round(multiCityAnalysis.yearlyTaxWindfall).toLocaleString()}/year
+                          in pure tax arbitrage, assuming comparable cost of living.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-br from-rose-50 to-pink-50 border-2 border-rose-100 rounded-3xl p-8 shadow-lg">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 bg-rose-600 rounded-xl flex items-center justify-center">
+                      <TrendingDown size={20} className="text-white" />
+                    </div>
+                    <h3 className="text-xl font-black text-rose-900">Career Mobility Premium</h3>
+                  </div>
+                  <p className="text-rose-700 font-medium mb-6 leading-relaxed">
+                    Moving away from high-cost hubs may cost you career trajectory and networking advantages. This metric quantifies
+                    the trade-off between savings and long-term earning potential.
+                  </p>
+                  <div className="bg-white rounded-2xl p-6 border border-rose-100 mb-5">
+                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-2">Net Premium After Trajectory Loss</p>
+                    <p className={`text-4xl font-black mb-3 ${multiCityAnalysis.mobilityPremium >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                      {multiCityAnalysis.mobilityPremium >= 0 ? '+' : ''}${Math.round(multiCityAnalysis.mobilityPremium).toLocaleString()}
+                    </p>
+                    <p className="text-sm text-slate-600 font-medium">
+                      Assumes ~7% cumulative salary trajectory loss over {years} years
+                    </p>
+                  </div>
+                  <div className="bg-rose-600 rounded-2xl p-5 text-white">
+                    <div className="flex items-start gap-3">
+                      <Zap size={18} className="flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-black text-xs uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
+                        <p className="text-rose-100 text-sm font-medium leading-relaxed">
+                          {multiCityAnalysis.mobilityPremium >= 0
+                            ? `Even accounting for career trajectory loss, arbitrage still nets you ${Math.abs(Math.round(multiCityAnalysis.mobilityPremium)).toLocaleString()} in extra wealth.`
+                            : `The savings from arbitrage may not offset the career trajectory loss. Consider hybrid strategies like 5-year sprints in hubs.`}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-slate-50 to-slate-100 border-2 border-slate-200 rounded-3xl p-8 shadow-lg">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 bg-slate-700 rounded-xl flex items-center justify-center">
+                    <TrendingUp size={20} className="text-white" />
+                  </div>
+                  <h3 className="text-xl font-black text-slate-900">Lifestyle Compression Score</h3>
+                </div>
+                <p className="text-slate-700 font-medium mb-6 leading-relaxed">
+                  Measures how much lifestyle quality you may be sacrificing to achieve arbitrage gains. A score below 50 indicates
+                  significant compression; above 75 suggests sustainable lifestyle maintenance.
+                </p>
+                <div className="bg-white rounded-2xl p-6 border border-slate-200 mb-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Compression Score</p>
+                    <p className="text-4xl font-black text-slate-800">{multiCityAnalysis.lifestyleScore}</p>
+                  </div>
+                  <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
+                    <div
+                      className={`h-full transition-all ${
+                        multiCityAnalysis.lifestyleScore >= 75 ? 'bg-emerald-500' :
+                        multiCityAnalysis.lifestyleScore >= 50 ? 'bg-amber-500' :
+                        'bg-rose-500'
+                      }`}
+                      style={{ width: `${Math.min(100, multiCityAnalysis.lifestyleScore)}%` }}
+                    ></div>
+                  </div>
+                  <div className="flex justify-between mt-2 text-xs font-bold text-slate-400">
+                    <span>High Compression</span>
+                    <span>Sustainable</span>
+                  </div>
+                </div>
+                <div className="bg-slate-700 rounded-2xl p-5 text-white">
+                  <div className="flex items-start gap-3">
+                    <Zap size={18} className="flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-black text-xs uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
+                      <p className="text-slate-300 text-sm font-medium leading-relaxed">
+                        {multiCityAnalysis.lifestyleScore >= 75
+                          ? 'Your target location maintains a sustainable lifestyle while delivering arbitrage gains. Low risk of burnout or regret.'
+                          : multiCityAnalysis.lifestyleScore >= 50
+                          ? 'Moderate lifestyle compression detected. Consider whether the savings justify the trade-offs in dining, housing, and amenities.'
+                          : 'High lifestyle compression risk. Ensure the financial gains are worth potential quality-of-life sacrifices.'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

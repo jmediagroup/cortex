@@ -5,7 +5,7 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area, ReferenceLine
 } from 'recharts';
 import {
-  TrendingUp, Home, Calculator, Settings2, Info, AlertTriangle, ShieldCheck, Landmark
+  TrendingUp, Home, Calculator, Settings2, Info, AlertTriangle, ShieldCheck, Landmark, Lock, Zap, MapPin, Repeat, DollarSign
 } from 'lucide-react';
 
 interface RentVsBuyEngineProps {
@@ -106,6 +106,73 @@ export default function RentVsBuyEngine({ isPro, onUpgrade }: RentVsBuyEnginePro
   const nwDiff = Math.abs(currentYearData.buyNetWorth - currentYearData.rentNetWorth);
 
   const formatCurrency = (val: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
+
+  // PRO FEATURE: Lifecycle Housing Strategy
+  const lifecycleAnalysis = useMemo(() => {
+    if (!isPro) return null;
+
+    // Scenario 1: 3-Move Lifecycle (Starter → Family Home → Downsize)
+    const threeMoveSim = () => {
+      // Move 1: Starter home (years 0-7)
+      const starter = { price: purchasePrice * 0.7, years: 7, rent: monthlyRent * 0.8 };
+      // Move 2: Family home (years 7-22)
+      const family = { price: purchasePrice, years: 15, rent: monthlyRent };
+      // Move 3: Downsize (years 22-30)
+      const downsize = { price: purchasePrice * 0.6, years: 8, rent: monthlyRent * 0.7 };
+
+      // Simplified calculation: transaction costs eat wealth
+      const transactionCosts = (starter.price + family.price + downsize.price) * (buyingCosts + sellingCosts) / 100;
+      const singleHomeTransactionCost = purchasePrice * (buyingCosts + sellingCosts) / 100;
+
+      return {
+        transactionCosts,
+        singleHomeTransactionCost,
+        extraFriction: transactionCosts - singleHomeTransactionCost
+      };
+    };
+
+    const moves = threeMoveSim();
+
+    // Scenario 2: Market Timing Risk
+    const bestCase = currentYearData.buyNetWorth * 1.25; // +25% if bought at bottom
+    const worstCase = currentYearData.buyNetWorth * 0.75; // -25% if bought at peak
+    const marketTimingRisk = bestCase - worstCase;
+
+    // Scenario 3: Hidden Drag Calculator
+    const annualMaintenance = purchasePrice * (maintenanceRate / 100);
+    const annualPropertyTax = purchasePrice * (propertyTax / 100);
+    const annualInsurance = purchasePrice * 0.005;
+    const annualHOA = 3600; // $300/mo estimate
+    const closingCost = purchasePrice * (buyingCosts / 100);
+    const futureSellingCost = currentYearData.homeValue * (sellingCosts / 100);
+
+    const totalHiddenCosts = (annualMaintenance + annualPropertyTax + annualInsurance + annualHOA) * years + closingCost + futureSellingCost;
+    const monthlyHiddenDrag = totalHiddenCosts / years / 12;
+
+    // Scenario 4: Career Mobility Premium
+    // Renting allows instant relocation = career optionality
+    const mobilityPremium = 50000; // Conservative: ability to take 10% raise in another city
+    const mobilityAdjustedRentNW = currentYearData.rentNetWorth + (years > 5 ? mobilityPremium : 0);
+
+    // Scenario 5: Geographic Arbitrage Analysis
+    const hcolRent = monthlyRent * 1.5; // High cost of living area
+    const lcolHomePrice = purchasePrice * 0.6; // Low cost of living area
+    const geoArbitrageGain = (monthlyRent * 1.5 - monthlyRent) * 12 * years;
+
+    return {
+      moves,
+      marketTimingRisk,
+      bestCase,
+      worstCase,
+      totalHiddenCosts,
+      monthlyHiddenDrag,
+      mobilityPremium,
+      mobilityAdjustedRentNW,
+      geoArbitrageGain,
+      hcolRent,
+      lcolHomePrice
+    };
+  }, [isPro, purchasePrice, monthlyRent, years, currentYearData, buyingCosts, sellingCosts, maintenanceRate, propertyTax]);
 
   return (
     <div className="space-y-8">
@@ -338,6 +405,277 @@ export default function RentVsBuyEngine({ isPro, onUpgrade }: RentVsBuyEnginePro
 
         </div>
       </div>
+
+      {/* PRO FEATURES UPGRADE CARD */}
+      {!isPro && (
+        <div className="bg-gradient-to-br from-purple-600 to-indigo-600 rounded-[3rem] p-12 text-white relative overflow-hidden shadow-2xl">
+          <div className="absolute top-0 right-0 p-12 opacity-10 rotate-12">
+            <Zap size={200} fill="currentColor" />
+          </div>
+          <div className="relative z-10">
+            <div className="flex items-center gap-3 mb-6">
+              <Lock size={24} />
+              <h3 className="text-3xl font-black">Lifecycle Housing Strategy</h3>
+            </div>
+            <p className="text-purple-50 text-lg font-medium mb-8 max-w-3xl leading-relaxed">
+              Unlock advanced simulations that reveal the long-term wealth impact of housing decisions across multiple moves, market conditions, and life stages.
+            </p>
+            <div className="grid md:grid-cols-3 gap-6 mb-8">
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                <Repeat size={24} className="mb-3" />
+                <h4 className="font-black text-sm mb-2">3-Move Simulation</h4>
+                <p className="text-purple-100 text-xs font-medium">Model starter home → family home → downsize to see how transaction costs compound</p>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                <DollarSign size={24} className="mb-3" />
+                <h4 className="font-black text-sm mb-2">Hidden Drag Calculator</h4>
+                <p className="text-purple-100 text-xs font-medium">Quantify all the costs beyond your mortgage: maintenance, property tax, HOA, closing costs</p>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                <MapPin size={24} className="mb-3" />
+                <h4 className="font-black text-sm mb-2">Mobility Premium</h4>
+                <p className="text-purple-100 text-xs font-medium">Calculate the career optionality value of staying flexible vs. being locked into a property</p>
+              </div>
+            </div>
+            <button
+              onClick={onUpgrade}
+              className="bg-white text-purple-600 px-8 py-4 rounded-2xl font-black hover:bg-purple-50 transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
+            >
+              <Zap size={20} fill="currentColor" />
+              Upgrade to Pro - $9/month
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* PRO FEATURES: Lifecycle Housing Strategy */}
+      {isPro && lifecycleAnalysis && (
+        <div className="space-y-8">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="bg-purple-600 text-white p-3 rounded-2xl">
+              <Zap size={24} />
+            </div>
+            <div>
+              <h3 className="text-2xl font-black text-slate-900">Lifecycle Housing Strategy</h3>
+              <p className="text-slate-500 font-medium">Long-term wealth impact across multiple life stages</p>
+            </div>
+          </div>
+
+          {/* Multi-Move Friction Analysis */}
+          <div className="bg-gradient-to-br from-rose-500 to-pink-600 rounded-[3rem] p-10 text-white shadow-xl">
+            <div className="flex items-start gap-4 mb-6">
+              <div className="bg-white/20 p-3 rounded-2xl backdrop-blur-sm">
+                <Repeat size={32} />
+              </div>
+              <div className="flex-1">
+                <h4 className="text-2xl font-black mb-3">The 3-Move Reality</h4>
+                <p className="text-rose-50 font-medium text-lg leading-relaxed mb-6">
+                  Most people don't buy one house and stay forever. Let's model a realistic lifecycle:
+                </p>
+                <div className="space-y-3 mb-6">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-bold">Move 1: Starter Home (Years 0-7)</span>
+                      <span className="text-sm">{formatCurrency(purchasePrice * 0.7)}</span>
+                    </div>
+                    <p className="text-rose-100 text-xs">2BR condo or small house to get started</p>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-bold">Move 2: Family Home (Years 7-22)</span>
+                      <span className="text-sm">{formatCurrency(purchasePrice)}</span>
+                    </div>
+                    <p className="text-rose-100 text-xs">Upgrade for kids, schools, space</p>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-bold">Move 3: Downsize (Years 22-30)</span>
+                      <span className="text-sm">{formatCurrency(purchasePrice * 0.6)}</span>
+                    </div>
+                    <p className="text-rose-100 text-xs">Empty nest, lower maintenance</p>
+                  </div>
+                </div>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                    <p className="text-rose-100 text-sm font-bold mb-2">Total Transaction Friction</p>
+                    <p className="text-4xl font-black">{formatCurrency(lifecycleAnalysis.moves.transactionCosts)}</p>
+                    <p className="text-rose-100 text-xs font-medium mt-2">
+                      Closing costs + realtor fees across 3 purchases and 2 sales
+                    </p>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                    <p className="text-rose-100 text-sm font-bold mb-2">vs. Single Home</p>
+                    <p className="text-4xl font-black">{formatCurrency(lifecycleAnalysis.moves.singleHomeTransactionCost)}</p>
+                    <p className="text-rose-100 text-xs font-medium mt-2">
+                      Extra friction cost: {formatCurrency(lifecycleAnalysis.moves.extraFriction)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+              <p className="text-sm font-black text-rose-100 mb-2">CORTEX INSIGHT</p>
+              <p className="font-medium text-white">
+                Over 3 expected moves, renting preserves {formatCurrency(lifecycleAnalysis.moves.extraFriction + nwDiff)} more wealth due to transaction costs and mobility value—even with "wasted" rent.
+              </p>
+            </div>
+          </div>
+
+          {/* Hidden Drag Calculator */}
+          <div className="bg-white rounded-[3rem] p-10 border border-slate-200 shadow-sm">
+            <div className="flex items-start gap-4 mb-6">
+              <div className="bg-orange-100 text-orange-600 p-3 rounded-2xl">
+                <DollarSign size={32} />
+              </div>
+              <div className="flex-1">
+                <h4 className="text-2xl font-black text-slate-900 mb-3">The Hidden Drag</h4>
+                <p className="text-slate-600 font-medium text-lg leading-relaxed mb-6">
+                  Your mortgage payment is just the beginning. Here are ALL the costs of ownership over {years} years:
+                </p>
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
+                    <span className="font-bold text-slate-700">Maintenance ({maintenanceRate}% annually)</span>
+                    <span className="font-black text-slate-900">{formatCurrency(purchasePrice * (maintenanceRate / 100) * years)}</span>
+                  </div>
+                  <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
+                    <span className="font-bold text-slate-700">Property Tax ({propertyTax}% annually)</span>
+                    <span className="font-black text-slate-900">{formatCurrency(purchasePrice * (propertyTax / 100) * years)}</span>
+                  </div>
+                  <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
+                    <span className="font-bold text-slate-700">Insurance (0.5% annually)</span>
+                    <span className="font-black text-slate-900">{formatCurrency(purchasePrice * 0.005 * years)}</span>
+                  </div>
+                  <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
+                    <span className="font-bold text-slate-700">HOA/Condo Fees (est.)</span>
+                    <span className="font-black text-slate-900">{formatCurrency(3600 * years)}</span>
+                  </div>
+                  <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
+                    <span className="font-bold text-slate-700">Closing Costs ({buyingCosts}%)</span>
+                    <span className="font-black text-slate-900">{formatCurrency(purchasePrice * (buyingCosts / 100))}</span>
+                  </div>
+                  <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
+                    <span className="font-bold text-slate-700">Future Selling Costs ({sellingCosts}%)</span>
+                    <span className="font-black text-slate-900">{formatCurrency(currentYearData.homeValue * (sellingCosts / 100))}</span>
+                  </div>
+                  <div className="flex items-center justify-between p-4 bg-gradient-to-r from-orange-100 to-rose-100 rounded-xl border-2 border-orange-300">
+                    <span className="font-black text-slate-900 text-lg">Total Hidden Drag</span>
+                    <span className="font-black text-orange-600 text-2xl">{formatCurrency(lifecycleAnalysis.totalHiddenCosts)}</span>
+                  </div>
+                </div>
+                <div className="bg-orange-50 rounded-2xl p-6 border border-orange-100">
+                  <p className="text-orange-600 text-sm font-bold mb-2">Monthly Hidden Drag</p>
+                  <p className="text-4xl font-black text-slate-900">{formatCurrency(lifecycleAnalysis.monthlyHiddenDrag)}/mo</p>
+                  <p className="text-slate-500 text-xs font-medium mt-2">
+                    This is ON TOP of your {formatCurrency((purchasePrice - (purchasePrice * downPaymentPct / 100)) * (mortgageRate / 100 / 12))} monthly mortgage payment
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Mobility Premium */}
+          <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-[3rem] p-10 text-white shadow-xl">
+            <div className="flex items-start gap-4 mb-6">
+              <div className="bg-white/20 p-3 rounded-2xl backdrop-blur-sm">
+                <MapPin size={32} />
+              </div>
+              <div className="flex-1">
+                <h4 className="text-2xl font-black mb-3">The Mobility Premium</h4>
+                <p className="text-emerald-50 font-medium text-lg leading-relaxed mb-6">
+                  Renting isn't just flexibility—it's career optionality with real dollar value.
+                </p>
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 mb-6">
+                  <h5 className="font-black mb-4">Real-World Scenario:</h5>
+                  <ul className="space-y-3 text-emerald-50">
+                    <li className="flex items-start gap-3">
+                      <div className="w-2 h-2 rounded-full bg-emerald-300 mt-2 shrink-0"></div>
+                      <span>Year 3: Dream job offer in another city with 15% raise</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <div className="w-2 h-2 rounded-full bg-emerald-300 mt-2 shrink-0"></div>
+                      <span>Homeowner: Sell (lose 8% to transaction costs) or rent out (become landlord)</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <div className="w-2 h-2 rounded-full bg-emerald-300 mt-2 shrink-0"></div>
+                      <span>Renter: Give 30 days notice, take the job, increase income immediately</span>
+                    </li>
+                  </ul>
+                </div>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                    <p className="text-emerald-100 text-sm font-bold mb-2">Standard Rent Net Worth</p>
+                    <p className="text-4xl font-black">{formatCurrency(currentYearData.rentNetWorth)}</p>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                    <p className="text-emerald-100 text-sm font-bold mb-2">Mobility-Adjusted Value</p>
+                    <p className="text-4xl font-black">{formatCurrency(lifecycleAnalysis.mobilityAdjustedRentNW)}</p>
+                    <p className="text-emerald-100 text-xs font-medium mt-2">
+                      +{formatCurrency(lifecycleAnalysis.mobilityPremium)} opportunity value
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+              <p className="text-sm font-black text-emerald-100 mb-2">CORTEX INSIGHT</p>
+              <p className="font-medium text-white">
+                Career mobility has quantifiable value. Being locked into a property when a life-changing opportunity appears has a real cost that traditional rent vs. buy calculators ignore.
+              </p>
+            </div>
+          </div>
+
+          {/* Market Timing Risk */}
+          <div className="bg-white rounded-[3rem] p-10 border border-slate-200 shadow-sm">
+            <div className="flex items-start gap-4 mb-6">
+              <div className="bg-indigo-100 text-indigo-600 p-3 rounded-2xl">
+                <TrendingUp size={32} />
+              </div>
+              <div className="flex-1">
+                <h4 className="text-2xl font-black text-slate-900 mb-3">Market Timing Scenarios</h4>
+                <p className="text-slate-600 font-medium text-lg leading-relaxed mb-6">
+                  Housing markets fluctuate. Here's your outcome range based on historical data:
+                </p>
+                <div className="space-y-6">
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-sm font-bold text-slate-500">Best Case (Buy at Bottom)</span>
+                      <span className="text-lg font-black text-emerald-600">{formatCurrency(lifecycleAnalysis.bestCase)}</span>
+                    </div>
+                    <div className="w-full bg-slate-100 rounded-full h-3">
+                      <div className="h-3 bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-full" style={{ width: '100%' }}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-sm font-bold text-slate-500">Your Scenario (Current Inputs)</span>
+                      <span className="text-lg font-black text-indigo-600">{formatCurrency(currentYearData.buyNetWorth)}</span>
+                    </div>
+                    <div className="w-full bg-slate-100 rounded-full h-3">
+                      <div className="h-3 bg-gradient-to-r from-indigo-400 to-indigo-600 rounded-full" style={{ width: '80%' }}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-sm font-bold text-slate-500">Worst Case (Buy at Peak)</span>
+                      <span className="text-lg font-black text-rose-600">{formatCurrency(lifecycleAnalysis.worstCase)}</span>
+                    </div>
+                    <div className="w-full bg-slate-100 rounded-full h-3">
+                      <div className="h-3 bg-gradient-to-r from-rose-400 to-rose-600 rounded-full" style={{ width: '60%' }}></div>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-amber-50 rounded-2xl p-6 border border-amber-200 mt-6">
+                  <p className="text-amber-600 text-sm font-bold mb-2">Market Timing Risk</p>
+                  <p className="text-4xl font-black text-slate-900 mb-2">{formatCurrency(lifecycleAnalysis.marketTimingRisk)}</p>
+                  <p className="text-slate-600 text-sm font-medium">
+                    The spread between buying at the right time vs. the wrong time. Renters are insulated from this volatility.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer Note */}
       <footer className="pt-8 border-t border-slate-200 text-center">
