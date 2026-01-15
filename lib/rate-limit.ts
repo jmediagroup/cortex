@@ -140,4 +140,7 @@ export const RATE_LIMITS = {
 
   // General API: 60 requests per minute per IP
   general: { limit: 60, windowSeconds: 60 },
+
+  // Email resend: 3 requests per 5 minutes per email
+  emailResend: { limit: 3, windowSeconds: 300 },
 } as const;
