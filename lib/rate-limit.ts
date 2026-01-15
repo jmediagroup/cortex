@@ -1,6 +1,7 @@
 /**
  * Simple in-memory rate limiter for API endpoints
  * For production at scale, consider using Redis-based rate limiting via Upstash
+ * @version 1.0.0
  */
 
 interface RateLimitEntry {
