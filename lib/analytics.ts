@@ -6,6 +6,8 @@ export type EventType =
   | 'user_signup'
   | 'user_login'
   | 'user_logout'
+  | 'password_reset_requested'
+  | 'password_reset_completed'
   | 'subscription_upgrade'
   | 'subscription_cancel'
 
