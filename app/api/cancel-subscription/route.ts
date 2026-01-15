@@ -1,15 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe/server';
 import { createServiceClient } from '@/lib/supabase/client';
+import { authenticateRequest, isAuthError, errorResponse } from '@/lib/auth-helpers';
+import { checkRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = await request.json();
+    // SECURITY: Authenticate request and extract user ID from token
+    // This prevents users from canceling other users' subscriptions
+    const authResult = await authenticateRequest(request);
+    if (isAuthError(authResult)) {
+      return errorResponse(authResult.error, authResult.status);
+    }
 
-    if (!userId) {
+    const { user } = authResult;
+    const userId = user.id;
+
+    // Rate limiting by authenticated user ID (more accurate than IP for logged-in users)
+    const rateLimit = checkRateLimit(`cancel:${userId}`, RATE_LIMITS.cancelSubscription);
+    if (!rateLimit.success) {
       return NextResponse.json(
-        { error: 'User ID is required' },
-        { status: 400 }
+        { error: 'Too many requests. Please try again later.' },
+        {
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': rateLimit.limit.toString(),
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': rateLimit.resetTime.toString(),
+            'Retry-After': Math.ceil((rateLimit.resetTime - Date.now()) / 1000).toString(),
+          },
+        }
       );
     }
 

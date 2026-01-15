@@ -3,9 +3,28 @@ import { createServiceClient, type Database } from '@/lib/supabase/client';
 import { createCheckoutSession } from '@/lib/stripe/server';
 import { authenticateRequest, isAuthError, errorResponse } from '@/lib/auth-helpers';
 import { validateRequiredFields, isValidPriceId, isAllowedPriceId } from '@/lib/validation';
+import { checkRateLimit, getClientIP, RATE_LIMITS } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting by IP
+    const clientIP = getClientIP(request.headers);
+    const rateLimit = checkRateLimit(`checkout:${clientIP}`, RATE_LIMITS.checkout);
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again later.' },
+        {
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': rateLimit.limit.toString(),
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': rateLimit.resetTime.toString(),
+            'Retry-After': Math.ceil((rateLimit.resetTime - Date.now()) / 1000).toString(),
+          },
+        }
+      );
+    }
+
     const body = await request.json();
     const { priceId } = body;
 
