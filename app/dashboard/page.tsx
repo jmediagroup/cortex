@@ -22,7 +22,8 @@ import {
   MapPin,
   Compass,
   Wallet,
-  BarChart3
+  BarChart3,
+  Dices
 } from 'lucide-react';
 import { hasAppAccess, getTierDisplayName, type Tier } from '@/lib/access-control';
 import { trackEvent } from '@/lib/analytics';
@@ -143,6 +144,16 @@ const APPS = [
     sector: 'finance' as const,
     category: 'Personal Finance',
     path: '/apps/budget'
+  },
+  {
+    id: 'gambling-redirect',
+    name: 'Gambling Spend Redirect',
+    description: 'See the life-changing difference between playing the odds and owning the market. Redirect gambling spend toward real wealth.',
+    icon: <Dices className="text-emerald-600" />,
+    tier: 'free' as const,
+    sector: 'finance' as const,
+    category: 'Personal Finance',
+    path: '/apps/gambling-redirect'
   }
 ];
 
