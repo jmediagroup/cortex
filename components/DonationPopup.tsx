@@ -1,22 +1,27 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { X, Coffee, Heart, ExternalLink } from 'lucide-react';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { trackEvent } from '@/lib/analytics';
 import { type Tier } from '@/lib/access-control';
 
 const GUMROAD_LINK = 'https://jmediagroup.gumroad.com/coffee';
-const POPUP_DELAY_MS = 3 * 60 * 1000; // 3 minutes
 const STORAGE_KEY = 'cortex_donation_popup_dismissed';
 const DISMISS_DURATION_DAYS = 7; // Don't show again for 7 days after dismissal
+const MIN_TIME_ON_PAGE_MS = 10000; // Wait at least 10 seconds before allowing exit intent
+const EXIT_INTENT_THRESHOLD = 20; // Pixels from top of viewport to trigger
 
 export default function DonationPopup() {
   const [showPopup, setShowPopup] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [isEligible, setIsEligible] = useState(false);
+  const hasTriggeredRef = useRef(false);
+  const pageLoadTimeRef = useRef(Date.now());
 
+  // Check eligibility on mount
   useEffect(() => {
-    const checkAndShowPopup = async () => {
+    const checkEligibility = async () => {
       // Check if popup was recently dismissed
       const dismissedAt = localStorage.getItem(STORAGE_KEY);
       if (dismissedAt) {
@@ -44,17 +49,41 @@ export default function DonationPopup() {
         }
       }
 
-      // Set timer to show popup after 3 minutes
-      const timer = setTimeout(() => {
-        setShowPopup(true);
-        trackEvent('donation_popup_shown', { source: 'time_trigger' });
-      }, POPUP_DELAY_MS);
-
-      return () => clearTimeout(timer);
+      // User is eligible for the popup
+      setIsEligible(true);
     };
 
-    checkAndShowPopup();
+    checkEligibility();
   }, []);
+
+  // Exit intent detection
+  const handleMouseLeave = useCallback((e: MouseEvent) => {
+    // Only trigger if mouse leaves from top of viewport
+    if (e.clientY > EXIT_INTENT_THRESHOLD) return;
+
+    // Don't trigger if already shown or not eligible
+    if (hasTriggeredRef.current || !isEligible) return;
+
+    // Don't trigger if user hasn't been on page long enough
+    const timeOnPage = Date.now() - pageLoadTimeRef.current;
+    if (timeOnPage < MIN_TIME_ON_PAGE_MS) return;
+
+    // Show the popup
+    hasTriggeredRef.current = true;
+    setShowPopup(true);
+    trackEvent('donation_popup_shown', { source: 'exit_intent' });
+  }, [isEligible]);
+
+  // Set up exit intent listener
+  useEffect(() => {
+    if (!isEligible) return;
+
+    document.addEventListener('mouseleave', handleMouseLeave);
+
+    return () => {
+      document.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, [isEligible, handleMouseLeave]);
 
   const handleClose = () => {
     setIsClosing(true);
@@ -112,17 +141,17 @@ export default function DonationPopup() {
             <div className="bg-white/20 backdrop-blur-sm w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <Coffee size={32} className="text-white" />
             </div>
-            <h3 className="text-2xl font-black mb-2">Enjoying Cortex?</h3>
+            <h3 className="text-2xl font-black mb-2">Wait! Before you go...</h3>
             <p className="text-amber-100 font-medium">
-              These tools are free, but they took time to build.
+              Did you find Cortex helpful?
             </p>
           </div>
 
           {/* Body */}
           <div className="p-8">
             <p className="text-slate-600 font-medium text-center mb-6 leading-relaxed">
-              If Cortex has helped you make better financial decisions, consider buying me a coffee.
-              Your support helps keep these tools free for everyone.
+              These tools are free, but they took time to build.
+              If Cortex helped you make better financial decisions, consider buying me a coffee.
             </p>
 
             <div className="space-y-3">
