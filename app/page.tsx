@@ -19,7 +19,8 @@ import {
   Landmark,
   TrendingDown,
   MapPin,
-  Wallet
+  Wallet,
+  BarChart3
 } from 'lucide-react';
 
 /**
@@ -152,6 +153,13 @@ export default function LandingPage() {
                 description: "See how your money grows over time with different contribution strategies and rates.",
                 isFree: true,
                 link: "/apps/compound-interest"
+              },
+              {
+                icon: <BarChart3 />,
+                title: "Index Fund Growth Visualizer",
+                description: "Simulate historical returns and volatility for popular index ETFs like VOO, VTI, VT, and QQQM.",
+                isFree: true,
+                link: "/apps/index-fund-visualizer"
               },
               {
                 icon: <Wallet />,
