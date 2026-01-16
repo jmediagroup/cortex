@@ -20,7 +20,8 @@ import {
   TrendingDown,
   MapPin,
   Wallet,
-  BarChart3
+  BarChart3,
+  Dices
 } from 'lucide-react';
 
 /**
@@ -167,6 +168,13 @@ export default function LandingPage() {
                 description: "Allocate resources under constraints with AI-powered optimization, tension metrics, and flexibility analysis.",
                 isFree: true,
                 link: "/apps/budget"
+              },
+              {
+                icon: <Dices />,
+                title: "Gambling Spend Redirect",
+                description: "See the wealth gap between playing the odds and owning the market. Redirect gambling spend toward building real wealth.",
+                isFree: true,
+                link: "/apps/gambling-redirect"
               },
               {
                 icon: <TrendingUp />,
