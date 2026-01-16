@@ -4,6 +4,7 @@ import Script from "next/script";
 import "./globals.css";
 import WebVitals from "@/components/WebVitals";
 import Analytics from "@/components/Analytics";
+import DonationPopup from "@/components/DonationPopup";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -92,6 +93,7 @@ export default function RootLayout({
       >
         <WebVitals />
         <Analytics />
+        <DonationPopup />
         {children}
       </body>
     </html>

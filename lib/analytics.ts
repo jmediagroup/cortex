@@ -24,6 +24,11 @@ export type EventType =
   | 'pricing_page_view'
   | 'account_page_view'
 
+  // Donation events
+  | 'donation_popup_shown'
+  | 'donation_popup_clicked'
+  | 'donation_popup_dismissed'
+
   // Error events
   | 'error_occurred'
   | 'api_error'
