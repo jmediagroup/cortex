@@ -21,7 +21,8 @@ import {
   TrendingDown,
   MapPin,
   Compass,
-  Wallet
+  Wallet,
+  BarChart3
 } from 'lucide-react';
 import { hasAppAccess, getTierDisplayName, type Tier } from '@/lib/access-control';
 import { trackEvent } from '@/lib/analytics';
@@ -52,6 +53,16 @@ const APPS = [
     sector: 'finance' as const,
     category: 'Personal Finance',
     path: '/apps/compound-interest'
+  },
+  {
+    id: 'index-fund-visualizer',
+    name: 'Index Fund Growth Visualizer',
+    description: 'Simulate historical returns and volatility for popular index ETFs like VOO, VTI, VT, and QQQM.',
+    icon: <BarChart3 className="text-indigo-600" />,
+    tier: 'free' as const,
+    sector: 'finance' as const,
+    category: 'Investing',
+    path: '/apps/index-fund-visualizer'
   },
   {
     id: 's-corp-optimizer',
