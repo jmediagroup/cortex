@@ -124,7 +124,10 @@ export default function CompoundInterestPage() {
 
       {/* FOOTER */}
       <footer className="max-w-7xl mx-auto px-6 py-12 text-center text-slate-400 font-medium text-sm">
-        &copy; {new Date().getFullYear()} Cortex Financial Technology. All rights reserved.
+        <p>&copy; {new Date().getFullYear()} Cortex Financial Technology. All rights reserved.</p>
+        <a href="/terms" className="text-slate-500 hover:text-slate-700 transition-colors text-xs mt-2 inline-block">
+          Terms & Privacy
+        </a>
       </footer>
     </div>
   );

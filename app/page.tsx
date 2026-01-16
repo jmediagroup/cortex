@@ -585,9 +585,14 @@ export default function LandingPage() {
             </div>
             <span className="font-black text-slate-300">Cortex</span>
           </div>
-          <p className="text-slate-500">
+          <p className="text-slate-500 mb-4">
             &copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.
           </p>
+          <div className="flex items-center justify-center gap-4 text-xs">
+            <a href="/terms" className="text-slate-500 hover:text-slate-300 transition-colors">
+              Terms & Privacy
+            </a>
+          </div>
         </div>
       </footer>
     </div>
