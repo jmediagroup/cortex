@@ -1,6 +1,7 @@
 // WordPress GraphQL Queries
 
-export const ARTICLE_FIELDS = `
+// Core fields that work without additional plugins
+export const ARTICLE_FIELDS_CORE = `
   id
   databaseId
   slug
@@ -45,6 +46,10 @@ export const ARTICLE_FIELDS = `
       }
     }
   }
+`;
+
+// Optional Yoast SEO fields - only include if WPGraphQL Yoast SEO plugin is installed
+export const SEO_FIELDS = `
   seo {
     title
     metaDesc
@@ -62,6 +67,10 @@ export const ARTICLE_FIELDS = `
       raw
     }
   }
+`;
+
+// Optional ACF fields - only include if WPGraphQL for ACF plugin is installed
+export const ACF_FIELDS = `
   acfArticleFields {
     readingTime
     relatedCalculator
@@ -73,6 +82,11 @@ export const ARTICLE_FIELDS = `
     ctaLink
   }
 `;
+
+// Use core fields by default (works without Yoast/ACF)
+// To enable SEO/ACF fields, install the plugins and update this line:
+// export const ARTICLE_FIELDS = ARTICLE_FIELDS_CORE + SEO_FIELDS + ACF_FIELDS;
+export const ARTICLE_FIELDS = ARTICLE_FIELDS_CORE;
 
 export const GET_ARTICLES = `
   query GetArticles($first: Int!, $after: String) {
