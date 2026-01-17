@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Cortex Vercel Auto-Deploy
- * Description: Automatically triggers Vercel deployment when posts are published or updated
- * Version: 1.0.0
+ * Description: Automatically triggers Vercel cache revalidation and optional deployment when posts are published or updated
+ * Version: 1.1.0
  * Author: Cortex Technologies
  */
 
@@ -14,13 +14,25 @@ if (!defined('ABSPATH')) {
 class Cortex_Vercel_Deploy {
 
     /**
-     * Vercel Deploy Hook URL - Set this in wp-config.php
+     * Vercel Deploy Hook URL - Set this in wp-config.php (optional)
      * define('CORTEX_VERCEL_DEPLOY_HOOK', 'https://api.vercel.com/v1/integrations/deploy/...');
      */
     private $deploy_hook_url;
 
     /**
-     * Debounce time in seconds to prevent multiple deploys
+     * Revalidation API URL - Set this in wp-config.php
+     * define('CORTEX_REVALIDATE_URL', 'https://cortex.vip/api/revalidate');
+     */
+    private $revalidate_url;
+
+    /**
+     * Revalidation secret token - Set this in wp-config.php
+     * define('CORTEX_REVALIDATE_SECRET', 'your-secret-token');
+     */
+    private $revalidate_secret;
+
+    /**
+     * Debounce time in seconds to prevent multiple triggers
      */
     private $debounce_seconds = 30;
 
@@ -34,8 +46,16 @@ class Cortex_Vercel_Deploy {
             ? CORTEX_VERCEL_DEPLOY_HOOK
             : '';
 
-        // Only initialize if deploy hook is configured
-        if (empty($this->deploy_hook_url)) {
+        $this->revalidate_url = defined('CORTEX_REVALIDATE_URL')
+            ? CORTEX_REVALIDATE_URL
+            : 'https://cortex.vip/api/revalidate';
+
+        $this->revalidate_secret = defined('CORTEX_REVALIDATE_SECRET')
+            ? CORTEX_REVALIDATE_SECRET
+            : '';
+
+        // Show notice if nothing is configured
+        if (empty($this->deploy_hook_url) && empty($this->revalidate_url)) {
             add_action('admin_notices', [$this, 'show_config_notice']);
             return;
         }
@@ -115,43 +135,51 @@ class Cortex_Vercel_Deploy {
     }
 
     /**
-     * Trigger the Vercel deploy
+     * Trigger cache revalidation and optional Vercel deploy
      */
     private function trigger_deploy($reason, $post_id = null) {
         // Check debounce
         if (get_transient($this->debounce_key)) {
-            $this->log("Deploy skipped (debounced) - Reason: {$reason}");
+            $this->log("Action skipped (debounced) - Reason: {$reason}");
             return false;
         }
 
         // Set debounce transient
         set_transient($this->debounce_key, true, $this->debounce_seconds);
 
-        // Prepare request body
-        $body = [
-            'trigger' => 'wordpress',
-            'reason' => $reason,
-            'post_id' => $post_id,
-            'timestamp' => current_time('c'),
-            'site_url' => get_site_url(),
-        ];
+        // Get post slug for cache revalidation
+        $slug = $post_id ? get_post_field('post_name', $post_id) : null;
 
-        // Make the request
-        $response = wp_remote_post($this->deploy_hook_url, [
-            'body' => json_encode($body),
-            'headers' => [
-                'Content-Type' => 'application/json',
-            ],
-            'timeout' => 10,
-            'blocking' => false, // Don't wait for response
-        ]);
+        // First: Trigger cache revalidation (this is the critical one)
+        $this->trigger_revalidation($reason, $slug);
 
-        if (is_wp_error($response)) {
-            $this->log("Deploy failed - Error: " . $response->get_error_message());
-            return false;
+        // Second: Optionally trigger a full rebuild (not usually needed)
+        if (!empty($this->deploy_hook_url)) {
+            $body = [
+                'trigger' => 'wordpress',
+                'reason' => $reason,
+                'post_id' => $post_id,
+                'timestamp' => current_time('c'),
+                'site_url' => get_site_url(),
+            ];
+
+            $response = wp_remote_post($this->deploy_hook_url, [
+                'body' => json_encode($body),
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                ],
+                'timeout' => 10,
+                'blocking' => false,
+            ]);
+
+            if (is_wp_error($response)) {
+                $this->log("Deploy hook failed - Error: " . $response->get_error_message());
+            } else {
+                $this->log("Deploy hook triggered - Reason: {$reason}");
+            }
         }
 
-        $this->log("Deploy triggered - Reason: {$reason}, Post ID: {$post_id}");
+        $this->log("Action completed - Reason: {$reason}, Post ID: {$post_id}");
 
         // Store last deploy info
         update_option('cortex_last_vercel_deploy', [
@@ -161,6 +189,63 @@ class Cortex_Vercel_Deploy {
         ]);
 
         return true;
+    }
+
+    /**
+     * Trigger Next.js cache revalidation via API
+     */
+    private function trigger_revalidation($reason, $slug = null) {
+        if (empty($this->revalidate_url)) {
+            $this->log("Revalidation skipped - URL not configured");
+            return false;
+        }
+
+        // Map WordPress reasons to revalidation types
+        $type_map = [
+            'post_published' => 'post_published',
+            'post_updated' => 'post_updated',
+            'post_unpublished' => 'post_deleted',
+            'manual' => 'all',
+        ];
+
+        $type = isset($type_map[$reason]) ? $type_map[$reason] : 'all';
+
+        $body = [
+            'type' => $type,
+            'slug' => $slug,
+        ];
+
+        $headers = [
+            'Content-Type' => 'application/json',
+        ];
+
+        // Add authorization header if secret is configured
+        if (!empty($this->revalidate_secret)) {
+            $headers['Authorization'] = 'Bearer ' . $this->revalidate_secret;
+        }
+
+        $response = wp_remote_post($this->revalidate_url, [
+            'body' => json_encode($body),
+            'headers' => $headers,
+            'timeout' => 15,
+            'blocking' => true, // Wait for response to confirm success
+        ]);
+
+        if (is_wp_error($response)) {
+            $this->log("Revalidation failed - Error: " . $response->get_error_message());
+            return false;
+        }
+
+        $response_code = wp_remote_retrieve_response_code($response);
+        $response_body = wp_remote_retrieve_body($response);
+
+        if ($response_code === 200) {
+            $this->log("Revalidation successful - Type: {$type}, Slug: " . ($slug ?: 'all'));
+            return true;
+        } else {
+            $this->log("Revalidation failed - HTTP {$response_code}: {$response_body}");
+            return false;
+        }
     }
 
     /**
@@ -224,8 +309,16 @@ class Cortex_Vercel_Deploy {
             <div class="card" style="max-width: 600px; padding: 20px; margin-top: 20px;">
                 <h2>Configuration</h2>
                 <p>
+                    <strong>Revalidation URL:</strong>
+                    <?php echo $this->revalidate_url ? '✓ ' . esc_html($this->revalidate_url) : '✗ Not configured'; ?>
+                </p>
+                <p>
+                    <strong>Revalidation Secret:</strong>
+                    <?php echo $this->revalidate_secret ? '✓ Configured' : '○ Not set (optional)'; ?>
+                </p>
+                <p>
                     <strong>Deploy Hook:</strong>
-                    <?php echo $this->deploy_hook_url ? '✓ Configured' : '✗ Not configured'; ?>
+                    <?php echo $this->deploy_hook_url ? '✓ Configured' : '○ Not set (optional)'; ?>
                 </p>
                 <p>
                     <strong>Debounce:</strong>
@@ -234,6 +327,11 @@ class Cortex_Vercel_Deploy {
                 <p>
                     <strong>Post Types:</strong>
                     <?php echo implode(', ', apply_filters('cortex_vercel_deploy_post_types', ['post'])); ?>
+                </p>
+                <hr style="margin: 15px 0;">
+                <p style="font-size: 12px; color: #666;">
+                    <strong>How it works:</strong> When a post is published/updated, the plugin calls your Next.js revalidation API to clear the cache,
+                    then optionally triggers a Vercel rebuild. Cache revalidation is instant; rebuilds take longer but aren't usually needed.
                 </p>
             </div>
         </div>
