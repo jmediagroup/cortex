@@ -130,24 +130,15 @@ export const GET_ALL_ARTICLE_SLUGS = `
 `;
 
 export const GET_ARTICLES_BY_CATEGORY = `
-  query GetArticlesByCategory($slug: String!, $first: Int!, $after: String) {
-    category(id: $slug, idType: SLUG) {
-      name
-      slug
-      description
-      posts(first: $first, after: $after, where: { status: PUBLISH }) {
-        edges {
-          node {
-            ${ARTICLE_FIELDS}
-          }
-          cursor
+  query GetArticlesByCategory($categorySlug: String!, $first: Int!) {
+    posts(first: $first, where: { status: PUBLISH, categoryName: $categorySlug }) {
+      edges {
+        node {
+          ${ARTICLE_FIELDS}
         }
-        pageInfo {
-          hasNextPage
-          hasPreviousPage
-          startCursor
-          endCursor
-        }
+      }
+      pageInfo {
+        hasNextPage
       }
     }
   }
@@ -163,6 +154,21 @@ export const GET_CATEGORIES = `
           description
           count
         }
+      }
+    }
+  }
+`;
+
+export const SEARCH_ARTICLES = `
+  query SearchArticles($search: String!, $first: Int!) {
+    posts(first: $first, where: { status: PUBLISH, search: $search }) {
+      edges {
+        node {
+          ${ARTICLE_FIELDS}
+        }
+      }
+      pageInfo {
+        hasNextPage
       }
     }
   }

@@ -9,6 +9,9 @@ import {
   GET_ARTICLES,
   GET_ARTICLE_BY_SLUG,
   GET_ALL_ARTICLE_SLUGS,
+  GET_CATEGORIES,
+  SEARCH_ARTICLES,
+  GET_ARTICLES_BY_CATEGORY,
 } from './queries';
 
 const WORDPRESS_API_URL = process.env.NEXT_PUBLIC_WORDPRESS_GRAPHQL_URL;
@@ -241,4 +244,96 @@ export function formatArticleDate(dateString: string): string {
     month: 'long',
     day: 'numeric',
   });
+}
+
+// Category type
+export interface Category {
+  name: string;
+  slug: string;
+  count: number;
+}
+
+// Fetch all categories
+export async function getCategories(): Promise<Category[]> {
+  try {
+    const data = await fetchGraphQL<{
+      categories: {
+        edges: Array<{
+          node: {
+            name: string;
+            slug: string;
+            count: number;
+          };
+        }>;
+      };
+    }>(GET_CATEGORIES, {}, [CACHE_TAGS.articles]);
+
+    return data.categories.edges
+      .map((edge) => ({
+        name: edge.node.name,
+        slug: edge.node.slug,
+        count: edge.node.count || 0,
+      }))
+      .filter((cat) => cat.slug !== 'uncategorized');
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    return [];
+  }
+}
+
+// Search articles by query
+export async function searchArticles(
+  searchQuery: string,
+  first: number = 10
+): Promise<{
+  articles: ArticleListItem[];
+  hasNextPage: boolean;
+}> {
+  try {
+    const data = await fetchGraphQL<WPArticlesResponse>(
+      SEARCH_ARTICLES,
+      { search: searchQuery, first },
+      [CACHE_TAGS.articles]
+    );
+
+    return {
+      articles: data.posts.edges.map((edge) => transformToListItem(edge.node)),
+      hasNextPage: data.posts.pageInfo.hasNextPage,
+    };
+  } catch (error) {
+    console.error('Error searching articles:', error);
+    return { articles: [], hasNextPage: false };
+  }
+}
+
+// Fetch articles by category
+export async function getArticlesByCategory(
+  categorySlug: string,
+  first: number = 10
+): Promise<{
+  articles: ArticleListItem[];
+  hasNextPage: boolean;
+  categoryName: string | null;
+}> {
+  try {
+    const data = await fetchGraphQL<{
+      posts: {
+        edges: Array<{ node: WPArticle }>;
+        pageInfo: { hasNextPage: boolean };
+      };
+    }>(
+      GET_ARTICLES_BY_CATEGORY,
+      { categorySlug, first },
+      [CACHE_TAGS.articles]
+    );
+
+    return {
+      articles: data.posts.edges.map((edge) => transformToListItem(edge.node)),
+      hasNextPage: data.posts.pageInfo.hasNextPage,
+      categoryName: null,
+    };
+  } catch (error) {
+    console.error('Error fetching articles by category:', error);
+    return { articles: [], hasNextPage: false, categoryName: null };
+  }
 }

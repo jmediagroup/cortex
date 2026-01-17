@@ -1,8 +1,8 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Brain, Clock, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
-import { getArticles, formatArticleDate } from '@/lib/wordpress/client';
+import { Brain, Clock, ArrowRight, ChevronLeft, ChevronRight, Search, X, Folder } from 'lucide-react';
+import { getArticles, getCategories, searchArticles, getArticlesByCategory, formatArticleDate, Category } from '@/lib/wordpress/client';
 import { ArticleListItem } from '@/lib/wordpress/types';
 
 export const metadata: Metadata = {
@@ -28,26 +28,47 @@ export const metadata: Metadata = {
 };
 
 interface PageProps {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; q?: string; category?: string }>;
 }
 
 export default async function ArticlesPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const currentPage = parseInt(params.page || '1', 10);
+  const searchQuery = params.q || '';
+  const categoryFilter = params.category || '';
   const articlesPerPage = 12;
 
   let articles: ArticleListItem[] = [];
+  let categories: Category[] = [];
   let hasNextPage = false;
   let error: string | null = null;
 
   try {
-    const result = await getArticles(articlesPerPage);
-    articles = result.articles;
-    hasNextPage = result.hasNextPage;
+    // Fetch categories for sidebar
+    categories = await getCategories();
+
+    // Fetch articles based on filters
+    if (searchQuery) {
+      const result = await searchArticles(searchQuery, articlesPerPage);
+      articles = result.articles;
+      hasNextPage = result.hasNextPage;
+    } else if (categoryFilter) {
+      const result = await getArticlesByCategory(categoryFilter, articlesPerPage);
+      articles = result.articles;
+      hasNextPage = result.hasNextPage;
+    } else {
+      const result = await getArticles(articlesPerPage);
+      articles = result.articles;
+      hasNextPage = result.hasNextPage;
+    }
   } catch (e) {
     console.error('Failed to fetch articles:', e);
     error = 'Unable to load articles. Please try again later.';
   }
+
+  const activeCategoryName = categoryFilter
+    ? categories.find((c) => c.slug === categoryFilter)?.name || categoryFilter
+    : null;
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
@@ -76,75 +97,198 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
       </nav>
 
       {/* MAIN CONTENT */}
-      <main className="max-w-7xl mx-auto px-6 py-16">
+      <main className="max-w-7xl mx-auto px-6 py-12">
         {/* HEADER */}
-        <div className="text-center mb-16">
-          <h1 className="text-5xl md:text-6xl font-black text-slate-900 mb-6 tracking-tight">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">
             Financial Insights
           </h1>
-          <p className="text-xl text-slate-600 font-medium max-w-2xl mx-auto">
+          <p className="text-lg text-slate-600 font-medium max-w-2xl mx-auto">
             Expert guides, strategies, and insights to help you make smarter financial decisions.
           </p>
         </div>
 
-        {/* ERROR STATE */}
-        {error && (
-          <div className="text-center py-16">
-            <p className="text-slate-600 text-lg">{error}</p>
-            <Link
-              href="/articles"
-              className="inline-flex items-center gap-2 mt-4 text-indigo-600 font-bold hover:text-indigo-700"
-            >
-              Try again
-              <ArrowRight size={16} />
-            </Link>
-          </div>
-        )}
+        {/* LAYOUT: SIDEBAR + CONTENT */}
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* LEFT SIDEBAR */}
+          <aside className="lg:w-64 flex-shrink-0">
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 sticky top-24">
+              {/* SEARCH */}
+              <div className="mb-6">
+                <h3 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
+                  <Search size={16} />
+                  Search
+                </h3>
+                <form action="/articles" method="GET">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      name="q"
+                      defaultValue={searchQuery}
+                      placeholder="Search articles..."
+                      className="w-full px-4 py-2.5 pr-10 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    />
+                    <button
+                      type="submit"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600"
+                    >
+                      <Search size={16} />
+                    </button>
+                  </div>
+                </form>
+              </div>
 
-        {/* EMPTY STATE */}
-        {!error && articles.length === 0 && (
-          <div className="text-center py-16">
-            <p className="text-slate-600 text-lg mb-4">No articles published yet.</p>
-            <p className="text-slate-500">Check back soon for new content!</p>
-          </div>
-        )}
+              {/* CATEGORIES */}
+              <div>
+                <h3 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
+                  <Folder size={16} />
+                  Categories
+                </h3>
+                <ul className="space-y-1">
+                  <li>
+                    <Link
+                      href="/articles"
+                      className={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        !categoryFilter && !searchQuery
+                          ? 'bg-indigo-50 text-indigo-700'
+                          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                      }`}
+                    >
+                      All Articles
+                    </Link>
+                  </li>
+                  {categories.map((category) => (
+                    <li key={category.slug}>
+                      <Link
+                        href={`/articles?category=${category.slug}`}
+                        className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                          categoryFilter === category.slug
+                            ? 'bg-indigo-50 text-indigo-700'
+                            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                        }`}
+                      >
+                        <span>{category.name}</span>
+                        <span className={`text-xs px-2 py-0.5 rounded-full ${
+                          categoryFilter === category.slug
+                            ? 'bg-indigo-200 text-indigo-800'
+                            : 'bg-slate-100 text-slate-500'
+                        }`}>
+                          {category.count}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </aside>
 
-        {/* ARTICLES GRID */}
-        {articles.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {articles.map((article) => (
-              <ArticleCard key={article.id} article={article} />
-            ))}
-          </div>
-        )}
-
-        {/* PAGINATION */}
-        {articles.length > 0 && (
-          <div className="flex justify-center items-center gap-4 mt-16">
-            {currentPage > 1 && (
-              <Link
-                href={`/articles?page=${currentPage - 1}`}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 hover:border-indigo-300 hover:text-indigo-600 transition-all"
-              >
-                <ChevronLeft size={20} />
-                Previous
-              </Link>
+          {/* MAIN CONTENT AREA */}
+          <div className="flex-1 min-w-0">
+            {/* ACTIVE FILTERS */}
+            {(searchQuery || categoryFilter) && (
+              <div className="flex items-center gap-3 mb-6">
+                <span className="text-sm text-slate-500">Showing:</span>
+                {searchQuery && (
+                  <Link
+                    href={categoryFilter ? `/articles?category=${categoryFilter}` : '/articles'}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-full text-sm font-medium hover:bg-indigo-100 transition-colors"
+                  >
+                    &ldquo;{searchQuery}&rdquo;
+                    <X size={14} />
+                  </Link>
+                )}
+                {categoryFilter && (
+                  <Link
+                    href={searchQuery ? `/articles?q=${searchQuery}` : '/articles'}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-full text-sm font-medium hover:bg-indigo-100 transition-colors"
+                  >
+                    {activeCategoryName}
+                    <X size={14} />
+                  </Link>
+                )}
+              </div>
             )}
-            <span className="text-slate-500 font-medium">Page {currentPage}</span>
-            {hasNextPage && (
-              <Link
-                href={`/articles?page=${currentPage + 1}`}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-all"
-              >
-                Next
-                <ChevronRight size={20} />
-              </Link>
+
+            {/* ERROR STATE */}
+            {error && (
+              <div className="text-center py-16">
+                <p className="text-slate-600 text-lg">{error}</p>
+                <Link
+                  href="/articles"
+                  className="inline-flex items-center gap-2 mt-4 text-indigo-600 font-bold hover:text-indigo-700"
+                >
+                  Try again
+                  <ArrowRight size={16} />
+                </Link>
+              </div>
+            )}
+
+            {/* EMPTY STATE */}
+            {!error && articles.length === 0 && (
+              <div className="text-center py-16 bg-white rounded-2xl border border-slate-200">
+                <p className="text-slate-600 text-lg mb-2">
+                  {searchQuery
+                    ? `No articles found for "${searchQuery}"`
+                    : categoryFilter
+                    ? `No articles in this category yet`
+                    : 'No articles published yet.'}
+                </p>
+                <p className="text-slate-500 text-sm mb-4">
+                  {searchQuery || categoryFilter
+                    ? 'Try adjusting your search or browse all articles.'
+                    : 'Check back soon for new content!'}
+                </p>
+                {(searchQuery || categoryFilter) && (
+                  <Link
+                    href="/articles"
+                    className="inline-flex items-center gap-2 text-indigo-600 font-bold hover:text-indigo-700"
+                  >
+                    View all articles
+                    <ArrowRight size={16} />
+                  </Link>
+                )}
+              </div>
+            )}
+
+            {/* ARTICLES GRID */}
+            {articles.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {articles.map((article) => (
+                  <ArticleCard key={article.id} article={article} />
+                ))}
+              </div>
+            )}
+
+            {/* PAGINATION */}
+            {articles.length > 0 && (
+              <div className="flex justify-center items-center gap-4 mt-12">
+                {currentPage > 1 && (
+                  <Link
+                    href={`/articles?page=${currentPage - 1}${searchQuery ? `&q=${searchQuery}` : ''}${categoryFilter ? `&category=${categoryFilter}` : ''}`}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 hover:border-indigo-300 hover:text-indigo-600 transition-all text-sm"
+                  >
+                    <ChevronLeft size={18} />
+                    Previous
+                  </Link>
+                )}
+                <span className="text-slate-500 font-medium text-sm">Page {currentPage}</span>
+                {hasNextPage && (
+                  <Link
+                    href={`/articles?page=${currentPage + 1}${searchQuery ? `&q=${searchQuery}` : ''}${categoryFilter ? `&category=${categoryFilter}` : ''}`}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-all text-sm"
+                  >
+                    Next
+                    <ChevronRight size={18} />
+                  </Link>
+                )}
+              </div>
             )}
           </div>
-        )}
+        </div>
 
         {/* CTA SECTION */}
-        <div className="mt-24 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl p-12 text-white text-center">
+        <div className="mt-16 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl p-12 text-white text-center">
           <h2 className="text-3xl font-black mb-4">Put Knowledge Into Action</h2>
           <p className="text-indigo-100 font-medium text-lg mb-6 max-w-xl mx-auto">
             Use our free calculators to apply what you&apos;ve learned and make better financial decisions.
@@ -173,7 +317,7 @@ function ArticleCard({ article }: { article: ArticleListItem }) {
       <article className="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:border-indigo-300 hover:shadow-lg transition-all h-full flex flex-col">
         {/* Featured Image */}
         {article.featuredImage ? (
-          <div className="relative h-48 bg-slate-100 overflow-hidden">
+          <div className="relative h-44 bg-slate-100 overflow-hidden">
             <Image
               src={article.featuredImage.url}
               alt={article.featuredImage.alt}
@@ -182,19 +326,19 @@ function ArticleCard({ article }: { article: ArticleListItem }) {
             />
           </div>
         ) : (
-          <div className="h-48 bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
-            <Brain size={48} className="text-indigo-300" />
+          <div className="h-44 bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
+            <Brain size={40} className="text-indigo-300" />
           </div>
         )}
 
-        <div className="p-6 flex flex-col flex-grow">
+        <div className="p-5 flex flex-col flex-grow">
           {/* Categories */}
           {article.categories.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-3">
+            <div className="flex flex-wrap gap-2 mb-2">
               {article.categories.slice(0, 2).map((category) => (
                 <span
                   key={category.slug}
-                  className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded-full"
+                  className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full"
                 >
                   {category.name}
                 </span>
@@ -203,21 +347,21 @@ function ArticleCard({ article }: { article: ArticleListItem }) {
           )}
 
           {/* Title */}
-          <h2 className="text-xl font-black text-slate-900 mb-2 group-hover:text-indigo-600 transition-colors line-clamp-2">
+          <h2 className="text-lg font-black text-slate-900 mb-2 group-hover:text-indigo-600 transition-colors line-clamp-2">
             {article.title}
           </h2>
 
           {/* Excerpt */}
-          <p className="text-slate-600 text-sm mb-4 line-clamp-3 flex-grow">
+          <p className="text-slate-600 text-sm mb-4 line-clamp-2 flex-grow">
             {article.excerpt}
           </p>
 
           {/* Meta */}
-          <div className="flex items-center justify-between text-sm text-slate-500 pt-4 border-t border-slate-100">
+          <div className="flex items-center justify-between text-xs text-slate-500 pt-3 border-t border-slate-100">
             <span className="font-medium">{formatArticleDate(article.date)}</span>
             <span className="flex items-center gap-1 font-medium">
-              <Clock size={14} />
-              {article.readingTime} min read
+              <Clock size={12} />
+              {article.readingTime} min
             </span>
           </div>
         </div>
