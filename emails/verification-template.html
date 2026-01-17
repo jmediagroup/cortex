@@ -1,0 +1,106 @@
+<!--
+  Cortex Email Verification Template
+  Copy this HTML into Supabase Dashboard > Authentication > Email Templates > "Confirm signup"
+
+  Supabase Variables:
+  - {{ .ConfirmationURL }} - The verification link
+  - {{ .Email }} - User's email address
+  - {{ .SiteURL }} - Your site URL (https://cortex.vip)
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Your Email - Cortex</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f8fafc;">
+  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f8fafc;">
+    <tr>
+      <td style="padding: 40px 20px;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 520px; margin: 0 auto; background-color: #ffffff; border-radius: 24px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); overflow: hidden;">
+
+          <!-- Header with solid background (gradient fallback for email clients) -->
+          <tr>
+            <td style="background-color: #4f46e5; padding: 40px 40px 32px 40px; text-align: center;">
+              <!-- Brain Icon -->
+              <div style="width: 56px; height: 56px; background-color: #6366f1; border-radius: 16px; margin: 0 auto 20px auto; line-height: 56px; font-size: 28px;">
+                &#129504;
+              </div>
+              <h1 style="margin: 0 0 8px 0; color: #ffffff !important; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;">
+                Welcome to Cortex
+              </h1>
+              <p style="margin: 0; color: #c7d2fe; font-size: 14px; font-weight: 500;">
+                Tools for Long-Term Thinking
+              </p>
+            </td>
+          </tr>
+
+          <!-- Body content -->
+          <tr>
+            <td style="padding: 40px;">
+              <p style="margin: 0 0 24px 0; color: #334155; font-size: 16px; line-height: 1.6;">
+                Thanks for signing up! Please verify your email address to get started with your free account.
+              </p>
+
+              <!-- CTA Button -->
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                <tr>
+                  <td style="text-align: center; padding: 8px 0 32px 0;">
+                    <a href="{{ .ConfirmationURL }}" style="display: inline-block; background-color: #4f46e5; color: #ffffff; font-size: 16px; font-weight: 700; text-decoration: none; padding: 16px 40px; border-radius: 16px; box-shadow: 0 4px 14px 0 rgba(79, 70, 229, 0.35);">
+                      Verify Email Address
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Security note -->
+              <p style="margin: 0 0 16px 0; color: #64748b; font-size: 14px; line-height: 1.6;">
+                This link will expire in <strong style="color: #334155;">24 hours</strong>. If you didn't create an account with Cortex, you can safely ignore this email.
+              </p>
+
+              <!-- Fallback link -->
+              <p style="margin: 24px 0 0 0; padding: 16px; background-color: #f8fafc; border-radius: 12px; color: #64748b; font-size: 13px; line-height: 1.5;">
+                <strong style="color: #334155;">Button not working?</strong><br>
+                Copy and paste this link into your browser:<br>
+                <a href="{{ .ConfirmationURL }}" style="color: #4f46e5; word-break: break-all;">{{ .ConfirmationURL }}</a>
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 24px 40px; background-color: #f8fafc; border-top: 1px solid #e2e8f0;">
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                <tr>
+                  <td style="text-align: center;">
+                    <p style="margin: 0 0 8px 0; color: #64748b; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
+                      Cortex Technologies
+                    </p>
+                    <p style="margin: 0; color: #94a3b8; font-size: 12px;">
+                      <a href="https://cortex.vip" style="color: #94a3b8; text-decoration: none;">cortex.vip</a>
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+        </table>
+
+        <!-- Email footer text -->
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 520px; margin: 24px auto 0 auto;">
+          <tr>
+            <td style="text-align: center;">
+              <p style="margin: 0; color: #94a3b8; font-size: 11px;">
+                You're receiving this email because you signed up for Cortex using {{ .Email }}
+              </p>
+            </td>
+          </tr>
+        </table>
+
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

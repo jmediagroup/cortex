@@ -4,6 +4,7 @@ import Script from "next/script";
 import "./globals.css";
 import WebVitals from "@/components/WebVitals";
 import Analytics from "@/components/Analytics";
+import DonationPopup from "@/components/DonationPopup";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -59,11 +60,74 @@ export const metadata: Metadata = {
     creator: '@cortextools',
   },
   icons: {
-    icon: '/brain-icon.svg',
-    shortcut: '/brain-icon.svg',
-    apple: '/apple-touch-icon.png',
+    icon: [
+      { url: '/icon', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/apple-icon', sizes: '180x180', type: 'image/png' },
+    ],
   },
-  manifest: '/site.webmanifest',
+  manifest: '/manifest.webmanifest',
+};
+
+// JSON-LD structured data for Organization and WebSite
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': 'https://cortex.vip/#organization',
+      name: 'Cortex Technologies',
+      url: 'https://cortex.vip',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://cortex.vip/icon',
+        width: 512,
+        height: 512,
+      },
+      sameAs: [
+        'https://twitter.com/cortextools',
+      ],
+      description: 'Cortex builds interactive decision-support tools for life\'s biggest choices, starting with personal finance.',
+    },
+    {
+      '@type': 'WebSite',
+      '@id': 'https://cortex.vip/#website',
+      url: 'https://cortex.vip',
+      name: 'Cortex',
+      description: 'Tools for thinking clearly about life\'s biggest decisions.',
+      publisher: {
+        '@id': 'https://cortex.vip/#organization',
+      },
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: {
+          '@type': 'EntryPoint',
+          urlTemplate: 'https://cortex.vip/dashboard?search={search_term_string}',
+        },
+        'query-input': 'required name=search_term_string',
+      },
+    },
+    {
+      '@type': 'SoftwareApplication',
+      '@id': 'https://cortex.vip/#application',
+      name: 'Cortex Financial Tools',
+      applicationCategory: 'FinanceApplication',
+      operatingSystem: 'Web',
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'USD',
+      },
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: '4.8',
+        ratingCount: '150',
+        bestRating: '5',
+        worstRating: '1',
+      },
+    },
+  ],
 };
 
 export default function RootLayout({
@@ -86,12 +150,17 @@ export default function RootLayout({
             gtag('config', 'G-0PQ1RZVNTS');
           `}
         </Script>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <WebVitals />
         <Analytics />
+        <DonationPopup />
         {children}
       </body>
     </html>

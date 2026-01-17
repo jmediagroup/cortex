@@ -19,7 +19,9 @@ import {
   Landmark,
   TrendingDown,
   MapPin,
-  Wallet
+  Wallet,
+  BarChart3,
+  Dices
 } from 'lucide-react';
 
 /**
@@ -154,11 +156,25 @@ export default function LandingPage() {
                 link: "/apps/compound-interest"
               },
               {
+                icon: <BarChart3 />,
+                title: "Index Fund Growth Visualizer",
+                description: "Simulate historical returns and volatility for popular index ETFs like VOO, VTI, VT, and QQQM.",
+                isFree: true,
+                link: "/apps/index-fund-visualizer"
+              },
+              {
                 icon: <Wallet />,
                 title: "Household Budgeting System",
                 description: "Allocate resources under constraints with AI-powered optimization, tension metrics, and flexibility analysis.",
                 isFree: true,
                 link: "/apps/budget"
+              },
+              {
+                icon: <Dices />,
+                title: "Gambling Spend Redirect",
+                description: "See the wealth gap between playing the odds and owning the market. Redirect gambling spend toward building real wealth.",
+                isFree: true,
+                link: "/apps/gambling-redirect"
               },
               {
                 icon: <TrendingUp />,
@@ -577,9 +593,14 @@ export default function LandingPage() {
             </div>
             <span className="font-black text-slate-300">Cortex</span>
           </div>
-          <p className="text-slate-500">
+          <p className="text-slate-500 mb-4">
             &copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.
           </p>
+          <div className="flex items-center justify-center gap-4 text-xs">
+            <a href="/terms" className="text-slate-500 hover:text-slate-300 transition-colors">
+              Terms & Privacy
+            </a>
+          </div>
         </div>
       </footer>
     </div>

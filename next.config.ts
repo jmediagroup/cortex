@@ -63,6 +63,28 @@ const nextConfig: NextConfig = {
 
   // Enable React strict mode for better development
   reactStrictMode: true,
+
+  // Configure remote image patterns for WordPress
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**.wordpress.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.wp.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'secure.gravatar.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cms.cortex.vip',
+      },
+    ],
+  },
 };
 
 export default nextConfig;

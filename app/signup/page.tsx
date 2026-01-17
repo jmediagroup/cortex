@@ -10,6 +10,11 @@ function SignupForm() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [signupComplete, setSignupComplete] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendSuccess, setResendSuccess] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createBrowserClient();
@@ -58,13 +63,11 @@ function SignupForm() {
           console.error('Error creating user record:', insertError);
         }
 
-        // Show success message
+        // Show confirmation screen
         setError(null);
         setLoading(false);
-        alert('Account created! Please check your email to confirm your account.');
-
-        // Redirect to login
-        router.push('/login');
+        setUserEmail(email);
+        setSignupComplete(true);
       }
     } catch (err: any) {
       console.error('Signup error:', err);
@@ -72,6 +75,140 @@ function SignupForm() {
       setLoading(false);
     }
   };
+
+  const handleResend = async () => {
+    if (resendCooldown > 0 || resendLoading) return;
+
+    setResendLoading(true);
+    setResendSuccess(false);
+    setError(null);
+
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: userEmail,
+      });
+
+      if (error) throw error;
+
+      setResendSuccess(true);
+      setResendCooldown(60);
+
+      // Start countdown
+      const interval = setInterval(() => {
+        setResendCooldown((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } catch (err: any) {
+      console.error('Resend error:', err);
+      setError(err.message || 'Failed to resend verification email. Please try again.');
+    } finally {
+      setResendLoading(false);
+    }
+  };
+
+  const handleStartOver = () => {
+    setSignupComplete(false);
+    setUserEmail('');
+    setEmail('');
+    setPassword('');
+    setError(null);
+    setResendSuccess(false);
+    setResendCooldown(0);
+  };
+
+  // Confirmation screen after successful signup
+  if (signupComplete) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-900">
+        <div className="max-w-lg w-full bg-white rounded-[3rem] shadow-2xl border border-slate-200 overflow-hidden p-10 lg:p-12 text-center">
+          {/* Mail Icon */}
+          <div className="mx-auto h-20 w-20 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-3xl flex items-center justify-center mb-8 shadow-xl shadow-indigo-200">
+            <Mail size={40} className="text-white" />
+          </div>
+
+          {/* Heading */}
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-3">
+            Check Your Email
+          </h1>
+
+          {/* Email display */}
+          <p className="text-slate-500 font-medium mb-6">
+            We&apos;ve sent a verification link to
+          </p>
+          <p className="text-indigo-600 font-black text-lg mb-8 bg-indigo-50 py-3 px-6 rounded-2xl inline-block">
+            {userEmail}
+          </p>
+
+          {/* Instructions */}
+          <p className="text-slate-600 font-medium mb-8 leading-relaxed">
+            Click the link in your email to verify your account.
+            <br />
+            <span className="text-slate-400 text-sm">The link will expire in 24 hours.</span>
+          </p>
+
+          {/* Success message */}
+          {resendSuccess && (
+            <div className="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-700 px-6 py-4 rounded-2xl flex items-center justify-center gap-3 animate-in fade-in slide-in-from-top-1">
+              <Check size={20} />
+              <span className="font-bold">Verification email sent!</span>
+            </div>
+          )}
+
+          {/* Error message */}
+          {error && (
+            <div className="mb-6 bg-rose-50 text-rose-600 p-4 rounded-2xl text-sm font-bold border border-rose-100 animate-in fade-in slide-in-from-top-1">
+              {error}
+            </div>
+          )}
+
+          {/* Resend button */}
+          <div className="mb-6">
+            <p className="text-slate-400 text-sm font-medium mb-3">
+              Didn&apos;t receive the email?
+            </p>
+            <button
+              onClick={handleResend}
+              disabled={resendCooldown > 0 || resendLoading}
+              className="text-indigo-600 font-bold hover:text-indigo-500 disabled:text-slate-400 transition-colors inline-flex items-center gap-2"
+            >
+              {resendLoading ? (
+                <>
+                  <Loader2 className="animate-spin" size={16} />
+                  Sending...
+                </>
+              ) : resendCooldown > 0 ? (
+                `Resend in ${resendCooldown}s`
+              ) : (
+                'Resend verification email'
+              )}
+            </button>
+          </div>
+
+          {/* Start over link */}
+          <div className="pt-6 border-t border-slate-100">
+            <button
+              onClick={handleStartOver}
+              className="text-slate-500 font-medium hover:text-slate-700 transition-colors text-sm"
+            >
+              Wrong email? Start over
+            </button>
+          </div>
+
+          {/* Security badge */}
+          <div className="mt-8 flex items-center justify-center gap-2 text-slate-400">
+            <ShieldCheck size={14} />
+            <span className="text-[10px] font-black uppercase tracking-widest">Bank-grade security</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-900">

@@ -129,13 +129,20 @@ export default function AccountPage() {
     setErrorMessage('');
 
     try {
+      // Get the current session for the auth token
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session) {
+        throw new Error('Not authenticated');
+      }
+
       // Call API to cancel Stripe subscription
       const response = await fetch('/api/cancel-subscription', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
         },
-        body: JSON.stringify({ userId: user.id }),
       });
 
       const data = await response.json();
@@ -166,15 +173,29 @@ export default function AccountPage() {
     setSaving(true);
 
     try {
-      // Delete user from database
-      const { error: dbError } = await supabase
-        .from('users')
-        .delete()
-        .eq('id', user.id);
+      // Get the current session for the auth token
+      const { data: { session } } = await supabase.auth.getSession();
 
-      if (dbError) throw dbError;
+      if (!session) {
+        throw new Error('Not authenticated');
+      }
 
-      // Sign out and redirect
+      // Call the delete account API (handles Stripe cancellation, users table, and auth deletion)
+      const response = await fetch('/api/delete-account', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to delete account');
+      }
+
+      // Sign out locally and redirect
       await supabase.auth.signOut();
       router.push('/');
     } catch (error: any) {
@@ -447,7 +468,10 @@ export default function AccountPage() {
 
       {/* FOOTER */}
       <footer className="max-w-4xl mx-auto px-6 py-12 text-center text-slate-400 font-medium text-sm">
-        &copy; {new Date().getFullYear()} Cortex Financial Technology. All rights reserved.
+        <p>&copy; {new Date().getFullYear()} Cortex Financial Technology. All rights reserved.</p>
+        <a href="/terms" className="text-slate-500 hover:text-slate-700 transition-colors text-xs mt-2 inline-block">
+          Terms & Privacy
+        </a>
       </footer>
     </div>
   );

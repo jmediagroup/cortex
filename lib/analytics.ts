@@ -6,6 +6,8 @@ export type EventType =
   | 'user_signup'
   | 'user_login'
   | 'user_logout'
+  | 'password_reset_requested'
+  | 'password_reset_completed'
   | 'subscription_upgrade'
   | 'subscription_cancel'
 
@@ -21,6 +23,11 @@ export type EventType =
   | 'dashboard_visit'
   | 'pricing_page_view'
   | 'account_page_view'
+
+  // Donation events
+  | 'donation_popup_shown'
+  | 'donation_popup_clicked'
+  | 'donation_popup_dismissed'
 
   // Error events
   | 'error_occurred'
