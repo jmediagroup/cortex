@@ -597,6 +597,10 @@ export default function LandingPage() {
             &copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.
           </p>
           <div className="flex items-center justify-center gap-4 text-xs">
+            <a href="/articles" className="text-slate-500 hover:text-slate-300 transition-colors">
+              Articles
+            </a>
+            <span className="text-slate-700">|</span>
             <a href="/terms" className="text-slate-500 hover:text-slate-300 transition-colors">
               Terms & Privacy
             </a>

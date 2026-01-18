@@ -109,9 +109,15 @@ export default function NetWorthPage() {
           <p className="text-xs text-slate-400 font-medium">
             &copy; {new Date().getFullYear()} Cortex Financial Technology. All rights reserved.
           </p>
-          <a href="/terms" className="text-slate-500 hover:text-slate-700 transition-colors text-xs mt-2 inline-block">
-            Terms & Privacy
-          </a>
+          <div className="flex items-center justify-center gap-3 mt-2">
+            <a href="/articles" className="text-slate-500 hover:text-slate-700 transition-colors text-xs">
+              Articles
+            </a>
+            <span className="text-slate-300">|</span>
+            <a href="/terms" className="text-slate-500 hover:text-slate-700 transition-colors text-xs">
+              Terms & Privacy
+            </a>
+          </div>
         </div>
       </footer>
     </div>
