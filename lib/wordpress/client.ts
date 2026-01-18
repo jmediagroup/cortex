@@ -10,8 +10,10 @@ import {
   GET_ARTICLE_BY_SLUG,
   GET_ALL_ARTICLE_SLUGS,
   GET_CATEGORIES,
+  GET_TAGS,
   SEARCH_ARTICLES,
   GET_ARTICLES_BY_CATEGORY,
+  GET_ARTICLES_BY_TAG,
 } from './queries';
 
 const WORDPRESS_API_URL = process.env.NEXT_PUBLIC_WORDPRESS_GRAPHQL_URL;
@@ -335,5 +337,70 @@ export async function getArticlesByCategory(
   } catch (error) {
     console.error('Error fetching articles by category:', error);
     return { articles: [], hasNextPage: false, categoryName: null };
+  }
+}
+
+// Tag type
+export interface Tag {
+  name: string;
+  slug: string;
+  count: number;
+}
+
+// Fetch all tags
+export async function getTags(): Promise<Tag[]> {
+  try {
+    const data = await fetchGraphQL<{
+      tags: {
+        edges: Array<{
+          node: {
+            name: string;
+            slug: string;
+            count: number;
+          };
+        }>;
+      };
+    }>(GET_TAGS, {}, [CACHE_TAGS.articles]);
+
+    return data.tags.edges
+      .map((edge) => ({
+        name: edge.node.name,
+        slug: edge.node.slug,
+        count: edge.node.count || 0,
+      }))
+      .sort((a, b) => b.count - a.count); // Sort by count descending
+  } catch (error) {
+    console.error('Error fetching tags:', error);
+    return [];
+  }
+}
+
+// Fetch articles by tag
+export async function getArticlesByTag(
+  tagSlug: string,
+  first: number = 10
+): Promise<{
+  articles: ArticleListItem[];
+  hasNextPage: boolean;
+}> {
+  try {
+    const data = await fetchGraphQL<{
+      posts: {
+        edges: Array<{ node: WPArticle }>;
+        pageInfo: { hasNextPage: boolean };
+      };
+    }>(
+      GET_ARTICLES_BY_TAG,
+      { tagSlug, first },
+      [CACHE_TAGS.articles]
+    );
+
+    return {
+      articles: data.posts.edges.map((edge) => transformToListItem(edge.node)),
+      hasNextPage: data.posts.pageInfo.hasNextPage,
+    };
+  } catch (error) {
+    console.error('Error fetching articles by tag:', error);
+    return { articles: [], hasNextPage: false };
   }
 }

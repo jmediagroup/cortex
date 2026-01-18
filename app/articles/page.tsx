@@ -1,8 +1,8 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Brain, Clock, ArrowRight, ChevronLeft, ChevronRight, Search, X, Folder } from 'lucide-react';
-import { getArticles, getCategories, searchArticles, getArticlesByCategory, formatArticleDate, Category } from '@/lib/wordpress/client';
+import { Brain, Clock, ArrowRight, ChevronLeft, ChevronRight, Search, X, Folder, Tag } from 'lucide-react';
+import { getArticles, getCategories, getTags, searchArticles, getArticlesByCategory, getArticlesByTag, formatArticleDate, Category, Tag as TagType } from '@/lib/wordpress/client';
 import { ArticleListItem } from '@/lib/wordpress/types';
 
 export const metadata: Metadata = {
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
 };
 
 interface PageProps {
-  searchParams: Promise<{ page?: string; q?: string; category?: string }>;
+  searchParams: Promise<{ page?: string; q?: string; category?: string; tag?: string }>;
 }
 
 export default async function ArticlesPage({ searchParams }: PageProps) {
@@ -36,16 +36,18 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
   const currentPage = parseInt(params.page || '1', 10);
   const searchQuery = params.q || '';
   const categoryFilter = params.category || '';
+  const tagFilter = params.tag || '';
   const articlesPerPage = 12;
 
   let articles: ArticleListItem[] = [];
   let categories: Category[] = [];
+  let tags: TagType[] = [];
   let hasNextPage = false;
   let error: string | null = null;
 
   try {
-    // Fetch categories for sidebar
-    categories = await getCategories();
+    // Fetch categories and tags for sidebar
+    [categories, tags] = await Promise.all([getCategories(), getTags()]);
 
     // Fetch articles based on filters
     if (searchQuery) {
@@ -54,6 +56,10 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
       hasNextPage = result.hasNextPage;
     } else if (categoryFilter) {
       const result = await getArticlesByCategory(categoryFilter, articlesPerPage);
+      articles = result.articles;
+      hasNextPage = result.hasNextPage;
+    } else if (tagFilter) {
+      const result = await getArticlesByTag(tagFilter, articlesPerPage);
       articles = result.articles;
       hasNextPage = result.hasNextPage;
     } else {
@@ -68,6 +74,10 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
 
   const activeCategoryName = categoryFilter
     ? categories.find((c) => c.slug === categoryFilter)?.name || categoryFilter
+    : null;
+
+  const activeTagName = tagFilter
+    ? tags.find((t) => t.slug === tagFilter)?.name || tagFilter
     : null;
 
   return (
@@ -139,7 +149,7 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
               </div>
 
               {/* CATEGORIES */}
-              <div>
+              <div className="mb-6">
                 <h3 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
                   <Folder size={16} />
                   Categories
@@ -149,7 +159,7 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
                     <Link
                       href="/articles"
                       className={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                        !categoryFilter && !searchQuery
+                        !categoryFilter && !searchQuery && !tagFilter
                           ? 'bg-indigo-50 text-indigo-700'
                           : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                       }`}
@@ -180,18 +190,46 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
                   ))}
                 </ul>
               </div>
+
+              {/* TAGS */}
+              {tags.length > 0 && (
+                <div>
+                  <h3 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
+                    <Tag size={16} />
+                    Tags
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {tags.slice(0, 15).map((tag) => (
+                      <Link
+                        key={tag.slug}
+                        href={`/articles?tag=${tag.slug}`}
+                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                          tagFilter === tag.slug
+                            ? 'bg-indigo-600 text-white'
+                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+                        }`}
+                      >
+                        {tag.name}
+                        <span className={`text-[10px] ${tagFilter === tag.slug ? 'text-indigo-200' : 'text-slate-400'}`}>
+                          {tag.count}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </aside>
 
           {/* MAIN CONTENT AREA */}
           <div className="flex-1 min-w-0">
             {/* ACTIVE FILTERS */}
-            {(searchQuery || categoryFilter) && (
-              <div className="flex items-center gap-3 mb-6">
+            {(searchQuery || categoryFilter || tagFilter) && (
+              <div className="flex flex-wrap items-center gap-3 mb-6">
                 <span className="text-sm text-slate-500">Showing:</span>
                 {searchQuery && (
                   <Link
-                    href={categoryFilter ? `/articles?category=${categoryFilter}` : '/articles'}
+                    href={categoryFilter ? `/articles?category=${categoryFilter}` : tagFilter ? `/articles?tag=${tagFilter}` : '/articles'}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-full text-sm font-medium hover:bg-indigo-100 transition-colors"
                   >
                     &ldquo;{searchQuery}&rdquo;
@@ -204,6 +242,15 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-full text-sm font-medium hover:bg-indigo-100 transition-colors"
                   >
                     {activeCategoryName}
+                    <X size={14} />
+                  </Link>
+                )}
+                {tagFilter && (
+                  <Link
+                    href={searchQuery ? `/articles?q=${searchQuery}` : '/articles'}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 text-white rounded-full text-sm font-medium hover:bg-indigo-700 transition-colors"
+                  >
+                    #{activeTagName}
                     <X size={14} />
                   </Link>
                 )}
@@ -232,14 +279,16 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
                     ? `No articles found for "${searchQuery}"`
                     : categoryFilter
                     ? `No articles in this category yet`
+                    : tagFilter
+                    ? `No articles with this tag yet`
                     : 'No articles published yet.'}
                 </p>
                 <p className="text-slate-500 text-sm mb-4">
-                  {searchQuery || categoryFilter
-                    ? 'Try adjusting your search or browse all articles.'
+                  {searchQuery || categoryFilter || tagFilter
+                    ? 'Try adjusting your filters or browse all articles.'
                     : 'Check back soon for new content!'}
                 </p>
-                {(searchQuery || categoryFilter) && (
+                {(searchQuery || categoryFilter || tagFilter) && (
                   <Link
                     href="/articles"
                     className="inline-flex items-center gap-2 text-indigo-600 font-bold hover:text-indigo-700"
@@ -265,7 +314,7 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
               <div className="flex justify-center items-center gap-4 mt-12">
                 {currentPage > 1 && (
                   <Link
-                    href={`/articles?page=${currentPage - 1}${searchQuery ? `&q=${searchQuery}` : ''}${categoryFilter ? `&category=${categoryFilter}` : ''}`}
+                    href={`/articles?page=${currentPage - 1}${searchQuery ? `&q=${searchQuery}` : ''}${categoryFilter ? `&category=${categoryFilter}` : ''}${tagFilter ? `&tag=${tagFilter}` : ''}`}
                     className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 hover:border-indigo-300 hover:text-indigo-600 transition-all text-sm"
                   >
                     <ChevronLeft size={18} />
@@ -275,7 +324,7 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
                 <span className="text-slate-500 font-medium text-sm">Page {currentPage}</span>
                 {hasNextPage && (
                   <Link
-                    href={`/articles?page=${currentPage + 1}${searchQuery ? `&q=${searchQuery}` : ''}${categoryFilter ? `&category=${categoryFilter}` : ''}`}
+                    href={`/articles?page=${currentPage + 1}${searchQuery ? `&q=${searchQuery}` : ''}${categoryFilter ? `&category=${categoryFilter}` : ''}${tagFilter ? `&tag=${tagFilter}` : ''}`}
                     className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-all text-sm"
                   >
                     Next

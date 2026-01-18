@@ -159,6 +159,35 @@ export const GET_CATEGORIES = `
   }
 `;
 
+export const GET_TAGS = `
+  query GetTags {
+    tags(first: 100, where: { hideEmpty: true }) {
+      edges {
+        node {
+          name
+          slug
+          count
+        }
+      }
+    }
+  }
+`;
+
+export const GET_ARTICLES_BY_TAG = `
+  query GetArticlesByTag($tagSlug: String!, $first: Int!) {
+    posts(first: $first, where: { status: PUBLISH, tag: $tagSlug }) {
+      edges {
+        node {
+          ${ARTICLE_FIELDS}
+        }
+      }
+      pageInfo {
+        hasNextPage
+      }
+    }
+  }
+`;
+
 export const SEARCH_ARTICLES = `
   query SearchArticles($search: String!, $first: Int!) {
     posts(first: $first, where: { status: PUBLISH, search: $search }) {
