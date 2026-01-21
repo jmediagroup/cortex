@@ -6,7 +6,7 @@ import { ChevronLeft, TrendingUp, ShieldCheck, Sparkles, Lock } from 'lucide-rea
 import IndexFundVisualizer from '@/components/apps/IndexFundVisualizer';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
-import { LeaderboardAd, BelowResultsAd, MobileBannerAd, StickySidebarAd } from '@/components/monetization';
+import { LeaderboardAd, StickySidebarAd } from '@/components/monetization';
 
 export default function IndexFundVisualizerPage() {
   const router = useRouter();
@@ -122,14 +122,9 @@ export default function IndexFundVisualizerPage() {
           </p>
         </div>
 
-        {/* Leaderboard Ad - Above the fold on desktop */}
-        <div className="hidden lg:block mb-8">
+        {/* Leaderboard Ad - Above the fold */}
+        <div className="mb-8">
           <LeaderboardAd context="index-fund-visualizer" />
-        </div>
-
-        {/* Mobile Banner - Mid-content on mobile */}
-        <div className="lg:hidden mb-8">
-          <MobileBannerAd context="index-fund-visualizer" />
         </div>
 
         {/* Main content with sidebar layout */}
@@ -137,11 +132,6 @@ export default function IndexFundVisualizerPage() {
           {/* Calculator - Main content area */}
           <div className="flex-1 min-w-0">
             <IndexFundVisualizer isPro={isPro} onUpgrade={() => router.push('/pricing')} />
-
-            {/* Below Results Ad - Shows after calculation */}
-            <div className="mt-8 flex justify-center">
-              <BelowResultsAd context="index-fund-visualizer" />
-            </div>
           </div>
 
           {/* Sticky Sidebar Ad - Desktop only */}

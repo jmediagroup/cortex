@@ -6,7 +6,7 @@ import { ChevronLeft, Calculator, ShieldCheck, Sparkles, Lock } from 'lucide-rea
 import CompoundInterest from '@/components/apps/CompoundInterest';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
-import { LeaderboardAd, BelowResultsAd, MobileBannerAd, StickySidebarAd } from '@/components/monetization';
+import { LeaderboardAd, StickySidebarAd } from '@/components/monetization';
 
 export default function CompoundInterestPage() {
   const router = useRouter();
@@ -120,14 +120,9 @@ export default function CompoundInterestPage() {
           </p>
         </div>
 
-        {/* Leaderboard Ad - Above the fold on desktop */}
-        <div className="hidden lg:block mb-8">
+        {/* Leaderboard Ad - Above the fold */}
+        <div className="mb-8">
           <LeaderboardAd context="compound-interest" />
-        </div>
-
-        {/* Mobile Banner - Mid-content on mobile */}
-        <div className="lg:hidden mb-8">
-          <MobileBannerAd context="compound-interest" />
         </div>
 
         {/* Main content with sidebar layout */}
@@ -135,11 +130,6 @@ export default function CompoundInterestPage() {
           {/* Calculator - Main content area */}
           <div className="flex-1 min-w-0">
             <CompoundInterest isPro={isPro} onUpgrade={() => router.push('/pricing')} />
-
-            {/* Below Results Ad - Shows after calculation */}
-            <div className="mt-8 flex justify-center">
-              <BelowResultsAd context="compound-interest" />
-            </div>
           </div>
 
           {/* Sticky Sidebar Ad - Desktop only */}

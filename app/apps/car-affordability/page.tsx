@@ -4,7 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, Car, ShieldCheck } from 'lucide-react';
 import CarAffordability from '@/components/apps/CarAffordability';
-import { LeaderboardAd, BelowResultsAd, MobileBannerAd, StickySidebarAd } from '@/components/monetization';
+import { LeaderboardAd, StickySidebarAd } from '@/components/monetization';
 
 export default function CarAffordabilityPage() {
   const router = useRouter();
@@ -44,14 +44,9 @@ export default function CarAffordabilityPage() {
           </p>
         </div>
 
-        {/* Leaderboard Ad - Above the fold on desktop */}
-        <div className="hidden lg:block mb-8">
+        {/* Leaderboard Ad - Above the fold */}
+        <div className="mb-8">
           <LeaderboardAd context="car-affordability" />
-        </div>
-
-        {/* Mobile Banner - Mid-content on mobile */}
-        <div className="lg:hidden mb-8">
-          <MobileBannerAd context="car-affordability" />
         </div>
 
         {/* Main content with sidebar layout */}
@@ -59,11 +54,6 @@ export default function CarAffordabilityPage() {
           {/* Calculator - Main content area */}
           <div className="flex-1 min-w-0">
             <CarAffordability />
-
-            {/* Below Results Ad - Shows after calculation */}
-            <div className="mt-8 flex justify-center">
-              <BelowResultsAd context="car-affordability" />
-            </div>
           </div>
 
           {/* Sticky Sidebar Ad - Desktop only */}

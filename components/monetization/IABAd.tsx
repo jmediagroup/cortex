@@ -113,7 +113,7 @@ export default function IABAd({
       >
         <div className="h-full flex flex-col p-5">
           {/* Sponsored label - top left */}
-          <span className="text-[10px] text-[#94A3B8] uppercase tracking-wide font-light">
+          <span className="text-[10px] text-[#64748B] uppercase tracking-wide font-normal">
             Sponsored
           </span>
 
@@ -165,7 +165,7 @@ export default function IABAd({
       >
         <div className="h-full flex items-center justify-between px-6 gap-6">
           <div className="flex items-center gap-4 flex-1 min-w-0">
-            <span className="text-[10px] text-[#94A3B8] uppercase tracking-wide font-light shrink-0">
+            <span className="text-[10px] text-[#64748B] uppercase tracking-wide font-normal shrink-0">
               Ad
             </span>
             <p
@@ -200,7 +200,7 @@ export default function IABAd({
         style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
       >
         <div className="h-full flex flex-col items-center justify-center p-4 text-center">
-          <span className="text-[9px] text-[#94A3B8] uppercase tracking-wide font-light mb-1">
+          <span className="text-[9px] text-[#64748B] uppercase tracking-wide font-normal mb-1">
             Sponsored
           </span>
           <h3
@@ -235,7 +235,7 @@ export default function IABAd({
       >
         <div className="h-full flex flex-col p-6">
           {/* Sponsored label - top left */}
-          <span className="text-[10px] text-[#94A3B8] uppercase tracking-wide font-light">
+          <span className="text-[10px] text-[#64748B] uppercase tracking-wide font-normal">
             Sponsored
           </span>
 

@@ -6,7 +6,7 @@ import { ChevronLeft, TrendingUp, ShieldCheck, Sparkles, Lock } from 'lucide-rea
 import RetirementStrategyEngine from '@/components/apps/RetirementStrategyEngine';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
-import { LeaderboardAd, BelowResultsAd, MobileBannerAd, StickySidebarAd } from '@/components/monetization';
+import { LeaderboardAd, StickySidebarAd } from '@/components/monetization';
 
 export default function RetirementStrategyPage() {
   const router = useRouter();
@@ -130,14 +130,9 @@ export default function RetirementStrategyPage() {
           </p>
         </div>
 
-        {/* Leaderboard Ad - Above the fold on desktop */}
-        <div className="hidden lg:block mb-8">
+        {/* Leaderboard Ad - Above the fold */}
+        <div className="mb-8">
           <LeaderboardAd context="retirement-strategy" />
-        </div>
-
-        {/* Mobile Banner - Mid-content on mobile */}
-        <div className="lg:hidden mb-8">
-          <MobileBannerAd context="retirement-strategy" />
         </div>
 
         {/* Main content with sidebar layout */}
@@ -148,11 +143,6 @@ export default function RetirementStrategyPage() {
               isPro={isPro}
               onUpgrade={() => router.push('/pricing')}
             />
-
-            {/* Below Results Ad - Shows after calculation */}
-            <div className="mt-8 flex justify-center">
-              <BelowResultsAd context="retirement-strategy" />
-            </div>
           </div>
 
           {/* Sticky Sidebar Ad - Desktop only */}

@@ -4,7 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, Zap, ShieldCheck } from 'lucide-react';
 import SCorpOptimizer from '@/components/apps/SCorpOptimizer';
-import { LeaderboardAd, BelowResultsAd, MobileBannerAd, StickySidebarAd } from '@/components/monetization';
+import { LeaderboardAd, StickySidebarAd } from '@/components/monetization';
 
 export default function SCorpOptimizerPage() {
   const router = useRouter();
@@ -42,14 +42,9 @@ export default function SCorpOptimizerPage() {
           </p>
         </div>
 
-        {/* Leaderboard Ad - Above the fold on desktop */}
-        <div className="hidden lg:block mb-8">
+        {/* Leaderboard Ad - Above the fold */}
+        <div className="mb-8">
           <LeaderboardAd context="s-corp-optimizer" />
-        </div>
-
-        {/* Mobile Banner - Mid-content on mobile */}
-        <div className="lg:hidden mb-8">
-          <MobileBannerAd context="s-corp-optimizer" />
         </div>
 
         {/* Main content with sidebar layout */}
@@ -57,11 +52,6 @@ export default function SCorpOptimizerPage() {
           {/* Calculator - Main content area */}
           <div className="flex-1 min-w-0">
             <SCorpOptimizer />
-
-            {/* Below Results Ad - Shows after calculation */}
-            <div className="mt-8 flex justify-center">
-              <BelowResultsAd context="s-corp-optimizer" />
-            </div>
           </div>
 
           {/* Sticky Sidebar Ad - Desktop only */}

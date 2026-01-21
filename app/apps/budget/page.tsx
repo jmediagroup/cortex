@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
-import { LeaderboardAd, BelowResultsAd, MobileBannerAd, StickySidebarAd } from '@/components/monetization';
+import { LeaderboardAd, StickySidebarAd } from '@/components/monetization';
 
 // --- Constants & Defaults ---
 const CATEGORIES = {
@@ -371,14 +371,9 @@ const App = () => {
       </nav>
 
       <div className="max-w-6xl mx-auto p-4 md:p-8">
-        {/* Leaderboard Ad - Above the fold on desktop */}
-        <div className="hidden lg:block mb-8">
+        {/* Leaderboard Ad - Above the fold */}
+        <div className="mb-8">
           <LeaderboardAd context="budget" />
-        </div>
-
-        {/* Mobile Banner - Mid-content on mobile */}
-        <div className="lg:hidden mb-8">
-          <MobileBannerAd context="budget" />
         </div>
 
         {!hasSession && (
@@ -705,10 +700,6 @@ const App = () => {
             </div>
           </div>
 
-          {/* Below Results Ad - Shows after budget content */}
-          <div className="flex justify-center">
-            <BelowResultsAd context="budget" />
-          </div>
         </main>
         </div>
 
