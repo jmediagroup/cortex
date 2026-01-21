@@ -6,7 +6,7 @@ import { ChevronLeft, Landmark, ShieldCheck } from 'lucide-react';
 import RentVsBuyEngine from '@/components/apps/RentVsBuyEngine';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
-import { LeaderboardAd, StickySidebarAd } from '@/components/monetization';
+import { StickySidebarAd } from '@/components/monetization';
 
 export default function RentVsBuyPage() {
   const router = useRouter();
@@ -77,11 +77,6 @@ export default function RentVsBuyPage() {
             rent inflation, and realistic tax treatment. Adjust the time horizon slider to see how
             the optimal choice changes over different timelines.
           </p>
-        </div>
-
-        {/* Leaderboard Ad - Above the fold */}
-        <div className="mb-8">
-          <LeaderboardAd context="rent-vs-buy" />
         </div>
 
         {/* Main content with sidebar layout */}

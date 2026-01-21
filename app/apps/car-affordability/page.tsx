@@ -4,7 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, Car, ShieldCheck } from 'lucide-react';
 import CarAffordability from '@/components/apps/CarAffordability';
-import { LeaderboardAd, StickySidebarAd } from '@/components/monetization';
+import { StickySidebarAd } from '@/components/monetization';
 
 export default function CarAffordabilityPage() {
   const router = useRouter();
@@ -42,11 +42,6 @@ export default function CarAffordabilityPage() {
             This calculator shows you exactly how much car you can afford based on your income, following the principle
             of 20% down payment, 3-year loan term, and no more than 8% of your pre-tax income for monthly payments.
           </p>
-        </div>
-
-        {/* Leaderboard Ad - Above the fold */}
-        <div className="mb-8">
-          <LeaderboardAd context="car-affordability" />
         </div>
 
         {/* Main content with sidebar layout */}

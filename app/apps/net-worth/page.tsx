@@ -6,7 +6,7 @@ import { ChevronLeft, Compass, ShieldCheck } from 'lucide-react';
 import NetWorthEngine from '@/components/apps/NetWorthEngine';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
-import { LeaderboardAd, StickySidebarAd } from '@/components/monetization';
+import { StickySidebarAd } from '@/components/monetization';
 
 export default function NetWorthPage() {
   const router = useRouter();
@@ -96,11 +96,6 @@ export default function NetWorthPage() {
               </p>
             </div>
           </div>
-        </div>
-
-        {/* Leaderboard Ad - Above the fold */}
-        <div className="mb-8">
-          <LeaderboardAd context="net-worth" />
         </div>
 
         {/* Main content with sidebar layout */}

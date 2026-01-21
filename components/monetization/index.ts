@@ -8,7 +8,6 @@ export { default as AdContainer } from './AdContainer';
 export { default as IABAd } from './IABAd';
 export { default as StickySidebarAd } from './StickySidebarAd';
 export { default as BelowResultsAd } from './BelowResultsAd';
-export { default as LeaderboardAd } from './LeaderboardAd';
 export { default as MobileBannerAd } from './MobileBannerAd';
 
 // Affiliate Configuration

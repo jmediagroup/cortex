@@ -6,7 +6,7 @@ import { ChevronLeft, Calculator, ShieldCheck, Sparkles, Lock } from 'lucide-rea
 import CompoundInterest from '@/components/apps/CompoundInterest';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
-import { LeaderboardAd, StickySidebarAd } from '@/components/monetization';
+import { StickySidebarAd } from '@/components/monetization';
 
 export default function CompoundInterestPage() {
   const router = useRouter();
@@ -118,11 +118,6 @@ export default function CompoundInterestPage() {
           <p className="text-indigo-700 font-medium">
             Visualize long-term wealth accumulation with custom contribution schedules. Adjust your initial principal, monthly contributions, and expected return rate to see how your investments can grow over time.
           </p>
-        </div>
-
-        {/* Leaderboard Ad - Above the fold */}
-        <div className="mb-8">
-          <LeaderboardAd context="compound-interest" />
         </div>
 
         {/* Main content with sidebar layout */}

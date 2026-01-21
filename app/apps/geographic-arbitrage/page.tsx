@@ -6,7 +6,7 @@ import { ChevronLeft, MapPin, ShieldCheck } from 'lucide-react';
 import GeographicArbitrageCalculator from '@/components/apps/GeographicArbitrageCalculator';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
-import { LeaderboardAd, StickySidebarAd } from '@/components/monetization';
+import { StickySidebarAd } from '@/components/monetization';
 
 export default function GeographicArbitragePage() {
   const router = useRouter();
@@ -78,11 +78,6 @@ export default function GeographicArbitragePage() {
             potential of geographic arbitrage. See how much you could save by relocating to a lower-cost area
             while maintaining or even increasing your income.
           </p>
-        </div>
-
-        {/* Leaderboard Ad - Above the fold */}
-        <div className="mb-8">
-          <LeaderboardAd context="geographic-arbitrage" />
         </div>
 
         {/* Main content with sidebar layout */}

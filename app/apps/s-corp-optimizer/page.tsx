@@ -4,7 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, Zap, ShieldCheck } from 'lucide-react';
 import SCorpOptimizer from '@/components/apps/SCorpOptimizer';
-import { LeaderboardAd, StickySidebarAd } from '@/components/monetization';
+import { StickySidebarAd } from '@/components/monetization';
 
 export default function SCorpOptimizerPage() {
   const router = useRouter();
@@ -40,11 +40,6 @@ export default function SCorpOptimizerPage() {
           <p className="text-amber-700 font-medium">
             Calculate self-employment tax savings and find your ideal salary/distribution split. Optimize your S-Corp structure to minimize tax liability while staying compliant with IRS guidelines on reasonable compensation.
           </p>
-        </div>
-
-        {/* Leaderboard Ad - Above the fold */}
-        <div className="mb-8">
-          <LeaderboardAd context="s-corp-optimizer" />
         </div>
 
         {/* Main content with sidebar layout */}

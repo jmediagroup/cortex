@@ -6,7 +6,7 @@ import { ChevronLeft, TrendingUp, ShieldCheck, Sparkles, Lock } from 'lucide-rea
 import IndexFundVisualizer from '@/components/apps/IndexFundVisualizer';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
-import { LeaderboardAd, StickySidebarAd } from '@/components/monetization';
+import { StickySidebarAd } from '@/components/monetization';
 
 export default function IndexFundVisualizerPage() {
   const router = useRouter();
@@ -120,11 +120,6 @@ export default function IndexFundVisualizerPage() {
             Visualize how your investments could grow over time with steady contributions and see the impact
             of market volatility on your portfolio.
           </p>
-        </div>
-
-        {/* Leaderboard Ad - Above the fold */}
-        <div className="mb-8">
-          <LeaderboardAd context="index-fund-visualizer" />
         </div>
 
         {/* Main content with sidebar layout */}

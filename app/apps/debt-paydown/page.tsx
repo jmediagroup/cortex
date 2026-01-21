@@ -6,7 +6,7 @@ import { ChevronLeft, Brain, ShieldCheck } from 'lucide-react';
 import DebtPaydownOptimizer from '@/components/apps/DebtPaydownOptimizer';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
-import { LeaderboardAd, StickySidebarAd } from '@/components/monetization';
+import { StickySidebarAd } from '@/components/monetization';
 
 export default function DebtPaydownPage() {
   const router = useRouter();
@@ -76,11 +76,6 @@ export default function DebtPaydownPage() {
             accounting for tax-deductible debt, psychological weighting, and opportunity cost of investing.
             This tool helps you decide which debts to prioritize based on both logic and behavioral economics.
           </p>
-        </div>
-
-        {/* Leaderboard Ad - Above the fold */}
-        <div className="mb-8">
-          <LeaderboardAd context="debt-paydown" />
         </div>
 
         {/* Main content with sidebar layout */}

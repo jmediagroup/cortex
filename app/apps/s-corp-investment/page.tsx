@@ -6,7 +6,7 @@ import { ChevronLeft, TrendingUp, ShieldCheck } from 'lucide-react';
 import SCorpInvestmentOptimizer from '@/components/apps/SCorpInvestmentOptimizer';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
-import { LeaderboardAd, StickySidebarAd } from '@/components/monetization';
+import { StickySidebarAd } from '@/components/monetization';
 
 export default function SCorpInvestmentPage() {
   const router = useRouter();
@@ -81,11 +81,6 @@ export default function SCorpInvestmentPage() {
             company matching, IRA contributions, and HSA. This optimizer uses 2026 IRS limits to calculate your optimal
             investment strategy and 30-year wealth projection with tax savings.
           </p>
-        </div>
-
-        {/* Leaderboard Ad - Above the fold */}
-        <div className="mb-8">
-          <LeaderboardAd context="s-corp-investment" />
         </div>
 
         {/* Main content with sidebar layout */}

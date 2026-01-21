@@ -6,7 +6,7 @@ import { ChevronLeft, TrendingUp, ShieldCheck, Sparkles, Lock } from 'lucide-rea
 import RetirementStrategyEngine from '@/components/apps/RetirementStrategyEngine';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
-import { LeaderboardAd, StickySidebarAd } from '@/components/monetization';
+import { StickySidebarAd } from '@/components/monetization';
 
 export default function RetirementStrategyPage() {
   const router = useRouter();
@@ -128,11 +128,6 @@ export default function RetirementStrategyPage() {
           <p className="text-purple-700 font-medium">
             Comprehensive simulation of retirement portfolio withdrawals with RMD calculations, Roth conversion ladder optimization, and Social Security integration. Model multiple withdrawal strategies and stress-test against market volatility.
           </p>
-        </div>
-
-        {/* Leaderboard Ad - Above the fold */}
-        <div className="mb-8">
-          <LeaderboardAd context="retirement-strategy" />
         </div>
 
         {/* Main content with sidebar layout */}
