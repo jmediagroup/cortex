@@ -6,7 +6,7 @@ import { ChevronLeft, TrendingUp, ShieldCheck, Sparkles, Lock } from 'lucide-rea
 import RetirementStrategyEngine from '@/components/apps/RetirementStrategyEngine';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
-import { RotatingAd } from '@/components/monetization';
+import { LeaderboardAd, BelowResultsAd, MobileBannerAd, StickySidebarAd } from '@/components/monetization';
 
 export default function RetirementStrategyPage() {
   const router = useRouter();
@@ -130,13 +130,36 @@ export default function RetirementStrategyPage() {
           </p>
         </div>
 
-        {/* Rotating Affiliate Ad */}
-        <RotatingAd context="retirement-strategy" variant="banner" className="mb-8" />
+        {/* Leaderboard Ad - Above the fold on desktop */}
+        <div className="hidden lg:block mb-8">
+          <LeaderboardAd context="retirement-strategy" />
+        </div>
 
-        <RetirementStrategyEngine
-          isPro={isPro}
-          onUpgrade={() => router.push('/pricing')}
-        />
+        {/* Mobile Banner - Mid-content on mobile */}
+        <div className="lg:hidden mb-8">
+          <MobileBannerAd context="retirement-strategy" />
+        </div>
+
+        {/* Main content with sidebar layout */}
+        <div className="flex gap-8">
+          {/* Calculator - Main content area */}
+          <div className="flex-1 min-w-0">
+            <RetirementStrategyEngine
+              isPro={isPro}
+              onUpgrade={() => router.push('/pricing')}
+            />
+
+            {/* Below Results Ad - Shows after calculation */}
+            <div className="mt-8 flex justify-center">
+              <BelowResultsAd context="retirement-strategy" />
+            </div>
+          </div>
+
+          {/* Sticky Sidebar Ad - Desktop only */}
+          <div className="hidden xl:block w-[320px] shrink-0">
+            <StickySidebarAd context="retirement-strategy" />
+          </div>
+        </div>
       </main>
 
       {/* FOOTER */}

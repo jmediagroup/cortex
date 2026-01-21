@@ -6,7 +6,7 @@ import { ChevronLeft, TrendingUp, ShieldCheck } from 'lucide-react';
 import SCorpInvestmentOptimizer from '@/components/apps/SCorpInvestmentOptimizer';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
-import { RotatingAd } from '@/components/monetization';
+import { LeaderboardAd, BelowResultsAd, MobileBannerAd, StickySidebarAd } from '@/components/monetization';
 
 export default function SCorpInvestmentPage() {
   const router = useRouter();
@@ -83,13 +83,36 @@ export default function SCorpInvestmentPage() {
           </p>
         </div>
 
-        <SCorpInvestmentOptimizer
-          isPro={isPro}
-          onUpgrade={() => router.push('/pricing')}
-        />
+        {/* Leaderboard Ad - Above the fold on desktop */}
+        <div className="hidden lg:block mb-8">
+          <LeaderboardAd context="s-corp-investment" />
+        </div>
 
-        {/* Rotating Affiliate Ad */}
-        <RotatingAd context="s-corp-investment" variant="banner" className="mt-8" />
+        {/* Mobile Banner - Mid-content on mobile */}
+        <div className="lg:hidden mb-8">
+          <MobileBannerAd context="s-corp-investment" />
+        </div>
+
+        {/* Main content with sidebar layout */}
+        <div className="flex gap-8">
+          {/* Calculator - Main content area */}
+          <div className="flex-1 min-w-0">
+            <SCorpInvestmentOptimizer
+              isPro={isPro}
+              onUpgrade={() => router.push('/pricing')}
+            />
+
+            {/* Below Results Ad - Shows after calculation */}
+            <div className="mt-8 flex justify-center">
+              <BelowResultsAd context="s-corp-investment" />
+            </div>
+          </div>
+
+          {/* Sticky Sidebar Ad - Desktop only */}
+          <div className="hidden xl:block w-[320px] shrink-0">
+            <StickySidebarAd context="s-corp-investment" />
+          </div>
+        </div>
       </main>
 
       {/* FOOTER */}

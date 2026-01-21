@@ -4,7 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, Zap, ShieldCheck } from 'lucide-react';
 import SCorpOptimizer from '@/components/apps/SCorpOptimizer';
-import { RotatingAd } from '@/components/monetization';
+import { LeaderboardAd, BelowResultsAd, MobileBannerAd, StickySidebarAd } from '@/components/monetization';
 
 export default function SCorpOptimizerPage() {
   const router = useRouter();
@@ -42,10 +42,33 @@ export default function SCorpOptimizerPage() {
           </p>
         </div>
 
-        <SCorpOptimizer />
+        {/* Leaderboard Ad - Above the fold on desktop */}
+        <div className="hidden lg:block mb-8">
+          <LeaderboardAd context="s-corp-optimizer" />
+        </div>
 
-        {/* Rotating Affiliate Ad */}
-        <RotatingAd context="s-corp-optimizer" variant="banner" className="mt-8" />
+        {/* Mobile Banner - Mid-content on mobile */}
+        <div className="lg:hidden mb-8">
+          <MobileBannerAd context="s-corp-optimizer" />
+        </div>
+
+        {/* Main content with sidebar layout */}
+        <div className="flex gap-8">
+          {/* Calculator - Main content area */}
+          <div className="flex-1 min-w-0">
+            <SCorpOptimizer />
+
+            {/* Below Results Ad - Shows after calculation */}
+            <div className="mt-8 flex justify-center">
+              <BelowResultsAd context="s-corp-optimizer" />
+            </div>
+          </div>
+
+          {/* Sticky Sidebar Ad - Desktop only */}
+          <div className="hidden xl:block w-[320px] shrink-0">
+            <StickySidebarAd context="s-corp-optimizer" />
+          </div>
+        </div>
       </main>
 
       {/* FOOTER */}

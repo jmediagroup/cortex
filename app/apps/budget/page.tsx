@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
-import { ContextualAd } from '@/components/monetization';
+import { LeaderboardAd, BelowResultsAd, MobileBannerAd, StickySidebarAd } from '@/components/monetization';
 
 // --- Constants & Defaults ---
 const CATEGORIES = {
@@ -371,6 +371,16 @@ const App = () => {
       </nav>
 
       <div className="max-w-6xl mx-auto p-4 md:p-8">
+        {/* Leaderboard Ad - Above the fold on desktop */}
+        <div className="hidden lg:block mb-8">
+          <LeaderboardAd context="budget" />
+        </div>
+
+        {/* Mobile Banner - Mid-content on mobile */}
+        <div className="lg:hidden mb-8">
+          <MobileBannerAd context="budget" />
+        </div>
+
         {!hasSession && (
           <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl p-8 mb-8 text-white shadow-xl">
             <div className="flex items-start justify-between gap-6">
@@ -553,8 +563,8 @@ const App = () => {
             </div>
           </section>
 
-          {/* Contextual Affiliate Ad */}
-          <ContextualAd context="budget" variant="card" />
+          {/* Sticky Sidebar Ad */}
+          <StickySidebarAd context="budget" />
 
           {/* Pro Feature: Auto-Optimize */}
           <div className={`relative overflow-hidden p-6 rounded-2xl shadow-xl ${hasProFeatures ? 'bg-indigo-900 shadow-indigo-100' : 'bg-slate-200'} text-white`}>
@@ -616,7 +626,7 @@ const App = () => {
         </aside>
 
         {/* Main Canvas */}
-        <main className="lg:col-span-8">
+        <main className="lg:col-span-8 space-y-8">
           <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-8">
             <div className="flex justify-between items-center mb-10">
               <div>
@@ -693,6 +703,11 @@ const App = () => {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Below Results Ad - Shows after budget content */}
+          <div className="flex justify-center">
+            <BelowResultsAd context="budget" />
           </div>
         </main>
         </div>
