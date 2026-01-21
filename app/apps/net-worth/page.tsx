@@ -6,6 +6,7 @@ import { ChevronLeft, Compass, ShieldCheck } from 'lucide-react';
 import NetWorthEngine from '@/components/apps/NetWorthEngine';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
+import { RotatingAd } from '@/components/monetization';
 
 export default function NetWorthPage() {
   const router = useRouter();
@@ -98,6 +99,9 @@ export default function NetWorthPage() {
         </div>
 
         <NetWorthEngine isPro={isPro} onUpgrade={() => router.push('/pricing')} />
+
+        {/* Rotating Affiliate Ad */}
+        <RotatingAd context="net-worth" variant="banner" className="mt-8" />
       </main>
 
       {/* FOOTER */}

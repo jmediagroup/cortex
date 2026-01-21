@@ -4,6 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, Zap, ShieldCheck } from 'lucide-react';
 import SCorpOptimizer from '@/components/apps/SCorpOptimizer';
+import { RotatingAd } from '@/components/monetization';
 
 export default function SCorpOptimizerPage() {
   const router = useRouter();
@@ -42,6 +43,9 @@ export default function SCorpOptimizerPage() {
         </div>
 
         <SCorpOptimizer />
+
+        {/* Rotating Affiliate Ad */}
+        <RotatingAd context="s-corp-optimizer" variant="banner" className="mt-8" />
       </main>
 
       {/* FOOTER */}

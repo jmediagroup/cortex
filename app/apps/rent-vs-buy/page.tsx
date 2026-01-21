@@ -6,6 +6,7 @@ import { ChevronLeft, Landmark, ShieldCheck } from 'lucide-react';
 import RentVsBuyEngine from '@/components/apps/RentVsBuyEngine';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
+import { RotatingAd } from '@/components/monetization';
 
 export default function RentVsBuyPage() {
   const router = useRouter();
@@ -79,6 +80,9 @@ export default function RentVsBuyPage() {
         </div>
 
         <RentVsBuyEngine isPro={isPro} onUpgrade={() => router.push('/pricing')} />
+
+        {/* Rotating Affiliate Ad */}
+        <RotatingAd context="rent-vs-buy" variant="banner" className="mt-8" />
       </main>
 
       {/* FOOTER */}

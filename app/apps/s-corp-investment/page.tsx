@@ -6,6 +6,7 @@ import { ChevronLeft, TrendingUp, ShieldCheck } from 'lucide-react';
 import SCorpInvestmentOptimizer from '@/components/apps/SCorpInvestmentOptimizer';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
+import { RotatingAd } from '@/components/monetization';
 
 export default function SCorpInvestmentPage() {
   const router = useRouter();
@@ -86,6 +87,9 @@ export default function SCorpInvestmentPage() {
           isPro={isPro}
           onUpgrade={() => router.push('/pricing')}
         />
+
+        {/* Rotating Affiliate Ad */}
+        <RotatingAd context="s-corp-investment" variant="banner" className="mt-8" />
       </main>
 
       {/* FOOTER */}

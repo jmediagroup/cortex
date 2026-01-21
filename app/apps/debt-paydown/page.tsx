@@ -6,6 +6,7 @@ import { ChevronLeft, Brain, ShieldCheck } from 'lucide-react';
 import DebtPaydownOptimizer from '@/components/apps/DebtPaydownOptimizer';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
+import { RotatingAd } from '@/components/monetization';
 
 export default function DebtPaydownPage() {
   const router = useRouter();
@@ -78,6 +79,9 @@ export default function DebtPaydownPage() {
         </div>
 
         <DebtPaydownOptimizer isPro={isPro} onUpgrade={() => router.push('/pricing')} />
+
+        {/* Rotating Affiliate Ad */}
+        <RotatingAd context="debt-paydown" variant="banner" className="mt-8" />
       </main>
 
       {/* FOOTER */}

@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
+import { ContextualAd } from '@/components/monetization';
 
 // --- Constants & Defaults ---
 const CATEGORIES = {
@@ -551,6 +552,9 @@ const App = () => {
               </div>
             </div>
           </section>
+
+          {/* Contextual Affiliate Ad */}
+          <ContextualAd context="budget" variant="card" />
 
           {/* Pro Feature: Auto-Optimize */}
           <div className={`relative overflow-hidden p-6 rounded-2xl shadow-xl ${hasProFeatures ? 'bg-indigo-900 shadow-indigo-100' : 'bg-slate-200'} text-white`}>

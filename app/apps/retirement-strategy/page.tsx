@@ -6,6 +6,7 @@ import { ChevronLeft, TrendingUp, ShieldCheck, Sparkles, Lock } from 'lucide-rea
 import RetirementStrategyEngine from '@/components/apps/RetirementStrategyEngine';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
+import { RotatingAd } from '@/components/monetization';
 
 export default function RetirementStrategyPage() {
   const router = useRouter();
@@ -128,6 +129,9 @@ export default function RetirementStrategyPage() {
             Comprehensive simulation of retirement portfolio withdrawals with RMD calculations, Roth conversion ladder optimization, and Social Security integration. Model multiple withdrawal strategies and stress-test against market volatility.
           </p>
         </div>
+
+        {/* Rotating Affiliate Ad */}
+        <RotatingAd context="retirement-strategy" variant="banner" className="mb-8" />
 
         <RetirementStrategyEngine
           isPro={isPro}

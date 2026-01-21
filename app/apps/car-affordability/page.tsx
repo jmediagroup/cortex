@@ -4,6 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, Car, ShieldCheck } from 'lucide-react';
 import CarAffordability from '@/components/apps/CarAffordability';
+import { RotatingAd } from '@/components/monetization';
 
 export default function CarAffordabilityPage() {
   const router = useRouter();
@@ -44,6 +45,9 @@ export default function CarAffordabilityPage() {
         </div>
 
         <CarAffordability />
+
+        {/* Rotating Affiliate Ad */}
+        <RotatingAd context="car-affordability" variant="banner" className="mt-8" />
       </main>
 
       {/* FOOTER */}

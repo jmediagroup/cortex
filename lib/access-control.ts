@@ -182,3 +182,31 @@ export function getRecommendedUpgrade(currentTier: Tier, requiredSector: Sector)
   // Default: recommend Elite
   return 'elite';
 }
+
+/**
+ * Determines if ads/affiliate content should be shown to a user
+ *
+ * Ad Visibility Rules:
+ * - Not logged in: Show ads (guests see ads)
+ * - Free tier: Show ads
+ * - Finance Pro / Elite: No ads (ad-free experience)
+ *
+ * @param userTier - The user's current subscription tier (null if not logged in)
+ * @param isLoggedIn - Whether the user has an active session
+ * @returns boolean - Whether ads should be displayed
+ */
+export function shouldShowAds(userTier: Tier | null, isLoggedIn: boolean): boolean {
+  if (!isLoggedIn) return true;
+  if (userTier === 'free' || userTier === null) return true;
+  return false;
+}
+
+/**
+ * Checks if a user has an ad-free experience
+ *
+ * @param userTier - The user's current subscription tier
+ * @returns boolean - Whether the user has ad-free access
+ */
+export function hasAdFreeExperience(userTier: Tier | null): boolean {
+  return userTier === 'finance_pro' || userTier === 'elite';
+}

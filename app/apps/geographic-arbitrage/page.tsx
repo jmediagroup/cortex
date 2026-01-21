@@ -6,6 +6,7 @@ import { ChevronLeft, MapPin, ShieldCheck } from 'lucide-react';
 import GeographicArbitrageCalculator from '@/components/apps/GeographicArbitrageCalculator';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
+import { RotatingAd } from '@/components/monetization';
 
 export default function GeographicArbitragePage() {
   const router = useRouter();
@@ -80,6 +81,9 @@ export default function GeographicArbitragePage() {
         </div>
 
         <GeographicArbitrageCalculator isPro={isPro} onUpgrade={() => router.push('/pricing')} />
+
+        {/* Rotating Affiliate Ad */}
+        <RotatingAd context="geographic-arbitrage" variant="banner" className="mt-8" />
       </main>
 
       {/* FOOTER */}

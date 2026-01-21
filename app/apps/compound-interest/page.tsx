@@ -6,6 +6,7 @@ import { ChevronLeft, Calculator, ShieldCheck, Sparkles, Lock } from 'lucide-rea
 import CompoundInterest from '@/components/apps/CompoundInterest';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
+import { RotatingAd } from '@/components/monetization';
 
 export default function CompoundInterestPage() {
   const router = useRouter();
@@ -120,6 +121,9 @@ export default function CompoundInterestPage() {
         </div>
 
         <CompoundInterest isPro={isPro} onUpgrade={() => router.push('/pricing')} />
+
+        {/* Rotating Affiliate Ad */}
+        <RotatingAd context="compound-interest" variant="banner" className="mt-8" />
       </main>
 
       {/* FOOTER */}

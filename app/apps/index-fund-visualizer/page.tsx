@@ -6,6 +6,7 @@ import { ChevronLeft, TrendingUp, ShieldCheck, Sparkles, Lock } from 'lucide-rea
 import IndexFundVisualizer from '@/components/apps/IndexFundVisualizer';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
+import { RotatingAd } from '@/components/monetization';
 
 export default function IndexFundVisualizerPage() {
   const router = useRouter();
@@ -122,6 +123,9 @@ export default function IndexFundVisualizerPage() {
         </div>
 
         <IndexFundVisualizer isPro={isPro} onUpgrade={() => router.push('/pricing')} />
+
+        {/* Rotating Affiliate Ad */}
+        <RotatingAd context="index-fund-visualizer" variant="banner" className="mt-8" />
       </main>
 
       {/* FOOTER */}
