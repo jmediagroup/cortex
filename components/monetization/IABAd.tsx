@@ -97,7 +97,7 @@ export default function IABAd({
 
   // Helper to highlight numbers in green (for bonuses/cash back)
   const highlightNumbers = (text: string) => {
-    return text.replace(/(\$[\d,]+(?:\.\d{2})?|\d+%)/g, '<span class="text-green-600 font-semibold">$1</span>');
+    return text.replace(/(\$[\d,]+(?:\.\d{2})?|\d+(?:\.\d+)?%)/g, '<span class="text-green-600 font-semibold">$1</span>');
   };
 
   // Medium Rectangle (300x250) - F-Pattern Layout
