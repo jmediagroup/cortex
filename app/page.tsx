@@ -1,6 +1,3 @@
-'use client';
-
-import React from 'react';
 import {
   Zap,
   ArrowRight,
@@ -21,8 +18,10 @@ import {
   MapPin,
   Wallet,
   BarChart3,
-  Dices
+  Dices,
+  BookOpen
 } from 'lucide-react';
+import LatestArticles from '@/components/home/LatestArticles';
 
 /**
  * LANDING PAGE (Root Route: /)
@@ -41,7 +40,11 @@ export default function LandingPage() {
           </div>
           <span className="font-black text-2xl tracking-tight">Cortex</span>
         </a>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-6">
+          <a href="/articles" className="text-sm font-bold text-slate-600 hover:text-indigo-600 transition-colors flex items-center gap-1.5">
+            <BookOpen size={16} />
+            Articles
+          </a>
           <a href="/login" className="text-sm font-bold text-slate-600 hover:text-indigo-600 transition-colors">
             Sign In
           </a>
@@ -378,6 +381,9 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* LATEST ARTICLES */}
+      <LatestArticles />
 
       {/* PRICING PREVIEW */}
       <section className="bg-slate-50 py-32 border-y border-slate-200">
