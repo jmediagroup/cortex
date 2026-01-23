@@ -22,6 +22,7 @@ import {
   BookOpen
 } from 'lucide-react';
 import LatestArticles from '@/components/home/LatestArticles';
+import MobileNav from '@/components/navigation/MobileNav';
 
 /**
  * LANDING PAGE (Root Route: /)
@@ -33,14 +34,16 @@ export default function LandingPage() {
     <div className="min-h-screen bg-white font-sans text-slate-900 scroll-smooth">
 
       {/* NAVIGATION */}
-      <nav className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
+      <nav className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6 flex items-center justify-between">
         <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <div className="bg-indigo-600 p-1.5 rounded-lg text-white">
             <Brain size={20} />
           </div>
           <span className="font-black text-2xl tracking-tight">Cortex</span>
         </a>
-        <div className="flex items-center gap-6">
+
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center gap-6">
           <a href="/articles" className="text-sm font-bold text-slate-600 hover:text-indigo-600 transition-colors flex items-center gap-1.5">
             <BookOpen size={16} />
             Articles
@@ -55,6 +58,9 @@ export default function LandingPage() {
             Get Started
           </a>
         </div>
+
+        {/* Mobile Navigation */}
+        <MobileNav />
       </nav>
 
       {/* HERO SECTION */}

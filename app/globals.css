@@ -24,3 +24,57 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* iOS-style bottom sheet animations */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Bottom sheet with spring-like easing */
+.bottom-sheet-enter {
+  animation: slideUp 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.bottom-sheet-exit {
+  animation: slideDown 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Haptic feedback simulation for touch */
+@media (hover: none) and (pointer: coarse) {
+  .touch-feedback:active {
+    transform: scale(0.97);
+    transition: transform 0.1s ease-out;
+  }
+}
