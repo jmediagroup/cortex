@@ -129,10 +129,8 @@ export default function IndexFundVisualizerPage() {
             <IndexFundVisualizer isPro={isPro} onUpgrade={() => router.push('/pricing')} />
           </div>
 
-          {/* Sticky Sidebar Ad - Desktop only */}
-          <div className="hidden xl:block w-[320px] shrink-0">
-            <StickySidebarAd context="index-fund-visualizer" />
-          </div>
+          {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}
+          <StickySidebarAd context="index-fund-visualizer" />
         </div>
       </main>
 

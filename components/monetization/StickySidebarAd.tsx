@@ -17,6 +17,9 @@ interface StickySidebarAdProps {
  * Displays a 300x250 Medium Rectangle ad in a sticky sidebar position.
  * Stays visible as the user scrolls through calculator results.
  * Best placement: Right sidebar on desktop.
+ *
+ * For paying users (finance_pro, elite), this component returns null entirely,
+ * allowing the main content to fill the available space.
  */
 export default function StickySidebarAd({
   context,
@@ -76,35 +79,40 @@ export default function StickySidebarAd({
     return () => clearInterval(interval);
   }, [affiliateList.length, showAd]);
 
+  // Return null entirely for paying users - no wrapper div, no reserved space
   if (isLoading || !showAd || affiliateList.length === 0) {
     return null;
   }
 
   const currentAffiliate = affiliateList[currentIndex];
 
+  // Include the wrapper div here so when we return null above,
+  // no space is reserved for the ad container
   return (
-    <div className={`sticky top-24 ${className}`}>
-      <IABAd
-        affiliate={currentAffiliate}
-        size="medium-rectangle"
-        variationIndex={currentIndex}
-      />
-      {affiliateList.length > 1 && (
-        <div className="flex justify-center gap-1.5 mt-3">
-          {affiliateList.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentIndex(index)}
-              className={`w-2 h-2 rounded-full transition-all ${
-                index === currentIndex
-                  ? 'bg-[#2563EB] w-4'
-                  : 'bg-[#E2E8F0] hover:bg-[#CBD5E1]'
-              }`}
-              aria-label={`Show affiliate ${index + 1}`}
-            />
-          ))}
-        </div>
-      )}
+    <div className={`hidden xl:block w-[320px] shrink-0 ${className}`}>
+      <div className="sticky top-24">
+        <IABAd
+          affiliate={currentAffiliate}
+          size="medium-rectangle"
+          variationIndex={currentIndex}
+        />
+        {affiliateList.length > 1 && (
+          <div className="flex justify-center gap-1.5 mt-3">
+            {affiliateList.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentIndex(index)}
+                className={`w-2 h-2 rounded-full transition-all ${
+                  index === currentIndex
+                    ? 'bg-[#2563EB] w-4'
+                    : 'bg-[#E2E8F0] hover:bg-[#CBD5E1]'
+                }`}
+                aria-label={`Show affiliate ${index + 1}`}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

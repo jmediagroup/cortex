@@ -51,10 +51,8 @@ export default function CarAffordabilityPage() {
             <CarAffordability />
           </div>
 
-          {/* Sticky Sidebar Ad - Desktop only */}
-          <div className="hidden xl:block w-[320px] shrink-0">
-            <StickySidebarAd context="car-affordability" />
-          </div>
+          {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}
+          <StickySidebarAd context="car-affordability" />
         </div>
       </main>
 
