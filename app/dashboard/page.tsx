@@ -23,7 +23,8 @@ import {
   Compass,
   Wallet,
   BarChart3,
-  Dices
+  Dices,
+  Anchor
 } from 'lucide-react';
 import { hasAppAccess, getTierDisplayName, type Tier } from '@/lib/access-control';
 import { trackEvent } from '@/lib/analytics';
@@ -94,6 +95,16 @@ const APPS = [
     sector: 'finance' as const,
     category: 'Retirement',
     path: '/apps/retirement-strategy'
+  },
+  {
+    id: 'coast-fire',
+    name: 'Coast FIRE Calculator',
+    description: 'Calculate your Coast FIRE number and discover when you can stop saving for retirement while still reaching your goals.',
+    icon: <Anchor className="text-emerald-600" />,
+    tier: 'free' as const,
+    sector: 'finance' as const,
+    category: 'Retirement',
+    path: '/apps/coast-fire'
   },
   {
     id: 'rent-vs-buy',
