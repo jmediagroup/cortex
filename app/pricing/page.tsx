@@ -331,7 +331,7 @@ export default function PricingPage() {
             Contact us for enterprise pricing, custom integrations, or white-label solutions.
           </p>
           <button
-            onClick={() => window.location.href = 'mailto:support@cortex.vip'}
+            onClick={() => router.push('/enterprise')}
             className="bg-white text-indigo-600 font-black px-8 py-4 rounded-xl hover:bg-indigo-50 transition-all shadow-xl"
           >
             Contact Sales

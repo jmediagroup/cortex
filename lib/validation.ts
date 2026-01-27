@@ -65,6 +65,28 @@ export function sanitizeString(input: string, maxLength: number = 255): string {
 }
 
 /**
+ * Validates phone number format (basic international support)
+ */
+export function isValidPhone(phone: string): boolean {
+  if (!phone || phone.trim() === '') return true; // Phone is optional
+  const phoneRegex = /^[\d\s\-\+\(\)]{10,20}$/;
+  return phoneRegex.test(phone.trim());
+}
+
+/**
+ * Valid company size options
+ */
+export const COMPANY_SIZES = ['1-10', '11-50', '51-200', '201-500', '500+'] as const;
+export type CompanySize = typeof COMPANY_SIZES[number];
+
+/**
+ * Validates company size against allowed values
+ */
+export function isValidCompanySize(size: string): size is CompanySize {
+  return COMPANY_SIZES.includes(size as CompanySize);
+}
+
+/**
  * Type guard for Stripe webhook event types
  */
 export function isValidWebhookEventType(type: string): boolean {

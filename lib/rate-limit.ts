@@ -143,4 +143,7 @@ export const RATE_LIMITS = {
 
   // Email resend: 3 requests per 5 minutes per email
   emailResend: { limit: 3, windowSeconds: 300 },
+
+  // Enterprise lead form: 10 requests per minute per IP
+  enterpriseLead: { limit: 10, windowSeconds: 60 },
 } as const;

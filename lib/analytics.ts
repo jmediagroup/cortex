@@ -23,6 +23,8 @@ export type EventType =
   | 'dashboard_visit'
   | 'pricing_page_view'
   | 'account_page_view'
+  | 'enterprise_page_view'
+  | 'enterprise_form_submitted'
 
   // Donation events
   | 'donation_popup_shown'

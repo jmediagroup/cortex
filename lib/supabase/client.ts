@@ -77,6 +77,42 @@ export type Database = {
           user_agent?: string | null;
         };
       };
+      enterprise_leads: {
+        Row: {
+          id: number;
+          first_name: string;
+          last_name: string;
+          email: string;
+          company_name: string;
+          company_size: string;
+          phone: string | null;
+          message: string;
+          status: 'new' | 'contacted' | 'qualified' | 'closed';
+          created_at: string;
+        };
+        Insert: {
+          id?: never;
+          first_name: string;
+          last_name: string;
+          email: string;
+          company_name: string;
+          company_size: string;
+          phone?: string | null;
+          message: string;
+          status?: 'new' | 'contacted' | 'qualified' | 'closed';
+          created_at?: string;
+        };
+        Update: {
+          first_name?: string;
+          last_name?: string;
+          email?: string;
+          company_name?: string;
+          company_size?: string;
+          phone?: string | null;
+          message?: string;
+          status?: 'new' | 'contacted' | 'qualified' | 'closed';
+        };
+      };
     };
   };
 };
