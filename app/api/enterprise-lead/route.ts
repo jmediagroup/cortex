@@ -8,6 +8,7 @@ import {
   sanitizeString
 } from '@/lib/validation';
 import { checkRateLimit, getClientIP, RATE_LIMITS } from '@/lib/rate-limit';
+import { sendEnterpriseLeadNotification } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
   try {
@@ -99,6 +100,22 @@ export async function POST(request: NextRequest) {
         { error: 'Failed to submit your request. Please try again.' },
         { status: 500 }
       );
+    }
+
+    // Send email notification (don't fail the request if email fails)
+    const emailResult = await sendEnterpriseLeadNotification({
+      firstName: sanitizedData.first_name,
+      lastName: sanitizedData.last_name,
+      email: sanitizedData.email,
+      companyName: sanitizedData.company_name,
+      companySize: sanitizedData.company_size,
+      phone: sanitizedData.phone,
+      message: sanitizedData.message,
+    });
+
+    if (!emailResult.success) {
+      console.error('Failed to send lead notification email:', emailResult.error);
+      // Continue anyway - the lead is saved in the database
     }
 
     return NextResponse.json(
