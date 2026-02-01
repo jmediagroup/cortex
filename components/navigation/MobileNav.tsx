@@ -105,7 +105,7 @@ export default function MobileNav() {
             {/* Sheet Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
               <div className="flex items-center gap-2">
-                <div className="bg-blue-600 p-1.5 rounded-lg text-white">
+                <div className="bg-indigo-600 p-1.5 rounded-lg text-white">
                   <Brain size={18} />
                 </div>
                 <span className="font-bold text-lg text-slate-900">Menu</span>
@@ -128,8 +128,8 @@ export default function MobileNav() {
                   className="flex items-center gap-4 px-4 py-4 rounded-2xl hover:bg-slate-50 active:bg-slate-100 transition-colors group"
                   onClick={handleClose}
                 >
-                  <div className="flex items-center justify-center w-11 h-11 rounded-xl bg-slate-100 group-hover:bg-blue-100 group-active:bg-blue-200 transition-colors">
-                    <item.icon size={22} className="text-slate-600 group-hover:text-blue-600 transition-colors" />
+                  <div className="flex items-center justify-center w-11 h-11 rounded-xl bg-slate-100 group-hover:bg-indigo-100 group-active:bg-indigo-200 transition-colors">
+                    <item.icon size={22} className="text-slate-600 group-hover:text-indigo-600 transition-colors" />
                   </div>
                   <div className="flex-1">
                     <div className="font-semibold text-slate-900">{item.label}</div>
@@ -144,7 +144,7 @@ export default function MobileNav() {
             <div className="px-6 py-4">
               <a
                 href="/login"
-                className="flex items-center justify-center gap-2 w-full bg-blue-600 text-white px-6 py-4 rounded-2xl font-semibold text-base hover:bg-blue-700 active:bg-blue-800 transition-all shadow-lg shadow-blue-200 active:scale-[0.98]"
+                className="flex items-center justify-center gap-2 w-full bg-indigo-600 text-white px-6 py-4 rounded-2xl font-bold text-base hover:bg-indigo-700 active:bg-indigo-800 transition-all shadow-lg shadow-indigo-200 active:scale-[0.98]"
                 onClick={handleClose}
               >
                 <Sparkles size={20} />
