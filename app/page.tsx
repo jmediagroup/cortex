@@ -7,8 +7,6 @@ import {
   TrendingUp,
   Car,
   Scale,
-  Leaf,
-  GraduationCap,
   Compass,
   Check,
   Lock,
@@ -164,7 +162,7 @@ export default function LandingPage() {
               Think clearly about life&apos;s biggest decisions.
             </h1>
             <p className="text-lg md:text-xl text-slate-500 font-medium mb-12 leading-relaxed max-w-2xl mx-auto">
-              Interactive models that turn complexity into clarity—starting with finance, expanding into health, education, and long-term planning.
+              Interactive financial models that turn complexity into clarity—so you can see outcomes before you live them.
             </p>
             <div className="flex flex-col sm:flex-row items-center gap-4 justify-center">
               <a
@@ -320,66 +318,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── FUTURE VISION ─── */}
-      <section className="py-24 md:py-32">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-14">
-            <div className="inline-flex items-center gap-2 bg-purple-50 text-purple-700 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest mb-5 border border-purple-100">
-              <Compass size={14} />
-              Coming Soon
-            </div>
-            <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-4 tracking-tight">What We&apos;re Building Next</h2>
-            <p className="text-lg text-slate-500 font-medium max-w-2xl mx-auto">
-              Expanding into life domains where decisions are frequent, emotional, and long-term.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              {
-                icon: <Leaf size={24} />,
-                title: "Health",
-                description: "Behavior tradeoffs, habit impact modeling, and longevity planning tools.",
-                gradient: "from-emerald-50 to-teal-50",
-                iconColor: "text-emerald-600",
-                iconBg: "from-emerald-100 to-teal-100"
-              },
-              {
-                icon: <GraduationCap size={24} />,
-                title: "Education",
-                description: "ROI of learning paths, certifications, degrees, and skill stack optimization.",
-                gradient: "from-blue-50 to-indigo-50",
-                iconColor: "text-blue-600",
-                iconBg: "from-blue-100 to-indigo-100"
-              },
-              {
-                icon: <Compass size={24} />,
-                title: "Life Planning",
-                description: "Time allocation analysis, career pivots, lifestyle tradeoffs, and optionality preservation.",
-                gradient: "from-purple-50 to-pink-50",
-                iconColor: "text-purple-600",
-                iconBg: "from-purple-100 to-pink-100"
-              }
-            ].map((sector, i) => (
-              <div key={i} className={`bg-gradient-to-br ${sector.gradient} p-8 rounded-2xl border border-slate-200/60 shadow-sm`}>
-                <div className={`bg-gradient-to-br ${sector.iconBg} ${sector.iconColor} p-3.5 rounded-xl w-fit mb-5`}>
-                  {sector.icon}
-                </div>
-                <h4 className="text-xl font-black mb-2 text-slate-800">{sector.title}</h4>
-                <p className="text-slate-500 font-medium leading-relaxed text-sm">{sector.description}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-12 text-center">
-            <p className="text-lg text-slate-500 font-medium">Each sector follows the same principle:</p>
-            <p className="text-xl md:text-2xl font-black text-slate-900 mt-2">
-              Make invisible consequences visible—early enough to matter.
-            </p>
-          </div>
-        </div>
-      </section>
-
       {/* ─── WHY CORTEX ─── */}
       <section className="py-24 md:py-32 bg-slate-50/50 border-y border-slate-100">
         <div className="max-w-4xl mx-auto px-6">
@@ -515,10 +453,10 @@ export default function LandingPage() {
                 </div>
                 <ul className="space-y-3 mb-8 flex-grow">
                   {[
-                    "All current & future apps",
-                    "Finance, Health, Education",
-                    "Life planning tools",
-                    "New sectors as they launch"
+                    "All current & future finance apps",
+                    "Advanced strategy modeling",
+                    "Priority access to new tools",
+                    "Early access to new features"
                   ].map((feature, i) => (
                     <li key={i} className="flex items-start gap-2.5 text-sm">
                       <Check size={15} className="text-purple-300 mt-0.5 flex-shrink-0" strokeWidth={3} />
