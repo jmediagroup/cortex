@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { Clock, ArrowLeft, ArrowRight, Calendar } from 'lucide-react';
 import { getArticleBySlug, getAllArticleSlugs, formatArticleDate } from '@/lib/wordpress/client';
 import { Article } from '@/lib/wordpress/types';
-import { DashboardShell } from '@/components/navigation';
 import { ShareButtons } from './ShareButtons';
 import './article-styles.css';
 
@@ -78,7 +77,7 @@ export default async function ArticlePage({ params }: PageProps) {
   const articleUrl = `https://cortex.vip/articles/${slug}`;
 
   return (
-    <DashboardShell>
+    <>
       {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"
@@ -113,7 +112,7 @@ export default async function ArticlePage({ params }: PageProps) {
 
         {/* Article Header */}
         <header className={`relative ${article.featuredImage ? '-mt-24 md:-mt-32' : 'pt-8 md:pt-12'}`}>
-          <div className="max-w-[65ch] mx-auto px-6">
+          <div className="max-w-3xl mx-auto px-6">
             {/* Card container for header when there's a featured image */}
             <div className={article.featuredImage ? 'bg-white rounded-t-2xl pt-8 md:pt-10 px-2' : ''}>
               {/* Breadcrumb */}
@@ -166,7 +165,7 @@ export default async function ArticlePage({ params }: PageProps) {
         </header>
 
         {/* Article Body */}
-        <div className="max-w-[65ch] mx-auto px-6 md:px-8">
+        <div className="max-w-3xl mx-auto px-6 md:px-8">
           {/* Main Content */}
           <div
             className="article-content py-10 md:py-12"
@@ -244,7 +243,7 @@ export default async function ArticlePage({ params }: PageProps) {
 
         {/* More Articles CTA */}
         <div className="bg-slate-50 py-16 mt-8">
-          <div className="max-w-[65ch] mx-auto px-6 text-center">
+          <div className="max-w-3xl mx-auto px-6 text-center">
             <h3 className="text-2xl font-black text-slate-900 mb-3">
               Continue Learning
             </h3>
@@ -266,7 +265,7 @@ export default async function ArticlePage({ params }: PageProps) {
       <footer className="py-10 text-center text-slate-400 font-medium text-sm border-t border-slate-100">
         &copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.
       </footer>
-    </DashboardShell>
+    </>
   );
 }
 
