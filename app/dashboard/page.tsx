@@ -1,172 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createBrowserClient } from '@/lib/supabase/client';
-import {
-  Brain,
-  TrendingUp,
-  Calculator,
-  ShieldCheck,
-  ArrowRight,
-  Lock,
-  LogOut,
-  User,
-  ArrowLeftRight,
-  Car,
-  ChevronDown,
-  Settings,
-  Filter,
-  Landmark,
-  TrendingDown,
-  MapPin,
-  Compass,
-  Wallet,
-  BarChart3,
-  Dices,
-  Anchor
-} from 'lucide-react';
-import { hasAppAccess, getTierDisplayName, type Tier } from '@/lib/access-control';
+import { type Tier } from '@/lib/access-control';
 import { trackEvent } from '@/lib/analytics';
-
-/**
- * APP DATA CONFIGURATION
- * This array defines the tools visible in the dashboard.
- * The 'tier' property determines if a user can launch the tool.
- * The 'category' property allows filtering apps by type.
- */
-const APPS = [
-  {
-    id: 'car-affordability',
-    name: 'Car Affordability',
-    description: 'Calculate how much car you can afford using the 20/3/8 rule.',
-    icon: <Car className="text-indigo-600" />,
-    tier: 'free' as const,
-    sector: 'finance' as const,
-    category: 'Personal Finance',
-    path: '/apps/car-affordability'
-  },
-  {
-    id: 'compound-interest',
-    name: 'Compound Interest Calculator',
-    description: 'Visualize long-term wealth accumulation with custom contribution schedules and compound growth.',
-    icon: <Calculator className="text-indigo-600" />,
-    tier: 'free' as const,
-    sector: 'finance' as const,
-    category: 'Personal Finance',
-    path: '/apps/compound-interest'
-  },
-  {
-    id: 'index-fund-visualizer',
-    name: 'Index Fund Growth Visualizer',
-    description: 'Simulate historical returns and volatility for popular index ETFs like VOO, VTI, VT, and QQQM.',
-    icon: <BarChart3 className="text-indigo-600" />,
-    tier: 'free' as const,
-    sector: 'finance' as const,
-    category: 'Investing',
-    path: '/apps/index-fund-visualizer'
-  },
-  {
-    id: 's-corp-optimizer',
-    name: 'S-Corp Optimizer',
-    description: 'Calculate self-employment tax savings and find your ideal salary/distribution split.',
-    icon: <Calculator className="text-amber-500" />,
-    tier: 'free' as const,
-    sector: 'finance' as const,
-    category: 'Business',
-    path: '/apps/s-corp-optimizer'
-  },
-  {
-    id: 's-corp-investment',
-    name: 'S-Corp Investment Optimizer',
-    description: 'Maximize retirement savings through strategic allocation across employee deferrals and company matching.',
-    icon: <TrendingUp className="text-emerald-600" />,
-    tier: 'free' as const,
-    sector: 'finance' as const,
-    category: 'Business',
-    path: '/apps/s-corp-investment'
-  },
-  {
-    id: 'retirement-strategy',
-    name: 'Retirement Strategy Engine',
-    description: 'Comprehensive simulation of retirement portfolio withdrawals with RMD calculations.',
-    icon: <TrendingUp className="text-purple-500" />,
-    tier: 'free' as const,
-    sector: 'finance' as const,
-    category: 'Retirement',
-    path: '/apps/retirement-strategy'
-  },
-  {
-    id: 'coast-fire',
-    name: 'Coast FIRE Calculator',
-    description: 'Calculate your Coast FIRE number and discover when you can stop saving for retirement while still reaching your goals.',
-    icon: <Anchor className="text-emerald-600" />,
-    tier: 'free' as const,
-    sector: 'finance' as const,
-    category: 'Retirement',
-    path: '/apps/coast-fire'
-  },
-  {
-    id: 'rent-vs-buy',
-    name: 'Rent vs Buy Reality Engine',
-    description: 'Compare renting vs buying with real-world factors: opportunity cost, maintenance drag, mobility risk, and tax treatment.',
-    icon: <Landmark className="text-indigo-600" />,
-    tier: 'free' as const,
-    sector: 'finance' as const,
-    category: 'Personal Finance',
-    path: '/apps/rent-vs-buy'
-  },
-  {
-    id: 'debt-paydown',
-    name: 'Debt Paydown Strategy Optimizer',
-    description: 'Compare avalanche vs snowball vs hybrid debt paydown strategies with psychological weighting and opportunity cost analysis.',
-    icon: <TrendingDown className="text-indigo-600" />,
-    tier: 'free' as const,
-    sector: 'finance' as const,
-    category: 'Personal Finance',
-    path: '/apps/debt-paydown'
-  },
-  {
-    id: 'geographic-arbitrage',
-    name: 'Geographic Arbitrage Calculator',
-    description: 'Calculate wealth-building potential by comparing income, taxes, and cost of living across all 50 U.S. state capitals and major hubs.',
-    icon: <MapPin className="text-indigo-600" />,
-    tier: 'free' as const,
-    sector: 'finance' as const,
-    category: 'Personal Finance',
-    path: '/apps/geographic-arbitrage'
-  },
-  {
-    id: 'net-worth',
-    name: 'Net Worth Engine',
-    description: 'Track assets and liabilities, analyze liquidity and momentum, identify leverage points, and visualize your financial trajectory.',
-    icon: <Compass className="text-indigo-600" />,
-    tier: 'free' as const,
-    sector: 'finance' as const,
-    category: 'Personal Finance',
-    path: '/apps/net-worth'
-  },
-  {
-    id: 'budget',
-    name: 'Household Budgeting System',
-    description: 'Allocate resources under constraints with AI-powered optimization, tension metrics, and flexibility analysis.',
-    icon: <Wallet className="text-indigo-600" />,
-    tier: 'free' as const,
-    sector: 'finance' as const,
-    category: 'Personal Finance',
-    path: '/apps/budget'
-  },
-  {
-    id: 'gambling-redirect',
-    name: 'Gambling Spend Redirect',
-    description: 'See the life-changing difference between playing the odds and owning the market. Redirect gambling spend toward real wealth.',
-    icon: <Dices className="text-emerald-600" />,
-    tier: 'free' as const,
-    sector: 'finance' as const,
-    category: 'Personal Finance',
-    path: '/apps/gambling-redirect'
-  }
-];
+import { DashboardShell } from '@/components/navigation';
+import { AppLibrary } from '@/components/dashboard';
+import { SkeletonDashboard } from '@/components/ui/Skeleton';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -174,10 +15,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [userTier, setUserTier] = useState<Tier>('free');
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
 
-  // Real authentication check
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -189,7 +27,6 @@ export default function Dashboard() {
 
       setUser(session.user);
 
-      // Fetch user tier from database
       const { data: userData } = await supabase
         .from('users')
         .select('tier')
@@ -200,9 +37,7 @@ export default function Dashboard() {
         setUserTier(userData.tier);
       }
 
-      // Track dashboard visit
       trackEvent('dashboard_visit');
-
       setLoading(false);
     };
 
@@ -210,29 +45,21 @@ export default function Dashboard() {
   }, [router, supabase]);
 
   const handleSignOut = async () => {
-    // Track logout
     await trackEvent('user_logout', {}, true);
-
     await supabase.auth.signOut();
     router.push('/');
   };
 
-  // Get unique categories for filter buttons
-  const categories = ['All', ...Array.from(new Set(APPS.map(app => app.category)))];
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[var(--surface-secondary)]">
+        <SkeletonDashboard />
+      </div>
+    );
+  }
 
-  // Filter apps based on selected category
-  const filteredApps = selectedCategory === 'All'
-    ? APPS
-    : APPS.filter(app => app.category === selectedCategory);
-
-  // 1. LOADING STATE
-  if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-    </div>
-  );
-
-  // 2. AUTH GUARD
+  // Auth guard
   if (!user) {
     if (typeof window !== 'undefined') {
       router.push('/login');
@@ -240,202 +67,22 @@ export default function Dashboard() {
     return null;
   }
 
+  const userName = user.user_metadata?.first_name || user.email?.split('@')[0] || 'User';
+
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+    <DashboardShell
+      user={{ email: user.email, name: userName }}
+      userTier={userTier}
+      onSignOut={handleSignOut}
+    >
+      <div className="mx-auto w-full max-w-7xl px-4 py-6 md:px-6 lg:px-8">
+        <AppLibrary userTier={userTier} />
+      </div>
 
-      {/* TOP NAVIGATION BAR */}
-      <nav className="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between sticky top-0 z-50">
-        <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <div className="bg-indigo-600 p-1.5 rounded-lg text-white">
-            <Brain size={20} />
-          </div>
-          <span className="font-black text-xl tracking-tight">Cortex</span>
-        </a>
-
-        <div className="flex items-center gap-6 relative">
-          <button
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="hidden md:flex items-center gap-3 px-4 py-2 bg-slate-100 rounded-full border border-slate-200 hover:bg-slate-200 transition-colors"
-          >
-            <User size={16} className="text-slate-500" />
-            <span className="text-sm font-bold text-slate-700">{user.email}</span>
-            <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-md ${
-              userTier === 'elite' ? 'bg-purple-600 text-white' : userTier === 'finance_pro' ? 'bg-indigo-600 text-white' : 'bg-slate-300 text-slate-600'
-            }`}>
-              {getTierDisplayName(userTier)}
-            </span>
-            <ChevronDown size={16} className={`text-slate-500 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
-          </button>
-
-          {/* Dropdown Menu */}
-          {dropdownOpen && (
-            <>
-              <div
-                className="fixed inset-0 z-40"
-                onClick={() => setDropdownOpen(false)}
-              />
-              <div className="absolute top-full right-0 mt-2 w-64 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 overflow-hidden">
-                <div className="p-4 border-b border-slate-100 bg-slate-50">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-indigo-600 p-2 rounded-full">
-                      <User size={16} className="text-white" />
-                    </div>
-                    <div className="flex-1 overflow-hidden">
-                      <p className="text-sm font-bold text-slate-700 truncate">{user.email}</p>
-                      <p className="text-xs text-slate-500 uppercase font-black">{userTier} Plan</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="py-2">
-                  <button
-                    onClick={() => {
-                      setDropdownOpen(false);
-                      router.push('/account');
-                    }}
-                    className="w-full px-4 py-3 text-left hover:bg-slate-50 transition-colors flex items-center gap-3 font-medium text-slate-700"
-                  >
-                    <Settings size={16} className="text-slate-500" />
-                    My Account
-                  </button>
-                  <button
-                    onClick={() => {
-                      setDropdownOpen(false);
-                      handleSignOut();
-                    }}
-                    className="w-full px-4 py-3 text-left hover:bg-rose-50 transition-colors flex items-center gap-3 font-medium text-rose-600"
-                  >
-                    <LogOut size={16} />
-                    Sign Out
-                  </button>
-                </div>
-              </div>
-            </>
-          )}
-
-          {/* Mobile Sign Out Button */}
-          <button
-            onClick={handleSignOut}
-            className="md:hidden text-slate-400 hover:text-rose-500 transition-colors flex items-center gap-2 font-bold text-sm"
-          >
-            <LogOut size={20} />
-          </button>
-        </div>
-      </nav>
-
-      {/* MAIN DASHBOARD CONTENT */}
-      <main className="max-w-6xl mx-auto px-6 py-12">
-        <div className="mb-12">
-          <h2 className="text-4xl font-black text-slate-900 mb-2 tracking-tight">App Library</h2>
-          <p className="text-slate-500 font-medium text-lg">Select a tool to begin your financial analysis.</p>
-        </div>
-
-        {/* CATEGORY FILTERS */}
-        <div className="mb-8 flex items-center gap-3 flex-wrap">
-          <div className="flex items-center gap-2 text-slate-600">
-            <Filter size={18} />
-            <span className="text-sm font-black uppercase tracking-wide">Filter:</span>
-          </div>
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={`px-4 py-2 rounded-xl font-bold text-sm transition-all ${
-                selectedCategory === category
-                  ? 'bg-indigo-600 text-white shadow-lg'
-                  : 'bg-white text-slate-600 border border-slate-200 hover:border-indigo-300 hover:text-indigo-600'
-              }`}
-            >
-              {category}
-            </button>
-          ))}
-        </div>
-
-        {/* APPS GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredApps.map((app) => {
-            const isLocked = !hasAppAccess(app, userTier);
-
-            return (
-              <div
-                key={app.id}
-                onClick={() => {
-                  if (!isLocked) {
-                    trackEvent('app_opened', {
-                      app_name: app.name,
-                      app_id: app.id,
-                      app_category: app.category,
-                    });
-                    router.push(app.path);
-                  }
-                }}
-                className={`group relative bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm transition-all duration-300 ${
-                  isLocked
-                  ? 'opacity-80 grayscale-[0.5] cursor-default'
-                  : 'hover:shadow-2xl hover:-translate-y-2 cursor-pointer border-indigo-100'
-                }`}
-              >
-                <div className="mb-6">
-                  <div className={`p-4 rounded-2xl transition-colors ${isLocked ? 'bg-slate-100' : 'bg-slate-50 group-hover:bg-indigo-50'}`}>
-                    {app.icon}
-                  </div>
-                </div>
-
-                <h3 className="text-2xl font-black mb-3 text-slate-800 tracking-tight">{app.name}</h3>
-                <p className="text-sm text-slate-500 font-medium leading-relaxed mb-8">
-                  {app.description}
-                </p>
-
-                <div className="flex items-center justify-between mt-auto">
-                  <span className={`text-sm font-black flex items-center gap-2 transition-all ${
-                    isLocked ? 'text-slate-400' : 'text-indigo-600 group-hover:gap-3'
-                  }`}>
-                    {isLocked ? 'Locked (Pro Feature)' : 'Launch Application'}
-                    {!isLocked && <ArrowRight size={18} />}
-                  </span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* ELITE UPGRADE CALL-TO-ACTION */}
-        {userTier !== 'elite' && (
-          <div className="mt-20 bg-indigo-900 rounded-[3.5rem] p-12 text-white overflow-hidden relative shadow-2xl border border-indigo-800">
-            <div className="absolute top-0 right-0 p-12 opacity-10 rotate-12">
-              <Brain size={250} fill="currentColor" />
-            </div>
-
-            <div className="relative z-10 max-w-2xl">
-              <span className="bg-indigo-500/30 text-indigo-200 text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-full border border-indigo-500/50 mb-6 inline-block">
-                Premium Access
-              </span>
-              <h3 className="text-4xl font-black mb-6 tracking-tight">
-                {userTier === 'free' ? 'Unlock Pro Financial Tools' : 'Upgrade to Elite - All Sectors'}
-              </h3>
-              <p className="text-indigo-100 font-medium text-xl mb-10 leading-relaxed opacity-90">
-                {userTier === 'free'
-                  ? 'Get access to advanced Finance tools including Roth Conversion optimization, auto-optimize features, and more.'
-                  : 'Access pro features across ALL current and future sectors. Health, Education, and more coming soon!'}
-              </p>
-              <button
-                onClick={() => router.push('/pricing')}
-                className="bg-white text-indigo-900 font-black px-10 py-5 rounded-2xl hover:bg-indigo-50 transition-all shadow-xl hover:scale-105 active:scale-95 text-lg"
-              >
-                Explore Pro Plans
-              </button>
-            </div>
-          </div>
-        )}
-      </main>
-
-      {/* FOOTER */}
-      <footer className="max-w-6xl mx-auto px-6 py-12 border-t border-slate-200 mt-12 text-center text-slate-400 font-medium text-sm">
-        <div className="flex items-center justify-center gap-6 mb-4">
-          <ArrowLeftRight size={16} />
-          <span>Optimized Strategy & Drawdown Intelligence</span>
-        </div>
-        &copy; {new Date().getFullYear()} Cortex SaaS. Built for mathematical wealth optimization.
+      {/* Footer */}
+      <footer className="mx-auto max-w-7xl border-t border-[var(--border-primary)] px-6 py-8 text-center text-xs text-[var(--text-tertiary)]">
+        &copy; {new Date().getFullYear()} Cortex Technologies. Built for smarter financial decisions.
       </footer>
-    </div>
+    </DashboardShell>
   );
 }
