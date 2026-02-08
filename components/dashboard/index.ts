@@ -7,3 +7,7 @@ export { default as PerformanceView } from './PerformanceView';
 export { default as ProgressTracking } from './ProgressTracking';
 export { default as BudgetOverview } from './BudgetOverview';
 export { default as TransactionHistory } from './TransactionHistory';
+export { default as PortfolioOverview } from './PortfolioOverview';
+export { default as Watchlist } from './Watchlist';
+export { default as AssetCards } from './AssetCards';
+export { default as PromoBanners } from './PromoBanners';
