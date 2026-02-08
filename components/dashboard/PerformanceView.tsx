@@ -1,6 +1,7 @@
 'use client';
 
 import { Star, Briefcase, Mail } from 'lucide-react';
+import { AIAlertBanner } from '@/components/ai';
 import {
   ResponsiveContainer,
   BarChart,
@@ -50,6 +51,13 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
 export default function PerformanceView() {
   return (
     <div className="flex flex-col gap-6">
+      {/* AI anomaly alert (Image 8) */}
+      <AIAlertBanner
+        message="AI detected unusual dip on Thursday — portfolio dropped 3.2% in 4 hours"
+        actionLabel="Cancel"
+        variant="default"
+      />
+
       {/* Summary cards (Image 4) */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <KPICard

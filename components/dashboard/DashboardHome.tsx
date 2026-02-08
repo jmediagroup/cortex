@@ -21,6 +21,7 @@ import {
 import KPICard from '@/components/ui/KPICard';
 import ChartCard from '@/components/ui/ChartCard';
 import FilterPills from '@/components/ui/FilterPills';
+import { AIInsightsPanel } from '@/components/ai';
 
 // Sample data for the overview chart (matches Image 11 bar+line pattern)
 const monthlyData = [
@@ -134,6 +135,9 @@ export default function DashboardHome({ userName }: DashboardHomeProps) {
           onMenuClick={() => {}}
         />
       </div>
+
+      {/* AI Insights Panel (matches Images 6, 10) */}
+      <AIInsightsPanel />
 
       {/* Main Chart - Combined Bar + Line (matches Image 11 Sales Overview) */}
       <ChartCard
