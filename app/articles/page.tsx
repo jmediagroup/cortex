@@ -2,7 +2,6 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Brain, Clock, ArrowRight, ChevronLeft, ChevronRight, Search, X, Folder, Tag } from 'lucide-react';
-import { DashboardShell } from '@/components/navigation';
 import { getArticles, getCategories, getTags, searchArticles, getArticlesByCategory, getArticlesByTag, formatArticleDate, Category, Tag as TagType } from '@/lib/wordpress/client';
 import { ArticleListItem } from '@/lib/wordpress/types';
 
@@ -82,7 +81,7 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
     : null;
 
   return (
-    <DashboardShell>
+    <>
       {/* MAIN CONTENT */}
       <div className="max-w-7xl mx-auto px-4 py-8 md:px-6 lg:px-8">
         {/* HEADER */}
@@ -333,7 +332,7 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
       <footer className="max-w-7xl mx-auto border-t border-[var(--border-primary)] px-6 py-8 text-center text-xs text-[var(--text-tertiary)]">
         &copy; {new Date().getFullYear()} Cortex Technologies. Built for smarter financial decisions.
       </footer>
-    </DashboardShell>
+    </>
   );
 }
 
