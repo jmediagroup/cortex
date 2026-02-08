@@ -8,6 +8,7 @@ import { trackEvent } from '@/lib/analytics';
 import { DashboardShell } from '@/components/navigation';
 import { DashboardLayout } from '@/components/layout';
 import { DashboardHome, SpendingSidebar, AppLibrary } from '@/components/dashboard';
+import { SkeletonDashboard } from '@/components/ui/Skeleton';
 
 type DashboardView = 'home' | 'apps';
 
@@ -56,8 +57,8 @@ export default function Dashboard() {
   // Loading state
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[var(--surface-secondary)]">
-        <div className="h-10 w-10 animate-spin rounded-full border-2 border-[var(--border-primary)] border-t-[var(--color-accent)]" />
+      <div className="min-h-screen bg-[var(--surface-secondary)]">
+        <SkeletonDashboard />
       </div>
     );
   }

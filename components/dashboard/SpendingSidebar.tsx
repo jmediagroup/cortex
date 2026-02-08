@@ -6,11 +6,16 @@ import {
 } from 'lucide-react';
 import CategoryCard from '@/components/ui/CategoryCard';
 import ProgressBar from '@/components/ui/ProgressBar';
+import CreditCardWidget from '@/components/ui/CreditCardWidget';
+import CurrencyExchange from '@/components/ui/CurrencyExchange';
 
 export default function SpendingSidebar() {
   return (
     <div className="flex flex-col gap-5">
-      {/* Most Spending section (matches Image 11 right sidebar) */}
+      {/* Credit Card carousel */}
+      <CreditCardWidget />
+
+      {/* Most Spending section */}
       <div
         className="rounded-[var(--radius-xl)] border border-[var(--border-primary)] bg-[var(--surface-primary)] p-4"
         style={{ boxShadow: 'var(--shadow-card)' }}
@@ -42,7 +47,7 @@ export default function SpendingSidebar() {
         </div>
       </div>
 
-      {/* Saving progress (matches Image 11) */}
+      {/* Saving progress */}
       <ProgressBar
         label="Saving"
         current={4834}
@@ -51,7 +56,7 @@ export default function SpendingSidebar() {
         showMenu
       />
 
-      {/* Daily Limit progress (matches Image 11) */}
+      {/* Daily Limit progress */}
       <ProgressBar
         label="Daily Limit"
         current={31364}
@@ -59,6 +64,9 @@ export default function SpendingSidebar() {
         color="accent"
         showMenu
       />
+
+      {/* Currency Exchange widget */}
+      <CurrencyExchange />
     </div>
   );
 }
