@@ -22,7 +22,7 @@ export default function BottomTabBar() {
   const pathname = usePathname();
 
   const isActive = (href: string) => {
-    if (href === '/dashboard') return pathname.startsWith('/dashboard');
+    if (href === '/dashboard') return pathname.startsWith('/dashboard') || pathname.startsWith('/apps');
     if (href === '/articles') return pathname.startsWith('/articles');
     return pathname === href;
   };

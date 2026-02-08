@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createBrowserClient } from '@/lib/supabase/client';
 import {
-  ChevronLeft,
   User,
   Save,
   Trash2,
@@ -13,8 +12,8 @@ import {
   TrendingDown,
   CheckCircle,
   XCircle,
-  Brain
 } from 'lucide-react';
+import { DashboardShell } from '@/components/navigation';
 import { getTierDisplayName, getTierColor, type Tier } from '@/lib/access-control';
 
 export default function AccountPage() {
@@ -205,11 +204,20 @@ export default function AccountPage() {
     }
   };
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.push('/');
+  };
+
+  const userName = user?.user_metadata?.first_name || user?.email?.split('@')[0] || 'User';
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-      </div>
+      <DashboardShell>
+        <div className="flex items-center justify-center py-32">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        </div>
+      </DashboardShell>
     );
   }
 
@@ -218,33 +226,13 @@ export default function AccountPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
-      {/* TOP NAVIGATION */}
-      <nav className="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between sticky top-0 z-50">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => router.push('/dashboard')}
-            className="flex items-center gap-2 text-slate-600 hover:text-indigo-600 transition-colors font-bold"
-          >
-            <ChevronLeft size={20} />
-            <span>Back to Dashboard</span>
-          </button>
-          <div className="h-6 w-px bg-slate-200" />
-          <div className="flex items-center gap-2">
-            <User className="text-indigo-600" size={20} />
-            <span className="font-black text-xl tracking-tight">My Account</span>
-          </div>
-        </div>
-        <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <div className="bg-indigo-600 p-1.5 rounded-lg text-white">
-            <Brain size={16} />
-          </div>
-          <span className="font-black text-lg tracking-tight">Cortex</span>
-        </a>
-      </nav>
-
+    <DashboardShell
+      user={{ email: user.email, name: userName }}
+      userTier={userTier}
+      onSignOut={handleSignOut}
+    >
       {/* MAIN CONTENT */}
-      <main className="max-w-4xl mx-auto px-6 py-12">
+      <div className="max-w-4xl mx-auto px-6 py-12">
         {/* Success/Error Messages */}
         {successMessage && (
           <div className="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-700 px-6 py-4 rounded-2xl flex items-center gap-3">
@@ -464,7 +452,7 @@ export default function AccountPage() {
             </div>
           )}
         </div>
-      </main>
+      </div>
 
       {/* FOOTER */}
       <footer className="max-w-4xl mx-auto px-6 py-12 text-center text-slate-400 font-medium text-sm">
@@ -479,6 +467,6 @@ export default function AccountPage() {
           </a>
         </div>
       </footer>
-    </div>
+    </DashboardShell>
   );
 }

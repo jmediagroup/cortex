@@ -2,9 +2,10 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Brain, Clock, ArrowLeft, ArrowRight, Calendar } from 'lucide-react';
+import { Clock, ArrowLeft, ArrowRight, Calendar } from 'lucide-react';
 import { getArticleBySlug, getAllArticleSlugs, formatArticleDate } from '@/lib/wordpress/client';
 import { Article } from '@/lib/wordpress/types';
+import { DashboardShell } from '@/components/navigation';
 import { ShareButtons } from './ShareButtons';
 import './article-styles.css';
 
@@ -77,7 +78,7 @@ export default async function ArticlePage({ params }: PageProps) {
   const articleUrl = `https://cortex.vip/articles/${slug}`;
 
   return (
-    <div className="min-h-screen bg-white font-sans text-slate-900">
+    <DashboardShell>
       {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"
@@ -93,27 +94,6 @@ export default async function ArticlePage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
-
-      {/* TOP NAVIGATION */}
-      <nav className="bg-white border-b border-slate-100 px-6 md:px-8 py-4 flex items-center justify-between sticky top-0 z-50">
-        <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <div className="bg-indigo-600 p-1.5 rounded-lg text-white">
-            <Brain size={20} />
-          </div>
-          <span className="font-black text-xl tracking-tight">Cortex</span>
-        </Link>
-        <div className="flex items-center gap-6">
-          <Link href="/articles" className="text-indigo-600 font-bold">
-            Articles
-          </Link>
-          <Link
-            href="/dashboard"
-            className="text-slate-600 hover:text-indigo-600 transition-colors font-bold"
-          >
-            Dashboard
-          </Link>
-        </div>
-      </nav>
 
       {/* ARTICLE CONTAINER */}
       <article className="relative">
@@ -286,7 +266,7 @@ export default async function ArticlePage({ params }: PageProps) {
       <footer className="py-10 text-center text-slate-400 font-medium text-sm border-t border-slate-100">
         &copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.
       </footer>
-    </div>
+    </DashboardShell>
   );
 }
 
