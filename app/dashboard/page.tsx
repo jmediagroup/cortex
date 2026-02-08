@@ -6,11 +6,8 @@ import { createBrowserClient } from '@/lib/supabase/client';
 import { type Tier } from '@/lib/access-control';
 import { trackEvent } from '@/lib/analytics';
 import { DashboardShell } from '@/components/navigation';
-import { DashboardLayout } from '@/components/layout';
-import { DashboardHome, SpendingSidebar, AppLibrary } from '@/components/dashboard';
+import { AppLibrary } from '@/components/dashboard';
 import { SkeletonDashboard } from '@/components/ui/Skeleton';
-
-type DashboardView = 'home' | 'apps';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -18,7 +15,6 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [userTier, setUserTier] = useState<Tier>('free');
-  const [activeView, setActiveView] = useState<DashboardView>('home');
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -79,43 +75,9 @@ export default function Dashboard() {
       userTier={userTier}
       onSignOut={handleSignOut}
     >
-      {/* View toggle tabs */}
-      <div className="mx-auto w-full max-w-7xl px-4 pt-4 md:px-6 lg:px-8">
-        <div className="inline-flex items-center gap-1 rounded-full border border-[var(--border-primary)] bg-[var(--surface-primary)] p-1">
-          <button
-            onClick={() => setActiveView('home')}
-            className={`rounded-full px-5 py-2 text-sm font-semibold transition-all duration-200 ${
-              activeView === 'home'
-                ? 'bg-[var(--color-accent)] text-white shadow-sm'
-                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-            }`}
-          >
-            Dashboard
-          </button>
-          <button
-            onClick={() => setActiveView('apps')}
-            className={`rounded-full px-5 py-2 text-sm font-semibold transition-all duration-200 ${
-              activeView === 'apps'
-                ? 'bg-[var(--color-accent)] text-white shadow-sm'
-                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-            }`}
-          >
-            App Library
-          </button>
-        </div>
+      <div className="mx-auto w-full max-w-7xl px-4 py-6 md:px-6 lg:px-8">
+        <AppLibrary userTier={userTier} />
       </div>
-
-      {activeView === 'home' ? (
-        <DashboardLayout
-          sidebar={<SpendingSidebar />}
-        >
-          <DashboardHome userName={userName} />
-        </DashboardLayout>
-      ) : (
-        <div className="mx-auto w-full max-w-7xl px-4 py-6 md:px-6 lg:px-8">
-          <AppLibrary userTier={userTier} />
-        </div>
-      )}
 
       {/* Footer */}
       <footer className="mx-auto max-w-7xl border-t border-[var(--border-primary)] px-6 py-8 text-center text-xs text-[var(--text-tertiary)]">

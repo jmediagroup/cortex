@@ -4,12 +4,8 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import {
   Brain,
-  LayoutDashboard,
-  BarChart3,
   Grid3X3,
-  Clock,
-  HelpCircle,
-  Search,
+  BookOpen,
   Settings,
   User,
   LogOut,
@@ -21,15 +17,12 @@ import { type Tier, getTierDisplayName } from '@/lib/access-control';
 interface NavItem {
   label: string;
   href: string;
-  icon: typeof LayoutDashboard;
+  icon: typeof Grid3X3;
 }
 
 const navItems: NavItem[] = [
-  { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { label: 'Analytics', href: '/dashboard/analytics', icon: BarChart3 },
-  { label: 'Apps', href: '/dashboard/apps', icon: Grid3X3 },
-  { label: 'History', href: '/dashboard/history', icon: Clock },
-  { label: 'Help', href: '/help', icon: HelpCircle },
+  { label: 'Apps', href: '/dashboard', icon: Grid3X3 },
+  { label: 'Learn', href: '/articles', icon: BookOpen },
 ];
 
 interface TopNavProps {
@@ -71,8 +64,9 @@ export default function TopNav({
   }, []);
 
   const isActive = (href: string) => {
-    if (href === '/dashboard') return pathname === '/dashboard';
-    return pathname.startsWith(href);
+    if (href === '/dashboard') return pathname.startsWith('/dashboard');
+    if (href === '/articles') return pathname.startsWith('/articles');
+    return pathname === href;
   };
 
   const tierBadgeColor =
@@ -118,13 +112,6 @@ export default function TopNav({
 
       {/* Right: Utilities + User */}
       <div className="flex items-center gap-3">
-        <button
-          className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-tertiary)] transition-colors hover:bg-[var(--surface-tertiary)] hover:text-[var(--text-primary)]"
-          aria-label="Search"
-        >
-          <Search size={18} />
-        </button>
-
         <button
           onClick={onSettingsClick}
           className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-tertiary)] transition-colors hover:bg-[var(--surface-tertiary)] hover:text-[var(--text-primary)]"

@@ -3,7 +3,6 @@
 import { type ReactNode } from 'react';
 import TopNav from './TopNav';
 import BottomTabBar from './BottomTabBar';
-import UserProfileBar from './UserProfileBar';
 import { type Tier } from '@/lib/access-control';
 
 interface DashboardShellProps {
@@ -31,12 +30,6 @@ export default function DashboardShell({
         user={user}
         userTier={userTier}
         onSignOut={onSignOut}
-      />
-
-      {/* Desktop user profile bar - hidden on mobile */}
-      <UserProfileBar
-        name={displayName}
-        lastActivity="Your last activity 2 hours ago"
       />
 
       {/* Mobile header - hidden on desktop */}
