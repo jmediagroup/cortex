@@ -183,6 +183,15 @@ body {
   animation: slideDown 0.3s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
+/* Hide scrollbar for filter pills and horizontal scrolling */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
 /* Haptic feedback simulation for touch */
 @media (hover: none) and (pointer: coarse) {
   .touch-feedback:active {
