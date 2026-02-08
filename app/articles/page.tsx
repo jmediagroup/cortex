@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Brain, Clock, ArrowRight, ChevronLeft, ChevronRight, Search, X, Folder, Tag } from 'lucide-react';
+import { Brain, Clock, ArrowRight, ChevronLeft, ChevronRight, Search, X, Folder, Tag, Grid3X3, BookOpen } from 'lucide-react';
 import { getArticles, getCategories, getTags, searchArticles, getArticlesByCategory, getArticlesByTag, formatArticleDate, Category, Tag as TagType } from '@/lib/wordpress/client';
 import { ArticleListItem } from '@/lib/wordpress/types';
 
@@ -81,39 +81,79 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
     : null;
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
-      {/* TOP NAVIGATION */}
-      <nav className="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between sticky top-0 z-50">
-        <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <div className="bg-indigo-600 p-1.5 rounded-lg text-white">
-            <Brain size={20} />
+    <div className="min-h-screen bg-[var(--surface-secondary)]">
+      {/* TOP NAVIGATION - matches TopNav design */}
+      <nav className="hidden md:flex items-center justify-between border-b border-[var(--border-primary)] bg-[var(--surface-primary)] px-6 py-3 sticky top-0 z-50">
+        <div className="flex items-center gap-8">
+          <Link href="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
+            <div className="bg-[var(--color-accent)] p-1.5 rounded-lg text-white">
+              <Brain size={20} />
+            </div>
+            <span className="font-black text-lg tracking-tight text-[var(--text-primary)]">
+              Cortex
+            </span>
+          </Link>
+
+          <div className="flex items-center gap-1">
+            <Link
+              href="/dashboard"
+              className="flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200 text-[var(--text-secondary)] hover:bg-[var(--surface-tertiary)] hover:text-[var(--text-primary)]"
+            >
+              <Grid3X3 size={16} />
+              Apps
+            </Link>
+            <Link
+              href="/articles"
+              className="flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200 bg-[var(--color-accent)] text-white shadow-sm"
+            >
+              <BookOpen size={16} />
+              Learn
+            </Link>
           </div>
-          <span className="font-black text-xl tracking-tight">Cortex</span>
-        </Link>
-        <div className="flex items-center gap-6">
+        </div>
+
+        <div className="flex items-center gap-3">
           <Link
-            href="/articles"
-            className="text-indigo-600 font-bold"
+            href="/login"
+            className="text-sm font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
           >
-            Articles
+            Sign In
           </Link>
           <Link
-            href="/dashboard"
-            className="text-slate-600 hover:text-indigo-600 transition-colors font-bold"
+            href="/login"
+            className="rounded-full bg-[var(--color-accent)] px-4 py-2 text-sm font-bold text-white transition-all hover:bg-[var(--primary-600)]"
           >
-            Dashboard
+            Get Started
           </Link>
         </div>
       </nav>
 
+      {/* MOBILE HEADER */}
+      <header className="flex items-center justify-between border-b border-[var(--border-primary)] bg-[var(--surface-primary)] px-4 py-3 md:hidden">
+        <Link href="/" className="flex items-center gap-2">
+          <div className="bg-[var(--color-accent)] p-1.5 rounded-lg text-white">
+            <Brain size={16} />
+          </div>
+          <span className="font-black text-base tracking-tight text-[var(--text-primary)]">
+            Cortex
+          </span>
+        </Link>
+        <Link
+          href="/login"
+          className="rounded-full bg-[var(--color-accent)] px-3.5 py-1.5 text-xs font-bold text-white"
+        >
+          Sign In
+        </Link>
+      </header>
+
       {/* MAIN CONTENT */}
-      <main className="max-w-7xl mx-auto px-6 py-12">
+      <main className="max-w-7xl mx-auto px-4 py-8 md:px-6 lg:px-8 pb-24 md:pb-8">
         {/* HEADER */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">
+        <div className="text-center mb-10">
+          <h1 className="text-3xl md:text-4xl font-black text-[var(--text-primary)] mb-3 tracking-tight">
             Financial Insights
           </h1>
-          <p className="text-lg text-slate-600 font-medium max-w-2xl mx-auto">
+          <p className="text-base text-[var(--text-secondary)] font-medium max-w-2xl mx-auto">
             Expert guides, strategies, and insights to help you make smarter financial decisions.
           </p>
         </div>
@@ -122,10 +162,10 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* LEFT SIDEBAR */}
           <aside className="lg:w-64 flex-shrink-0">
-            <div className="bg-white rounded-2xl border border-slate-200 p-6 sticky top-24">
+            <div className="rounded-[var(--radius-xl)] border border-[var(--border-primary)] bg-[var(--surface-primary)] p-5 sticky top-24" style={{ boxShadow: 'var(--shadow-card)' }}>
               {/* SEARCH */}
               <div className="mb-6">
-                <h3 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
+                <h3 className="font-bold text-[var(--text-primary)] mb-3 flex items-center gap-2">
                   <Search size={16} />
                   Search
                 </h3>
@@ -136,11 +176,11 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
                       name="q"
                       defaultValue={searchQuery}
                       placeholder="Search articles..."
-                      className="w-full px-4 py-2.5 pr-10 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      className="w-full px-4 py-2.5 pr-10 border border-[var(--border-primary)] rounded-[var(--radius-lg)] bg-[var(--surface-secondary)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent"
                     />
                     <button
                       type="submit"
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)] hover:text-[var(--color-accent)]"
                     >
                       <Search size={16} />
                     </button>
@@ -150,7 +190,7 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
 
               {/* CATEGORIES */}
               <div className="mb-6">
-                <h3 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
+                <h3 className="font-bold text-[var(--text-primary)] mb-3 flex items-center gap-2">
                   <Folder size={16} />
                   Categories
                 </h3>
@@ -158,10 +198,10 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
                   <li>
                     <Link
                       href="/articles"
-                      className={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      className={`block px-3 py-2 rounded-[var(--radius-md)] text-sm font-medium transition-colors ${
                         !categoryFilter && !searchQuery && !tagFilter
-                          ? 'bg-indigo-50 text-indigo-700'
-                          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                          ? 'bg-[var(--color-accent-light)] text-[var(--color-accent)]'
+                          : 'text-[var(--text-secondary)] hover:bg-[var(--surface-tertiary)] hover:text-[var(--text-primary)]'
                       }`}
                     >
                       All Articles
@@ -171,17 +211,17 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
                     <li key={category.slug}>
                       <Link
                         href={`/articles?category=${category.slug}`}
-                        className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        className={`flex items-center justify-between px-3 py-2 rounded-[var(--radius-md)] text-sm font-medium transition-colors ${
                           categoryFilter === category.slug
-                            ? 'bg-indigo-50 text-indigo-700'
-                            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                            ? 'bg-[var(--color-accent-light)] text-[var(--color-accent)]'
+                            : 'text-[var(--text-secondary)] hover:bg-[var(--surface-tertiary)] hover:text-[var(--text-primary)]'
                         }`}
                       >
                         <span>{category.name}</span>
                         <span className={`text-xs px-2 py-0.5 rounded-full ${
                           categoryFilter === category.slug
-                            ? 'bg-indigo-200 text-indigo-800'
-                            : 'bg-slate-100 text-slate-500'
+                            ? 'bg-[var(--primary-200)] text-[var(--primary-800)]'
+                            : 'bg-[var(--surface-tertiary)] text-[var(--text-tertiary)]'
                         }`}>
                           {category.count}
                         </span>
@@ -194,7 +234,7 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
               {/* TAGS */}
               {tags.length > 0 && (
                 <div>
-                  <h3 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
+                  <h3 className="font-bold text-[var(--text-primary)] mb-3 flex items-center gap-2">
                     <Tag size={16} />
                     Tags
                   </h3>
@@ -205,12 +245,12 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
                         href={`/articles?tag=${tag.slug}`}
                         className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
                           tagFilter === tag.slug
-                            ? 'bg-indigo-600 text-white'
-                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+                            ? 'bg-[var(--color-accent)] text-white'
+                            : 'bg-[var(--surface-tertiary)] text-[var(--text-secondary)] hover:bg-[var(--border-primary)] hover:text-[var(--text-primary)]'
                         }`}
                       >
                         {tag.name}
-                        <span className={`text-[10px] ${tagFilter === tag.slug ? 'text-indigo-200' : 'text-slate-400'}`}>
+                        <span className={`text-[10px] ${tagFilter === tag.slug ? 'text-white/60' : 'text-[var(--text-tertiary)]'}`}>
                           {tag.count}
                         </span>
                       </Link>
@@ -226,11 +266,11 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
             {/* ACTIVE FILTERS */}
             {(searchQuery || categoryFilter || tagFilter) && (
               <div className="flex flex-wrap items-center gap-3 mb-6">
-                <span className="text-sm text-slate-500">Showing:</span>
+                <span className="text-sm text-[var(--text-tertiary)]">Showing:</span>
                 {searchQuery && (
                   <Link
                     href={categoryFilter ? `/articles?category=${categoryFilter}` : tagFilter ? `/articles?tag=${tagFilter}` : '/articles'}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-full text-sm font-medium hover:bg-indigo-100 transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[var(--color-accent-light)] text-[var(--color-accent)] rounded-full text-sm font-medium hover:opacity-80 transition-colors"
                   >
                     &ldquo;{searchQuery}&rdquo;
                     <X size={14} />
@@ -239,7 +279,7 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
                 {categoryFilter && (
                   <Link
                     href={searchQuery ? `/articles?q=${searchQuery}` : '/articles'}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-full text-sm font-medium hover:bg-indigo-100 transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[var(--color-accent-light)] text-[var(--color-accent)] rounded-full text-sm font-medium hover:opacity-80 transition-colors"
                   >
                     {activeCategoryName}
                     <X size={14} />
@@ -248,7 +288,7 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
                 {tagFilter && (
                   <Link
                     href={searchQuery ? `/articles?q=${searchQuery}` : '/articles'}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 text-white rounded-full text-sm font-medium hover:bg-indigo-700 transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[var(--color-accent)] text-white rounded-full text-sm font-medium hover:opacity-90 transition-colors"
                   >
                     #{activeTagName}
                     <X size={14} />
@@ -260,10 +300,10 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
             {/* ERROR STATE */}
             {error && (
               <div className="text-center py-16">
-                <p className="text-slate-600 text-lg">{error}</p>
+                <p className="text-[var(--text-secondary)] text-lg">{error}</p>
                 <Link
                   href="/articles"
-                  className="inline-flex items-center gap-2 mt-4 text-indigo-600 font-bold hover:text-indigo-700"
+                  className="inline-flex items-center gap-2 mt-4 text-[var(--color-accent)] font-bold hover:opacity-80"
                 >
                   Try again
                   <ArrowRight size={16} />
@@ -273,8 +313,8 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
 
             {/* EMPTY STATE */}
             {!error && articles.length === 0 && (
-              <div className="text-center py-16 bg-white rounded-2xl border border-slate-200">
-                <p className="text-slate-600 text-lg mb-2">
+              <div className="text-center py-16 rounded-[var(--radius-xl)] border border-[var(--border-primary)] bg-[var(--surface-primary)]">
+                <p className="text-[var(--text-secondary)] text-lg mb-2">
                   {searchQuery
                     ? `No articles found for "${searchQuery}"`
                     : categoryFilter
@@ -283,7 +323,7 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
                     ? `No articles with this tag yet`
                     : 'No articles published yet.'}
                 </p>
-                <p className="text-slate-500 text-sm mb-4">
+                <p className="text-[var(--text-tertiary)] text-sm mb-4">
                   {searchQuery || categoryFilter || tagFilter
                     ? 'Try adjusting your filters or browse all articles.'
                     : 'Check back soon for new content!'}
@@ -291,7 +331,7 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
                 {(searchQuery || categoryFilter || tagFilter) && (
                   <Link
                     href="/articles"
-                    className="inline-flex items-center gap-2 text-indigo-600 font-bold hover:text-indigo-700"
+                    className="inline-flex items-center gap-2 text-[var(--color-accent)] font-bold hover:opacity-80"
                   >
                     View all articles
                     <ArrowRight size={16} />
@@ -302,7 +342,7 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
 
             {/* ARTICLES GRID */}
             {articles.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {articles.map((article) => (
                   <ArticleCard key={article.id} article={article} />
                 ))}
@@ -315,17 +355,17 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
                 {currentPage > 1 && (
                   <Link
                     href={`/articles?page=${currentPage - 1}${searchQuery ? `&q=${searchQuery}` : ''}${categoryFilter ? `&category=${categoryFilter}` : ''}${tagFilter ? `&tag=${tagFilter}` : ''}`}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 hover:border-indigo-300 hover:text-indigo-600 transition-all text-sm"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 border border-[var(--border-primary)] bg-[var(--surface-primary)] rounded-[var(--radius-lg)] font-bold text-[var(--text-primary)] hover:bg-[var(--surface-tertiary)] transition-all text-sm"
                   >
                     <ChevronLeft size={18} />
                     Previous
                   </Link>
                 )}
-                <span className="text-slate-500 font-medium text-sm">Page {currentPage}</span>
+                <span className="text-[var(--text-tertiary)] font-medium text-sm">Page {currentPage}</span>
                 {hasNextPage && (
                   <Link
                     href={`/articles?page=${currentPage + 1}${searchQuery ? `&q=${searchQuery}` : ''}${categoryFilter ? `&category=${categoryFilter}` : ''}${tagFilter ? `&tag=${tagFilter}` : ''}`}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-all text-sm"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-[var(--color-accent)] text-white rounded-[var(--radius-lg)] font-bold hover:bg-[var(--primary-600)] transition-all text-sm"
                   >
                     Next
                     <ChevronRight size={18} />
@@ -337,14 +377,14 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
         </div>
 
         {/* CTA SECTION */}
-        <div className="mt-16 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl p-12 text-white text-center">
-          <h2 className="text-3xl font-black mb-4">Put Knowledge Into Action</h2>
-          <p className="text-indigo-100 font-medium text-lg mb-6 max-w-xl mx-auto">
+        <div className="mt-16 bg-[var(--primary-900)] rounded-[var(--radius-2xl)] p-10 md:p-12 text-white text-center">
+          <h2 className="text-2xl md:text-3xl font-black mb-4">Put Knowledge Into Action</h2>
+          <p className="text-white/70 font-medium text-base md:text-lg mb-6 max-w-xl mx-auto">
             Use our free calculators to apply what you&apos;ve learned and make better financial decisions.
           </p>
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-2 bg-white text-indigo-600 font-black px-8 py-4 rounded-xl hover:bg-indigo-50 transition-all shadow-xl"
+            className="inline-flex items-center gap-2 bg-white text-[var(--primary-900)] font-black px-8 py-4 rounded-[var(--radius-lg)] hover:bg-white/90 transition-all shadow-xl"
           >
             Explore Calculators
             <ArrowRight size={20} />
@@ -352,9 +392,26 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
         </div>
       </main>
 
+      {/* MOBILE BOTTOM TAB BAR */}
+      <nav
+        className="fixed bottom-0 left-0 right-0 z-50 border-t border-[var(--border-primary)] bg-[var(--surface-primary)]/95 backdrop-blur-lg md:hidden"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+      >
+        <div className="flex items-center justify-around px-4 py-2">
+          <Link href="/dashboard" className="flex flex-col items-center gap-1 px-6 py-1.5">
+            <Grid3X3 size={22} className="text-[var(--text-tertiary)]" />
+            <span className="text-xs font-semibold text-[var(--text-tertiary)]">Apps</span>
+          </Link>
+          <Link href="/articles" className="flex flex-col items-center gap-1 px-6 py-1.5">
+            <BookOpen size={22} className="text-[var(--color-accent)]" />
+            <span className="text-xs font-semibold text-[var(--color-accent)]">Learn</span>
+          </Link>
+        </div>
+      </nav>
+
       {/* FOOTER */}
-      <footer className="max-w-7xl mx-auto px-6 py-12 text-center text-slate-400 font-medium text-sm">
-        &copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.
+      <footer className="max-w-7xl mx-auto border-t border-[var(--border-primary)] px-6 py-8 text-center text-xs text-[var(--text-tertiary)]">
+        &copy; {new Date().getFullYear()} Cortex Technologies. Built for smarter financial decisions.
       </footer>
     </div>
   );
@@ -363,10 +420,13 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
 function ArticleCard({ article }: { article: ArticleListItem }) {
   return (
     <Link href={`/articles/${article.slug}`} className="group">
-      <article className="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:border-indigo-300 hover:shadow-lg transition-all h-full flex flex-col">
+      <article
+        className="rounded-[var(--radius-xl)] border border-[var(--border-primary)] bg-[var(--surface-primary)] overflow-hidden hover:border-[var(--color-accent)] transition-all duration-300 h-full flex flex-col hover:-translate-y-1"
+        style={{ boxShadow: 'var(--shadow-card)' }}
+      >
         {/* Featured Image */}
         {article.featuredImage ? (
-          <div className="relative h-44 bg-slate-100 overflow-hidden">
+          <div className="relative h-44 bg-[var(--surface-tertiary)] overflow-hidden">
             <Image
               src={article.featuredImage.url}
               alt={article.featuredImage.alt}
@@ -375,8 +435,8 @@ function ArticleCard({ article }: { article: ArticleListItem }) {
             />
           </div>
         ) : (
-          <div className="h-44 bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
-            <Brain size={40} className="text-indigo-300" />
+          <div className="h-44 bg-gradient-to-br from-[var(--primary-100)] to-[var(--primary-200)] flex items-center justify-center">
+            <Brain size={40} className="text-[var(--primary-300)]" />
           </div>
         )}
 
@@ -387,7 +447,7 @@ function ArticleCard({ article }: { article: ArticleListItem }) {
               {article.categories.slice(0, 2).map((category) => (
                 <span
                   key={category.slug}
-                  className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full"
+                  className="text-xs font-bold text-[var(--color-accent)] bg-[var(--color-accent-light)] px-2 py-0.5 rounded-full"
                 >
                   {category.name}
                 </span>
@@ -396,17 +456,17 @@ function ArticleCard({ article }: { article: ArticleListItem }) {
           )}
 
           {/* Title */}
-          <h2 className="text-lg font-black text-slate-900 mb-2 group-hover:text-indigo-600 transition-colors line-clamp-2">
+          <h2 className="text-lg font-black text-[var(--text-primary)] mb-2 group-hover:text-[var(--color-accent)] transition-colors line-clamp-2">
             {article.title}
           </h2>
 
           {/* Excerpt */}
-          <p className="text-slate-600 text-sm mb-4 line-clamp-2 flex-grow">
+          <p className="text-[var(--text-secondary)] text-sm mb-4 line-clamp-2 flex-grow">
             {article.excerpt}
           </p>
 
           {/* Meta */}
-          <div className="flex items-center justify-between text-xs text-slate-500 pt-3 border-t border-slate-100">
+          <div className="flex items-center justify-between text-xs text-[var(--text-tertiary)] pt-3 border-t border-[var(--border-secondary)]">
             <span className="font-medium">{formatArticleDate(article.date)}</span>
             <span className="flex items-center gap-1 font-medium">
               <Clock size={12} />
