@@ -1,7 +1,8 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Brain, Clock, ArrowRight, ChevronLeft, ChevronRight, Search, X, Folder, Tag, Grid3X3, BookOpen } from 'lucide-react';
+import { Brain, Clock, ArrowRight, ChevronLeft, ChevronRight, Search, X, Folder, Tag } from 'lucide-react';
+import { DashboardShell } from '@/components/navigation';
 import { getArticles, getCategories, getTags, searchArticles, getArticlesByCategory, getArticlesByTag, formatArticleDate, Category, Tag as TagType } from '@/lib/wordpress/client';
 import { ArticleListItem } from '@/lib/wordpress/types';
 
@@ -81,73 +82,9 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
     : null;
 
   return (
-    <div className="min-h-screen bg-[var(--surface-secondary)]">
-      {/* TOP NAVIGATION - matches TopNav design */}
-      <nav className="hidden md:flex items-center justify-between border-b border-[var(--border-primary)] bg-[var(--surface-primary)] px-6 py-3 sticky top-0 z-50">
-        <div className="flex items-center gap-8">
-          <Link href="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
-            <div className="bg-[var(--color-accent)] p-1.5 rounded-lg text-white">
-              <Brain size={20} />
-            </div>
-            <span className="font-black text-lg tracking-tight text-[var(--text-primary)]">
-              Cortex
-            </span>
-          </Link>
-
-          <div className="flex items-center gap-1">
-            <Link
-              href="/dashboard"
-              className="flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200 text-[var(--text-secondary)] hover:bg-[var(--surface-tertiary)] hover:text-[var(--text-primary)]"
-            >
-              <Grid3X3 size={16} />
-              Apps
-            </Link>
-            <Link
-              href="/articles"
-              className="flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200 bg-[var(--color-accent)] text-white shadow-sm"
-            >
-              <BookOpen size={16} />
-              Learn
-            </Link>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <Link
-            href="/login"
-            className="text-sm font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
-          >
-            Sign In
-          </Link>
-          <Link
-            href="/login"
-            className="rounded-full bg-[var(--color-accent)] px-4 py-2 text-sm font-bold text-white transition-all hover:bg-[var(--primary-600)]"
-          >
-            Get Started
-          </Link>
-        </div>
-      </nav>
-
-      {/* MOBILE HEADER */}
-      <header className="flex items-center justify-between border-b border-[var(--border-primary)] bg-[var(--surface-primary)] px-4 py-3 md:hidden">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="bg-[var(--color-accent)] p-1.5 rounded-lg text-white">
-            <Brain size={16} />
-          </div>
-          <span className="font-black text-base tracking-tight text-[var(--text-primary)]">
-            Cortex
-          </span>
-        </Link>
-        <Link
-          href="/login"
-          className="rounded-full bg-[var(--color-accent)] px-3.5 py-1.5 text-xs font-bold text-white"
-        >
-          Sign In
-        </Link>
-      </header>
-
+    <DashboardShell>
       {/* MAIN CONTENT */}
-      <main className="max-w-7xl mx-auto px-4 py-8 md:px-6 lg:px-8 pb-24 md:pb-8">
+      <div className="max-w-7xl mx-auto px-4 py-8 md:px-6 lg:px-8">
         {/* HEADER */}
         <div className="text-center mb-10">
           <h1 className="text-3xl md:text-4xl font-black text-[var(--text-primary)] mb-3 tracking-tight">
@@ -390,30 +327,13 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
             <ArrowRight size={20} />
           </Link>
         </div>
-      </main>
-
-      {/* MOBILE BOTTOM TAB BAR */}
-      <nav
-        className="fixed bottom-0 left-0 right-0 z-50 border-t border-[var(--border-primary)] bg-[var(--surface-primary)]/95 backdrop-blur-lg md:hidden"
-        style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
-      >
-        <div className="flex items-center justify-around px-4 py-2">
-          <Link href="/dashboard" className="flex flex-col items-center gap-1 px-6 py-1.5">
-            <Grid3X3 size={22} className="text-[var(--text-tertiary)]" />
-            <span className="text-xs font-semibold text-[var(--text-tertiary)]">Apps</span>
-          </Link>
-          <Link href="/articles" className="flex flex-col items-center gap-1 px-6 py-1.5">
-            <BookOpen size={22} className="text-[var(--color-accent)]" />
-            <span className="text-xs font-semibold text-[var(--color-accent)]">Learn</span>
-          </Link>
-        </div>
-      </nav>
+      </div>
 
       {/* FOOTER */}
       <footer className="max-w-7xl mx-auto border-t border-[var(--border-primary)] px-6 py-8 text-center text-xs text-[var(--text-tertiary)]">
         &copy; {new Date().getFullYear()} Cortex Technologies. Built for smarter financial decisions.
       </footer>
-    </div>
+    </DashboardShell>
   );
 }
 

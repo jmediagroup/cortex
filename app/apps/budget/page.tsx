@@ -3,19 +3,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  BarChart3,
-  ShieldCheck,
   Zap,
   RefreshCcw,
   ArrowRightLeft,
   TrendingUp,
   Info,
-  ChevronDown,
-  ChevronUp,
   Lock,
   BrainCircuit,
-  Settings2,
-  AlertCircle,
   Crown,
   Sparkles
 } from 'lucide-react';
@@ -335,7 +329,7 @@ const App = () => {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="flex items-center justify-center py-32">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
           <p className="text-slate-600 font-medium">Loading Budget System...</p>
@@ -347,29 +341,7 @@ const App = () => {
   const hasProFeatures = hasProAccess('finance', userTier);
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
-      {/* TOP NAVIGATION */}
-      <nav className="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between sticky top-0 z-50 shadow-sm">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => router.push('/dashboard')}
-            className="flex items-center gap-2 text-slate-600 hover:text-indigo-600 transition-colors font-bold"
-          >
-            <ArrowRightLeft size={20} />
-            <span>Back to Dashboard</span>
-          </button>
-          <div className="h-6 w-px bg-slate-200" />
-          <div className="flex items-center gap-2">
-            <BrainCircuit className="text-indigo-600" size={20} />
-            <span className="font-black text-xl tracking-tight">Budget System</span>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 text-emerald-600 bg-emerald-50 px-4 py-2 rounded-full border border-emerald-100">
-          <ShieldCheck size={14} />
-          <span className="text-[10px] font-black uppercase tracking-widest">Verified Session</span>
-        </div>
-      </nav>
-
+    <>
       <div className="max-w-6xl mx-auto p-4 md:p-8">
         {!hasSession && (
           <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl p-8 mb-8 text-white shadow-xl">
@@ -616,7 +588,7 @@ const App = () => {
         </aside>
 
         {/* Main Canvas */}
-        <main className="lg:col-span-8 space-y-8">
+        <div className="lg:col-span-8 space-y-8">
           <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-8">
             <div className="flex justify-between items-center mb-10">
               <div>
@@ -695,7 +667,7 @@ const App = () => {
             </div>
           </div>
 
-        </main>
+        </div>
         </div>
 
       {/* Optimization Modal */}
@@ -839,7 +811,7 @@ const App = () => {
           </a>
         </div>
       </footer>
-    </div>
+    </>
   );
 };
 

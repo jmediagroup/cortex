@@ -64,7 +64,7 @@ export default function TopNav({
   }, []);
 
   const isActive = (href: string) => {
-    if (href === '/dashboard') return pathname.startsWith('/dashboard');
+    if (href === '/dashboard') return pathname.startsWith('/dashboard') || pathname.startsWith('/apps');
     if (href === '/articles') return pathname.startsWith('/articles');
     return pathname === href;
   };
@@ -112,92 +112,109 @@ export default function TopNav({
 
       {/* Right: Utilities + User */}
       <div className="flex items-center gap-3">
-        <button
-          onClick={onSettingsClick}
-          className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-tertiary)] transition-colors hover:bg-[var(--surface-tertiary)] hover:text-[var(--text-primary)]"
-          aria-label="Settings"
-        >
-          <Settings size={18} />
-        </button>
-
-        {/* User dropdown */}
-        {user && (
-          <div className="relative" ref={dropdownRef}>
+        {user ? (
+          <>
             <button
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex items-center gap-2.5 rounded-full border border-[var(--border-primary)] bg-[var(--surface-secondary)] px-3 py-1.5 transition-colors hover:bg-[var(--surface-tertiary)]"
+              onClick={onSettingsClick}
+              className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-tertiary)] transition-colors hover:bg-[var(--surface-tertiary)] hover:text-[var(--text-primary)]"
+              aria-label="Settings"
             >
-              <div className="relative">
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--color-accent)] text-xs font-bold text-white">
-                  {(user.name || user.email).charAt(0).toUpperCase()}
-                </div>
-                <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--surface-secondary)] bg-[var(--color-positive)]" />
-              </div>
-              <span className="max-w-[140px] truncate text-sm font-semibold text-[var(--text-primary)]">
-                {user.name || user.email}
-              </span>
-              <span className={`rounded-md px-1.5 py-0.5 text-[10px] font-black uppercase ${tierBadgeColor}`}>
-                {getTierDisplayName(userTier)}
-              </span>
-              <ChevronDown
-                size={14}
-                className={`text-[var(--text-tertiary)] transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`}
-              />
+              <Settings size={18} />
             </button>
 
-            {/* Dropdown */}
-            {dropdownOpen && (
-              <div
-                className="absolute right-0 top-full mt-2 w-64 overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border-primary)] bg-[var(--surface-primary)] z-50"
-                style={{ boxShadow: 'var(--shadow-elevated)' }}
+            {/* User dropdown */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="flex items-center gap-2.5 rounded-full border border-[var(--border-primary)] bg-[var(--surface-secondary)] px-3 py-1.5 transition-colors hover:bg-[var(--surface-tertiary)]"
               >
-                <div className="border-b border-[var(--border-secondary)] bg-[var(--surface-secondary)] p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--color-accent)] text-sm font-bold text-white">
-                      {(user.name || user.email).charAt(0).toUpperCase()}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-bold text-[var(--text-primary)]">
-                        {user.name || user.email}
-                      </p>
-                      <p className="text-xs font-semibold uppercase text-[var(--text-tertiary)]">
-                        {getTierDisplayName(userTier)} Plan
-                      </p>
+                <div className="relative">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--color-accent)] text-xs font-bold text-white">
+                    {(user.name || user.email).charAt(0).toUpperCase()}
+                  </div>
+                  <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--surface-secondary)] bg-[var(--color-positive)]" />
+                </div>
+                <span className="max-w-[140px] truncate text-sm font-semibold text-[var(--text-primary)]">
+                  {user.name || user.email}
+                </span>
+                <span className={`rounded-md px-1.5 py-0.5 text-[10px] font-black uppercase ${tierBadgeColor}`}>
+                  {getTierDisplayName(userTier)}
+                </span>
+                <ChevronDown
+                  size={14}
+                  className={`text-[var(--text-tertiary)] transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`}
+                />
+              </button>
+
+              {/* Dropdown */}
+              {dropdownOpen && (
+                <div
+                  className="absolute right-0 top-full mt-2 w-64 overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border-primary)] bg-[var(--surface-primary)] z-50"
+                  style={{ boxShadow: 'var(--shadow-elevated)' }}
+                >
+                  <div className="border-b border-[var(--border-secondary)] bg-[var(--surface-secondary)] p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--color-accent)] text-sm font-bold text-white">
+                        {(user.name || user.email).charAt(0).toUpperCase()}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-bold text-[var(--text-primary)]">
+                          {user.name || user.email}
+                        </p>
+                        <p className="text-xs font-semibold uppercase text-[var(--text-tertiary)]">
+                          {getTierDisplayName(userTier)} Plan
+                        </p>
+                      </div>
                     </div>
                   </div>
+                  <div className="py-1">
+                    <Link
+                      href="/account"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-secondary)]"
+                    >
+                      <User size={16} className="text-[var(--text-tertiary)]" />
+                      My Account
+                    </Link>
+                    <Link
+                      href="/pricing"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-secondary)]"
+                    >
+                      <ChevronDown size={16} className="rotate-[-90deg] text-[var(--text-tertiary)]" />
+                      Upgrade Plan
+                    </Link>
+                    <div className="my-1 border-t border-[var(--border-secondary)]" />
+                    <button
+                      onClick={() => {
+                        setDropdownOpen(false);
+                        onSignOut?.();
+                      }}
+                      className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-[var(--color-negative)] transition-colors hover:bg-[var(--color-negative-light)]"
+                    >
+                      <LogOut size={16} />
+                      Sign Out
+                    </button>
+                  </div>
                 </div>
-                <div className="py-1">
-                  <Link
-                    href="/account"
-                    onClick={() => setDropdownOpen(false)}
-                    className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-secondary)]"
-                  >
-                    <User size={16} className="text-[var(--text-tertiary)]" />
-                    My Account
-                  </Link>
-                  <Link
-                    href="/pricing"
-                    onClick={() => setDropdownOpen(false)}
-                    className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-secondary)]"
-                  >
-                    <ChevronDown size={16} className="rotate-[-90deg] text-[var(--text-tertiary)]" />
-                    Upgrade Plan
-                  </Link>
-                  <div className="my-1 border-t border-[var(--border-secondary)]" />
-                  <button
-                    onClick={() => {
-                      setDropdownOpen(false);
-                      onSignOut?.();
-                    }}
-                    className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-[var(--color-negative)] transition-colors hover:bg-[var(--color-negative-light)]"
-                  >
-                    <LogOut size={16} />
-                    Sign Out
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          </>
+        ) : (
+          <>
+            <Link
+              href="/login"
+              className="text-sm font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+            >
+              Sign In
+            </Link>
+            <Link
+              href="/login"
+              className="rounded-full bg-[var(--color-accent)] px-4 py-2 text-sm font-bold text-white transition-all hover:opacity-90"
+            >
+              Get Started
+            </Link>
+          </>
         )}
       </div>
     </nav>

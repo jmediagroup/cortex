@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, Compass, ShieldCheck } from 'lucide-react';
+import { Compass } from 'lucide-react';
 import NetWorthEngine from '@/components/apps/NetWorthEngine';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
@@ -38,7 +38,7 @@ export default function NetWorthPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="flex items-center justify-center py-32">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
           <p className="text-slate-600 font-medium">Loading Net Worth Engine...</p>
@@ -48,31 +48,9 @@ export default function NetWorthPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
-      {/* TOP NAVIGATION */}
-      <nav className="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between sticky top-0 z-50 shadow-sm">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => router.push('/dashboard')}
-            className="flex items-center gap-2 text-slate-600 hover:text-indigo-600 transition-colors font-bold"
-          >
-            <ChevronLeft size={20} />
-            <span>Back to Dashboard</span>
-          </button>
-          <div className="h-6 w-px bg-slate-200" />
-          <div className="flex items-center gap-2">
-            <Compass className="text-indigo-600" size={20} />
-            <span className="font-black text-xl tracking-tight">Net Worth Engine</span>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 text-emerald-600 bg-emerald-50 px-4 py-2 rounded-full border border-emerald-100">
-          <ShieldCheck size={14} />
-          <span className="text-[10px] font-black uppercase tracking-widest">Verified Session</span>
-        </div>
-      </nav>
-
+    <>
       {/* MAIN CONTENT */}
-      <main className="max-w-7xl mx-auto px-6 py-12">
+      <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="bg-indigo-50 border border-indigo-100 rounded-3xl p-8 mb-8">
           <div className="flex items-center gap-3 mb-4">
             <Compass size={28} className="text-indigo-600 stroke-[2.5]" />
@@ -108,7 +86,7 @@ export default function NetWorthPage() {
           {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}
           <StickySidebarAd context="net-worth" />
         </div>
-      </main>
+      </div>
 
       {/* FOOTER */}
       <footer className="max-w-7xl mx-auto px-6 py-12 text-center border-t border-slate-200 mt-16">
@@ -130,6 +108,6 @@ export default function NetWorthPage() {
           </div>
         </div>
       </footer>
-    </div>
+    </>
   );
 }

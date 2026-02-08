@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, TrendingUp, ShieldCheck, Sparkles, Lock } from 'lucide-react';
+import { Sparkles, Lock } from 'lucide-react';
 import RetirementStrategyEngine from '@/components/apps/RetirementStrategyEngine';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
@@ -42,38 +42,16 @@ export default function RetirementStrategyPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="flex items-center justify-center py-32">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
-      {/* TOP NAVIGATION */}
-      <nav className="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between sticky top-0 z-50">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => router.push('/dashboard')}
-            className="flex items-center gap-2 text-slate-600 hover:text-indigo-600 transition-colors font-bold"
-          >
-            <ChevronLeft size={20} />
-            <span>Back to Dashboard</span>
-          </button>
-          <div className="h-6 w-px bg-slate-200" />
-          <div className="flex items-center gap-2">
-            <TrendingUp className="text-purple-500" size={20} />
-            <span className="font-black text-xl tracking-tight">Retirement Strategy Engine</span>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 text-emerald-600 bg-emerald-50 px-4 py-2 rounded-full border border-emerald-100">
-          <ShieldCheck size={14} />
-          <span className="text-[10px] font-black uppercase tracking-widest">Verified Session</span>
-        </div>
-      </nav>
-
+    <>
       {/* MAIN CONTENT */}
-      <main className="max-w-7xl mx-auto px-6 py-12">
+      <div className="max-w-7xl mx-auto px-6 py-12">
         {!hasSession && (
           <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl p-8 mb-8 text-white shadow-xl">
             <div className="flex items-start justify-between gap-6">
@@ -143,7 +121,7 @@ export default function RetirementStrategyPage() {
           {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}
           <StickySidebarAd context="retirement-strategy" />
         </div>
-      </main>
+      </div>
 
       {/* FOOTER */}
       <footer className="max-w-7xl mx-auto px-6 py-12 text-center text-slate-400 font-medium text-sm">
@@ -158,6 +136,6 @@ export default function RetirementStrategyPage() {
           </a>
         </div>
       </footer>
-    </div>
+    </>
   );
 }
