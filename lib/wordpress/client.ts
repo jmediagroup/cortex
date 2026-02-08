@@ -18,6 +18,46 @@ import {
 
 const WORDPRESS_API_URL = process.env.NEXT_PUBLIC_WORDPRESS_GRAPHQL_URL;
 
+// Common HTML named entities mapping
+const HTML_ENTITIES: Record<string, string> = {
+  amp: '&',
+  lt: '<',
+  gt: '>',
+  quot: '"',
+  apos: "'",
+  nbsp: '\u00A0',
+  ndash: '\u2013',
+  mdash: '\u2014',
+  lsquo: '\u2018',
+  rsquo: '\u2019',
+  ldquo: '\u201C',
+  rdquo: '\u201D',
+  bull: '\u2022',
+  hellip: '\u2026',
+  copy: '\u00A9',
+  reg: '\u00AE',
+  trade: '\u2122',
+  frac12: '\u00BD',
+  frac14: '\u00BC',
+  frac34: '\u00BE',
+  deg: '\u00B0',
+  times: '\u00D7',
+  divide: '\u00F7',
+};
+
+// Decode HTML entities (numeric, hex, and named) into their actual characters
+function decodeHtmlEntities(text: string): string {
+  return text
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCodePoint(parseInt(dec, 10)))
+    .replace(/&([a-zA-Z]+);/g, (match, name) => HTML_ENTITIES[name] || match);
+}
+
+// Strip HTML tags and decode entities from a string
+function stripHtml(html: string): string {
+  return decodeHtmlEntities(html.replace(/<[^>]*>/g, '')).trim();
+}
+
 // Cache tags for on-demand revalidation
 export const CACHE_TAGS = {
   articles: 'wordpress-articles',
@@ -74,7 +114,7 @@ async function fetchGraphQL<T>(
 // Transform WordPress article to clean Article type
 function transformArticle(wpArticle: WPArticle): Article {
   const wordCount = wpArticle.content
-    ? wpArticle.content.replace(/<[^>]*>/g, '').split(/\s+/).length
+    ? stripHtml(wpArticle.content).split(/\s+/).length
     : 0;
   const calculatedReadingTime = Math.ceil(wordCount / 200);
 
@@ -82,7 +122,7 @@ function transformArticle(wpArticle: WPArticle): Article {
     id: wpArticle.id,
     slug: wpArticle.slug,
     title: wpArticle.title,
-    excerpt: wpArticle.excerpt?.replace(/<[^>]*>/g, '') || '',
+    excerpt: wpArticle.excerpt ? stripHtml(wpArticle.excerpt) : '',
     content: wpArticle.content || '',
     date: wpArticle.date,
     modified: wpArticle.modified,
@@ -111,10 +151,10 @@ function transformArticle(wpArticle: WPArticle): Article {
     seo: wpArticle.seo
       ? {
           title: wpArticle.seo.title || wpArticle.title,
-          description: wpArticle.seo.metaDesc || wpArticle.excerpt?.replace(/<[^>]*>/g, '') || '',
+          description: wpArticle.seo.metaDesc || (wpArticle.excerpt ? stripHtml(wpArticle.excerpt) : ''),
           keywords: wpArticle.seo.metaKeywords || '',
           ogTitle: wpArticle.seo.opengraphTitle || wpArticle.title,
-          ogDescription: wpArticle.seo.opengraphDescription || wpArticle.excerpt?.replace(/<[^>]*>/g, '') || '',
+          ogDescription: wpArticle.seo.opengraphDescription || (wpArticle.excerpt ? stripHtml(wpArticle.excerpt) : ''),
           ogImage: wpArticle.seo.opengraphImage?.sourceUrl || null,
           canonical: wpArticle.seo.canonical || `https://cortex.vip/articles/${wpArticle.slug}`,
           schema: wpArticle.seo.schema?.raw || null,
@@ -134,8 +174,9 @@ function transformArticle(wpArticle: WPArticle): Article {
 
 // Transform to list item (lighter weight for listings)
 function transformToListItem(wpArticle: WPArticle): ArticleListItem {
-  const wordCount = wpArticle.excerpt
-    ? wpArticle.excerpt.replace(/<[^>]*>/g, '').split(/\s+/).length * 5
+  const strippedExcerpt = wpArticle.excerpt ? stripHtml(wpArticle.excerpt) : '';
+  const wordCount = strippedExcerpt
+    ? strippedExcerpt.split(/\s+/).length * 5
     : 0;
   const calculatedReadingTime = Math.max(Math.ceil(wordCount / 200), 3);
 
@@ -143,7 +184,7 @@ function transformToListItem(wpArticle: WPArticle): ArticleListItem {
     id: wpArticle.id,
     slug: wpArticle.slug,
     title: wpArticle.title,
-    excerpt: wpArticle.excerpt?.replace(/<[^>]*>/g, '') || '',
+    excerpt: strippedExcerpt,
     date: wpArticle.date,
     featuredImage: wpArticle.featuredImage?.node
       ? {
@@ -233,7 +274,7 @@ export async function getAllArticleSlugs(): Promise<
 
 // Estimate reading time from content
 export function calculateReadingTime(content: string): number {
-  const text = content.replace(/<[^>]*>/g, '');
+  const text = stripHtml(content);
   const wordCount = text.split(/\s+/).length;
   return Math.ceil(wordCount / 200);
 }
