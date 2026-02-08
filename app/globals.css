@@ -3,11 +3,107 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Primary palette - Purple/Indigo (from design system) */
+  --primary-50: #f0eeff;
+  --primary-100: #e0ddff;
+  --primary-200: #c4b8ff;
+  --primary-300: #a593ff;
+  --primary-400: #8b6fff;
+  --primary-500: #6c63ff;
+  --primary-600: #5a4ee6;
+  --primary-700: #4a3ecc;
+  --primary-800: #3a30a3;
+  --primary-900: #2a2279;
+
+  /* Semantic colors */
+  --color-positive: #22c55e;
+  --color-positive-light: #dcfce7;
+  --color-negative: #ef4444;
+  --color-negative-light: #fee2e2;
+  --color-accent: #6c63ff;
+  --color-accent-light: #f0eeff;
+  --color-warning: #f59e0b;
+  --color-warning-light: #fef3c7;
+  --color-info: #3b82f6;
+  --color-info-light: #dbeafe;
+
+  /* Surface colors */
+  --surface-primary: #ffffff;
+  --surface-secondary: #f8fafc;
+  --surface-tertiary: #f1f5f9;
+  --surface-elevated: #ffffff;
+
+  /* Border colors */
+  --border-primary: #e2e8f0;
+  --border-secondary: #f1f5f9;
+
+  /* Text colors */
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --text-tertiary: #94a3b8;
+  --text-inverse: #ffffff;
+
+  /* Chart colors */
+  --chart-purple: #6c63ff;
+  --chart-green: #22c55e;
+  --chart-blue: #3b82f6;
+  --chart-orange: #f97316;
+  --chart-teal: #14b8a6;
+  --chart-pink: #ec4899;
+  --chart-purple-area: rgba(108, 99, 255, 0.15);
+  --chart-green-area: rgba(34, 197, 94, 0.15);
+
+  /* Shadows */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+
+  /* Radii */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.5rem;
+  --radius-full: 9999px;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary-50: var(--primary-50);
+  --color-primary-100: var(--primary-100);
+  --color-primary-200: var(--primary-200);
+  --color-primary-300: var(--primary-300);
+  --color-primary-400: var(--primary-400);
+  --color-primary-500: var(--primary-500);
+  --color-primary-600: var(--primary-600);
+  --color-primary-700: var(--primary-700);
+  --color-primary-800: var(--primary-800);
+  --color-primary-900: var(--primary-900);
+  --color-positive: var(--color-positive);
+  --color-positive-light: var(--color-positive-light);
+  --color-negative: var(--color-negative);
+  --color-negative-light: var(--color-negative-light);
+  --color-accent: var(--color-accent);
+  --color-accent-light: var(--color-accent-light);
+  --color-warning: var(--color-warning);
+  --color-warning-light: var(--color-warning-light);
+  --color-surface-primary: var(--surface-primary);
+  --color-surface-secondary: var(--surface-secondary);
+  --color-surface-tertiary: var(--surface-tertiary);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-text-inverse: var(--text-inverse);
+  --color-border-primary: var(--border-primary);
+  --color-border-secondary: var(--border-secondary);
+  --color-chart-purple: var(--chart-purple);
+  --color-chart-green: var(--chart-green);
+  --color-chart-blue: var(--chart-blue);
+  --color-chart-orange: var(--chart-orange);
+  --color-chart-teal: var(--chart-teal);
+  --color-chart-pink: var(--chart-pink);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -16,6 +112,22 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+
+    --surface-primary: #1a1a2e;
+    --surface-secondary: #16162a;
+    --surface-tertiary: #1e1e3a;
+    --surface-elevated: #222244;
+
+    --border-primary: #2a2a4a;
+    --border-secondary: #1e1e3a;
+
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-tertiary: #64748b;
+
+    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
+    --shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
   }
 }
 
