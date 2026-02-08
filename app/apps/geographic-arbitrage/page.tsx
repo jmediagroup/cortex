@@ -40,7 +40,10 @@ export default function GeographicArbitragePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <p className="text-slate-500 font-medium text-sm">Loading...</p>
+        </div>
       </div>
     );
   }
@@ -48,7 +51,7 @@ export default function GeographicArbitragePage() {
   return (
     <>
       <div className="max-w-7xl mx-auto px-6 py-12">
-        <div className="bg-indigo-50 border border-indigo-100 rounded-3xl p-8 mb-8">
+        <div className="bg-gradient-to-br from-indigo-50 to-white border border-indigo-100/80 rounded-2xl p-8 mb-8 shadow-sm">
           <h2 className="text-2xl font-black text-indigo-900 mb-3">Geographic Arbitrage Calculator</h2>
           <p className="text-indigo-700 font-medium">
             Relocation isn&apos;t just a move—it&apos;s an investment strategy. Compare your financial trajectory
@@ -72,16 +75,14 @@ export default function GeographicArbitragePage() {
       </div>
 
       {/* FOOTER */}
-      <footer className="max-w-7xl mx-auto px-6 py-12 text-center text-slate-400 font-medium text-sm">
-        <p>&copy; {new Date().getFullYear()} Cortex Financial Technology. All rights reserved.</p>
+      <footer className="max-w-7xl mx-auto px-6 py-10 text-center border-t border-slate-100 mt-8">
+        <p className="text-xs text-slate-400 font-medium">&copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.</p>
         <div className="flex items-center justify-center gap-3 mt-2">
-          <a href="/articles" className="text-slate-500 hover:text-slate-700 transition-colors text-xs">
-            Articles
-          </a>
-          <span className="text-slate-300">|</span>
-          <a href="/terms" className="text-slate-500 hover:text-slate-700 transition-colors text-xs">
-            Terms & Privacy
-          </a>
+          <a href="/articles" className="text-slate-400 hover:text-slate-600 transition-colors text-xs">Articles</a>
+          <span className="text-slate-200">|</span>
+          <a href="/pricing" className="text-slate-400 hover:text-slate-600 transition-colors text-xs">Pricing</a>
+          <span className="text-slate-200">|</span>
+          <a href="/terms" className="text-slate-400 hover:text-slate-600 transition-colors text-xs">Terms & Privacy</a>
         </div>
       </footer>
     </>

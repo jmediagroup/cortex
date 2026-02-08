@@ -43,7 +43,8 @@ export default function CompoundInterestPage() {
       {/* MAIN CONTENT */}
       <div className="max-w-7xl mx-auto px-6 py-12">
         {hasSession === false && (
-          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl p-8 mb-8 text-white shadow-xl">
+          <div className="bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-700 rounded-2xl p-8 mb-8 text-white shadow-xl relative overflow-hidden">
+            <div className="absolute inset-0 opacity-5 grid-bg pointer-events-none" />
             <div className="flex items-start justify-between gap-6">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-3">
@@ -91,7 +92,7 @@ export default function CompoundInterestPage() {
           </div>
         )}
 
-        <div className="bg-indigo-50 border border-indigo-100 rounded-3xl p-8 mb-8">
+        <div className="bg-gradient-to-br from-indigo-50 to-white border border-indigo-100/80 rounded-2xl p-8 mb-8 shadow-sm">
           <h2 className="text-2xl font-black text-indigo-900 mb-3">Compound Interest Calculator</h2>
           <p className="text-indigo-700 font-medium">
             Visualize long-term wealth accumulation with custom contribution schedules. Adjust your initial principal, monthly contributions, and expected return rate to see how your investments can grow over time.
@@ -111,16 +112,14 @@ export default function CompoundInterestPage() {
       </div>
 
       {/* FOOTER */}
-      <footer className="max-w-7xl mx-auto px-6 py-12 text-center text-slate-400 font-medium text-sm">
-        <p>&copy; {new Date().getFullYear()} Cortex Financial Technology. All rights reserved.</p>
+      <footer className="max-w-7xl mx-auto px-6 py-10 text-center border-t border-slate-100 mt-8">
+        <p className="text-xs text-slate-400 font-medium">&copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.</p>
         <div className="flex items-center justify-center gap-3 mt-2">
-          <a href="/articles" className="text-slate-500 hover:text-slate-700 transition-colors text-xs">
-            Articles
-          </a>
-          <span className="text-slate-300">|</span>
-          <a href="/terms" className="text-slate-500 hover:text-slate-700 transition-colors text-xs">
-            Terms & Privacy
-          </a>
+          <a href="/articles" className="text-slate-400 hover:text-slate-600 transition-colors text-xs">Articles</a>
+          <span className="text-slate-200">|</span>
+          <a href="/pricing" className="text-slate-400 hover:text-slate-600 transition-colors text-xs">Pricing</a>
+          <span className="text-slate-200">|</span>
+          <a href="/terms" className="text-slate-400 hover:text-slate-600 transition-colors text-xs">Terms & Privacy</a>
         </div>
       </footer>
     </>
