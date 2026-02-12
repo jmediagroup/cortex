@@ -71,43 +71,50 @@ export default function LandingPage() {
       icon: <Building2 size={22} />,
       title: "S-Corp Investment Optimizer",
       description: "Maximize retirement contributions while optimizing your S-Corp owner compensation.",
-      isFree: false
+      isFree: false,
+      link: "/apps/s-corp-investment"
     },
     {
       icon: <Car size={22} />,
       title: "Car Affordability Calculator",
       description: "Understand the true cost of vehicle ownership including depreciation and opportunity cost.",
-      isFree: false
+      isFree: false,
+      link: "/apps/car-affordability"
     },
     {
       icon: <Scale size={22} />,
       title: "S-Corp Optimizer",
       description: "Calculate self-employment tax savings and find your ideal salary/distribution split.",
-      isFree: false
+      isFree: false,
+      link: "/apps/s-corp-optimizer"
     },
     {
       icon: <Landmark size={22} />,
       title: "Rent vs Buy Reality Engine",
       description: "Compare renting vs buying with opportunity cost, maintenance drag, and tax treatment.",
-      isFree: false
+      isFree: false,
+      link: "/apps/rent-vs-buy"
     },
     {
       icon: <TrendingDown size={22} />,
       title: "Debt Paydown Strategy Optimizer",
       description: "Compare avalanche vs snowball strategies with psychological weighting and opportunity cost.",
-      isFree: false
+      isFree: false,
+      link: "/apps/debt-paydown"
     },
     {
       icon: <MapPin size={22} />,
       title: "Geographic Arbitrage Calculator",
       description: "Calculate wealth-building potential by comparing income, taxes, and cost of living across all 50 states.",
-      isFree: false
+      isFree: false,
+      link: "/apps/geographic-arbitrage"
     },
     {
       icon: <Compass size={22} />,
       title: "Net Worth Engine",
       description: "Track assets and liabilities, analyze liquidity and momentum, and visualize your financial trajectory.",
-      isFree: false
+      isFree: false,
+      link: "/apps/net-worth"
     }
   ];
 
@@ -276,12 +283,12 @@ export default function LandingPage() {
                 <p className="text-slate-500 font-medium leading-relaxed text-sm mb-4">
                   {tool.description}
                 </p>
-                {tool.isFree && tool.link && (
+                {tool.link && (
                   <a
                     href={tool.link}
                     className="inline-flex items-center gap-1.5 text-indigo-600 font-bold text-sm group-hover:gap-2.5 transition-all"
                   >
-                    Try for Free
+                    {tool.isFree ? "Try for Free" : "Learn More"}
                     <ArrowRight size={14} />
                   </a>
                 )}
