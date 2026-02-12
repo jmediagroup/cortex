@@ -267,9 +267,10 @@ export default function LandingPage() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 mb-14">
             {tools.map((tool, i) => (
-              <div
+              <a
                 key={i}
-                className="card-glow bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all duration-300 group relative"
+                href={tool.link}
+                className="card-glow bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all duration-300 group relative block"
               >
                 {tool.isFree && (
                   <div className="absolute -top-2.5 -right-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-md">
@@ -283,16 +284,11 @@ export default function LandingPage() {
                 <p className="text-slate-500 font-medium leading-relaxed text-sm mb-4">
                   {tool.description}
                 </p>
-                {tool.link && (
-                  <a
-                    href={tool.link}
-                    className="inline-flex items-center gap-1.5 text-indigo-600 font-bold text-sm group-hover:gap-2.5 transition-all"
-                  >
-                    {tool.isFree ? "Try for Free" : "Learn More"}
-                    <ArrowRight size={14} />
-                  </a>
-                )}
-              </div>
+                <span className="inline-flex items-center gap-1.5 text-indigo-600 font-bold text-sm group-hover:gap-2.5 transition-all">
+                  {tool.isFree ? "Try for Free" : "Learn More"}
+                  <ArrowRight size={14} />
+                </span>
+              </a>
             ))}
           </div>
 
