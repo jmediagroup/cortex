@@ -8,7 +8,7 @@ interface Stats {
   users: { total: number; free: number; finance_pro: number; elite: number };
   signups: { last7d: number; last30d: number };
   events: { last7d: number };
-  revenue: { balance: number };
+  revenue: { mrr: number };
 }
 
 export default function AdminOverview() {
@@ -69,8 +69,8 @@ export default function AdminOverview() {
       bg: '#dcfce7',
     },
     {
-      label: 'Stripe Balance',
-      value: `$${(stats?.revenue.balance || 0).toFixed(2)}`,
+      label: 'MRR',
+      value: `$${(stats?.revenue.mrr || 0).toFixed(2)}`,
       icon: CreditCard,
       color: 'var(--color-info)',
       bg: '#dbeafe',
