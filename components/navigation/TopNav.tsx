@@ -10,9 +10,11 @@ import {
   User,
   LogOut,
   ChevronDown,
+  Shield,
 } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { type Tier, getTierDisplayName } from '@/lib/access-control';
+import { isAdmin } from '@/lib/admin';
 
 interface NavItem {
   label: string;
@@ -184,6 +186,16 @@ export default function TopNav({
                       <ChevronDown size={16} className="rotate-[-90deg] text-[var(--text-tertiary)]" />
                       Upgrade Plan
                     </Link>
+                    {isAdmin(user.email) && (
+                      <Link
+                        href="/admin"
+                        onClick={() => setDropdownOpen(false)}
+                        className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-secondary)]"
+                      >
+                        <Shield size={16} className="text-[var(--text-tertiary)]" />
+                        Admin Panel
+                      </Link>
+                    )}
                     <div className="my-1 border-t border-[var(--border-secondary)]" />
                     <button
                       onClick={() => {
