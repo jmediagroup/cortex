@@ -3,8 +3,8 @@
  * Uses email allowlist for admin access control
  */
 
-// Admin email allowlist - add admin emails here
-const ADMIN_EMAILS: string[] = (process.env.ADMIN_EMAILS || '')
+// Admin email allowlist - uses NEXT_PUBLIC_ prefix so it's available in client components
+const ADMIN_EMAILS: string[] = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '')
   .split(',')
   .map(email => email.trim().toLowerCase())
   .filter(Boolean);
