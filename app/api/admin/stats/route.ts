@@ -21,8 +21,8 @@ export async function GET(request: NextRequest) {
 
     const supabase = createServiceClient();
 
-    // Fetch user counts by tier in parallel with recent signups and Stripe data
-    const [tierCounts, recentSignups, last30dSignups, stripeBalance] = await Promise.all([
+    // Fetch user counts by tier in parallel with recent signups
+    const [tierCounts, recentSignups, last30dSignups] = await Promise.all([
       // Users by tier
       Promise.all([
         supabase.from('users').select('*', { count: 'exact', head: true }),
@@ -42,9 +42,6 @@ export async function GET(request: NextRequest) {
         .from('users')
         .select('*', { count: 'exact', head: true })
         .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()) as unknown as { count: number | null; error: any },
-
-      // Stripe balance
-      stripe.balance.retrieve().catch(() => null),
     ]);
 
     // Fetch recent events count
@@ -53,11 +50,22 @@ export async function GET(request: NextRequest) {
       .select('*', { count: 'exact', head: true })
       .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()) as { count: number | null; error: any };
 
-    // Parse Stripe balance
-    let monthlyRevenue = 0;
-    if (stripeBalance) {
-      const usdBalance = stripeBalance.available?.find((b: any) => b.currency === 'usd');
-      monthlyRevenue = usdBalance ? usdBalance.amount / 100 : 0;
+    // Calculate real MRR from active Stripe subscriptions
+    let mrr = 0;
+    try {
+      const subscriptions = await stripe.subscriptions.list({
+        status: 'active',
+        limit: 100,
+      });
+      for (const sub of subscriptions.data) {
+        const price = sub.items.data[0]?.price;
+        if (price?.unit_amount && price?.recurring) {
+          const amount = price.unit_amount / 100;
+          mrr += price.recurring.interval === 'year' ? amount / 12 : amount;
+        }
+      }
+    } catch {
+      // Stripe API error, MRR stays 0
     }
 
     return NextResponse.json({
@@ -75,7 +83,7 @@ export async function GET(request: NextRequest) {
         last7d: eventsLast7d || 0,
       },
       revenue: {
-        balance: monthlyRevenue,
+        mrr: Math.round(mrr * 100) / 100,
       },
     });
   } catch (error: any) {
