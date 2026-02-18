@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import crypto from 'crypto';
 import { createServiceClient } from '@/lib/supabase/client';
 import { authenticateRequest, isAuthError, unauthorizedResponse } from '@/lib/auth-helpers';
 import { hasProAccess, type Tier } from '@/lib/access-control';
@@ -72,6 +73,7 @@ export async function POST(request: NextRequest) {
       tool_name,
       inputs,
       key_result: key_result || '',
+      share_token: crypto.randomUUID(),
     })
     .select()
     .single();
