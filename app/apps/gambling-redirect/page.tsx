@@ -97,7 +97,7 @@ export default function GamblingRedirectPage() {
           </p>
         </div>
 
-        <GamblingRedirect isPro={isPro} onUpgrade={() => router.push('/pricing')} />
+        <GamblingRedirect isPro={isPro} onUpgrade={() => router.push('/pricing')} isLoggedIn={hasSession === true} />
       </div>
 
       {/* FOOTER */}

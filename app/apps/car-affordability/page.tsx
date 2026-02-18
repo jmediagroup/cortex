@@ -1,12 +1,23 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import CarAffordability from '@/components/apps/CarAffordability';
+import { createBrowserClient } from '@/lib/supabase/client';
 import { StickySidebarAd } from '@/components/monetization';
 
 export default function CarAffordabilityPage() {
   const router = useRouter();
+  const supabase = createBrowserClient();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsLoggedIn(!!session);
+    };
+    checkAuth();
+  }, [supabase]);
 
   return (
     <>
@@ -25,7 +36,7 @@ export default function CarAffordabilityPage() {
         <div className="flex gap-8">
           {/* Calculator - Main content area */}
           <div className="flex-1 min-w-0">
-            <CarAffordability />
+            <CarAffordability isLoggedIn={isLoggedIn} />
           </div>
 
           {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}

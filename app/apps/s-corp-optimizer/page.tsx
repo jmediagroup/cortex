@@ -1,13 +1,24 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 import SCorpOptimizer from '@/components/apps/SCorpOptimizer';
+import { createBrowserClient } from '@/lib/supabase/client';
 import { StickySidebarAd } from '@/components/monetization';
 
 export default function SCorpOptimizerPage() {
   const router = useRouter();
+  const supabase = createBrowserClient();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsLoggedIn(!!session);
+    };
+    checkAuth();
+  }, [supabase]);
 
   return (
     <>
@@ -24,7 +35,7 @@ export default function SCorpOptimizerPage() {
         <div className="flex gap-8">
           {/* Calculator - Main content area */}
           <div className="flex-1 min-w-0">
-            <SCorpOptimizer />
+            <SCorpOptimizer isLoggedIn={isLoggedIn} />
           </div>
 
           {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}

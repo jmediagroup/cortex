@@ -103,7 +103,7 @@ export default function CompoundInterestPage() {
         <div className="flex gap-8">
           {/* Calculator - Main content area */}
           <div className="flex-1 min-w-0">
-            <CompoundInterest isPro={isPro} onUpgrade={() => router.push('/pricing')} />
+            <CompoundInterest isPro={isPro} onUpgrade={() => router.push('/pricing')} isLoggedIn={hasSession === true} />
           </div>
 
           {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}

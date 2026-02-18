@@ -11,9 +11,10 @@ import {
 interface GamblingRedirectProps {
   isPro?: boolean;
   onUpgrade?: () => void;
+  isLoggedIn?: boolean;
 }
 
-export default function GamblingRedirect({ isPro = false, onUpgrade }: GamblingRedirectProps) {
+export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn = false }: GamblingRedirectProps) {
   const [inputs, setInputs] = useState({
     monthlyBet: 250,
     years: 30,
