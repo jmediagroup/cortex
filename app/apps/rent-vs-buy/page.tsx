@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import RentVsBuyEngine from '@/components/apps/RentVsBuyEngine';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { StickySidebarAd } from '@/components/monetization';
 
-export default function RentVsBuyPage() {
+function RentVsBuyPageInner() {
   const router = useRouter();
   const supabase = createBrowserClient();
   const [isPro, setIsPro] = useState(false);
@@ -102,5 +102,13 @@ export default function RentVsBuyPage() {
         </div>
       </footer>
     </>
+  );
+}
+
+export default function RentVsBuyPage() {
+  return (
+    <Suspense fallback={null}>
+      <RentVsBuyPageInner />
+    </Suspense>
   );
 }

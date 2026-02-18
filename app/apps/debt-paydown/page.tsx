@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import DebtPaydownOptimizer from '@/components/apps/DebtPaydownOptimizer';
@@ -8,7 +8,7 @@ import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { StickySidebarAd } from '@/components/monetization';
 
-export default function DebtPaydownPage() {
+function DebtPaydownPageInner() {
   const router = useRouter();
   const supabase = createBrowserClient();
   const [isPro, setIsPro] = useState(false);
@@ -102,5 +102,13 @@ export default function DebtPaydownPage() {
         </div>
       </footer>
     </>
+  );
+}
+
+export default function DebtPaydownPage() {
+  return (
+    <Suspense fallback={null}>
+      <DebtPaydownPageInner />
+    </Suspense>
   );
 }

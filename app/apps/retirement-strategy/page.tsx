@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Sparkles, Lock } from 'lucide-react';
 import RetirementStrategyEngine from '@/components/apps/RetirementStrategyEngine';
@@ -8,7 +8,7 @@ import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { StickySidebarAd } from '@/components/monetization';
 
-export default function RetirementStrategyPage() {
+function RetirementStrategyPageInner() {
   const router = useRouter();
   const supabase = createBrowserClient();
   const [isPro, setIsPro] = useState(false);
@@ -152,5 +152,13 @@ export default function RetirementStrategyPage() {
         </div>
       </footer>
     </>
+  );
+}
+
+export default function RetirementStrategyPage() {
+  return (
+    <Suspense fallback={null}>
+      <RetirementStrategyPageInner />
+    </Suspense>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Sparkles, Lock } from 'lucide-react';
 import IndexFundVisualizer from '@/components/apps/IndexFundVisualizer';
@@ -8,7 +8,7 @@ import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { StickySidebarAd } from '@/components/monetization';
 
-export default function IndexFundVisualizerPage() {
+function IndexFundVisualizerPageInner() {
   const router = useRouter();
   const supabase = createBrowserClient();
   const [hasSession, setHasSession] = useState<boolean | null>(null);
@@ -136,5 +136,13 @@ export default function IndexFundVisualizerPage() {
         </div>
       </footer>
     </>
+  );
+}
+
+export default function IndexFundVisualizerPage() {
+  return (
+    <Suspense fallback={null}>
+      <IndexFundVisualizerPageInner />
+    </Suspense>
   );
 }

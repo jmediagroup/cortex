@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Sparkles, Lock } from 'lucide-react';
 import CompoundInterest from '@/components/apps/CompoundInterest';
@@ -8,7 +8,7 @@ import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { StickySidebarAd } from '@/components/monetization';
 
-export default function CompoundInterestPage() {
+function CompoundInterestPageInner() {
   const router = useRouter();
   const supabase = createBrowserClient();
   const [hasSession, setHasSession] = useState<boolean | null>(null);
@@ -134,5 +134,13 @@ export default function CompoundInterestPage() {
         </div>
       </footer>
     </>
+  );
+}
+
+export default function CompoundInterestPage() {
+  return (
+    <Suspense fallback={null}>
+      <CompoundInterestPageInner />
+    </Suspense>
   );
 }
