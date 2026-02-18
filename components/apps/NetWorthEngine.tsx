@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
   TrendingUp,
   ShieldAlert,
@@ -202,9 +202,10 @@ interface NetWorthEngineProps {
   isPro?: boolean;
   onUpgrade?: () => void;
   isLoggedIn?: boolean;
+  initialValues?: Record<string, unknown>;
 }
 
-export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false }: NetWorthEngineProps = {}) {
+export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, initialValues }: NetWorthEngineProps = {}) {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [liabilities, setLiabilities] = useState<Liability[]>([]);
   const [monthlySavings, setMonthlySavings] = useState(0);
@@ -213,6 +214,17 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false }:
 
   const [showAssetMenu, setShowAssetMenu] = useState(false);
   const [showLibMenu, setShowLibMenu] = useState(false);
+
+  const initialApplied = useRef(false);
+  useEffect(() => {
+    if (!initialValues || initialApplied.current) return;
+    initialApplied.current = true;
+    const v = initialValues as Record<string, any>;
+    if (v.assets != null) setAssets(v.assets);
+    if (v.liabilities != null) setLiabilities(v.liabilities);
+    if (v.monthlySavings != null) setMonthlySavings(v.monthlySavings);
+    if (v.growthRate != null) setGrowthRate(v.growthRate);
+  }, [initialValues]);
 
   // --- State Handlers ---
 

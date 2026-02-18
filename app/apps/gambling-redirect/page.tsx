@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Sparkles, Lock } from 'lucide-react';
 import GamblingRedirect from '@/components/apps/GamblingRedirect';
 import { createBrowserClient } from '@/lib/supabase/client';
@@ -13,6 +13,8 @@ export default function GamblingRedirectPage() {
   const [hasSession, setHasSession] = useState<boolean | null>(null);
   const [isPro, setIsPro] = useState(false);
   const [loading, setLoading] = useState(true);
+  const searchParams = useSearchParams();
+  const [initialValues, setInitialValues] = useState<Record<string, unknown> | undefined>();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -35,6 +37,15 @@ export default function GamblingRedirectPage() {
     };
     checkAuth();
   }, [router, supabase]);
+
+  useEffect(() => {
+    const token = searchParams.get('scenario');
+    if (!token) return;
+    fetch(`/api/scenarios/shared/${token}`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => { if (data?.scenario?.inputs) setInitialValues(data.scenario.inputs); })
+      .catch(() => {});
+  }, [searchParams]);
 
   return (
     <>
@@ -97,7 +108,7 @@ export default function GamblingRedirectPage() {
           </p>
         </div>
 
-        <GamblingRedirect isPro={isPro} onUpgrade={() => router.push('/pricing')} isLoggedIn={hasSession === true} />
+        <GamblingRedirect isPro={isPro} onUpgrade={() => router.push('/pricing')} isLoggedIn={hasSession === true} initialValues={initialValues} />
       </div>
 
       {/* FOOTER */}

@@ -13,15 +13,17 @@ interface CompoundInterestProps {
   isPro?: boolean;
   isLoggedIn?: boolean;
   onUpgrade?: () => void;
+  initialValues?: Record<string, unknown>;
 }
 
-export default function CompoundInterest({ isPro = false, isLoggedIn = false, onUpgrade }: CompoundInterestProps) {
+export default function CompoundInterest({ isPro = false, isLoggedIn = false, onUpgrade, initialValues }: CompoundInterestProps) {
   const [inputs, setInputs] = useState({
     principal: 25000,
     monthlyContribution: 500,
     annualReturn: 8,
     years: 30,
-    compoundingFrequency: 12
+    compoundingFrequency: 12,
+    ...(initialValues || {}),
   });
 
   const simulationData = useMemo(() => {

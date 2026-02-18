@@ -12,13 +12,15 @@ interface GamblingRedirectProps {
   isPro?: boolean;
   onUpgrade?: () => void;
   isLoggedIn?: boolean;
+  initialValues?: Record<string, unknown>;
 }
 
-export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn = false }: GamblingRedirectProps) {
+export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn = false, initialValues }: GamblingRedirectProps) {
   const [inputs, setInputs] = useState({
     monthlyBet: 250,
     years: 30,
-    marketReturn: 10
+    marketReturn: 10,
+    ...(initialValues || {}),
   });
 
   const simulationData = useMemo(() => {

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import CarAffordability from '@/components/apps/CarAffordability';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { StickySidebarAd } from '@/components/monetization';
@@ -10,6 +10,8 @@ export default function CarAffordabilityPage() {
   const router = useRouter();
   const supabase = createBrowserClient();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const searchParams = useSearchParams();
+  const [initialValues, setInitialValues] = useState<Record<string, unknown> | undefined>();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -18,6 +20,15 @@ export default function CarAffordabilityPage() {
     };
     checkAuth();
   }, [supabase]);
+
+  useEffect(() => {
+    const token = searchParams.get('scenario');
+    if (!token) return;
+    fetch(`/api/scenarios/shared/${token}`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => { if (data?.scenario?.inputs) setInitialValues(data.scenario.inputs); })
+      .catch(() => {});
+  }, [searchParams]);
 
   return (
     <>
@@ -36,7 +47,7 @@ export default function CarAffordabilityPage() {
         <div className="flex gap-8">
           {/* Calculator - Main content area */}
           <div className="flex-1 min-w-0">
-            <CarAffordability isLoggedIn={isLoggedIn} />
+            <CarAffordability isLoggedIn={isLoggedIn} initialValues={initialValues} />
           </div>
 
           {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}

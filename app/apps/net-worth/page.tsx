@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Compass } from 'lucide-react';
 import NetWorthEngine from '@/components/apps/NetWorthEngine';
 import { createBrowserClient } from '@/lib/supabase/client';
@@ -14,12 +14,18 @@ export default function NetWorthPage() {
   const [isPro, setIsPro] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
+  const searchParams = useSearchParams();
+  const [initialValues, setInitialValues] = useState<Record<string, unknown> | undefined>();
 
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        router.push('/login');
+        if (!searchParams.get('scenario')) {
+          router.push('/login');
+          return;
+        }
+        setLoading(false);
         return;
       }
 
@@ -38,6 +44,15 @@ export default function NetWorthPage() {
     };
     checkAuth();
   }, [router, supabase]);
+
+  useEffect(() => {
+    const token = searchParams.get('scenario');
+    if (!token) return;
+    fetch(`/api/scenarios/shared/${token}`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => { if (data?.scenario?.inputs) setInitialValues(data.scenario.inputs); })
+      .catch(() => {});
+  }, [searchParams]);
 
   if (loading) {
     return (
@@ -83,7 +98,7 @@ export default function NetWorthPage() {
         <div className="flex gap-8">
           {/* Calculator - Main content area */}
           <div className="flex-1 min-w-0">
-            <NetWorthEngine isPro={isPro} onUpgrade={() => router.push('/pricing')} isLoggedIn={isLoggedIn} />
+            <NetWorthEngine isPro={isPro} onUpgrade={() => router.push('/pricing')} isLoggedIn={isLoggedIn} initialValues={initialValues} />
           </div>
 
           {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}

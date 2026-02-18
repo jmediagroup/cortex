@@ -76,9 +76,10 @@ interface RetirementStrategyEngineProps {
   isPro?: boolean;
   isLoggedIn?: boolean;
   onUpgrade?: () => void;
+  initialValues?: Record<string, unknown>;
 }
 
-export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = false, onUpgrade }: RetirementStrategyEngineProps) {
+export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = false, onUpgrade, initialValues }: RetirementStrategyEngineProps) {
   const [inputs, setInputs] = useState({
     currentAge: 62,
     targetRetirementAge: 65,
@@ -101,7 +102,8 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
     targetBracketIndex: 1,
     rothConvAmount: 40000,
     rothConvStartAge: 62,
-    rothConvEndAge: 72
+    rothConvEndAge: 72,
+    ...(initialValues || {}),
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>, category: string | null = null) => {

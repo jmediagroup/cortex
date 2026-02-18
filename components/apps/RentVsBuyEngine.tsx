@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area, ReferenceLine
 } from 'recharts';
@@ -13,9 +13,10 @@ interface RentVsBuyEngineProps {
   isPro?: boolean;
   isLoggedIn?: boolean;
   onUpgrade?: () => void;
+  initialValues?: Record<string, unknown>;
 }
 
-export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade }: RentVsBuyEngineProps) {
+export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, initialValues }: RentVsBuyEngineProps) {
   // --- Input State ---
   const [purchasePrice, setPurchasePrice] = useState(500000);
   const [downPaymentPct, setDownPaymentPct] = useState(20);
@@ -31,6 +32,25 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade }
   const [propertyTax, setPropertyTax] = useState(1.2);
   const [buyingCosts, setBuyingCosts] = useState(2); // Closing costs %
   const [sellingCosts, setSellingCosts] = useState(6); // Real estate agent + transfer fees
+
+  const initialApplied = useRef(false);
+  useEffect(() => {
+    if (!initialValues || initialApplied.current) return;
+    initialApplied.current = true;
+    const v = initialValues as Record<string, number>;
+    if (v.purchasePrice != null) setPurchasePrice(v.purchasePrice);
+    if (v.downPaymentPct != null) setDownPaymentPct(v.downPaymentPct);
+    if (v.mortgageRate != null) setMortgageRate(v.mortgageRate);
+    if (v.monthlyRent != null) setMonthlyRent(v.monthlyRent);
+    if (v.years != null) setYears(v.years);
+    if (v.appreciationRate != null) setAppreciationRate(v.appreciationRate);
+    if (v.rentInflation != null) setRentInflation(v.rentInflation);
+    if (v.stockReturn != null) setStockReturn(v.stockReturn);
+    if (v.maintenanceRate != null) setMaintenanceRate(v.maintenanceRate);
+    if (v.propertyTax != null) setPropertyTax(v.propertyTax);
+    if (v.buyingCosts != null) setBuyingCosts(v.buyingCosts);
+    if (v.sellingCosts != null) setSellingCosts(v.sellingCosts);
+  }, [initialValues]);
 
   // --- Calculations ---
   const results = useMemo(() => {

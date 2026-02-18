@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Sparkles, Lock } from 'lucide-react';
 import IndexFundVisualizer from '@/components/apps/IndexFundVisualizer';
 import { createBrowserClient } from '@/lib/supabase/client';
@@ -14,6 +14,8 @@ export default function IndexFundVisualizerPage() {
   const [hasSession, setHasSession] = useState<boolean | null>(null);
   const [isPro, setIsPro] = useState(false);
   const [loading, setLoading] = useState(true);
+  const searchParams = useSearchParams();
+  const [initialValues, setInitialValues] = useState<Record<string, unknown> | undefined>();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -37,6 +39,15 @@ export default function IndexFundVisualizerPage() {
     };
     checkAuth();
   }, [router, supabase]);
+
+  useEffect(() => {
+    const token = searchParams.get('scenario');
+    if (!token) return;
+    fetch(`/api/scenarios/shared/${token}`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => { if (data?.scenario?.inputs) setInitialValues(data.scenario.inputs); })
+      .catch(() => {});
+  }, [searchParams]);
 
   return (
     <>
@@ -105,7 +116,7 @@ export default function IndexFundVisualizerPage() {
         <div className="flex gap-8">
           {/* Calculator - Main content area */}
           <div className="flex-1 min-w-0">
-            <IndexFundVisualizer isPro={isPro} onUpgrade={() => router.push('/pricing')} isLoggedIn={hasSession === true} />
+            <IndexFundVisualizer isPro={isPro} onUpgrade={() => router.push('/pricing')} isLoggedIn={hasSession === true} initialValues={initialValues} />
           </div>
 
           {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}

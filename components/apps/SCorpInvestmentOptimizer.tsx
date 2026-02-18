@@ -20,9 +20,10 @@ interface SCorpInvestmentOptimizerProps {
   isPro: boolean;
   onUpgrade: () => void;
   isLoggedIn?: boolean;
+  initialValues?: Record<string, unknown>;
 }
 
-export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn = false }: SCorpInvestmentOptimizerProps) {
+export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn = false, initialValues }: SCorpInvestmentOptimizerProps) {
   const [inputs, setInputs] = useState({
     annualSalary: 60000,
     age: 35,
@@ -35,7 +36,8 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
     monthlyBrokerage: 0,
     growthRate: 7.0,
     inflationRate: 3.0,
-    adjustInflation: false
+    adjustInflation: false,
+    ...(initialValues || {}),
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
