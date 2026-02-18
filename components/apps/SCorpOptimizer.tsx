@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell
 } from 'recharts';
@@ -13,11 +13,21 @@ interface SCorpOptimizerProps {
   isPro?: boolean;
   onUpgrade?: () => void;
   isLoggedIn?: boolean;
+  initialValues?: Record<string, unknown>;
 }
 
-export default function SCorpOptimizer({ isPro = false, onUpgrade, isLoggedIn = false }: SCorpOptimizerProps) {
+export default function SCorpOptimizer({ isPro = false, onUpgrade, isLoggedIn = false, initialValues }: SCorpOptimizerProps) {
   const [profit, setProfit] = useState(150000);
   const [salary, setSalary] = useState(60000);
+
+  const initialApplied = useRef(false);
+  useEffect(() => {
+    if (!initialValues || initialApplied.current) return;
+    initialApplied.current = true;
+    const v = initialValues as Record<string, number>;
+    if (v.profit != null) setProfit(v.profit);
+    if (v.salary != null) setSalary(v.salary);
+  }, [initialValues]);
 
   const stats = useMemo(() => {
     // Self-Employment Tax (15.3% on 92.35% of profit)

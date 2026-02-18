@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as ChartTooltip, ResponsiveContainer
 } from 'recharts';
@@ -33,6 +33,7 @@ interface GeographicArbitrageCalculatorProps {
   isPro?: boolean;
   onUpgrade?: () => void;
   isLoggedIn?: boolean;
+  initialValues?: Record<string, unknown>;
 }
 
 // Comprehensive Data for all 50 State Capitals + Major Hubs + DC + Custom Cities
@@ -99,7 +100,7 @@ const LOCATION_PRESETS: Record<string, LocationData> = {
   "Remote / LCOL": { taxRate: 0.03, colIndex: 0.8, housingBase: 1200, note: "The 'Ideal Arbitrage' scenario. Assumes rural or mid-west living while keeping city salary." },
 };
 
-export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLoggedIn = false }: GeographicArbitrageCalculatorProps) {
+export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLoggedIn = false, initialValues }: GeographicArbitrageCalculatorProps) {
   const [currentLoc, setCurrentLoc] = useState("San Francisco, CA");
   const [targetLoc, setTargetLoc] = useState("Austin, TX");
   const [annualIncome, setAnnualIncome] = useState<number | string>(150000);
@@ -114,6 +115,20 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
     transit: 30,
     discretionary: 50
   });
+
+  const initialApplied = useRef(false);
+  useEffect(() => {
+    if (!initialValues || initialApplied.current) return;
+    initialApplied.current = true;
+    const v = initialValues as Record<string, any>;
+    if (v.currentLoc != null) setCurrentLoc(v.currentLoc);
+    if (v.targetLoc != null) setTargetLoc(v.targetLoc);
+    if (v.annualIncome != null) setAnnualIncome(v.annualIncome);
+    if (v.incomeAdjustment != null) setIncomeAdjustment(v.incomeAdjustment);
+    if (v.investmentReturn != null) setInvestmentReturn(v.investmentReturn);
+    if (v.years != null) setYears(v.years);
+    if (v.lifestyle != null) setLifestyle(v.lifestyle);
+  }, [initialValues]);
 
   // Sort keys by State (suffix) then City (prefix)
   const sortedLocationKeys = useMemo(() => {

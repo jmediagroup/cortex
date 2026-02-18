@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import SCorpInvestmentOptimizer from '@/components/apps/SCorpInvestmentOptimizer';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
@@ -14,6 +14,8 @@ export default function SCorpInvestmentPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
   const [userTier, setUserTier] = useState<Tier>('free');
+  const searchParams = useSearchParams();
+  const [initialValues, setInitialValues] = useState<Record<string, unknown> | undefined>();
 
   // Fetch user tier from database (optional - no redirect)
   useEffect(() => {
@@ -40,6 +42,15 @@ export default function SCorpInvestmentPage() {
 
     checkAuth();
   }, [router, supabase]);
+
+  useEffect(() => {
+    const token = searchParams.get('scenario');
+    if (!token) return;
+    fetch(`/api/scenarios/shared/${token}`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => { if (data?.scenario?.inputs) setInitialValues(data.scenario.inputs); })
+      .catch(() => {});
+  }, [searchParams]);
 
   if (loading) {
     return (
@@ -73,6 +84,7 @@ export default function SCorpInvestmentPage() {
               isPro={isPro}
               onUpgrade={() => router.push('/pricing')}
               isLoggedIn={isLoggedIn}
+              initialValues={initialValues}
             />
           </div>
 

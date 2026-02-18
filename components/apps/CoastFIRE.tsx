@@ -15,9 +15,10 @@ interface CoastFIREProps {
   isPro?: boolean;
   onUpgrade?: () => void;
   isLoggedIn?: boolean;
+  initialValues?: Record<string, unknown>;
 }
 
-export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false }: CoastFIREProps) {
+export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false, initialValues }: CoastFIREProps) {
   const [inputs, setInputs] = useState({
     currentAge: 30,
     retirementAge: 65,
@@ -33,7 +34,8 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
     desiredCoastAge: 45,
     socialSecurityAge: 67,
     estimatedSocialSecurity: 2000,
-    riskTolerance: 'moderate' as 'conservative' | 'moderate' | 'aggressive'
+    riskTolerance: 'moderate' as 'conservative' | 'moderate' | 'aggressive',
+    ...(initialValues || {}),
   });
 
   // --- Core Calculations ---

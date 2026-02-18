@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
   ComposedChart,
   Line,
@@ -33,6 +33,7 @@ interface IndexFundVisualizerProps {
   isPro?: boolean;
   onUpgrade?: () => void;
   isLoggedIn?: boolean;
+  initialValues?: Record<string, unknown>;
 }
 
 // Historical data approximations based on 10-20 year rolling averages
@@ -77,7 +78,7 @@ const FUND_METADATA = {
 
 type FundKey = keyof typeof FUND_METADATA;
 
-export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLoggedIn = false }: IndexFundVisualizerProps) {
+export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLoggedIn = false, initialValues }: IndexFundVisualizerProps) {
   const [principal, setPrincipal] = useState(10000);
   const [contribution, setContribution] = useState(1000);
   const [frequency, setFrequency] = useState<'monthly' | 'annual'>('monthly');
@@ -85,6 +86,18 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
   const [selectedFund, setSelectedFund] = useState<FundKey>('VOO_IVV');
   const [showSimulated, setShowSimulated] = useState(true);
   const [seed, setSeed] = useState(0);
+
+  const initialApplied = useRef(false);
+  useEffect(() => {
+    if (!initialValues || initialApplied.current) return;
+    initialApplied.current = true;
+    const v = initialValues as Record<string, any>;
+    if (v.principal != null) setPrincipal(v.principal);
+    if (v.contribution != null) setContribution(v.contribution);
+    if (v.frequency != null) setFrequency(v.frequency);
+    if (v.duration != null) setDuration(v.duration);
+    if (v.selectedFund != null) setSelectedFund(v.selectedFund);
+  }, [initialValues]);
 
   // Formatting helpers
   const formatCurrency = (val: number) =>

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Sparkles, Lock } from 'lucide-react';
 import RetirementStrategyEngine from '@/components/apps/RetirementStrategyEngine';
 import { createBrowserClient } from '@/lib/supabase/client';
@@ -14,6 +14,8 @@ export default function RetirementStrategyPage() {
   const [isPro, setIsPro] = useState(false);
   const [loading, setLoading] = useState(true);
   const [hasSession, setHasSession] = useState(false);
+  const searchParams = useSearchParams();
+  const [initialValues, setInitialValues] = useState<Record<string, unknown> | undefined>();
 
   // Fetch user tier from database (optional - no redirect)
   useEffect(() => {
@@ -39,6 +41,15 @@ export default function RetirementStrategyPage() {
 
     checkAuth();
   }, [router, supabase]);
+
+  useEffect(() => {
+    const token = searchParams.get('scenario');
+    if (!token) return;
+    fetch(`/api/scenarios/shared/${token}`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => { if (data?.scenario?.inputs) setInitialValues(data.scenario.inputs); })
+      .catch(() => {});
+  }, [searchParams]);
 
   if (loading) {
     return (
@@ -120,6 +131,7 @@ export default function RetirementStrategyPage() {
               isPro={isPro}
               onUpgrade={() => router.push('/pricing')}
               isLoggedIn={hasSession}
+              initialValues={initialValues}
             />
           </div>
 

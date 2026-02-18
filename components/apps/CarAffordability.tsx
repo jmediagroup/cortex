@@ -17,14 +17,16 @@ interface CarAffordabilityProps {
   isPro?: boolean;
   onUpgrade?: () => void;
   isLoggedIn?: boolean;
+  initialValues?: Record<string, unknown>;
 }
 
-export default function CarAffordability({ isLoggedIn = false, onUpgrade }: CarAffordabilityProps) {
+export default function CarAffordability({ isLoggedIn = false, onUpgrade, initialValues }: CarAffordabilityProps) {
   const [inputs, setInputs] = useState({
     annualIncome: 150000,
     interestRate: 4.0,
     currentMonthlyPayment: 0,
-    downPaymentPercent: 44
+    downPaymentPercent: 44,
+    ...(initialValues || {}),
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
