@@ -7,13 +7,15 @@ import {
 import {
   TrendingUp, Home, Calculator, Settings2, Info, AlertTriangle, ShieldCheck, Landmark, Lock, Zap, MapPin, Repeat, DollarSign
 } from 'lucide-react';
+import SaveScenarioButton from './SaveScenarioButton';
 
 interface RentVsBuyEngineProps {
   isPro?: boolean;
+  isLoggedIn?: boolean;
   onUpgrade?: () => void;
 }
 
-export default function RentVsBuyEngine({ isPro, onUpgrade }: RentVsBuyEngineProps) {
+export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade }: RentVsBuyEngineProps) {
   // --- Input State ---
   const [purchasePrice, setPurchasePrice] = useState(500000);
   const [downPaymentPct, setDownPaymentPct] = useState(20);
@@ -176,6 +178,18 @@ export default function RentVsBuyEngine({ isPro, onUpgrade }: RentVsBuyEnginePro
 
   return (
     <div className="space-y-8">
+      {/* Save Scenario */}
+      <div className="flex justify-end mb-4">
+        <SaveScenarioButton
+          toolId="rent-vs-buy"
+          toolName="Rent vs Buy Reality Engine"
+          getInputs={() => ({ purchasePrice, downPaymentPct, mortgageRate, monthlyRent, years, appreciationRate, rentInflation, stockReturn, maintenanceRate, propertyTax, buyingCosts, sellingCosts })}
+          getKeyResult={() => `$${purchasePrice.toLocaleString()} home vs $${monthlyRent.toLocaleString()}/mo rent over ${years}yr`}
+          isLoggedIn={isLoggedIn}
+          onLoginPrompt={onUpgrade}
+        />
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
         {/* Controls Column */}

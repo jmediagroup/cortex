@@ -7,8 +7,15 @@ import {
 import {
   Zap, Scale, Info
 } from 'lucide-react';
+import SaveScenarioButton from './SaveScenarioButton';
 
-export default function SCorpOptimizer() {
+interface SCorpOptimizerProps {
+  isPro?: boolean;
+  onUpgrade?: () => void;
+  isLoggedIn?: boolean;
+}
+
+export default function SCorpOptimizer({ isPro = false, onUpgrade, isLoggedIn = false }: SCorpOptimizerProps) {
   const [profit, setProfit] = useState(150000);
   const [salary, setSalary] = useState(60000);
 
@@ -36,6 +43,18 @@ export default function SCorpOptimizer() {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
+      {/* Save Scenario */}
+      <div className="flex justify-end mb-4">
+        <SaveScenarioButton
+          toolId="s-corp-optimizer"
+          toolName="S-Corp Optimizer"
+          getInputs={() => ({ profit, salary })}
+          getKeyResult={() => `Profit: $${profit.toLocaleString()}, Salary: $${salary.toLocaleString()}`}
+          isLoggedIn={isLoggedIn}
+          onLoginPrompt={onUpgrade}
+        />
+      </div>
+
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
