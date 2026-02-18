@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Sparkles, Lock } from 'lucide-react';
 import GamblingRedirect from '@/components/apps/GamblingRedirect';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 
-export default function GamblingRedirectPage() {
+function GamblingRedirectPageInner() {
   const router = useRouter();
   const supabase = createBrowserClient();
   const [hasSession, setHasSession] = useState<boolean | null>(null);
@@ -124,5 +124,13 @@ export default function GamblingRedirectPage() {
         </div>
       </footer>
     </>
+  );
+}
+
+export default function GamblingRedirectPage() {
+  return (
+    <Suspense fallback={null}>
+      <GamblingRedirectPageInner />
+    </Suspense>
   );
 }

@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import CarAffordability from '@/components/apps/CarAffordability';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { StickySidebarAd } from '@/components/monetization';
 
-export default function CarAffordabilityPage() {
+function CarAffordabilityPageInner() {
   const router = useRouter();
   const supabase = createBrowserClient();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -67,5 +67,13 @@ export default function CarAffordabilityPage() {
         </div>
       </footer>
     </>
+  );
+}
+
+export default function CarAffordabilityPage() {
+  return (
+    <Suspense fallback={null}>
+      <CarAffordabilityPageInner />
+    </Suspense>
   );
 }

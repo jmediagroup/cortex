@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import SCorpInvestmentOptimizer from '@/components/apps/SCorpInvestmentOptimizer';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { StickySidebarAd } from '@/components/monetization';
 
-export default function SCorpInvestmentPage() {
+function SCorpInvestmentPageInner() {
   const router = useRouter();
   const supabase = createBrowserClient();
   const [isPro, setIsPro] = useState(false);
@@ -105,5 +105,13 @@ export default function SCorpInvestmentPage() {
         </div>
       </footer>
     </>
+  );
+}
+
+export default function SCorpInvestmentPage() {
+  return (
+    <Suspense fallback={null}>
+      <SCorpInvestmentPageInner />
+    </Suspense>
   );
 }

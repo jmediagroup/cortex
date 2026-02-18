@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Compass } from 'lucide-react';
 import NetWorthEngine from '@/components/apps/NetWorthEngine';
@@ -8,7 +8,7 @@ import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { StickySidebarAd } from '@/components/monetization';
 
-export default function NetWorthPage() {
+function NetWorthPageInner() {
   const router = useRouter();
   const supabase = createBrowserClient();
   const [isPro, setIsPro] = useState(false);
@@ -124,5 +124,13 @@ export default function NetWorthPage() {
         </div>
       </footer>
     </>
+  );
+}
+
+export default function NetWorthPage() {
+  return (
+    <Suspense fallback={null}>
+      <NetWorthPageInner />
+    </Suspense>
   );
 }
