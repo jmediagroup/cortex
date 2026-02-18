@@ -1,6 +1,14 @@
 import { createBrowserClient as createClient } from '@supabase/ssr';
 import { createClient as createSupabaseClient, SupabaseClient } from '@supabase/supabase-js';
 
+export type OnboardingAnswers = {
+  describes_you: string;
+  financial_focus: string;
+  investing_status: string;
+  own_or_rent: string;
+  tool_familiarity: string;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -16,6 +24,8 @@ export type Database = {
           stripe_customer_id: string | null;
           stripe_subscription_id: string | null;
           subscription_status: string | null;
+          has_completed_onboarding: boolean;
+          onboarding_answers: OnboardingAnswers | null;
           created_at: string;
           updated_at: string;
         };
@@ -30,6 +40,8 @@ export type Database = {
           stripe_customer_id?: string | null;
           stripe_subscription_id?: string | null;
           subscription_status?: string | null;
+          has_completed_onboarding?: boolean;
+          onboarding_answers?: OnboardingAnswers | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -44,6 +56,8 @@ export type Database = {
           stripe_customer_id?: string | null;
           stripe_subscription_id?: string | null;
           subscription_status?: string | null;
+          has_completed_onboarding?: boolean;
+          onboarding_answers?: OnboardingAnswers | null;
           updated_at?: string;
         };
       };
