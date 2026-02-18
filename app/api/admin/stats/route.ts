@@ -50,22 +50,32 @@ export async function GET(request: NextRequest) {
       .select('*', { count: 'exact', head: true })
       .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()) as { count: number | null; error: any };
 
-    // Calculate real MRR from active Stripe subscriptions
+    // Calculate MRR from database subscribers' actual Stripe subscription data
     let mrr = 0;
-    try {
-      const subscriptions = await stripe.subscriptions.list({
-        status: 'active',
-        limit: 100,
-      });
-      for (const sub of subscriptions.data) {
-        const price = sub.items.data[0]?.price;
-        if (price?.unit_amount && price?.recurring) {
-          const amount = price.unit_amount / 100;
-          mrr += price.recurring.interval === 'year' ? amount / 12 : amount;
+    const { data: allSubscribers } = await supabase
+      .from('users')
+      .select('stripe_subscription_id')
+      .not('stripe_subscription_id', 'is', null) as { data: { stripe_subscription_id: string }[] | null };
+
+    if (allSubscribers) {
+      const results = await Promise.all(
+        allSubscribers.map(async (u) => {
+          try {
+            return await stripe.subscriptions.retrieve(u.stripe_subscription_id);
+          } catch {
+            return null;
+          }
+        })
+      );
+      for (const sub of results) {
+        if (sub && sub.status === 'active') {
+          const price = sub.items.data[0]?.price;
+          if (price?.unit_amount && price?.recurring) {
+            const amount = price.unit_amount / 100;
+            mrr += price.recurring.interval === 'year' ? amount / 12 : amount;
+          }
         }
       }
-    } catch {
-      // Stripe API error, MRR stays 0
     }
 
     return NextResponse.json({
