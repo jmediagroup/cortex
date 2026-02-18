@@ -40,11 +40,11 @@ export async function POST(request: NextRequest) {
   // Check user tier for save limits
   const { data: userData } = await supabase
     .from('users')
-    .select('subscription_status')
+    .select('tier')
     .eq('id', auth.user.id)
     .single();
 
-  const userTier = ((userData as { subscription_status?: string } | null)?.subscription_status === 'active' ? 'finance' : 'free') as Tier;
+  const userTier = ((userData as { tier?: string } | null)?.tier || 'free') as Tier;
   const isPro = hasProAccess('finance', userTier);
 
   if (!isPro) {
