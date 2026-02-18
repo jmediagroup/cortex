@@ -12,6 +12,7 @@ export default function NetWorthPage() {
   const router = useRouter();
   const supabase = createBrowserClient();
   const [isPro, setIsPro] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,6 +22,8 @@ export default function NetWorthPage() {
         router.push('/login');
         return;
       }
+
+      setIsLoggedIn(true);
 
       const { data: userData } = await supabase
         .from('users')
@@ -80,7 +83,7 @@ export default function NetWorthPage() {
         <div className="flex gap-8">
           {/* Calculator - Main content area */}
           <div className="flex-1 min-w-0">
-            <NetWorthEngine isPro={isPro} onUpgrade={() => router.push('/pricing')} />
+            <NetWorthEngine isPro={isPro} onUpgrade={() => router.push('/pricing')} isLoggedIn={isLoggedIn} />
           </div>
 
           {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}

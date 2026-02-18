@@ -119,6 +119,7 @@ export default function RetirementStrategyPage() {
             <RetirementStrategyEngine
               isPro={isPro}
               onUpgrade={() => router.push('/pricing')}
+              isLoggedIn={hasSession}
             />
           </div>
 

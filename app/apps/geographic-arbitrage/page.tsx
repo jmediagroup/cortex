@@ -12,6 +12,7 @@ export default function GeographicArbitragePage() {
   const router = useRouter();
   const supabase = createBrowserClient();
   const [isPro, setIsPro] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,6 +22,8 @@ export default function GeographicArbitragePage() {
         router.push('/login');
         return;
       }
+
+      setIsLoggedIn(true);
 
       const { data: userData } = await supabase
         .from('users')
@@ -66,7 +69,7 @@ export default function GeographicArbitragePage() {
         <div className="flex gap-8">
           {/* Calculator - Main content area */}
           <div className="flex-1 min-w-0">
-            <GeographicArbitrageCalculator isPro={isPro} onUpgrade={() => router.push('/pricing')} />
+            <GeographicArbitrageCalculator isPro={isPro} onUpgrade={() => router.push('/pricing')} isLoggedIn={isLoggedIn} />
           </div>
 
           {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}

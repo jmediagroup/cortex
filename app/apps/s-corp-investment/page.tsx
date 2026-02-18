@@ -11,6 +11,7 @@ export default function SCorpInvestmentPage() {
   const router = useRouter();
   const supabase = createBrowserClient();
   const [isPro, setIsPro] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
   const [userTier, setUserTier] = useState<Tier>('free');
 
@@ -18,6 +19,7 @@ export default function SCorpInvestmentPage() {
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
+      setIsLoggedIn(!!session);
 
       if (session) {
         // Fetch user tier from database if logged in
@@ -70,6 +72,7 @@ export default function SCorpInvestmentPage() {
             <SCorpInvestmentOptimizer
               isPro={isPro}
               onUpgrade={() => router.push('/pricing')}
+              isLoggedIn={isLoggedIn}
             />
           </div>
 
