@@ -16,6 +16,7 @@ import {
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { StickySidebarAd } from '@/components/monetization';
+import SaveScenarioButton from '@/components/apps/SaveScenarioButton';
 
 // --- Constants & Defaults ---
 const CATEGORIES = {
@@ -390,6 +391,19 @@ const App = () => {
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Save Scenario */}
+        {hasSession && (
+          <div className="flex justify-end mb-4">
+            <SaveScenarioButton
+              toolId="budget"
+              toolName="Budget System"
+              getInputs={() => ({ grossIncome: typeof grossIncome === 'number' ? grossIncome : parseFloat(String(grossIncome)) || 0, taxMode, allocations, viewMode })}
+              getKeyResult={() => `Take-home: $${Math.round(takeHomePay).toLocaleString()}/mo, Remaining: $${Math.round(remaining).toLocaleString()}`}
+              isLoggedIn={hasSession}
+            />
           </div>
         )}
 

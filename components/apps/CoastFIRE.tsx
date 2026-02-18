@@ -9,13 +9,15 @@ import {
   CheckCircle2, PiggyBank, Calendar, RefreshCw, Anchor, Briefcase, Heart, Sparkles, DollarSign,
   ShieldCheck, Gauge, Flame, Coffee
 } from 'lucide-react';
+import SaveScenarioButton from './SaveScenarioButton';
 
 interface CoastFIREProps {
   isPro?: boolean;
   onUpgrade?: () => void;
+  isLoggedIn?: boolean;
 }
 
-export default function CoastFIRE({ isPro = false, onUpgrade }: CoastFIREProps) {
+export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false }: CoastFIREProps) {
   const [inputs, setInputs] = useState({
     currentAge: 30,
     retirementAge: 65,
@@ -353,6 +355,21 @@ export default function CoastFIRE({ isPro = false, onUpgrade }: CoastFIREProps) 
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
+      {/* Save Scenario */}
+      <div className="flex justify-end">
+        <SaveScenarioButton
+          toolId="coast-fire"
+          toolName="Coast FIRE Calculator"
+          getInputs={() => inputs}
+          getKeyResult={() => {
+            const coastNumber = inputs.annualSpending / (inputs.withdrawalRate / 100);
+            return `Coast FIRE number: $${Math.round(coastNumber).toLocaleString()}`;
+          }}
+          isLoggedIn={isLoggedIn}
+          onLoginPrompt={onUpgrade}
+        />
+      </div>
+
       {/* Primary Status Card */}
       <div className={`rounded-[3rem] p-8 md:p-10 border-2 transition-all shadow-lg ${
         calculations.hasReachedCoast

@@ -27,10 +27,12 @@ import {
   AlertTriangle,
   Sparkles
 } from 'lucide-react';
+import SaveScenarioButton from './SaveScenarioButton';
 
 interface IndexFundVisualizerProps {
   isPro?: boolean;
   onUpgrade?: () => void;
+  isLoggedIn?: boolean;
 }
 
 // Historical data approximations based on 10-20 year rolling averages
@@ -75,7 +77,7 @@ const FUND_METADATA = {
 
 type FundKey = keyof typeof FUND_METADATA;
 
-export default function IndexFundVisualizer({ isPro = false, onUpgrade }: IndexFundVisualizerProps) {
+export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLoggedIn = false }: IndexFundVisualizerProps) {
   const [principal, setPrincipal] = useState(10000);
   const [contribution, setContribution] = useState(1000);
   const [frequency, setFrequency] = useState<'monthly' | 'annual'>('monthly');
@@ -213,6 +215,18 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade }: IndexF
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
+      {/* Save Scenario */}
+      <div className="flex justify-end mb-4">
+        <SaveScenarioButton
+          toolId="index-fund-visualizer"
+          toolName="Index Fund Visualizer"
+          getInputs={() => ({ principal, contribution, frequency, duration, selectedFund })}
+          getKeyResult={() => `$${principal.toLocaleString()} initial, $${contribution.toLocaleString()}/${frequency}, ${duration}yr`}
+          isLoggedIn={isLoggedIn}
+          onLoginPrompt={onUpgrade}
+        />
+      </div>
+
       {/* Metrics Header */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">

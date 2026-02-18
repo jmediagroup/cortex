@@ -7,13 +7,15 @@ import {
 import {
   Calculator, TrendingUp, Info, ArrowUpRight, Lock, Zap, AlertTriangle, Target, Clock, ArrowRight
 } from 'lucide-react';
+import SaveScenarioButton from './SaveScenarioButton';
 
 interface CompoundInterestProps {
   isPro?: boolean;
+  isLoggedIn?: boolean;
   onUpgrade?: () => void;
 }
 
-export default function CompoundInterest({ isPro = false, onUpgrade }: CompoundInterestProps) {
+export default function CompoundInterest({ isPro = false, isLoggedIn = false, onUpgrade }: CompoundInterestProps) {
   const [inputs, setInputs] = useState({
     principal: 25000,
     monthlyContribution: 500,
@@ -128,6 +130,18 @@ export default function CompoundInterest({ isPro = false, onUpgrade }: CompoundI
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
+      {/* Save Scenario */}
+      <div className="flex justify-end">
+        <SaveScenarioButton
+          toolId="compound-interest"
+          toolName="Compound Interest Calculator"
+          getInputs={() => inputs}
+          getKeyResult={() => `$${finalStats.balance.toLocaleString()} after ${inputs.years} years`}
+          isLoggedIn={isLoggedIn}
+          onLoginPrompt={onUpgrade}
+        />
+      </div>
+
       {/* Metrics Header */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">

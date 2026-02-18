@@ -20,6 +20,7 @@ import {
   TrendingDown,
   Plane
 } from 'lucide-react';
+import SaveScenarioButton from './SaveScenarioButton';
 
 interface LocationData {
   taxRate: number;
@@ -31,6 +32,7 @@ interface LocationData {
 interface GeographicArbitrageCalculatorProps {
   isPro?: boolean;
   onUpgrade?: () => void;
+  isLoggedIn?: boolean;
 }
 
 // Comprehensive Data for all 50 State Capitals + Major Hubs + DC + Custom Cities
@@ -97,7 +99,7 @@ const LOCATION_PRESETS: Record<string, LocationData> = {
   "Remote / LCOL": { taxRate: 0.03, colIndex: 0.8, housingBase: 1200, note: "The 'Ideal Arbitrage' scenario. Assumes rural or mid-west living while keeping city salary." },
 };
 
-export default function GeographicArbitrageCalculator({ isPro, onUpgrade }: GeographicArbitrageCalculatorProps) {
+export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLoggedIn = false }: GeographicArbitrageCalculatorProps) {
   const [currentLoc, setCurrentLoc] = useState("San Francisco, CA");
   const [targetLoc, setTargetLoc] = useState("Austin, TX");
   const [annualIncome, setAnnualIncome] = useState<number | string>(150000);
@@ -341,6 +343,18 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade }: Geog
 
   return (
     <div className="space-y-8">
+
+      {/* Save Scenario */}
+      <div className="flex justify-end mb-4">
+        <SaveScenarioButton
+          toolId="geographic-arbitrage"
+          toolName="Geographic Arbitrage Calculator"
+          getInputs={() => ({ currentLoc, targetLoc, annualIncome, incomeAdjustment, investmentReturn, years })}
+          getKeyResult={() => `${currentLoc} → ${targetLoc}, Income: $${Number(annualIncome).toLocaleString()}`}
+          isLoggedIn={isLoggedIn}
+          onLoginPrompt={onUpgrade}
+        />
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Controls Panel */}

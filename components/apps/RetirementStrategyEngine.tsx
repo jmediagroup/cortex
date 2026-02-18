@@ -20,6 +20,7 @@ import {
   Info,
   Scale
 } from 'lucide-react';
+import SaveScenarioButton from './SaveScenarioButton';
 
 // IRS Uniform Lifetime Table (simplified for RMD age 73+)
 const RMD_TABLE: Record<number, number> = {
@@ -73,10 +74,11 @@ const estimateTax = (taxableIncome: number) => {
 
 interface RetirementStrategyEngineProps {
   isPro?: boolean;
+  isLoggedIn?: boolean;
   onUpgrade?: () => void;
 }
 
-export default function RetirementStrategyEngine({ isPro = false, onUpgrade }: RetirementStrategyEngineProps) {
+export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = false, onUpgrade }: RetirementStrategyEngineProps) {
   const [inputs, setInputs] = useState({
     currentAge: 62,
     targetRetirementAge: 65,
@@ -275,6 +277,18 @@ export default function RetirementStrategyEngine({ isPro = false, onUpgrade }: R
 
   return (
     <div className="space-y-8">
+      {/* Save Scenario */}
+      <div className="flex justify-end mb-4">
+        <SaveScenarioButton
+          toolId="retirement-strategy"
+          toolName="Retirement Strategy Engine"
+          getInputs={() => inputs}
+          getKeyResult={() => `Age ${inputs.currentAge}→${inputs.targetRetirementAge}, $${inputs.annualSpending.toLocaleString()}/yr spending`}
+          isLoggedIn={isLoggedIn}
+          onLoginPrompt={onUpgrade}
+        />
+      </div>
+
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>

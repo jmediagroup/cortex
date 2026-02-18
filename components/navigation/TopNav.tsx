@@ -6,6 +6,7 @@ import {
   Brain,
   Grid3X3,
   BookOpen,
+  Bookmark,
   Settings,
   User,
   LogOut,
@@ -24,6 +25,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: 'Apps', href: '/dashboard', icon: Grid3X3 },
+  { label: 'Scenarios', href: '/dashboard/scenarios', icon: Bookmark },
   { label: 'Learn', href: '/articles', icon: BookOpen },
 ];
 
@@ -66,7 +68,8 @@ export default function TopNav({
   }, []);
 
   const isActive = (href: string) => {
-    if (href === '/dashboard') return pathname.startsWith('/dashboard') || pathname.startsWith('/apps');
+    if (href === '/dashboard/scenarios') return pathname === '/dashboard/scenarios';
+    if (href === '/dashboard') return pathname === '/dashboard' || pathname.startsWith('/apps');
     if (href === '/articles') return pathname.startsWith('/articles');
     return pathname === href;
   };
@@ -177,6 +180,14 @@ export default function TopNav({
                     >
                       <User size={16} className="text-[var(--text-tertiary)]" />
                       My Account
+                    </Link>
+                    <Link
+                      href="/dashboard/scenarios"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-secondary)]"
+                    >
+                      <Bookmark size={16} className="text-[var(--text-tertiary)]" />
+                      My Scenarios
                     </Link>
                     <Link
                       href="/pricing"

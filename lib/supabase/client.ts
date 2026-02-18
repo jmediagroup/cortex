@@ -127,6 +127,32 @@ export type Database = {
           status?: 'new' | 'contacted' | 'qualified' | 'closed';
         };
       };
+      scenarios: {
+        Row: {
+          id: string;
+          user_id: string;
+          tool_id: string;
+          tool_name: string;
+          inputs: Record<string, any>;
+          key_result: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          tool_id: string;
+          tool_name: string;
+          inputs: Record<string, any>;
+          key_result: string;
+          created_at?: string;
+        };
+        Update: {
+          tool_id?: string;
+          tool_name?: string;
+          inputs?: Record<string, any>;
+          key_result?: string;
+        };
+      };
     };
   };
 };
@@ -140,7 +166,7 @@ export const createBrowserClient = () => {
 };
 
 // Server-side Supabase client with service role (for API routes)
-export const createServiceClient = (): SupabaseClient<Database> => {
+export const createServiceClient = () => {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 

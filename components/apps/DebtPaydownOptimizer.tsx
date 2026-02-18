@@ -21,6 +21,7 @@ import {
   Shield,
   Repeat
 } from 'lucide-react';
+import SaveScenarioButton from './SaveScenarioButton';
 
 interface Debt {
   id: number;
@@ -34,6 +35,7 @@ interface Debt {
 interface DebtPaydownOptimizerProps {
   isPro?: boolean;
   onUpgrade?: () => void;
+  isLoggedIn?: boolean;
 }
 
 interface SimulationResult {
@@ -48,7 +50,7 @@ interface SimulationResult {
 
 const COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f97316', '#eab308', '#22c55e', '#06b6d4'];
 
-export default function DebtPaydownOptimizer({ isPro, onUpgrade }: DebtPaydownOptimizerProps) {
+export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = false }: DebtPaydownOptimizerProps) {
   const [debts, setDebts] = useState<Debt[]>([
     { id: 1, name: 'Credit Card A', balance: 5000, rate: 24.99, minPayment: 150, isTaxDeductible: false },
     { id: 2, name: 'Student Loan', balance: 15000, rate: 4.5, minPayment: 200, isTaxDeductible: true },
@@ -258,6 +260,21 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade }: DebtPaydownOp
 
   return (
     <div className="space-y-8">
+      {/* Save Scenario */}
+      <div className="flex justify-end mb-4">
+        <SaveScenarioButton
+          toolId="debt-paydown"
+          toolName="Debt Paydown Optimizer"
+          getInputs={() => ({ debts, monthlyBudget, monthlyIncome })}
+          getKeyResult={() => {
+            const totalDebt = debts.reduce((sum, d) => sum + d.balance, 0);
+            return `Total debt: $${totalDebt.toLocaleString()}, Budget: $${monthlyBudget}/mo`;
+          }}
+          isLoggedIn={isLoggedIn}
+          onLoginPrompt={onUpgrade}
+        />
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Panel: Inputs */}
         <div className="lg:col-span-5 space-y-6">
