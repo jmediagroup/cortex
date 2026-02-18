@@ -184,18 +184,30 @@ const APPS: AppConfig[] = [
 
 interface AppLibraryProps {
   userTier: Tier;
+  appOrder?: string[] | null;
 }
 
-export default function AppLibrary({ userTier }: AppLibraryProps) {
+export default function AppLibrary({ userTier, appOrder }: AppLibraryProps) {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState('All');
 
   const categories = ['All', ...Array.from(new Set(APPS.map((app) => app.category)))];
 
+  // Reorder apps if personalized order provided
+  const orderedApps = appOrder
+    ? [...APPS].sort((a, b) => {
+        const aIdx = appOrder.indexOf(a.id);
+        const bIdx = appOrder.indexOf(b.id);
+        const aPos = aIdx === -1 ? Infinity : aIdx;
+        const bPos = bIdx === -1 ? Infinity : bIdx;
+        return aPos - bPos;
+      })
+    : APPS;
+
   const filteredApps =
     selectedCategory === 'All'
-      ? APPS
-      : APPS.filter((app) => app.category === selectedCategory);
+      ? orderedApps
+      : orderedApps.filter((app) => app.category === selectedCategory);
 
   return (
     <div className="flex flex-col gap-6">

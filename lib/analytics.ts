@@ -26,6 +26,12 @@ export type EventType =
   | 'enterprise_page_view'
   | 'enterprise_form_submitted'
 
+  // Onboarding events
+  | 'onboarding_started'
+  | 'onboarding_step_completed'
+  | 'onboarding_completed'
+  | 'onboarding_skipped'
+
   // Donation events
   | 'donation_popup_shown'
   | 'donation_popup_clicked'
