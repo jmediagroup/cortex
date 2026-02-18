@@ -249,6 +249,17 @@ export default function AppLibrary({ userTier }: AppLibraryProps) {
               }`}
               style={{ boxShadow: 'var(--shadow-card)' }}
             >
+              {/* Tier badge */}
+              <span
+                className={`absolute right-4 top-4 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
+                  app.tier === 'pro'
+                    ? 'bg-purple-500/10 text-purple-500 ring-1 ring-purple-500/20'
+                    : 'bg-[var(--surface-tertiary)] text-[var(--text-tertiary)]'
+                }`}
+              >
+                {app.tier === 'pro' ? 'Pro' : 'Free'}
+              </span>
+
               <div className="mb-4">
                 <div
                   className={`inline-flex h-11 w-11 items-center justify-center rounded-[var(--radius-md)] transition-colors ${
