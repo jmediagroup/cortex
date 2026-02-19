@@ -6,7 +6,7 @@ import { Sparkles, Lock } from 'lucide-react';
 import IndexFundVisualizer from '@/components/apps/IndexFundVisualizer';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
-import { StickySidebarAd } from '@/components/monetization';
+import ToolRecommendationSidebar from '@/components/dashboard/ToolRecommendationSidebar';
 
 function IndexFundVisualizerPageInner() {
   const router = useRouter();
@@ -120,7 +120,7 @@ function IndexFundVisualizerPageInner() {
           </div>
 
           {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}
-          <StickySidebarAd context="index-fund-visualizer" />
+          <ToolRecommendationSidebar context="index-fund-visualizer" />
         </div>
       </div>
 

@@ -6,7 +6,7 @@ import { Sparkles, Lock } from 'lucide-react';
 import RetirementStrategyEngine from '@/components/apps/RetirementStrategyEngine';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
-import { StickySidebarAd } from '@/components/monetization';
+import ToolRecommendationSidebar from '@/components/dashboard/ToolRecommendationSidebar';
 
 function RetirementStrategyPageInner() {
   const router = useRouter();
@@ -136,7 +136,7 @@ function RetirementStrategyPageInner() {
           </div>
 
           {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}
-          <StickySidebarAd context="retirement-strategy" />
+          <ToolRecommendationSidebar context="retirement-strategy" />
         </div>
       </div>
 

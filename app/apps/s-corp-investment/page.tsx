@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import SCorpInvestmentOptimizer from '@/components/apps/SCorpInvestmentOptimizer';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
-import { StickySidebarAd } from '@/components/monetization';
+import ToolRecommendationSidebar from '@/components/dashboard/ToolRecommendationSidebar';
 
 function SCorpInvestmentPageInner() {
   const router = useRouter();
@@ -89,7 +89,7 @@ function SCorpInvestmentPageInner() {
           </div>
 
           {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}
-          <StickySidebarAd context="s-corp-investment" />
+          <ToolRecommendationSidebar context="s-corp-investment" />
         </div>
       </div>
 

@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
-import { StickySidebarAd } from '@/components/monetization';
+import ToolRecommendationSidebar from '@/components/dashboard/ToolRecommendationSidebar';
 import SaveScenarioButton from '@/components/apps/SaveScenarioButton';
 
 // --- Constants & Defaults ---
@@ -541,7 +541,7 @@ const App = () => {
           </section>
 
           {/* Sticky Sidebar Ad */}
-          <StickySidebarAd context="budget" />
+          <ToolRecommendationSidebar context="budget" />
 
           {/* Pro Feature: Auto-Optimize */}
           <div className={`relative overflow-hidden p-6 rounded-2xl shadow-xl ${hasProFeatures ? 'bg-indigo-900 shadow-indigo-100' : 'bg-slate-200'} text-white`}>
