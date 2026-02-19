@@ -6,6 +6,7 @@ import SCorpInvestmentOptimizer from '@/components/apps/SCorpInvestmentOptimizer
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { StickySidebarAd } from '@/components/monetization';
+import { trackToolVisit } from '@/lib/useRecentTools';
 
 function SCorpInvestmentPageInner() {
   const router = useRouter();
@@ -51,6 +52,8 @@ function SCorpInvestmentPageInner() {
       .then(data => { if (data?.scenario?.inputs) setInitialValues(data.scenario.inputs); })
       .catch(() => {});
   }, [searchParams]);
+
+  useEffect(() => { trackToolVisit('s-corp-investment', 'S-Corp Investment Optimizer', '/apps/s-corp-investment'); }, []);
 
   if (loading) {
     return (

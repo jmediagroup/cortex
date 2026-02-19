@@ -18,11 +18,13 @@ import {
   Dices,
   Anchor,
   Brain,
+  Clock,
   type LucideIcon,
 } from 'lucide-react';
 import { hasAppAccess, type Tier } from '@/lib/access-control';
 import { trackEvent } from '@/lib/analytics';
 import FilterPills from '@/components/ui/FilterPills';
+import { useRecentTools, type RecentTool } from '@/lib/useRecentTools';
 
 interface AppConfig {
   id: string;
@@ -187,9 +189,21 @@ interface AppLibraryProps {
   appOrder?: string[] | null;
 }
 
+function formatRelativeTime(timestamp: number): string {
+  const diff = Date.now() - timestamp;
+  const minutes = Math.floor(diff / 60000);
+  if (minutes < 1) return 'Just now';
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
+
 export default function AppLibrary({ userTier, appOrder }: AppLibraryProps) {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const recentTools = useRecentTools();
 
   const categories = ['All', ...Array.from(new Set(APPS.map((app) => app.category)))];
 
@@ -220,6 +234,43 @@ export default function AppLibrary({ userTier, appOrder }: AppLibraryProps) {
           Select a tool to begin your financial analysis.
         </p>
       </div>
+
+      {/* Recently Used */}
+      {recentTools.length > 0 && (
+        <div>
+          <h3 className="text-sm font-bold text-[var(--text-secondary)] uppercase tracking-wide mb-3 flex items-center gap-2">
+            <Clock size={14} />
+            Recently Used
+          </h3>
+          <div className="flex gap-3 overflow-x-auto pb-1">
+            {recentTools.map((recent) => {
+              const appConfig = APPS.find((a) => a.id === recent.id);
+              const Icon = appConfig?.icon;
+              return (
+                <div
+                  key={recent.id}
+                  onClick={() => {
+                    trackEvent('app_opened', { app_name: recent.name, app_id: recent.id, source: 'recent' });
+                    router.push(recent.path);
+                  }}
+                  className="group flex items-center gap-3 min-w-[200px] max-w-[260px] rounded-xl border border-[var(--border-primary)] bg-[var(--surface-primary)] px-4 py-3 cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-card-hover)]"
+                  style={{ boxShadow: 'var(--shadow-card)' }}
+                >
+                  {Icon && (
+                    <div className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-[var(--color-accent-light)] group-hover:bg-[var(--primary-100)] transition-colors">
+                      <Icon size={18} className={appConfig?.iconColor || 'text-[var(--color-accent)]'} />
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <p className="text-sm font-bold text-[var(--text-primary)] truncate">{recent.name}</p>
+                    <p className="text-[10px] font-medium text-[var(--text-tertiary)]">{formatRelativeTime(recent.visitedAt)}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Category Filters */}
       <div className="flex items-center gap-3 flex-wrap">

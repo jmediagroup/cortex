@@ -7,7 +7,7 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
+  Tooltip as ChartTooltip,
   ResponsiveContainer,
   Area
 } from 'recharts';
@@ -28,6 +28,8 @@ import {
   Sparkles
 } from 'lucide-react';
 import SaveScenarioButton from './SaveScenarioButton';
+import Tooltip from '@/components/ui/Tooltip';
+import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 
 interface IndexFundVisualizerProps {
   isPro?: boolean;
@@ -294,7 +296,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
                         <div className="text-xs text-slate-500 leading-tight mt-1 line-clamp-2">{fund.description}</div>
                         <div className="flex gap-3 mt-2">
                           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Avg: {fund.cagr}%</span>
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Exp: {fund.expenseRatio}</span>
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Exp: {fund.expenseRatio}<Tooltip content="Annual fee charged by the fund, expressed as a percentage. Even small differences compound significantly over time." /></span>
                         </div>
                       </div>
                     </button>
@@ -438,7 +440,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
                     tickFormatter={(v) => formatCompact(v)}
                     tick={{fill: '#94a3b8', fontSize: 11, fontWeight: 'bold'}}
                   />
-                  <Tooltip
+                  <ChartTooltip
                     contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.1)' }}
                     formatter={(value: number) => [formatCurrency(value), ""]}
                     labelFormatter={(label) => `Year ${label}`}
@@ -671,6 +673,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
           </div>
         </div>
       )}
+      {!isPro && <ProUpsellCard toolId="index-fund-visualizer" isLoggedIn={isLoggedIn} />}
     </div>
   );
 }

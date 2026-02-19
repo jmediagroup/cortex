@@ -2,12 +2,14 @@
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area, ReferenceLine
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as ChartTooltip, Legend, ResponsiveContainer, AreaChart, Area, ReferenceLine
 } from 'recharts';
 import {
   TrendingUp, Home, Calculator, Settings2, Info, AlertTriangle, ShieldCheck, Landmark, Lock, Zap, MapPin, Repeat, DollarSign
 } from 'lucide-react';
 import SaveScenarioButton from './SaveScenarioButton';
+import Tooltip from '@/components/ui/Tooltip';
+import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 
 interface RentVsBuyEngineProps {
   isPro?: boolean;
@@ -273,7 +275,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
             <div className="space-y-5">
               <div>
                 <div className="flex justify-between items-center mb-1">
-                  <label className="text-xs font-bold text-slate-500 uppercase">Maintenance Drag</label>
+                  <label className="text-xs font-bold text-slate-500 uppercase">Maintenance Drag<Tooltip content="Annual maintenance costs as a percentage of home value. Typically 1-2% per year." /></label>
                   <span className="text-xs font-mono bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded">{maintenanceRate}% / yr</span>
                 </div>
                 <input
@@ -286,7 +288,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
 
               <div>
                 <div className="flex justify-between items-center mb-1">
-                  <label className="text-xs font-bold text-slate-500 uppercase">Alt Investment Return</label>
+                  <label className="text-xs font-bold text-slate-500 uppercase">Alt Investment Return<Tooltip content="The annual return you could earn by investing your down payment instead of buying." /></label>
                   <span className="text-xs font-mono bg-green-100 text-green-700 px-1.5 py-0.5 rounded">{stockReturn}% / yr</span>
                 </div>
                 <input
@@ -385,7 +387,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                     tick={{fill: '#94a3b8', fontSize: 12}}
                     tickFormatter={(val) => `$${val/1000}k`}
                   />
-                  <Tooltip
+                  <ChartTooltip
                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
                     formatter={(val: number) => formatCurrency(val)}
                   />
@@ -718,6 +720,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
           <span>This is a simulation, not financial advice. Tax benefits (SALT, Mortgage Interest Deduction) vary by bracket and jurisdiction.</span>
         </div>
       </footer>
+      {!isPro && <ProUpsellCard toolId="rent-vs-buy" isLoggedIn={isLoggedIn} />}
     </div>
   );
 }

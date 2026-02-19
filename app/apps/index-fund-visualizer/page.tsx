@@ -7,6 +7,7 @@ import IndexFundVisualizer from '@/components/apps/IndexFundVisualizer';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { StickySidebarAd } from '@/components/monetization';
+import { trackToolVisit } from '@/lib/useRecentTools';
 
 function IndexFundVisualizerPageInner() {
   const router = useRouter();
@@ -48,6 +49,8 @@ function IndexFundVisualizerPageInner() {
       .then(data => { if (data?.scenario?.inputs) setInitialValues(data.scenario.inputs); })
       .catch(() => {});
   }, [searchParams]);
+
+  useEffect(() => { trackToolVisit('index-fund-visualizer', 'Index Fund Growth Visualizer', '/apps/index-fund-visualizer'); }, []);
 
   return (
     <>

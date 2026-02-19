@@ -7,6 +7,7 @@ import RetirementStrategyEngine from '@/components/apps/RetirementStrategyEngine
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { StickySidebarAd } from '@/components/monetization';
+import { trackToolVisit } from '@/lib/useRecentTools';
 
 function RetirementStrategyPageInner() {
   const router = useRouter();
@@ -50,6 +51,8 @@ function RetirementStrategyPageInner() {
       .then(data => { if (data?.scenario?.inputs) setInitialValues(data.scenario.inputs); })
       .catch(() => {});
   }, [searchParams]);
+
+  useEffect(() => { trackToolVisit('retirement-strategy', 'Retirement Strategy Engine', '/apps/retirement-strategy'); }, []);
 
   if (loading) {
     return (

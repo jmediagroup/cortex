@@ -7,6 +7,7 @@ import GeographicArbitrageCalculator from '@/components/apps/GeographicArbitrage
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { StickySidebarAd } from '@/components/monetization';
+import { trackToolVisit } from '@/lib/useRecentTools';
 
 function GeographicArbitragePageInner() {
   const router = useRouter();
@@ -54,6 +55,8 @@ function GeographicArbitragePageInner() {
       .then(data => { if (data?.scenario?.inputs) setInitialValues(data.scenario.inputs); })
       .catch(() => {});
   }, [searchParams]);
+
+  useEffect(() => { trackToolVisit('geographic-arbitrage', 'Geographic Arbitrage Calculator', '/apps/geographic-arbitrage'); }, []);
 
   if (loading) {
     return (

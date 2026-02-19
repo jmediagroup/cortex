@@ -7,6 +7,7 @@ import {
 import {
   TrendingUp, TrendingDown, AlertTriangle, Info, Target, Calendar, ArrowUpRight, Lock, Zap, Clock, ArrowRight
 } from 'lucide-react';
+import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 
 interface GamblingRedirectProps {
   isPro?: boolean;
@@ -528,6 +529,7 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
           National Council on Problem Gambling: 1-800-522-4700
         </p>
       </div>
+      {!isPro && <ProUpsellCard toolId="gambling-redirect" isLoggedIn={isLoggedIn} />}
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { Sparkles, Lock } from 'lucide-react';
 import GamblingRedirect from '@/components/apps/GamblingRedirect';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
+import { trackToolVisit } from '@/lib/useRecentTools';
 
 function GamblingRedirectPageInner() {
   const router = useRouter();
@@ -46,6 +47,8 @@ function GamblingRedirectPageInner() {
       .then(data => { if (data?.scenario?.inputs) setInitialValues(data.scenario.inputs); })
       .catch(() => {});
   }, [searchParams]);
+
+  useEffect(() => { trackToolVisit('gambling-redirect', 'Gambling Spend Redirect', '/apps/gambling-redirect'); }, []);
 
   return (
     <>

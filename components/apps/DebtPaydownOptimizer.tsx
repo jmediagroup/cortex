@@ -22,6 +22,7 @@ import {
   Repeat
 } from 'lucide-react';
 import SaveScenarioButton from './SaveScenarioButton';
+import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 
 interface Debt {
   id: number;
@@ -974,6 +975,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
           </div>
         </div>
       )}
+      {!isPro && <ProUpsellCard toolId="debt-paydown" isLoggedIn={isLoggedIn} />}
     </div>
   );
 }

@@ -7,6 +7,7 @@ import DebtPaydownOptimizer from '@/components/apps/DebtPaydownOptimizer';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { StickySidebarAd } from '@/components/monetization';
+import { trackToolVisit } from '@/lib/useRecentTools';
 
 function DebtPaydownPageInner() {
   const router = useRouter();
@@ -54,6 +55,8 @@ function DebtPaydownPageInner() {
       .then(data => { if (data?.scenario?.inputs) setInitialValues(data.scenario.inputs); })
       .catch(() => {});
   }, [searchParams]);
+
+  useEffect(() => { trackToolVisit('debt-paydown', 'Debt Paydown Strategy Optimizer', '/apps/debt-paydown'); }, []);
 
   if (loading) {
     return (

@@ -6,6 +6,7 @@ import RentVsBuyEngine from '@/components/apps/RentVsBuyEngine';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { StickySidebarAd } from '@/components/monetization';
+import { trackToolVisit } from '@/lib/useRecentTools';
 
 function RentVsBuyPageInner() {
   const router = useRouter();
@@ -53,6 +54,8 @@ function RentVsBuyPageInner() {
       .then(data => { if (data?.scenario?.inputs) setInitialValues(data.scenario.inputs); })
       .catch(() => {});
   }, [searchParams]);
+
+  useEffect(() => { trackToolVisit('rent-vs-buy', 'Rent vs Buy Reality Engine', '/apps/rent-vs-buy'); }, []);
 
   if (loading) {
     return (

@@ -2,12 +2,14 @@
 
 import React, { useState, useMemo } from 'react';
 import {
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as ChartTooltip, ResponsiveContainer, LineChart, Line
 } from 'recharts';
 import {
   Calculator, TrendingUp, Info, ArrowUpRight, Lock, Zap, AlertTriangle, Target, Clock, ArrowRight
 } from 'lucide-react';
 import SaveScenarioButton from './SaveScenarioButton';
+import Tooltip from '@/components/ui/Tooltip';
+import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 
 interface CompoundInterestProps {
   isPro?: boolean;
@@ -194,6 +196,22 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
                 <label className="block text-[10px] font-black text-slate-400 uppercase mb-1">Investment Horizon (Years)</label>
                 <input type="number" name="years" value={inputs.years} onChange={handleInputChange} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold outline-none focus:ring-2 focus:ring-indigo-500" />
               </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase mb-1">
+                  Compound Frequency
+                  <Tooltip content="How often interest is calculated and added to your balance. More frequent compounding means slightly higher returns." />
+                </label>
+                <select
+                  value={inputs.compoundingFrequency}
+                  onChange={(e) => setInputs({ ...inputs, compoundingFrequency: Number(e.target.value) })}
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  <option value={1}>Annually</option>
+                  <option value={4}>Quarterly</option>
+                  <option value={12}>Monthly</option>
+                  <option value={365}>Daily</option>
+                </select>
+              </div>
             </div>
           </div>
 
@@ -228,7 +246,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                 <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 11, fontWeight: 'bold'}} />
                 <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 11, fontWeight: 'bold'}} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
-                <Tooltip
+                <ChartTooltip
                   contentStyle={{ borderRadius: '24px', border: 'none', boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.1)' }}
                   formatter={(v) => `$${(v || 0).toLocaleString()}`}
                 />
@@ -451,6 +469,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
           </div>
         </div>
       )}
+      {!isPro && <ProUpsellCard toolId="compound-interest" isLoggedIn={isLoggedIn} />}
     </div>
   );
 }

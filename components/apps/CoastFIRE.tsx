@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import {
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, BarChart, Bar, Cell, ReferenceLine
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as ChartTooltip, ResponsiveContainer, LineChart, Line, BarChart, Bar, Cell, ReferenceLine
 } from 'recharts';
 import {
   TrendingUp, Calculator, Info, ArrowUpRight, Lock, Zap, AlertTriangle, Target, Clock, ArrowRight,
@@ -10,6 +10,8 @@ import {
   ShieldCheck, Gauge, Flame, Coffee
 } from 'lucide-react';
 import SaveScenarioButton from './SaveScenarioButton';
+import Tooltip from '@/components/ui/Tooltip';
+import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 
 interface CoastFIREProps {
   isPro?: boolean;
@@ -582,7 +584,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                     />
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-500 font-medium">Withdrawal Rate (%)</span>
+                    <span className="text-slate-500 font-medium">Withdrawal Rate (%)<Tooltip content="The percentage of your portfolio you plan to withdraw annually in retirement. 4% is the traditional safe withdrawal rate." /></span>
                     <input
                       type="number"
                       name="withdrawalRate"
@@ -593,7 +595,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                     />
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-500 font-medium">Investment Fees (%)</span>
+                    <span className="text-slate-500 font-medium">Investment Fees (%)<Tooltip content="Annual fund expense ratio. Low-cost index funds typically charge 0.03-0.20%." /></span>
                     <input
                       type="number"
                       name="investmentFees"
@@ -672,7 +674,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                   axisLine={false}
                   tickFormatter={(val) => `$${(val / 1000000).toFixed(1)}M`}
                 />
-                <Tooltip
+                <ChartTooltip
                   contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.15)', fontWeight: 600 }}
                   formatter={(value: number) => formatCurrency(value)}
                 />
@@ -1170,7 +1172,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                     axisLine={false}
                     tickFormatter={(val) => `$${(val / 1000000).toFixed(1)}M`}
                   />
-                  <Tooltip
+                  <ChartTooltip
                     contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.15)' }}
                     formatter={(value: number) => formatCurrency(value)}
                   />
@@ -1211,6 +1213,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
           </div>
         </div>
       )}
+      {!isPro && <ProUpsellCard toolId="coast-fire" isLoggedIn={isLoggedIn} />}
     </div>
   );
 }
