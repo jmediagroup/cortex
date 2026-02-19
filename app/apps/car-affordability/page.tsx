@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import CarAffordability from '@/components/apps/CarAffordability';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { StickySidebarAd } from '@/components/monetization';
+import { Breadcrumb } from '@/components/ui';
 
 function CarAffordabilityPageInner() {
   const router = useRouter();
@@ -34,6 +35,7 @@ function CarAffordabilityPageInner() {
     <>
       {/* MAIN CONTENT */}
       <div className="max-w-7xl mx-auto px-6 py-12">
+        <Breadcrumb toolName="Car Affordability Calculator" />
         <div className="bg-gradient-to-br from-indigo-50 to-white border border-indigo-100/80 rounded-2xl p-8 mb-8 shadow-sm">
           <h2 className="text-2xl font-black text-indigo-900 mb-3">20/3/8 Car-Buying Rule</h2>
           <p className="text-indigo-700 font-medium">

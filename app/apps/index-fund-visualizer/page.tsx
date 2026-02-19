@@ -7,6 +7,7 @@ import IndexFundVisualizer from '@/components/apps/IndexFundVisualizer';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { StickySidebarAd } from '@/components/monetization';
+import { Breadcrumb } from '@/components/ui';
 
 function IndexFundVisualizerPageInner() {
   const router = useRouter();
@@ -53,6 +54,7 @@ function IndexFundVisualizerPageInner() {
     <>
       {/* MAIN CONTENT */}
       <div className="max-w-7xl mx-auto px-6 py-12">
+        <Breadcrumb toolName="Index Fund Visualizer" />
         {hasSession === false && (
           <div className="bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-700 rounded-2xl p-8 mb-8 text-white shadow-xl relative overflow-hidden">
             <div className="absolute inset-0 opacity-5 grid-bg pointer-events-none" />

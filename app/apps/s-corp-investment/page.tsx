@@ -6,6 +6,7 @@ import SCorpInvestmentOptimizer from '@/components/apps/SCorpInvestmentOptimizer
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { StickySidebarAd } from '@/components/monetization';
+import { Breadcrumb } from '@/components/ui';
 
 function SCorpInvestmentPageInner() {
   const router = useRouter();
@@ -67,6 +68,7 @@ function SCorpInvestmentPageInner() {
     <>
       {/* MAIN CONTENT */}
       <div className="max-w-7xl mx-auto px-6 py-12">
+        <Breadcrumb toolName="S-Corp Investment Optimizer" />
         <div className="bg-gradient-to-br from-emerald-50 to-white border border-emerald-100/80 rounded-2xl p-8 mb-8 shadow-sm">
           <h2 className="text-2xl font-black text-emerald-900 mb-3">S-Corp Investment Strategy (2026 Limits)</h2>
           <p className="text-emerald-700 font-medium">

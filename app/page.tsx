@@ -20,7 +20,8 @@ import {
   BookOpen,
   Star,
   Shield,
-  ChevronRight
+  ChevronRight,
+  Anchor
 } from 'lucide-react';
 import LatestArticles from '@/components/home/LatestArticles';
 import MobileNav from '@/components/navigation/MobileNav';
@@ -115,6 +116,13 @@ export default function LandingPage() {
       description: "Track assets and liabilities, analyze liquidity and momentum, and visualize your financial trajectory.",
       isFree: false,
       link: "/apps/net-worth"
+    },
+    {
+      icon: <Anchor size={22} />,
+      title: "Coast FIRE Calculator",
+      description: "Find out if your current savings will grow to your retirement number on their own — no more contributions needed.",
+      isFree: true,
+      link: "/apps/coast-fire"
     }
   ];
 

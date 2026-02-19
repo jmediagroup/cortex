@@ -7,6 +7,7 @@ import GeographicArbitrageCalculator from '@/components/apps/GeographicArbitrage
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { StickySidebarAd } from '@/components/monetization';
+import { Breadcrumb } from '@/components/ui';
 
 function GeographicArbitragePageInner() {
   const router = useRouter();
@@ -69,6 +70,7 @@ function GeographicArbitragePageInner() {
   return (
     <>
       <div className="max-w-7xl mx-auto px-6 py-12">
+        <Breadcrumb toolName="Geographic Arbitrage Calculator" />
         <div className="bg-gradient-to-br from-indigo-50 to-white border border-indigo-100/80 rounded-2xl p-8 mb-8 shadow-sm">
           <h2 className="text-2xl font-black text-indigo-900 mb-3">Geographic Arbitrage Calculator</h2>
           <p className="text-indigo-700 font-medium">
