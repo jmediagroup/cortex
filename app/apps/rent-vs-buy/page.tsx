@@ -6,6 +6,7 @@ import RentVsBuyEngine from '@/components/apps/RentVsBuyEngine';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { StickySidebarAd } from '@/components/monetization';
+import { Breadcrumb } from '@/components/ui';
 
 function RentVsBuyPageInner() {
   const router = useRouter();
@@ -68,6 +69,7 @@ function RentVsBuyPageInner() {
   return (
     <>
       <div className="max-w-7xl mx-auto px-6 py-12">
+        <Breadcrumb toolName="Rent vs. Buy Calculator" />
         <div className="bg-gradient-to-br from-indigo-50 to-white border border-indigo-100/80 rounded-2xl p-8 mb-8 shadow-sm">
           <h2 className="text-2xl font-black text-indigo-900 mb-3">Rent vs Buy Reality Engine</h2>
           <p className="text-indigo-700 font-medium">
