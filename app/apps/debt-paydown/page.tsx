@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import DebtPaydownOptimizer from '@/components/apps/DebtPaydownOptimizer';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
-import { StickySidebarAd } from '@/components/monetization';
+import ToolRecommendationSidebar from '@/components/dashboard/ToolRecommendationSidebar';
 
 function DebtPaydownPageInner() {
   const router = useRouter();
@@ -86,7 +86,7 @@ function DebtPaydownPageInner() {
           </div>
 
           {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}
-          <StickySidebarAd context="debt-paydown" />
+          <ToolRecommendationSidebar context="debt-paydown" />
         </div>
       </div>
 

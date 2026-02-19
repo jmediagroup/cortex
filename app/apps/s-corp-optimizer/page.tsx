@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 import SCorpOptimizer from '@/components/apps/SCorpOptimizer';
 import { createBrowserClient } from '@/lib/supabase/client';
-import { StickySidebarAd } from '@/components/monetization';
+import ToolRecommendationSidebar from '@/components/dashboard/ToolRecommendationSidebar';
 
 function SCorpOptimizerPageInner() {
   const router = useRouter();
@@ -50,7 +50,7 @@ function SCorpOptimizerPageInner() {
           </div>
 
           {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}
-          <StickySidebarAd context="s-corp-optimizer" />
+          <ToolRecommendationSidebar context="s-corp-optimizer" />
         </div>
       </div>
 

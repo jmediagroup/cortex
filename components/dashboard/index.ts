@@ -12,3 +12,4 @@ export { default as Watchlist } from './Watchlist';
 export { default as AssetCards } from './AssetCards';
 export { default as PromoBanners } from './PromoBanners';
 export { default as OnboardingQuiz } from './OnboardingQuiz';
+export { default as ToolRecommendationSidebar } from './ToolRecommendationSidebar';

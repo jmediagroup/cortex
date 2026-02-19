@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import RentVsBuyEngine from '@/components/apps/RentVsBuyEngine';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
-import { StickySidebarAd } from '@/components/monetization';
+import ToolRecommendationSidebar from '@/components/dashboard/ToolRecommendationSidebar';
 
 function RentVsBuyPageInner() {
   const router = useRouter();
@@ -86,7 +86,7 @@ function RentVsBuyPageInner() {
           </div>
 
           {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}
-          <StickySidebarAd context="rent-vs-buy" />
+          <ToolRecommendationSidebar context="rent-vs-buy" />
         </div>
       </div>
 

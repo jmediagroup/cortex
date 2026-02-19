@@ -6,7 +6,7 @@ import { Compass } from 'lucide-react';
 import NetWorthEngine from '@/components/apps/NetWorthEngine';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
-import { StickySidebarAd } from '@/components/monetization';
+import ToolRecommendationSidebar from '@/components/dashboard/ToolRecommendationSidebar';
 
 function NetWorthPageInner() {
   const router = useRouter();
@@ -102,7 +102,7 @@ function NetWorthPageInner() {
           </div>
 
           {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}
-          <StickySidebarAd context="net-worth" />
+          <ToolRecommendationSidebar context="net-worth" />
         </div>
       </div>
 

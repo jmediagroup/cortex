@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import GeographicArbitrageCalculator from '@/components/apps/GeographicArbitrageCalculator';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
-import { StickySidebarAd } from '@/components/monetization';
+import ToolRecommendationSidebar from '@/components/dashboard/ToolRecommendationSidebar';
 
 function GeographicArbitragePageInner() {
   const router = useRouter();
@@ -88,7 +88,7 @@ function GeographicArbitragePageInner() {
           </div>
 
           {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}
-          <StickySidebarAd context="geographic-arbitrage" />
+          <ToolRecommendationSidebar context="geographic-arbitrage" />
         </div>
       </div>
 

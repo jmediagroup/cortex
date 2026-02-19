@@ -6,7 +6,7 @@ import { Sparkles, Lock } from 'lucide-react';
 import CompoundInterest from '@/components/apps/CompoundInterest';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
-import { StickySidebarAd } from '@/components/monetization';
+import ToolRecommendationSidebar from '@/components/dashboard/ToolRecommendationSidebar';
 
 function CompoundInterestPageInner() {
   const router = useRouter();
@@ -118,7 +118,7 @@ function CompoundInterestPageInner() {
           </div>
 
           {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}
-          <StickySidebarAd context="compound-interest" />
+          <ToolRecommendationSidebar context="compound-interest" />
         </div>
       </div>
 
