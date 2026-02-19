@@ -1,4 +1,5 @@
 export { default as Badge } from './Badge';
+export { default as Breadcrumb } from './Breadcrumb';
 export type { BadgeVariant } from './Badge';
 export { default as KPICard } from './KPICard';
 export { default as ChartCard } from './ChartCard';

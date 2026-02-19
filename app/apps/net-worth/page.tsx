@@ -8,6 +8,7 @@ import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { StickySidebarAd } from '@/components/monetization';
 import { trackToolVisit } from '@/lib/useRecentTools';
+import { Breadcrumb } from '@/components/ui';
 
 function NetWorthPageInner() {
   const router = useRouter();
@@ -72,6 +73,7 @@ function NetWorthPageInner() {
     <>
       {/* MAIN CONTENT */}
       <div className="max-w-7xl mx-auto px-6 py-12">
+        <Breadcrumb toolName="Net Worth Engine" />
         <div className="bg-gradient-to-br from-indigo-50 to-white border border-indigo-100/80 rounded-2xl p-8 mb-8 shadow-sm">
           <div className="flex items-center gap-3 mb-4">
             <Compass size={28} className="text-indigo-600 stroke-[2.5]" />

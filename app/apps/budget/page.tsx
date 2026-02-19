@@ -18,6 +18,7 @@ import { hasProAccess, type Tier } from '@/lib/access-control';
 import { StickySidebarAd } from '@/components/monetization';
 import SaveScenarioButton from '@/components/apps/SaveScenarioButton';
 import { trackToolVisit } from '@/lib/useRecentTools';
+import { Breadcrumb } from '@/components/ui';
 
 // --- Constants & Defaults ---
 const CATEGORIES = {
@@ -347,6 +348,7 @@ const App = () => {
   return (
     <>
       <div className="max-w-6xl mx-auto p-4 md:p-8">
+        <Breadcrumb toolName="Budget Planner" />
         {!hasSession && (
           <div className="bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-700 rounded-2xl p-8 mb-8 text-white shadow-xl relative overflow-hidden">
             <div className="absolute inset-0 opacity-5 grid-bg pointer-events-none" />

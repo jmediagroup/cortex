@@ -7,6 +7,7 @@ import SCorpOptimizer from '@/components/apps/SCorpOptimizer';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { StickySidebarAd } from '@/components/monetization';
 import { trackToolVisit } from '@/lib/useRecentTools';
+import { Breadcrumb } from '@/components/ui';
 
 function SCorpOptimizerPageInner() {
   const router = useRouter();
@@ -38,6 +39,7 @@ function SCorpOptimizerPageInner() {
     <>
       {/* MAIN CONTENT */}
       <div className="max-w-7xl mx-auto px-6 py-12">
+        <Breadcrumb toolName="S-Corp Optimizer" />
         <div className="bg-gradient-to-br from-amber-50 to-white border border-amber-100/80 rounded-2xl p-8 mb-8 shadow-sm">
           <h2 className="text-2xl font-black text-amber-900 mb-3">S-Corp Tax Optimizer</h2>
           <p className="text-amber-700 font-medium">
