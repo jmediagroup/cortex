@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { Car, DollarSign, Calendar, TrendingDown, AlertCircle, CheckCircle } from 'lucide-react';
 import SaveScenarioButton from './SaveScenarioButton';
+import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 
 /**
  * Car Affordability Calculator (20/3/8 Rule)
@@ -20,7 +21,7 @@ interface CarAffordabilityProps {
   initialValues?: Record<string, unknown>;
 }
 
-export default function CarAffordability({ isLoggedIn = false, onUpgrade, initialValues }: CarAffordabilityProps) {
+export default function CarAffordability({ isPro = false, isLoggedIn = false, onUpgrade, initialValues }: CarAffordabilityProps) {
   const [inputs, setInputs] = useState({
     annualIncome: 150000,
     interestRate: 4.0,
@@ -356,6 +357,8 @@ export default function CarAffordability({ isLoggedIn = false, onUpgrade, initia
           </div>
         </div>
       </div>
+
+      {!isPro && <ProUpsellCard toolId="car-affordability" isLoggedIn={isLoggedIn} />}
     </div>
   );
 }

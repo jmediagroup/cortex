@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import SCorpOptimizer from '@/components/apps/SCorpOptimizer';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { StickySidebarAd } from '@/components/monetization';
+import { trackToolVisit } from '@/lib/useRecentTools';
 import { Breadcrumb } from '@/components/ui';
 
 function SCorpOptimizerPageInner() {
@@ -31,6 +32,8 @@ function SCorpOptimizerPageInner() {
       .then(data => { if (data?.scenario?.inputs) setInitialValues(data.scenario.inputs); })
       .catch(() => {});
   }, [searchParams]);
+
+  useEffect(() => { trackToolVisit('s-corp-optimizer', 'S-Corp Optimizer', '/apps/s-corp-optimizer'); }, []);
 
   return (
     <>

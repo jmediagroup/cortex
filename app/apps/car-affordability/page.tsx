@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import CarAffordability from '@/components/apps/CarAffordability';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { StickySidebarAd } from '@/components/monetization';
+import { trackToolVisit } from '@/lib/useRecentTools';
 import { Breadcrumb } from '@/components/ui';
 
 function CarAffordabilityPageInner() {
@@ -30,6 +31,8 @@ function CarAffordabilityPageInner() {
       .then(data => { if (data?.scenario?.inputs) setInitialValues(data.scenario.inputs); })
       .catch(() => {});
   }, [searchParams]);
+
+  useEffect(() => { trackToolVisit('car-affordability', 'Car Affordability', '/apps/car-affordability'); }, []);
 
   return (
     <>

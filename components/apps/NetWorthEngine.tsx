@@ -19,6 +19,7 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import SaveScenarioButton from './SaveScenarioButton';
+import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 
 /**
  * CORTEX: NET WORTH ENGINE
@@ -1187,6 +1188,7 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
           </div>
         </div>
       )}
+      {!isPro && <ProUpsellCard toolId="net-worth" isLoggedIn={isLoggedIn} />}
     </div>
   );
 }

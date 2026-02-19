@@ -21,6 +21,7 @@ import {
   Scale
 } from 'lucide-react';
 import SaveScenarioButton from './SaveScenarioButton';
+import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 
 // IRS Uniform Lifetime Table (simplified for RMD age 73+)
 const RMD_TABLE: Record<number, number> = {
@@ -678,6 +679,7 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
           </div>
         </main>
       </div>
+      {!isPro && <ProUpsellCard toolId="retirement-strategy" isLoggedIn={isLoggedIn} />}
     </div>
   );
 }

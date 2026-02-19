@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { TrendingUp, DollarSign, PiggyBank, Shield, AlertCircle, Lock } from 'lucide-react';
 import SaveScenarioButton from './SaveScenarioButton';
+import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 
 /**
  * S-Corp Investment Optimizer (2026 Limits)
@@ -549,6 +550,7 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
           </p>
         </div>
       </div>
+      {!isPro && <ProUpsellCard toolId="s-corp-investment" isLoggedIn={isLoggedIn} />}
     </div>
   );
 }

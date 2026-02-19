@@ -2,12 +2,14 @@
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as ChartTooltip, ResponsiveContainer, Cell
 } from 'recharts';
 import {
   Zap, Scale, Info
 } from 'lucide-react';
 import SaveScenarioButton from './SaveScenarioButton';
+import Tooltip from '@/components/ui/Tooltip';
+import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 
 interface SCorpOptimizerProps {
   isPro?: boolean;
@@ -101,7 +103,7 @@ export default function SCorpOptimizer({ isPro = false, onUpgrade, isLoggedIn = 
                 </div>
               </div>
               <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase mb-1">Proposed Reasonable Salary</label>
+                <label className="block text-[10px] font-black text-slate-400 uppercase mb-1">Proposed Reasonable Salary<Tooltip content="The IRS requires S-Corp owners to pay themselves a reasonable salary. This is typically 40-60% of net profit." /></label>
                 <div className="relative">
                   <span className="absolute left-4 top-2.5 text-slate-300 font-bold">$</span>
                   <input type="number" value={salary} onChange={(e) => setSalary(parseFloat(e.target.value) || 0)} className="w-full pl-8 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold outline-none focus:ring-2 focus:ring-amber-500" />
@@ -132,7 +134,7 @@ export default function SCorpOptimizer({ isPro = false, onUpgrade, isLoggedIn = 
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12, fontWeight: 'bold'}} />
                 <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12, fontWeight: 'bold'}} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
-                <Tooltip cursor={{fill: '#f8fafc'}} formatter={(v) => `$${Math.round(Number(v) || 0).toLocaleString()}`} />
+                <ChartTooltip cursor={{fill: '#f8fafc'}} formatter={(v) => `$${Math.round(Number(v) || 0).toLocaleString()}`} />
                 <Bar dataKey="tax" radius={[12, 12, 0, 0]} barSize={80}>
                   {[0, 1].map((entry, index) => <Cell key={`cell-${index}`} fill={index === 0 ? '#94a3b8' : '#4f46e5'} />)}
                 </Bar>
@@ -141,6 +143,7 @@ export default function SCorpOptimizer({ isPro = false, onUpgrade, isLoggedIn = 
           </div>
         </main>
       </div>
+      {!isPro && <ProUpsellCard toolId="s-corp-optimizer" isLoggedIn={isLoggedIn} />}
     </div>
   );
 }

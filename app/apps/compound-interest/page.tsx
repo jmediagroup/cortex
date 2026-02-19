@@ -7,6 +7,7 @@ import CompoundInterest from '@/components/apps/CompoundInterest';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { StickySidebarAd } from '@/components/monetization';
+import { trackToolVisit } from '@/lib/useRecentTools';
 import { Breadcrumb } from '@/components/ui';
 
 function CompoundInterestPageInner() {
@@ -49,6 +50,8 @@ function CompoundInterestPageInner() {
       .then(data => { if (data?.scenario?.inputs) setInitialValues(data.scenario.inputs); })
       .catch(() => {});
   }, [searchParams]);
+
+  useEffect(() => { trackToolVisit('compound-interest', 'Compound Interest Calculator', '/apps/compound-interest'); }, []);
 
   return (
     <>

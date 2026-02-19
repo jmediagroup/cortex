@@ -17,6 +17,7 @@ import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { StickySidebarAd } from '@/components/monetization';
 import SaveScenarioButton from '@/components/apps/SaveScenarioButton';
+import { trackToolVisit } from '@/lib/useRecentTools';
 import { Breadcrumb } from '@/components/ui';
 
 // --- Constants & Defaults ---
@@ -165,6 +166,8 @@ const App = () => {
 
     checkAuth();
   }, [router, supabase]);
+
+  useEffect(() => { trackToolVisit('budget', 'Household Budgeting System', '/apps/budget'); }, []);
 
   // --- Calculations ---
   const taxRate = TAX_MODES[taxMode as keyof typeof TAX_MODES].rate;
