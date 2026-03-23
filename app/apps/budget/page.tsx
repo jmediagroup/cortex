@@ -16,6 +16,9 @@ import {
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { StickySidebarAd } from '@/components/monetization';
+import SaveScenarioButton from '@/components/apps/SaveScenarioButton';
+import { trackToolVisit } from '@/lib/useRecentTools';
+import { Breadcrumb } from '@/components/ui';
 
 // --- Constants & Defaults ---
 const CATEGORIES = {
@@ -163,6 +166,8 @@ const App = () => {
 
     checkAuth();
   }, [router, supabase]);
+
+  useEffect(() => { trackToolVisit('budget', 'Household Budgeting System', '/apps/budget'); }, []);
 
   // --- Calculations ---
   const taxRate = TAX_MODES[taxMode as keyof typeof TAX_MODES].rate;
@@ -343,6 +348,7 @@ const App = () => {
   return (
     <>
       <div className="max-w-6xl mx-auto p-4 md:p-8">
+        <Breadcrumb toolName="Budget Planner" />
         {!hasSession && (
           <div className="bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-700 rounded-2xl p-8 mb-8 text-white shadow-xl relative overflow-hidden">
             <div className="absolute inset-0 opacity-5 grid-bg pointer-events-none" />
@@ -390,6 +396,19 @@ const App = () => {
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Save Scenario */}
+        {hasSession && (
+          <div className="flex justify-end mb-4">
+            <SaveScenarioButton
+              toolId="budget"
+              toolName="Budget System"
+              getInputs={() => ({ grossIncome: typeof grossIncome === 'number' ? grossIncome : parseFloat(String(grossIncome)) || 0, taxMode, allocations, viewMode })}
+              getKeyResult={() => `Take-home: $${Math.round(takeHomePay).toLocaleString()}/mo, Remaining: $${Math.round(remaining).toLocaleString()}`}
+              isLoggedIn={hasSession}
+            />
           </div>
         )}
 

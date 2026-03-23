@@ -2,20 +2,25 @@
 
 import React, { useState, useMemo } from 'react';
 import {
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, BarChart, Bar, Cell, ReferenceLine
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as ChartTooltip, ResponsiveContainer, LineChart, Line, BarChart, Bar, Cell, ReferenceLine
 } from 'recharts';
 import {
   TrendingUp, Calculator, Info, ArrowUpRight, Lock, Zap, AlertTriangle, Target, Clock, ArrowRight,
   CheckCircle2, PiggyBank, Calendar, RefreshCw, Anchor, Briefcase, Heart, Sparkles, DollarSign,
   ShieldCheck, Gauge, Flame, Coffee
 } from 'lucide-react';
+import SaveScenarioButton from './SaveScenarioButton';
+import Tooltip from '@/components/ui/Tooltip';
+import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 
 interface CoastFIREProps {
   isPro?: boolean;
   onUpgrade?: () => void;
+  isLoggedIn?: boolean;
+  initialValues?: Record<string, unknown>;
 }
 
-export default function CoastFIRE({ isPro = false, onUpgrade }: CoastFIREProps) {
+export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false, initialValues }: CoastFIREProps) {
   const [inputs, setInputs] = useState({
     currentAge: 30,
     retirementAge: 65,
@@ -31,7 +36,8 @@ export default function CoastFIRE({ isPro = false, onUpgrade }: CoastFIREProps) 
     desiredCoastAge: 45,
     socialSecurityAge: 67,
     estimatedSocialSecurity: 2000,
-    riskTolerance: 'moderate' as 'conservative' | 'moderate' | 'aggressive'
+    riskTolerance: 'moderate' as 'conservative' | 'moderate' | 'aggressive',
+    ...(initialValues || {}),
   });
 
   // --- Core Calculations ---
@@ -353,6 +359,21 @@ export default function CoastFIRE({ isPro = false, onUpgrade }: CoastFIREProps) 
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
+      {/* Save Scenario */}
+      <div className="flex justify-end">
+        <SaveScenarioButton
+          toolId="coast-fire"
+          toolName="Coast FIRE Calculator"
+          getInputs={() => inputs}
+          getKeyResult={() => {
+            const coastNumber = inputs.annualSpending / (inputs.withdrawalRate / 100);
+            return `Coast FIRE number: $${Math.round(coastNumber).toLocaleString()}`;
+          }}
+          isLoggedIn={isLoggedIn}
+          onLoginPrompt={onUpgrade}
+        />
+      </div>
+
       {/* Primary Status Card */}
       <div className={`rounded-[3rem] p-8 md:p-10 border-2 transition-all shadow-lg ${
         calculations.hasReachedCoast
@@ -563,7 +584,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade }: CoastFIREProps) 
                     />
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-500 font-medium">Withdrawal Rate (%)</span>
+                    <span className="text-slate-500 font-medium">Withdrawal Rate (%)<Tooltip content="The percentage of your portfolio you plan to withdraw annually in retirement. 4% is the traditional safe withdrawal rate." /></span>
                     <input
                       type="number"
                       name="withdrawalRate"
@@ -574,7 +595,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade }: CoastFIREProps) 
                     />
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-500 font-medium">Investment Fees (%)</span>
+                    <span className="text-slate-500 font-medium">Investment Fees (%)<Tooltip content="Annual fund expense ratio. Low-cost index funds typically charge 0.03-0.20%." /></span>
                     <input
                       type="number"
                       name="investmentFees"
@@ -653,7 +674,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade }: CoastFIREProps) 
                   axisLine={false}
                   tickFormatter={(val) => `$${(val / 1000000).toFixed(1)}M`}
                 />
-                <Tooltip
+                <ChartTooltip
                   contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.15)', fontWeight: 600 }}
                   formatter={(value: number) => formatCurrency(value)}
                 />
@@ -1151,7 +1172,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade }: CoastFIREProps) 
                     axisLine={false}
                     tickFormatter={(val) => `$${(val / 1000000).toFixed(1)}M`}
                   />
-                  <Tooltip
+                  <ChartTooltip
                     contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.15)' }}
                     formatter={(value: number) => formatCurrency(value)}
                   />
@@ -1192,6 +1213,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade }: CoastFIREProps) 
           </div>
         </div>
       )}
+      {!isPro && <ProUpsellCard toolId="coast-fire" isLoggedIn={isLoggedIn} />}
     </div>
   );
 }

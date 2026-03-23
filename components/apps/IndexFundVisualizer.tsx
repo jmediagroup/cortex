@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
   ComposedChart,
   Line,
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
+  Tooltip as ChartTooltip,
   ResponsiveContainer,
   Area
 } from 'recharts';
@@ -27,10 +27,15 @@ import {
   AlertTriangle,
   Sparkles
 } from 'lucide-react';
+import SaveScenarioButton from './SaveScenarioButton';
+import Tooltip from '@/components/ui/Tooltip';
+import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 
 interface IndexFundVisualizerProps {
   isPro?: boolean;
   onUpgrade?: () => void;
+  isLoggedIn?: boolean;
+  initialValues?: Record<string, unknown>;
 }
 
 // Historical data approximations based on 10-20 year rolling averages
@@ -75,7 +80,7 @@ const FUND_METADATA = {
 
 type FundKey = keyof typeof FUND_METADATA;
 
-export default function IndexFundVisualizer({ isPro = false, onUpgrade }: IndexFundVisualizerProps) {
+export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLoggedIn = false, initialValues }: IndexFundVisualizerProps) {
   const [principal, setPrincipal] = useState(10000);
   const [contribution, setContribution] = useState(1000);
   const [frequency, setFrequency] = useState<'monthly' | 'annual'>('monthly');
@@ -83,6 +88,18 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade }: IndexF
   const [selectedFund, setSelectedFund] = useState<FundKey>('VOO_IVV');
   const [showSimulated, setShowSimulated] = useState(true);
   const [seed, setSeed] = useState(0);
+
+  const initialApplied = useRef(false);
+  useEffect(() => {
+    if (!initialValues || initialApplied.current) return;
+    initialApplied.current = true;
+    const v = initialValues as Record<string, any>;
+    if (v.principal != null) setPrincipal(v.principal);
+    if (v.contribution != null) setContribution(v.contribution);
+    if (v.frequency != null) setFrequency(v.frequency);
+    if (v.duration != null) setDuration(v.duration);
+    if (v.selectedFund != null) setSelectedFund(v.selectedFund);
+  }, [initialValues]);
 
   // Formatting helpers
   const formatCurrency = (val: number) =>
@@ -213,6 +230,18 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade }: IndexF
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
+      {/* Save Scenario */}
+      <div className="flex justify-end mb-4">
+        <SaveScenarioButton
+          toolId="index-fund-visualizer"
+          toolName="Index Fund Visualizer"
+          getInputs={() => ({ principal, contribution, frequency, duration, selectedFund })}
+          getKeyResult={() => `$${principal.toLocaleString()} initial, $${contribution.toLocaleString()}/${frequency}, ${duration}yr`}
+          isLoggedIn={isLoggedIn}
+          onLoginPrompt={onUpgrade}
+        />
+      </div>
+
       {/* Metrics Header */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
@@ -267,7 +296,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade }: IndexF
                         <div className="text-xs text-slate-500 leading-tight mt-1 line-clamp-2">{fund.description}</div>
                         <div className="flex gap-3 mt-2">
                           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Avg: {fund.cagr}%</span>
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Exp: {fund.expenseRatio}</span>
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Exp: {fund.expenseRatio}<Tooltip content="Annual fee charged by the fund, expressed as a percentage. Even small differences compound significantly over time." /></span>
                         </div>
                       </div>
                     </button>
@@ -411,7 +440,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade }: IndexF
                     tickFormatter={(v) => formatCompact(v)}
                     tick={{fill: '#94a3b8', fontSize: 11, fontWeight: 'bold'}}
                   />
-                  <Tooltip
+                  <ChartTooltip
                     contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.1)' }}
                     formatter={(value: number) => [formatCurrency(value), ""]}
                     labelFormatter={(label) => `Year ${label}`}
@@ -644,6 +673,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade }: IndexF
           </div>
         </div>
       )}
+      {!isPro && <ProUpsellCard toolId="index-fund-visualizer" isLoggedIn={isLoggedIn} />}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
   TrendingUp,
   ShieldAlert,
@@ -18,6 +18,8 @@ import {
   Gauge,
   AlertTriangle
 } from 'lucide-react';
+import SaveScenarioButton from './SaveScenarioButton';
+import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 
 /**
  * CORTEX: NET WORTH ENGINE
@@ -200,9 +202,11 @@ const DropdownMenu = ({ presets, onSelect, type, title }: {
 interface NetWorthEngineProps {
   isPro?: boolean;
   onUpgrade?: () => void;
+  isLoggedIn?: boolean;
+  initialValues?: Record<string, unknown>;
 }
 
-export default function NetWorthEngine({ isPro, onUpgrade }: NetWorthEngineProps = {}) {
+export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, initialValues }: NetWorthEngineProps = {}) {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [liabilities, setLiabilities] = useState<Liability[]>([]);
   const [monthlySavings, setMonthlySavings] = useState(0);
@@ -211,6 +215,17 @@ export default function NetWorthEngine({ isPro, onUpgrade }: NetWorthEngineProps
 
   const [showAssetMenu, setShowAssetMenu] = useState(false);
   const [showLibMenu, setShowLibMenu] = useState(false);
+
+  const initialApplied = useRef(false);
+  useEffect(() => {
+    if (!initialValues || initialApplied.current) return;
+    initialApplied.current = true;
+    const v = initialValues as Record<string, any>;
+    if (v.assets != null) setAssets(v.assets);
+    if (v.liabilities != null) setLiabilities(v.liabilities);
+    if (v.monthlySavings != null) setMonthlySavings(v.monthlySavings);
+    if (v.growthRate != null) setGrowthRate(v.growthRate);
+  }, [initialValues]);
 
   // --- State Handlers ---
 
@@ -399,6 +414,22 @@ export default function NetWorthEngine({ isPro, onUpgrade }: NetWorthEngineProps
 
   return (
     <div className="space-y-8">
+      {/* Save Scenario */}
+      <div className="flex justify-end mb-4">
+        <SaveScenarioButton
+          toolId="net-worth"
+          toolName="Net Worth Engine"
+          getInputs={() => ({ assets, liabilities })}
+          getKeyResult={() => {
+            const totalAssets = assets.reduce((s: number, a: any) => s + (typeof a.value === 'number' ? a.value : parseFloat(a.value) || 0), 0);
+            const totalLiabilities = liabilities.reduce((s: number, l: any) => s + (typeof l.value === 'number' ? l.value : parseFloat(l.value) || 0), 0);
+            return `Net worth: $${Math.round(totalAssets - totalLiabilities).toLocaleString()}`;
+          }}
+          isLoggedIn={isLoggedIn}
+          onLoginPrompt={onUpgrade}
+        />
+      </div>
+
       {/* Top Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm transition-all hover:shadow-md">
@@ -1157,6 +1188,7 @@ export default function NetWorthEngine({ isPro, onUpgrade }: NetWorthEngineProps
           </div>
         </div>
       )}
+      {!isPro && <ProUpsellCard toolId="net-worth" isLoggedIn={isLoggedIn} />}
     </div>
   );
 }

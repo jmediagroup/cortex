@@ -1,19 +1,24 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area, ReferenceLine
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as ChartTooltip, Legend, ResponsiveContainer, AreaChart, Area, ReferenceLine
 } from 'recharts';
 import {
   TrendingUp, Home, Calculator, Settings2, Info, AlertTriangle, ShieldCheck, Landmark, Lock, Zap, MapPin, Repeat, DollarSign
 } from 'lucide-react';
+import SaveScenarioButton from './SaveScenarioButton';
+import Tooltip from '@/components/ui/Tooltip';
+import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 
 interface RentVsBuyEngineProps {
   isPro?: boolean;
+  isLoggedIn?: boolean;
   onUpgrade?: () => void;
+  initialValues?: Record<string, unknown>;
 }
 
-export default function RentVsBuyEngine({ isPro, onUpgrade }: RentVsBuyEngineProps) {
+export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, initialValues }: RentVsBuyEngineProps) {
   // --- Input State ---
   const [purchasePrice, setPurchasePrice] = useState(500000);
   const [downPaymentPct, setDownPaymentPct] = useState(20);
@@ -29,6 +34,25 @@ export default function RentVsBuyEngine({ isPro, onUpgrade }: RentVsBuyEnginePro
   const [propertyTax, setPropertyTax] = useState(1.2);
   const [buyingCosts, setBuyingCosts] = useState(2); // Closing costs %
   const [sellingCosts, setSellingCosts] = useState(6); // Real estate agent + transfer fees
+
+  const initialApplied = useRef(false);
+  useEffect(() => {
+    if (!initialValues || initialApplied.current) return;
+    initialApplied.current = true;
+    const v = initialValues as Record<string, number>;
+    if (v.purchasePrice != null) setPurchasePrice(v.purchasePrice);
+    if (v.downPaymentPct != null) setDownPaymentPct(v.downPaymentPct);
+    if (v.mortgageRate != null) setMortgageRate(v.mortgageRate);
+    if (v.monthlyRent != null) setMonthlyRent(v.monthlyRent);
+    if (v.years != null) setYears(v.years);
+    if (v.appreciationRate != null) setAppreciationRate(v.appreciationRate);
+    if (v.rentInflation != null) setRentInflation(v.rentInflation);
+    if (v.stockReturn != null) setStockReturn(v.stockReturn);
+    if (v.maintenanceRate != null) setMaintenanceRate(v.maintenanceRate);
+    if (v.propertyTax != null) setPropertyTax(v.propertyTax);
+    if (v.buyingCosts != null) setBuyingCosts(v.buyingCosts);
+    if (v.sellingCosts != null) setSellingCosts(v.sellingCosts);
+  }, [initialValues]);
 
   // --- Calculations ---
   const results = useMemo(() => {
@@ -176,6 +200,18 @@ export default function RentVsBuyEngine({ isPro, onUpgrade }: RentVsBuyEnginePro
 
   return (
     <div className="space-y-8">
+      {/* Save Scenario */}
+      <div className="flex justify-end mb-4">
+        <SaveScenarioButton
+          toolId="rent-vs-buy"
+          toolName="Rent vs Buy Reality Engine"
+          getInputs={() => ({ purchasePrice, downPaymentPct, mortgageRate, monthlyRent, years, appreciationRate, rentInflation, stockReturn, maintenanceRate, propertyTax, buyingCosts, sellingCosts })}
+          getKeyResult={() => `$${purchasePrice.toLocaleString()} home vs $${monthlyRent.toLocaleString()}/mo rent over ${years}yr`}
+          isLoggedIn={isLoggedIn}
+          onLoginPrompt={onUpgrade}
+        />
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
         {/* Controls Column */}
@@ -239,7 +275,7 @@ export default function RentVsBuyEngine({ isPro, onUpgrade }: RentVsBuyEnginePro
             <div className="space-y-5">
               <div>
                 <div className="flex justify-between items-center mb-1">
-                  <label className="text-xs font-bold text-slate-500 uppercase">Maintenance Drag</label>
+                  <label className="text-xs font-bold text-slate-500 uppercase">Maintenance Drag<Tooltip content="Annual maintenance costs as a percentage of home value. Typically 1-2% per year." /></label>
                   <span className="text-xs font-mono bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded">{maintenanceRate}% / yr</span>
                 </div>
                 <input
@@ -252,7 +288,7 @@ export default function RentVsBuyEngine({ isPro, onUpgrade }: RentVsBuyEnginePro
 
               <div>
                 <div className="flex justify-between items-center mb-1">
-                  <label className="text-xs font-bold text-slate-500 uppercase">Alt Investment Return</label>
+                  <label className="text-xs font-bold text-slate-500 uppercase">Alt Investment Return<Tooltip content="The annual return you could earn by investing your down payment instead of buying." /></label>
                   <span className="text-xs font-mono bg-green-100 text-green-700 px-1.5 py-0.5 rounded">{stockReturn}% / yr</span>
                 </div>
                 <input
@@ -351,7 +387,7 @@ export default function RentVsBuyEngine({ isPro, onUpgrade }: RentVsBuyEnginePro
                     tick={{fill: '#94a3b8', fontSize: 12}}
                     tickFormatter={(val) => `$${val/1000}k`}
                   />
-                  <Tooltip
+                  <ChartTooltip
                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
                     formatter={(val: number) => formatCurrency(val)}
                   />
@@ -684,6 +720,7 @@ export default function RentVsBuyEngine({ isPro, onUpgrade }: RentVsBuyEnginePro
           <span>This is a simulation, not financial advice. Tax benefits (SALT, Mortgage Interest Deduction) vary by bracket and jurisdiction.</span>
         </div>
       </footer>
+      {!isPro && <ProUpsellCard toolId="rent-vs-buy" isLoggedIn={isLoggedIn} />}
     </div>
   );
 }

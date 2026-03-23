@@ -1,19 +1,23 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Sparkles, Lock } from 'lucide-react';
 import CoastFIRE from '@/components/apps/CoastFIRE';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { StickySidebarAd } from '@/components/monetization';
+import { trackToolVisit } from '@/lib/useRecentTools';
+import { Breadcrumb } from '@/components/ui';
 
-export default function CoastFIREPage() {
+function CoastFIREPageInner() {
   const router = useRouter();
   const supabase = createBrowserClient();
   const [hasSession, setHasSession] = useState<boolean | null>(null);
   const [isPro, setIsPro] = useState(false);
   const [loading, setLoading] = useState(true);
+  const searchParams = useSearchParams();
+  const [initialValues, setInitialValues] = useState<Record<string, unknown> | undefined>();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -38,10 +42,22 @@ export default function CoastFIREPage() {
     checkAuth();
   }, [router, supabase]);
 
+  useEffect(() => {
+    const token = searchParams.get('scenario');
+    if (!token) return;
+    fetch(`/api/scenarios/shared/${token}`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => { if (data?.scenario?.inputs) setInitialValues(data.scenario.inputs); })
+      .catch(() => {});
+  }, [searchParams]);
+
+  useEffect(() => { trackToolVisit('coast-fire', 'Coast FIRE Calculator', '/apps/coast-fire'); }, []);
+
   return (
     <>
       {/* MAIN CONTENT */}
       <div className="max-w-7xl mx-auto px-6 py-12">
+        <Breadcrumb toolName="Coast FIRE Calculator" />
         {hasSession === false && (
           <div className="bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-700 rounded-2xl p-8 mb-8 text-white shadow-xl relative overflow-hidden">
             <div className="absolute inset-0 opacity-5 grid-bg pointer-events-none" />
@@ -105,7 +121,7 @@ export default function CoastFIREPage() {
         <div className="flex gap-8">
           {/* Calculator - Main content area */}
           <div className="flex-1 min-w-0">
-            <CoastFIRE isPro={isPro} onUpgrade={() => router.push('/pricing')} />
+            <CoastFIRE isPro={isPro} onUpgrade={() => router.push('/pricing')} isLoggedIn={hasSession === true} initialValues={initialValues} />
           </div>
 
           {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}
@@ -125,5 +141,13 @@ export default function CoastFIREPage() {
         </div>
       </footer>
     </>
+  );
+}
+
+export default function CoastFIREPage() {
+  return (
+    <Suspense fallback={null}>
+      <CoastFIREPageInner />
+    </Suspense>
   );
 }

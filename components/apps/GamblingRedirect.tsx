@@ -7,17 +7,21 @@ import {
 import {
   TrendingUp, TrendingDown, AlertTriangle, Info, Target, Calendar, ArrowUpRight, Lock, Zap, Clock, ArrowRight
 } from 'lucide-react';
+import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 
 interface GamblingRedirectProps {
   isPro?: boolean;
   onUpgrade?: () => void;
+  isLoggedIn?: boolean;
+  initialValues?: Record<string, unknown>;
 }
 
-export default function GamblingRedirect({ isPro = false, onUpgrade }: GamblingRedirectProps) {
+export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn = false, initialValues }: GamblingRedirectProps) {
   const [inputs, setInputs] = useState({
     monthlyBet: 250,
     years: 30,
-    marketReturn: 10
+    marketReturn: 10,
+    ...(initialValues || {}),
   });
 
   const simulationData = useMemo(() => {
@@ -525,6 +529,7 @@ export default function GamblingRedirect({ isPro = false, onUpgrade }: GamblingR
           National Council on Problem Gambling: 1-800-522-4700
         </p>
       </div>
+      {!isPro && <ProUpsellCard toolId="gambling-redirect" isLoggedIn={isLoggedIn} />}
     </div>
   );
 }

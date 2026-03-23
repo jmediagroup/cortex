@@ -1,18 +1,45 @@
 'use client';
 
-import React from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import SCorpOptimizer from '@/components/apps/SCorpOptimizer';
+import { createBrowserClient } from '@/lib/supabase/client';
 import { StickySidebarAd } from '@/components/monetization';
+import { trackToolVisit } from '@/lib/useRecentTools';
+import { Breadcrumb } from '@/components/ui';
 
-export default function SCorpOptimizerPage() {
+function SCorpOptimizerPageInner() {
   const router = useRouter();
+  const supabase = createBrowserClient();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const searchParams = useSearchParams();
+  const [initialValues, setInitialValues] = useState<Record<string, unknown> | undefined>();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsLoggedIn(!!session);
+    };
+    checkAuth();
+  }, [supabase]);
+
+  useEffect(() => {
+    const token = searchParams.get('scenario');
+    if (!token) return;
+    fetch(`/api/scenarios/shared/${token}`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => { if (data?.scenario?.inputs) setInitialValues(data.scenario.inputs); })
+      .catch(() => {});
+  }, [searchParams]);
+
+  useEffect(() => { trackToolVisit('s-corp-optimizer', 'S-Corp Optimizer', '/apps/s-corp-optimizer'); }, []);
 
   return (
     <>
       {/* MAIN CONTENT */}
       <div className="max-w-7xl mx-auto px-6 py-12">
+        <Breadcrumb toolName="S-Corp Optimizer" />
         <div className="bg-gradient-to-br from-amber-50 to-white border border-amber-100/80 rounded-2xl p-8 mb-8 shadow-sm">
           <h2 className="text-2xl font-black text-amber-900 mb-3">S-Corp Tax Optimizer</h2>
           <p className="text-amber-700 font-medium">
@@ -24,7 +51,7 @@ export default function SCorpOptimizerPage() {
         <div className="flex gap-8">
           {/* Calculator - Main content area */}
           <div className="flex-1 min-w-0">
-            <SCorpOptimizer />
+            <SCorpOptimizer isLoggedIn={isLoggedIn} initialValues={initialValues} />
           </div>
 
           {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}
@@ -44,5 +71,13 @@ export default function SCorpOptimizerPage() {
         </div>
       </footer>
     </>
+  );
+}
+
+export default function SCorpOptimizerPage() {
+  return (
+    <Suspense fallback={null}>
+      <SCorpOptimizerPageInner />
+    </Suspense>
   );
 }

@@ -1,17 +1,44 @@
 'use client';
 
-import React from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import CarAffordability from '@/components/apps/CarAffordability';
+import { createBrowserClient } from '@/lib/supabase/client';
 import { StickySidebarAd } from '@/components/monetization';
+import { trackToolVisit } from '@/lib/useRecentTools';
+import { Breadcrumb } from '@/components/ui';
 
-export default function CarAffordabilityPage() {
+function CarAffordabilityPageInner() {
   const router = useRouter();
+  const supabase = createBrowserClient();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const searchParams = useSearchParams();
+  const [initialValues, setInitialValues] = useState<Record<string, unknown> | undefined>();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsLoggedIn(!!session);
+    };
+    checkAuth();
+  }, [supabase]);
+
+  useEffect(() => {
+    const token = searchParams.get('scenario');
+    if (!token) return;
+    fetch(`/api/scenarios/shared/${token}`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => { if (data?.scenario?.inputs) setInitialValues(data.scenario.inputs); })
+      .catch(() => {});
+  }, [searchParams]);
+
+  useEffect(() => { trackToolVisit('car-affordability', 'Car Affordability', '/apps/car-affordability'); }, []);
 
   return (
     <>
       {/* MAIN CONTENT */}
       <div className="max-w-7xl mx-auto px-6 py-12">
+        <Breadcrumb toolName="Car Affordability Calculator" />
         <div className="bg-gradient-to-br from-indigo-50 to-white border border-indigo-100/80 rounded-2xl p-8 mb-8 shadow-sm">
           <h2 className="text-2xl font-black text-indigo-900 mb-3">20/3/8 Car-Buying Rule</h2>
           <p className="text-indigo-700 font-medium">
@@ -25,7 +52,7 @@ export default function CarAffordabilityPage() {
         <div className="flex gap-8">
           {/* Calculator - Main content area */}
           <div className="flex-1 min-w-0">
-            <CarAffordability />
+            <CarAffordability isLoggedIn={isLoggedIn} initialValues={initialValues} />
           </div>
 
           {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}
@@ -45,5 +72,13 @@ export default function CarAffordabilityPage() {
         </div>
       </footer>
     </>
+  );
+}
+
+export default function CarAffordabilityPage() {
+  return (
+    <Suspense fallback={null}>
+      <CarAffordabilityPageInner />
+    </Suspense>
   );
 }

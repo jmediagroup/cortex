@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
@@ -21,6 +21,8 @@ import {
   Shield,
   Repeat
 } from 'lucide-react';
+import SaveScenarioButton from './SaveScenarioButton';
+import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 
 interface Debt {
   id: number;
@@ -34,6 +36,8 @@ interface Debt {
 interface DebtPaydownOptimizerProps {
   isPro?: boolean;
   onUpgrade?: () => void;
+  isLoggedIn?: boolean;
+  initialValues?: Record<string, unknown>;
 }
 
 interface SimulationResult {
@@ -48,7 +52,7 @@ interface SimulationResult {
 
 const COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f97316', '#eab308', '#22c55e', '#06b6d4'];
 
-export default function DebtPaydownOptimizer({ isPro, onUpgrade }: DebtPaydownOptimizerProps) {
+export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = false, initialValues }: DebtPaydownOptimizerProps) {
   const [debts, setDebts] = useState<Debt[]>([
     { id: 1, name: 'Credit Card A', balance: 5000, rate: 24.99, minPayment: 150, isTaxDeductible: false },
     { id: 2, name: 'Student Loan', balance: 15000, rate: 4.5, minPayment: 200, isTaxDeductible: true },
@@ -61,6 +65,20 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade }: DebtPaydownOp
   const [investmentRate, setInvestmentRate] = useState(7);
   const [taxRate, setTaxRate] = useState(25);
   const [psychologicalWeight, setPsychologicalWeight] = useState(50); // 0 = Pure Math, 100 = Pure Motivation
+
+  const initialApplied = useRef(false);
+  useEffect(() => {
+    if (!initialValues || initialApplied.current) return;
+    initialApplied.current = true;
+    const v = initialValues as Record<string, any>;
+    if (v.debts != null) setDebts(v.debts);
+    if (v.monthlyBudget != null) setMonthlyBudget(v.monthlyBudget);
+    if (v.monthlyIncome != null) setMonthlyIncome(v.monthlyIncome);
+    if (v.age != null) setAge(v.age);
+    if (v.investmentRate != null) setInvestmentRate(v.investmentRate);
+    if (v.taxRate != null) setTaxRate(v.taxRate);
+    if (v.psychologicalWeight != null) setPsychologicalWeight(v.psychologicalWeight);
+  }, [initialValues]);
 
   // Input Handlers
   const addDebt = () => {
@@ -258,6 +276,21 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade }: DebtPaydownOp
 
   return (
     <div className="space-y-8">
+      {/* Save Scenario */}
+      <div className="flex justify-end mb-4">
+        <SaveScenarioButton
+          toolId="debt-paydown"
+          toolName="Debt Paydown Optimizer"
+          getInputs={() => ({ debts, monthlyBudget, monthlyIncome })}
+          getKeyResult={() => {
+            const totalDebt = debts.reduce((sum, d) => sum + d.balance, 0);
+            return `Total debt: $${totalDebt.toLocaleString()}, Budget: $${monthlyBudget}/mo`;
+          }}
+          isLoggedIn={isLoggedIn}
+          onLoginPrompt={onUpgrade}
+        />
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Panel: Inputs */}
         <div className="lg:col-span-5 space-y-6">
@@ -942,6 +975,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade }: DebtPaydownOp
           </div>
         </div>
       )}
+      {!isPro && <ProUpsellCard toolId="debt-paydown" isLoggedIn={isLoggedIn} />}
     </div>
   );
 }

@@ -1,16 +1,35 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as ChartTooltip, ResponsiveContainer, Cell
 } from 'recharts';
 import {
   Zap, Scale, Info
 } from 'lucide-react';
+import SaveScenarioButton from './SaveScenarioButton';
+import Tooltip from '@/components/ui/Tooltip';
+import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 
-export default function SCorpOptimizer() {
+interface SCorpOptimizerProps {
+  isPro?: boolean;
+  onUpgrade?: () => void;
+  isLoggedIn?: boolean;
+  initialValues?: Record<string, unknown>;
+}
+
+export default function SCorpOptimizer({ isPro = false, onUpgrade, isLoggedIn = false, initialValues }: SCorpOptimizerProps) {
   const [profit, setProfit] = useState(150000);
   const [salary, setSalary] = useState(60000);
+
+  const initialApplied = useRef(false);
+  useEffect(() => {
+    if (!initialValues || initialApplied.current) return;
+    initialApplied.current = true;
+    const v = initialValues as Record<string, number>;
+    if (v.profit != null) setProfit(v.profit);
+    if (v.salary != null) setSalary(v.salary);
+  }, [initialValues]);
 
   const stats = useMemo(() => {
     // Self-Employment Tax (15.3% on 92.35% of profit)
@@ -36,6 +55,18 @@ export default function SCorpOptimizer() {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
+      {/* Save Scenario */}
+      <div className="flex justify-end mb-4">
+        <SaveScenarioButton
+          toolId="s-corp-optimizer"
+          toolName="S-Corp Optimizer"
+          getInputs={() => ({ profit, salary })}
+          getKeyResult={() => `Profit: $${profit.toLocaleString()}, Salary: $${salary.toLocaleString()}`}
+          isLoggedIn={isLoggedIn}
+          onLoginPrompt={onUpgrade}
+        />
+      </div>
+
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
@@ -72,7 +103,7 @@ export default function SCorpOptimizer() {
                 </div>
               </div>
               <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase mb-1">Proposed Reasonable Salary</label>
+                <label className="block text-[10px] font-black text-slate-400 uppercase mb-1">Proposed Reasonable Salary<Tooltip content="The IRS requires S-Corp owners to pay themselves a reasonable salary. This is typically 40-60% of net profit." /></label>
                 <div className="relative">
                   <span className="absolute left-4 top-2.5 text-slate-300 font-bold">$</span>
                   <input type="number" value={salary} onChange={(e) => setSalary(parseFloat(e.target.value) || 0)} className="w-full pl-8 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold outline-none focus:ring-2 focus:ring-amber-500" />
@@ -103,7 +134,7 @@ export default function SCorpOptimizer() {
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12, fontWeight: 'bold'}} />
                 <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12, fontWeight: 'bold'}} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
-                <Tooltip cursor={{fill: '#f8fafc'}} formatter={(v) => `$${Math.round(Number(v) || 0).toLocaleString()}`} />
+                <ChartTooltip cursor={{fill: '#f8fafc'}} formatter={(v) => `$${Math.round(Number(v) || 0).toLocaleString()}`} />
                 <Bar dataKey="tax" radius={[12, 12, 0, 0]} barSize={80}>
                   {[0, 1].map((entry, index) => <Cell key={`cell-${index}`} fill={index === 0 ? '#94a3b8' : '#4f46e5'} />)}
                 </Bar>
@@ -112,6 +143,7 @@ export default function SCorpOptimizer() {
           </div>
         </main>
       </div>
+      {!isPro && <ProUpsellCard toolId="s-corp-optimizer" isLoggedIn={isLoggedIn} />}
     </div>
   );
 }

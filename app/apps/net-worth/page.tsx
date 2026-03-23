@@ -1,26 +1,37 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useEffect, useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Compass } from 'lucide-react';
 import NetWorthEngine from '@/components/apps/NetWorthEngine';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { StickySidebarAd } from '@/components/monetization';
+import { trackToolVisit } from '@/lib/useRecentTools';
+import { Breadcrumb } from '@/components/ui';
 
-export default function NetWorthPage() {
+function NetWorthPageInner() {
   const router = useRouter();
   const supabase = createBrowserClient();
   const [isPro, setIsPro] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
+  const searchParams = useSearchParams();
+  const [initialValues, setInitialValues] = useState<Record<string, unknown> | undefined>();
 
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        router.push('/login');
+        if (!searchParams.get('scenario')) {
+          router.push('/login');
+          return;
+        }
+        setLoading(false);
         return;
       }
+
+      setIsLoggedIn(true);
 
       const { data: userData } = await supabase
         .from('users')
@@ -35,6 +46,17 @@ export default function NetWorthPage() {
     };
     checkAuth();
   }, [router, supabase]);
+
+  useEffect(() => {
+    const token = searchParams.get('scenario');
+    if (!token) return;
+    fetch(`/api/scenarios/shared/${token}`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => { if (data?.scenario?.inputs) setInitialValues(data.scenario.inputs); })
+      .catch(() => {});
+  }, [searchParams]);
+
+  useEffect(() => { trackToolVisit('net-worth', 'Net Worth Engine', '/apps/net-worth'); }, []);
 
   if (loading) {
     return (
@@ -51,6 +73,7 @@ export default function NetWorthPage() {
     <>
       {/* MAIN CONTENT */}
       <div className="max-w-7xl mx-auto px-6 py-12">
+        <Breadcrumb toolName="Net Worth Engine" />
         <div className="bg-gradient-to-br from-indigo-50 to-white border border-indigo-100/80 rounded-2xl p-8 mb-8 shadow-sm">
           <div className="flex items-center gap-3 mb-4">
             <Compass size={28} className="text-indigo-600 stroke-[2.5]" />
@@ -80,7 +103,7 @@ export default function NetWorthPage() {
         <div className="flex gap-8">
           {/* Calculator - Main content area */}
           <div className="flex-1 min-w-0">
-            <NetWorthEngine isPro={isPro} onUpgrade={() => router.push('/pricing')} />
+            <NetWorthEngine isPro={isPro} onUpgrade={() => router.push('/pricing')} isLoggedIn={isLoggedIn} initialValues={initialValues} />
           </div>
 
           {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}
@@ -106,5 +129,13 @@ export default function NetWorthPage() {
         </div>
       </footer>
     </>
+  );
+}
+
+export default function NetWorthPage() {
+  return (
+    <Suspense fallback={null}>
+      <NetWorthPageInner />
+    </Suspense>
   );
 }

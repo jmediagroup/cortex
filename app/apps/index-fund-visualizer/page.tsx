@@ -1,19 +1,23 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Sparkles, Lock } from 'lucide-react';
 import IndexFundVisualizer from '@/components/apps/IndexFundVisualizer';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { StickySidebarAd } from '@/components/monetization';
+import { trackToolVisit } from '@/lib/useRecentTools';
+import { Breadcrumb } from '@/components/ui';
 
-export default function IndexFundVisualizerPage() {
+function IndexFundVisualizerPageInner() {
   const router = useRouter();
   const supabase = createBrowserClient();
   const [hasSession, setHasSession] = useState<boolean | null>(null);
   const [isPro, setIsPro] = useState(false);
   const [loading, setLoading] = useState(true);
+  const searchParams = useSearchParams();
+  const [initialValues, setInitialValues] = useState<Record<string, unknown> | undefined>();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -38,10 +42,22 @@ export default function IndexFundVisualizerPage() {
     checkAuth();
   }, [router, supabase]);
 
+  useEffect(() => {
+    const token = searchParams.get('scenario');
+    if (!token) return;
+    fetch(`/api/scenarios/shared/${token}`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => { if (data?.scenario?.inputs) setInitialValues(data.scenario.inputs); })
+      .catch(() => {});
+  }, [searchParams]);
+
+  useEffect(() => { trackToolVisit('index-fund-visualizer', 'Index Fund Growth Visualizer', '/apps/index-fund-visualizer'); }, []);
+
   return (
     <>
       {/* MAIN CONTENT */}
       <div className="max-w-7xl mx-auto px-6 py-12">
+        <Breadcrumb toolName="Index Fund Visualizer" />
         {hasSession === false && (
           <div className="bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-700 rounded-2xl p-8 mb-8 text-white shadow-xl relative overflow-hidden">
             <div className="absolute inset-0 opacity-5 grid-bg pointer-events-none" />
@@ -105,7 +121,7 @@ export default function IndexFundVisualizerPage() {
         <div className="flex gap-8">
           {/* Calculator - Main content area */}
           <div className="flex-1 min-w-0">
-            <IndexFundVisualizer isPro={isPro} onUpgrade={() => router.push('/pricing')} />
+            <IndexFundVisualizer isPro={isPro} onUpgrade={() => router.push('/pricing')} isLoggedIn={hasSession === true} initialValues={initialValues} />
           </div>
 
           {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}
@@ -125,5 +141,13 @@ export default function IndexFundVisualizerPage() {
         </div>
       </footer>
     </>
+  );
+}
+
+export default function IndexFundVisualizerPage() {
+  return (
+    <Suspense fallback={null}>
+      <IndexFundVisualizerPageInner />
+    </Suspense>
   );
 }

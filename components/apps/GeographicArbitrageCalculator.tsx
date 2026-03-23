@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as ChartTooltip, ResponsiveContainer
 } from 'recharts';
@@ -20,6 +20,9 @@ import {
   TrendingDown,
   Plane
 } from 'lucide-react';
+import SaveScenarioButton from './SaveScenarioButton';
+import Tooltip from '@/components/ui/Tooltip';
+import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 
 interface LocationData {
   taxRate: number;
@@ -31,6 +34,8 @@ interface LocationData {
 interface GeographicArbitrageCalculatorProps {
   isPro?: boolean;
   onUpgrade?: () => void;
+  isLoggedIn?: boolean;
+  initialValues?: Record<string, unknown>;
 }
 
 // Comprehensive Data for all 50 State Capitals + Major Hubs + DC + Custom Cities
@@ -97,7 +102,7 @@ const LOCATION_PRESETS: Record<string, LocationData> = {
   "Remote / LCOL": { taxRate: 0.03, colIndex: 0.8, housingBase: 1200, note: "The 'Ideal Arbitrage' scenario. Assumes rural or mid-west living while keeping city salary." },
 };
 
-export default function GeographicArbitrageCalculator({ isPro, onUpgrade }: GeographicArbitrageCalculatorProps) {
+export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLoggedIn = false, initialValues }: GeographicArbitrageCalculatorProps) {
   const [currentLoc, setCurrentLoc] = useState("San Francisco, CA");
   const [targetLoc, setTargetLoc] = useState("Austin, TX");
   const [annualIncome, setAnnualIncome] = useState<number | string>(150000);
@@ -112,6 +117,20 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade }: Geog
     transit: 30,
     discretionary: 50
   });
+
+  const initialApplied = useRef(false);
+  useEffect(() => {
+    if (!initialValues || initialApplied.current) return;
+    initialApplied.current = true;
+    const v = initialValues as Record<string, any>;
+    if (v.currentLoc != null) setCurrentLoc(v.currentLoc);
+    if (v.targetLoc != null) setTargetLoc(v.targetLoc);
+    if (v.annualIncome != null) setAnnualIncome(v.annualIncome);
+    if (v.incomeAdjustment != null) setIncomeAdjustment(v.incomeAdjustment);
+    if (v.investmentReturn != null) setInvestmentReturn(v.investmentReturn);
+    if (v.years != null) setYears(v.years);
+    if (v.lifestyle != null) setLifestyle(v.lifestyle);
+  }, [initialValues]);
 
   // Sort keys by State (suffix) then City (prefix)
   const sortedLocationKeys = useMemo(() => {
@@ -227,9 +246,10 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade }: Geog
     min?: number;
     max?: number;
     suffix?: string;
+    tooltip?: string;
   }
 
-  const SliderField = ({ label, icon: Icon, value, onChange, min = 0, max = 100, suffix = "" }: SliderFieldProps) => {
+  const SliderField = ({ label, icon: Icon, value, onChange, min = 0, max = 100, suffix = "", tooltip }: SliderFieldProps) => {
     // Determine step size based on the range
     const getStep = () => {
       const range = max - min;
@@ -265,6 +285,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade }: Geog
           <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
             {Icon && <Icon size={16} className="text-indigo-500" />}
             {label}
+            {tooltip && <Tooltip content={tooltip} />}
           </label>
         </div>
         <div className="relative flex items-center gap-2">
@@ -342,6 +363,18 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade }: Geog
   return (
     <div className="space-y-8">
 
+      {/* Save Scenario */}
+      <div className="flex justify-end mb-4">
+        <SaveScenarioButton
+          toolId="geographic-arbitrage"
+          toolName="Geographic Arbitrage Calculator"
+          getInputs={() => ({ currentLoc, targetLoc, annualIncome, incomeAdjustment, investmentReturn, years })}
+          getKeyResult={() => `${currentLoc} → ${targetLoc}, Income: $${Number(annualIncome).toLocaleString()}`}
+          isLoggedIn={isLoggedIn}
+          onLoginPrompt={onUpgrade}
+        />
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Controls Panel */}
         <div className="lg:col-span-4 space-y-6">
@@ -386,7 +419,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade }: Geog
               </div>
             </div>
 
-            <SliderField label="Retention Ratio" icon={ArrowRightLeft} value={incomeAdjustment} onChange={setIncomeAdjustment} min={50} max={150} suffix="%" />
+            <SliderField label="Retention Ratio" icon={ArrowRightLeft} value={incomeAdjustment} onChange={setIncomeAdjustment} min={50} max={150} suffix="%" tooltip="The percentage of your income you keep after taxes and cost of living. Higher means more wealth-building potential." />
           </section>
 
           <section className="bg-white p-7 rounded-3xl shadow-sm border border-slate-200/60 ring-1 ring-slate-100">
@@ -394,7 +427,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade }: Geog
               <TrendingUp size={22} className="text-indigo-600" />
               Variables & Lifestyle
             </h2>
-            <SliderField label="Housing Standard" icon={Home} value={lifestyle.housing} onChange={(v) => setLifestyle({...lifestyle, housing: v})} />
+            <SliderField label="Housing Standard" icon={Home} value={lifestyle.housing} onChange={(v) => setLifestyle({...lifestyle, housing: v})} tooltip="Your relative housing quality preference (1-10). Higher means you want comparable or better housing in the new city." />
             <SliderField label="Consumption" icon={Coffee} value={lifestyle.dining} onChange={(v) => setLifestyle({...lifestyle, dining: v})} />
             <SliderField label="Time Horizon" value={years} onChange={setYears} min={1} max={40} suffix=" Years" />
             <SliderField label="Investment Yield" value={investmentReturn} onChange={setInvestmentReturn} min={1} max={12} suffix="%" />
@@ -742,6 +775,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade }: Geog
           )}
         </div>
       </div>
+      {!isPro && <ProUpsellCard toolId="geographic-arbitrage" isLoggedIn={isLoggedIn} />}
     </div>
   );
 }

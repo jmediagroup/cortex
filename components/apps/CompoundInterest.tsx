@@ -2,24 +2,30 @@
 
 import React, { useState, useMemo } from 'react';
 import {
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as ChartTooltip, ResponsiveContainer, LineChart, Line
 } from 'recharts';
 import {
   Calculator, TrendingUp, Info, ArrowUpRight, Lock, Zap, AlertTriangle, Target, Clock, ArrowRight
 } from 'lucide-react';
+import SaveScenarioButton from './SaveScenarioButton';
+import Tooltip from '@/components/ui/Tooltip';
+import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 
 interface CompoundInterestProps {
   isPro?: boolean;
+  isLoggedIn?: boolean;
   onUpgrade?: () => void;
+  initialValues?: Record<string, unknown>;
 }
 
-export default function CompoundInterest({ isPro = false, onUpgrade }: CompoundInterestProps) {
+export default function CompoundInterest({ isPro = false, isLoggedIn = false, onUpgrade, initialValues }: CompoundInterestProps) {
   const [inputs, setInputs] = useState({
     principal: 25000,
     monthlyContribution: 500,
     annualReturn: 8,
     years: 30,
-    compoundingFrequency: 12
+    compoundingFrequency: 12,
+    ...(initialValues || {}),
   });
 
   const simulationData = useMemo(() => {
@@ -128,6 +134,18 @@ export default function CompoundInterest({ isPro = false, onUpgrade }: CompoundI
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
+      {/* Save Scenario */}
+      <div className="flex justify-end">
+        <SaveScenarioButton
+          toolId="compound-interest"
+          toolName="Compound Interest Calculator"
+          getInputs={() => inputs}
+          getKeyResult={() => `$${finalStats.balance.toLocaleString()} after ${inputs.years} years`}
+          isLoggedIn={isLoggedIn}
+          onLoginPrompt={onUpgrade}
+        />
+      </div>
+
       {/* Metrics Header */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
@@ -178,6 +196,22 @@ export default function CompoundInterest({ isPro = false, onUpgrade }: CompoundI
                 <label className="block text-[10px] font-black text-slate-400 uppercase mb-1">Investment Horizon (Years)</label>
                 <input type="number" name="years" value={inputs.years} onChange={handleInputChange} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold outline-none focus:ring-2 focus:ring-indigo-500" />
               </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase mb-1">
+                  Compound Frequency
+                  <Tooltip content="How often interest is calculated and added to your balance. More frequent compounding means slightly higher returns." />
+                </label>
+                <select
+                  value={inputs.compoundingFrequency}
+                  onChange={(e) => setInputs({ ...inputs, compoundingFrequency: Number(e.target.value) })}
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  <option value={1}>Annually</option>
+                  <option value={4}>Quarterly</option>
+                  <option value={12}>Monthly</option>
+                  <option value={365}>Daily</option>
+                </select>
+              </div>
             </div>
           </div>
 
@@ -212,7 +246,7 @@ export default function CompoundInterest({ isPro = false, onUpgrade }: CompoundI
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                 <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 11, fontWeight: 'bold'}} />
                 <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 11, fontWeight: 'bold'}} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
-                <Tooltip
+                <ChartTooltip
                   contentStyle={{ borderRadius: '24px', border: 'none', boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.1)' }}
                   formatter={(v) => `$${(v || 0).toLocaleString()}`}
                 />
@@ -435,6 +469,7 @@ export default function CompoundInterest({ isPro = false, onUpgrade }: CompoundI
           </div>
         </div>
       )}
+      {!isPro && <ProUpsellCard toolId="compound-interest" isLoggedIn={isLoggedIn} />}
     </div>
   );
 }

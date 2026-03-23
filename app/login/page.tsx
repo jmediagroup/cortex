@@ -70,17 +70,19 @@ function AuthForm() {
         }
 
         if (data.user) {
-          // Create user record in users table with free tier
-          const { error: insertError } = await (supabase
-            .from('users')
-            .insert as any)([{
-              id: data.user.id,
-              email: data.user.email || '',
-              tier: 'free',
-            }]);
-
-          if (insertError && insertError.code !== '23505') { // Ignore duplicate key errors
-            console.error('Error creating user record:', insertError);
+          // Create user record in users table via API route (uses service role to bypass RLS)
+          try {
+            await fetch('/api/create-user-record', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                userId: data.user.id,
+                email: data.user.email || '',
+              }),
+            });
+          } catch (insertErr) {
+            // Log but don't block signup - the trigger may have already created the record
+            console.error('Error creating user record:', insertErr);
           }
 
           // Track signup event

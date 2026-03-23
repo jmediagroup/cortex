@@ -1,19 +1,23 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Sparkles, Lock } from 'lucide-react';
 import RetirementStrategyEngine from '@/components/apps/RetirementStrategyEngine';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { StickySidebarAd } from '@/components/monetization';
+import { trackToolVisit } from '@/lib/useRecentTools';
+import { Breadcrumb } from '@/components/ui';
 
-export default function RetirementStrategyPage() {
+function RetirementStrategyPageInner() {
   const router = useRouter();
   const supabase = createBrowserClient();
   const [isPro, setIsPro] = useState(false);
   const [loading, setLoading] = useState(true);
   const [hasSession, setHasSession] = useState(false);
+  const searchParams = useSearchParams();
+  const [initialValues, setInitialValues] = useState<Record<string, unknown> | undefined>();
 
   // Fetch user tier from database (optional - no redirect)
   useEffect(() => {
@@ -40,6 +44,17 @@ export default function RetirementStrategyPage() {
     checkAuth();
   }, [router, supabase]);
 
+  useEffect(() => {
+    const token = searchParams.get('scenario');
+    if (!token) return;
+    fetch(`/api/scenarios/shared/${token}`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => { if (data?.scenario?.inputs) setInitialValues(data.scenario.inputs); })
+      .catch(() => {});
+  }, [searchParams]);
+
+  useEffect(() => { trackToolVisit('retirement-strategy', 'Retirement Strategy Engine', '/apps/retirement-strategy'); }, []);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
@@ -55,6 +70,7 @@ export default function RetirementStrategyPage() {
     <>
       {/* MAIN CONTENT */}
       <div className="max-w-7xl mx-auto px-6 py-12">
+        <Breadcrumb toolName="Retirement Strategy Calculator" />
         {!hasSession && (
           <div className="bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-700 rounded-2xl p-8 mb-8 text-white shadow-xl relative overflow-hidden">
             <div className="absolute inset-0 opacity-5 grid-bg pointer-events-none" />
@@ -119,6 +135,8 @@ export default function RetirementStrategyPage() {
             <RetirementStrategyEngine
               isPro={isPro}
               onUpgrade={() => router.push('/pricing')}
+              isLoggedIn={hasSession}
+              initialValues={initialValues}
             />
           </div>
 
@@ -139,5 +157,13 @@ export default function RetirementStrategyPage() {
         </div>
       </footer>
     </>
+  );
+}
+
+export default function RetirementStrategyPage() {
+  return (
+    <Suspense fallback={null}>
+      <RetirementStrategyPageInner />
+    </Suspense>
   );
 }

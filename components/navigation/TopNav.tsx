@@ -6,13 +6,16 @@ import {
   Brain,
   Grid3X3,
   BookOpen,
+  Bookmark,
   Settings,
   User,
   LogOut,
   ChevronDown,
+  Shield,
 } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { type Tier, getTierDisplayName } from '@/lib/access-control';
+import { isAdmin } from '@/lib/admin';
 
 interface NavItem {
   label: string;
@@ -22,6 +25,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: 'Apps', href: '/dashboard', icon: Grid3X3 },
+  { label: 'Scenarios', href: '/dashboard/scenarios', icon: Bookmark },
   { label: 'Learn', href: '/articles', icon: BookOpen },
 ];
 
@@ -64,7 +68,8 @@ export default function TopNav({
   }, []);
 
   const isActive = (href: string) => {
-    if (href === '/dashboard') return pathname.startsWith('/dashboard') || pathname.startsWith('/apps');
+    if (href === '/dashboard/scenarios') return pathname === '/dashboard/scenarios';
+    if (href === '/dashboard') return pathname === '/dashboard' || pathname.startsWith('/apps');
     if (href === '/articles') return pathname.startsWith('/articles');
     return pathname === href;
   };
@@ -177,6 +182,14 @@ export default function TopNav({
                       My Account
                     </Link>
                     <Link
+                      href="/dashboard/scenarios"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-secondary)]"
+                    >
+                      <Bookmark size={16} className="text-[var(--text-tertiary)]" />
+                      My Scenarios
+                    </Link>
+                    <Link
                       href="/pricing"
                       onClick={() => setDropdownOpen(false)}
                       className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-secondary)]"
@@ -184,6 +197,16 @@ export default function TopNav({
                       <ChevronDown size={16} className="rotate-[-90deg] text-[var(--text-tertiary)]" />
                       Upgrade Plan
                     </Link>
+                    {isAdmin(user.email) && (
+                      <Link
+                        href="/admin"
+                        onClick={() => setDropdownOpen(false)}
+                        className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-secondary)]"
+                      >
+                        <Shield size={16} className="text-[var(--text-tertiary)]" />
+                        Admin Panel
+                      </Link>
+                    )}
                     <div className="my-1 border-t border-[var(--border-secondary)]" />
                     <button
                       onClick={() => {

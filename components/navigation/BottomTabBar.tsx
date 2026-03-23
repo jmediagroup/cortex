@@ -5,6 +5,7 @@ import Link from 'next/link';
 import {
   Grid3X3,
   BookOpen,
+  Bookmark,
 } from 'lucide-react';
 
 interface TabItem {
@@ -15,6 +16,7 @@ interface TabItem {
 
 const tabs: TabItem[] = [
   { label: 'Apps', href: '/dashboard', icon: Grid3X3 },
+  { label: 'Scenarios', href: '/dashboard/scenarios', icon: Bookmark },
   { label: 'Learn', href: '/articles', icon: BookOpen },
 ];
 
@@ -22,7 +24,8 @@ export default function BottomTabBar() {
   const pathname = usePathname();
 
   const isActive = (href: string) => {
-    if (href === '/dashboard') return pathname.startsWith('/dashboard') || pathname.startsWith('/apps');
+    if (href === '/dashboard/scenarios') return pathname === '/dashboard/scenarios';
+    if (href === '/dashboard') return pathname === '/dashboard' || pathname.startsWith('/apps');
     if (href === '/articles') return pathname.startsWith('/articles');
     return pathname === href;
   };

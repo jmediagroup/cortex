@@ -3,6 +3,8 @@
 import React, { useState, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { TrendingUp, DollarSign, PiggyBank, Shield, AlertCircle, Lock } from 'lucide-react';
+import SaveScenarioButton from './SaveScenarioButton';
+import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 
 /**
  * S-Corp Investment Optimizer (2026 Limits)
@@ -18,9 +20,11 @@ import { TrendingUp, DollarSign, PiggyBank, Shield, AlertCircle, Lock } from 'lu
 interface SCorpInvestmentOptimizerProps {
   isPro: boolean;
   onUpgrade: () => void;
+  isLoggedIn?: boolean;
+  initialValues?: Record<string, unknown>;
 }
 
-export default function SCorpInvestmentOptimizer({ isPro, onUpgrade }: SCorpInvestmentOptimizerProps) {
+export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn = false, initialValues }: SCorpInvestmentOptimizerProps) {
   const [inputs, setInputs] = useState({
     annualSalary: 60000,
     age: 35,
@@ -33,7 +37,8 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade }: SCorpInve
     monthlyBrokerage: 0,
     growthRate: 7.0,
     inflationRate: 3.0,
-    adjustInflation: false
+    adjustInflation: false,
+    ...(initialValues || {}),
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -186,6 +191,18 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade }: SCorpInve
 
   return (
     <div className="space-y-8">
+      {/* Save Scenario */}
+      <div className="flex justify-end mb-4">
+        <SaveScenarioButton
+          toolId="s-corp-investment"
+          toolName="S-Corp Investment Optimizer"
+          getInputs={() => inputs}
+          getKeyResult={() => `Salary: $${inputs.annualSalary.toLocaleString()}, Age: ${inputs.age}`}
+          isLoggedIn={isLoggedIn}
+          onLoginPrompt={onUpgrade}
+        />
+      </div>
+
       {/* EXPLANATION BANNER */}
       <div className="bg-emerald-50 border-2 border-emerald-200 rounded-[2.5rem] p-8">
         <div className="flex items-start gap-4">
@@ -533,6 +550,7 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade }: SCorpInve
           </p>
         </div>
       </div>
+      {!isPro && <ProUpsellCard toolId="s-corp-investment" isLoggedIn={isLoggedIn} />}
     </div>
   );
 }

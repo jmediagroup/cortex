@@ -1,26 +1,37 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import DebtPaydownOptimizer from '@/components/apps/DebtPaydownOptimizer';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { StickySidebarAd } from '@/components/monetization';
+import { trackToolVisit } from '@/lib/useRecentTools';
+import { Breadcrumb } from '@/components/ui';
 
-export default function DebtPaydownPage() {
+function DebtPaydownPageInner() {
   const router = useRouter();
   const supabase = createBrowserClient();
   const [isPro, setIsPro] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
+  const searchParams = useSearchParams();
+  const [initialValues, setInitialValues] = useState<Record<string, unknown> | undefined>();
 
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        router.push('/login');
+        if (!searchParams.get('scenario')) {
+          router.push('/login');
+          return;
+        }
+        setLoading(false);
         return;
       }
+
+      setIsLoggedIn(true);
 
       const { data: userData } = await supabase
         .from('users')
@@ -37,6 +48,17 @@ export default function DebtPaydownPage() {
     checkAuth();
   }, [router, supabase]);
 
+  useEffect(() => {
+    const token = searchParams.get('scenario');
+    if (!token) return;
+    fetch(`/api/scenarios/shared/${token}`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => { if (data?.scenario?.inputs) setInitialValues(data.scenario.inputs); })
+      .catch(() => {});
+  }, [searchParams]);
+
+  useEffect(() => { trackToolVisit('debt-paydown', 'Debt Paydown Strategy Optimizer', '/apps/debt-paydown'); }, []);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
@@ -51,6 +73,7 @@ export default function DebtPaydownPage() {
   return (
     <>
       <div className="max-w-7xl mx-auto px-6 py-12">
+        <Breadcrumb toolName="Debt Paydown Optimizer" />
         <div className="bg-gradient-to-br from-indigo-50 to-white border border-indigo-100/80 rounded-2xl p-8 mb-8 shadow-sm">
           <h2 className="text-2xl font-black text-indigo-900 mb-3">Debt Paydown Strategy Optimizer</h2>
           <p className="text-indigo-700 font-medium">
@@ -64,7 +87,7 @@ export default function DebtPaydownPage() {
         <div className="flex gap-8">
           {/* Calculator - Main content area */}
           <div className="flex-1 min-w-0">
-            <DebtPaydownOptimizer isPro={isPro} onUpgrade={() => router.push('/pricing')} />
+            <DebtPaydownOptimizer isPro={isPro} onUpgrade={() => router.push('/pricing')} isLoggedIn={isLoggedIn} initialValues={initialValues} />
           </div>
 
           {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}
@@ -84,5 +107,13 @@ export default function DebtPaydownPage() {
         </div>
       </footer>
     </>
+  );
+}
+
+export default function DebtPaydownPage() {
+  return (
+    <Suspense fallback={null}>
+      <DebtPaydownPageInner />
+    </Suspense>
   );
 }

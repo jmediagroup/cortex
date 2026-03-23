@@ -20,7 +20,8 @@ import {
   BookOpen,
   Star,
   Shield,
-  ChevronRight
+  ChevronRight,
+  Anchor
 } from 'lucide-react';
 import LatestArticles from '@/components/home/LatestArticles';
 import MobileNav from '@/components/navigation/MobileNav';
@@ -71,43 +72,57 @@ export default function LandingPage() {
       icon: <Building2 size={22} />,
       title: "S-Corp Investment Optimizer",
       description: "Maximize retirement contributions while optimizing your S-Corp owner compensation.",
-      isFree: false
+      isFree: false,
+      link: "/apps/s-corp-investment"
     },
     {
       icon: <Car size={22} />,
       title: "Car Affordability Calculator",
       description: "Understand the true cost of vehicle ownership including depreciation and opportunity cost.",
-      isFree: false
+      isFree: false,
+      link: "/apps/car-affordability"
     },
     {
       icon: <Scale size={22} />,
       title: "S-Corp Optimizer",
       description: "Calculate self-employment tax savings and find your ideal salary/distribution split.",
-      isFree: false
+      isFree: false,
+      link: "/apps/s-corp-optimizer"
     },
     {
       icon: <Landmark size={22} />,
       title: "Rent vs Buy Reality Engine",
       description: "Compare renting vs buying with opportunity cost, maintenance drag, and tax treatment.",
-      isFree: false
+      isFree: false,
+      link: "/apps/rent-vs-buy"
     },
     {
       icon: <TrendingDown size={22} />,
       title: "Debt Paydown Strategy Optimizer",
       description: "Compare avalanche vs snowball strategies with psychological weighting and opportunity cost.",
-      isFree: false
+      isFree: false,
+      link: "/apps/debt-paydown"
     },
     {
       icon: <MapPin size={22} />,
       title: "Geographic Arbitrage Calculator",
       description: "Calculate wealth-building potential by comparing income, taxes, and cost of living across all 50 states.",
-      isFree: false
+      isFree: false,
+      link: "/apps/geographic-arbitrage"
     },
     {
       icon: <Compass size={22} />,
       title: "Net Worth Engine",
       description: "Track assets and liabilities, analyze liquidity and momentum, and visualize your financial trajectory.",
-      isFree: false
+      isFree: false,
+      link: "/apps/net-worth"
+    },
+    {
+      icon: <Anchor size={22} />,
+      title: "Coast FIRE Calculator",
+      description: "Find out if your current savings will grow to your retirement number on their own — no more contributions needed.",
+      isFree: true,
+      link: "/apps/coast-fire"
     }
   ];
 
@@ -260,9 +275,10 @@ export default function LandingPage() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 mb-14">
             {tools.map((tool, i) => (
-              <div
+              <a
                 key={i}
-                className="card-glow bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all duration-300 group relative"
+                href={tool.link}
+                className="card-glow bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all duration-300 group relative block"
               >
                 {tool.isFree && (
                   <div className="absolute -top-2.5 -right-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-md">
@@ -276,16 +292,11 @@ export default function LandingPage() {
                 <p className="text-slate-500 font-medium leading-relaxed text-sm mb-4">
                   {tool.description}
                 </p>
-                {tool.isFree && tool.link && (
-                  <a
-                    href={tool.link}
-                    className="inline-flex items-center gap-1.5 text-indigo-600 font-bold text-sm group-hover:gap-2.5 transition-all"
-                  >
-                    Try for Free
-                    <ArrowRight size={14} />
-                  </a>
-                )}
-              </div>
+                <span className="inline-flex items-center gap-1.5 text-indigo-600 font-bold text-sm group-hover:gap-2.5 transition-all">
+                  {tool.isFree ? "Try for Free" : "Learn More"}
+                  <ArrowRight size={14} />
+                </span>
+              </a>
             ))}
           </div>
 

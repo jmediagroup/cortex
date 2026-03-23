@@ -1,23 +1,29 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import SCorpInvestmentOptimizer from '@/components/apps/SCorpInvestmentOptimizer';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { StickySidebarAd } from '@/components/monetization';
+import { trackToolVisit } from '@/lib/useRecentTools';
+import { Breadcrumb } from '@/components/ui';
 
-export default function SCorpInvestmentPage() {
+function SCorpInvestmentPageInner() {
   const router = useRouter();
   const supabase = createBrowserClient();
   const [isPro, setIsPro] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
   const [userTier, setUserTier] = useState<Tier>('free');
+  const searchParams = useSearchParams();
+  const [initialValues, setInitialValues] = useState<Record<string, unknown> | undefined>();
 
   // Fetch user tier from database (optional - no redirect)
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
+      setIsLoggedIn(!!session);
 
       if (session) {
         // Fetch user tier from database if logged in
@@ -39,6 +45,17 @@ export default function SCorpInvestmentPage() {
     checkAuth();
   }, [router, supabase]);
 
+  useEffect(() => {
+    const token = searchParams.get('scenario');
+    if (!token) return;
+    fetch(`/api/scenarios/shared/${token}`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => { if (data?.scenario?.inputs) setInitialValues(data.scenario.inputs); })
+      .catch(() => {});
+  }, [searchParams]);
+
+  useEffect(() => { trackToolVisit('s-corp-investment', 'S-Corp Investment Optimizer', '/apps/s-corp-investment'); }, []);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
@@ -54,6 +71,7 @@ export default function SCorpInvestmentPage() {
     <>
       {/* MAIN CONTENT */}
       <div className="max-w-7xl mx-auto px-6 py-12">
+        <Breadcrumb toolName="S-Corp Investment Optimizer" />
         <div className="bg-gradient-to-br from-emerald-50 to-white border border-emerald-100/80 rounded-2xl p-8 mb-8 shadow-sm">
           <h2 className="text-2xl font-black text-emerald-900 mb-3">S-Corp Investment Strategy (2026 Limits)</h2>
           <p className="text-emerald-700 font-medium">
@@ -70,6 +88,8 @@ export default function SCorpInvestmentPage() {
             <SCorpInvestmentOptimizer
               isPro={isPro}
               onUpgrade={() => router.push('/pricing')}
+              isLoggedIn={isLoggedIn}
+              initialValues={initialValues}
             />
           </div>
 
@@ -90,5 +110,13 @@ export default function SCorpInvestmentPage() {
         </div>
       </footer>
     </>
+  );
+}
+
+export default function SCorpInvestmentPage() {
+  return (
+    <Suspense fallback={null}>
+      <SCorpInvestmentPageInner />
+    </Suspense>
   );
 }

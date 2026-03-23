@@ -2,6 +2,8 @@
 
 import React, { useState, useMemo } from 'react';
 import { Car, DollarSign, Calendar, TrendingDown, AlertCircle, CheckCircle } from 'lucide-react';
+import SaveScenarioButton from './SaveScenarioButton';
+import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 
 /**
  * Car Affordability Calculator (20/3/8 Rule)
@@ -12,12 +14,20 @@ import { Car, DollarSign, Calendar, TrendingDown, AlertCircle, CheckCircle } fro
  * - 8% of pre-tax income for monthly payment
  */
 
-export default function CarAffordability() {
+interface CarAffordabilityProps {
+  isPro?: boolean;
+  onUpgrade?: () => void;
+  isLoggedIn?: boolean;
+  initialValues?: Record<string, unknown>;
+}
+
+export default function CarAffordability({ isPro = false, isLoggedIn = false, onUpgrade, initialValues }: CarAffordabilityProps) {
   const [inputs, setInputs] = useState({
     annualIncome: 150000,
     interestRate: 4.0,
     currentMonthlyPayment: 0,
-    downPaymentPercent: 44
+    downPaymentPercent: 44,
+    ...(initialValues || {}),
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -84,6 +94,18 @@ export default function CarAffordability() {
 
   return (
     <div className="space-y-8">
+      {/* Save Scenario */}
+      <div className="flex justify-end mb-4">
+        <SaveScenarioButton
+          toolId="car-affordability"
+          toolName="Car Affordability Calculator"
+          getInputs={() => inputs}
+          getKeyResult={() => `Max car: $${Math.round(calculations.maxCarPrice).toLocaleString()}`}
+          isLoggedIn={isLoggedIn}
+          onLoginPrompt={onUpgrade}
+        />
+      </div>
+
       {/* RULE EXPLANATION BANNER */}
       <div className="bg-blue-50 border-2 border-blue-200 rounded-[2.5rem] p-8">
         <div className="flex items-start gap-4">
@@ -335,6 +357,8 @@ export default function CarAffordability() {
           </div>
         </div>
       </div>
+
+      {!isPro && <ProUpsellCard toolId="car-affordability" isLoggedIn={isLoggedIn} />}
     </div>
   );
 }

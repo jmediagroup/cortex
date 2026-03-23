@@ -11,3 +11,4 @@ export { default as PortfolioOverview } from './PortfolioOverview';
 export { default as Watchlist } from './Watchlist';
 export { default as AssetCards } from './AssetCards';
 export { default as PromoBanners } from './PromoBanners';
+export { default as OnboardingQuiz } from './OnboardingQuiz';
