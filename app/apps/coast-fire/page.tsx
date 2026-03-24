@@ -6,7 +6,7 @@ import { Sparkles, Lock } from 'lucide-react';
 import CoastFIRE from '@/components/apps/CoastFIRE';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
-import { StickySidebarAd } from '@/components/monetization';
+import { InlineAd } from '@/components/monetization';
 import { trackToolVisit } from '@/lib/useRecentTools';
 import { Breadcrumb } from '@/components/ui';
 
@@ -117,16 +117,11 @@ function CoastFIREPageInner() {
           </p>
         </div>
 
-        {/* Main content with sidebar layout */}
-        <div className="flex gap-8">
-          {/* Calculator - Main content area */}
-          <div className="flex-1 min-w-0">
-            <CoastFIRE isPro={isPro} onUpgrade={() => router.push('/pricing')} isLoggedIn={hasSession === true} initialValues={initialValues} />
-          </div>
+        {/* Inline Ad - Full width above calculator */}
+        <InlineAd context="coast-fire" className="mb-8" />
 
-          {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}
-          <StickySidebarAd context="coast-fire" />
-        </div>
+        {/* Calculator - Full width */}
+        <CoastFIRE isPro={isPro} onUpgrade={() => router.push('/pricing')} isLoggedIn={hasSession === true} initialValues={initialValues} />
       </div>
 
       {/* FOOTER */}

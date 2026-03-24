@@ -52,29 +52,29 @@ export const affiliateAdCopy: Record<string, AdCopySet> = {
     leaderboard: [
       {
         headline: 'Your calculator shows the goal. Rocket Money shows the leaks.',
-        cta: 'Find Hidden Costs',
+        cta: 'Try Rocket Money',
       },
       {
         headline: 'Average user saves $512/year by canceling forgotten subscriptions.',
-        cta: 'Audit My Spending',
+        cta: 'Try Rocket Money Free',
       },
       {
         headline: '3+ subscriptions you forgot about are billing you right now.',
-        cta: 'Find My Savings',
+        cta: 'Get Rocket Money',
       },
     ],
     mobileBanner: [
       {
         headline: 'Find $200+ in Forgotten Subs',
-        cta: 'Audit Now',
+        cta: 'Try Rocket Money',
       },
       {
         headline: 'Your Budget Has Leaks',
-        cta: 'Find Savings',
+        cta: 'Get Rocket Money',
       },
       {
         headline: 'Stop Overpaying Monthly',
-        cta: 'Get Started',
+        cta: 'Try Rocket Money Free',
       },
     ],
     largeRectangle: [
@@ -105,47 +105,47 @@ export const affiliateAdCopy: Record<string, AdCopySet> = {
         headline: 'Your Savings Earn 0.01% APY?',
         body: 'SoFi members earn up to 4.00% APY',
         bodyLine2: 'with no account fees.',
-        cta: 'Claim Your $325 Bonus',
+        cta: 'Open SoFi Account',
       },
       {
         headline: 'Make Your Cash Work Harder',
         body: 'Direct deposit unlocks up to $325',
         bodyLine2: 'in bonus cash + premium APY.',
-        cta: 'Open Free Account',
+        cta: 'Try SoFi Free',
       },
       {
         headline: 'High-Yield + $325 Bonus',
         body: 'Your emergency fund deserves',
         bodyLine2: 'better than 0.01% APY.',
-        cta: 'Upgrade Your Savings',
+        cta: 'Get SoFi',
       },
     ],
     leaderboard: [
       {
         headline: 'Your calculation assumes growth. SoFi delivers 4.00% APY + $325 bonus.',
-        cta: 'Claim Bonus',
+        cta: 'Open SoFi Account',
       },
       {
         headline: 'Earning 0.01% APY? SoFi members earn up to 4.00% with no fees.',
-        cta: 'Upgrade Your Rate',
+        cta: 'Try SoFi Free',
       },
       {
         headline: '$325 cash bonus when you set up direct deposit. No minimum balance.',
-        cta: 'Open Free Account',
+        cta: 'Get SoFi — $325 Bonus',
       },
     ],
     mobileBanner: [
       {
         headline: 'Get $325 + 4.00% APY',
-        cta: 'Claim Bonus',
+        cta: 'Open SoFi Account',
       },
       {
         headline: 'Stop Earning 0.01%',
-        cta: 'Upgrade Now',
+        cta: 'Try SoFi Free',
       },
       {
         headline: '$325 Cash Bonus',
-        cta: 'Get Started',
+        cta: 'Get SoFi',
       },
     ],
     largeRectangle: [
@@ -176,13 +176,13 @@ export const affiliateAdCopy: Record<string, AdCopySet> = {
         headline: 'Get $5 Free to Start',
         body: 'Send $5 to anyone and you both',
         bodyLine2: 'get $5. Use code: XWZVQ7P',
-        cta: 'Claim Your $5',
+        cta: 'Get Cash App',
       },
       {
         headline: 'Your First Investment: $5 Free',
         body: 'Cash App gives you $5 when you',
         bodyLine2: 'send your first $5.',
-        cta: 'Get Started Free',
+        cta: 'Download Cash App',
       },
       {
         headline: 'Start With $5 on Us',
@@ -193,30 +193,30 @@ export const affiliateAdCopy: Record<string, AdCopySet> = {
     ],
     leaderboard: [
       {
-        headline: 'Get $5 free when you send your first $5. Code: XWZVQ7P',
-        cta: 'Claim $5',
+        headline: 'Get $5 free when you send your first $5 on Cash App. Code: XWZVQ7P',
+        cta: 'Download Cash App',
       },
       {
-        headline: 'Your next calculation: free money. Get $5 to start.',
-        cta: 'Get $5 Free',
+        headline: 'Cash App gives you $5 free to start. Your next calculation: free money.',
+        cta: 'Get Cash App Free',
       },
       {
-        headline: 'Small start, big returns. $5 free with code XWZVQ7P',
-        cta: 'Download Free',
+        headline: 'Small start, big returns. $5 free on Cash App with code XWZVQ7P',
+        cta: 'Try Cash App',
       },
     ],
     mobileBanner: [
       {
-        headline: '$5 Free With Code XWZVQ7P',
-        cta: 'Claim Now',
+        headline: 'Cash App: $5 Free (XWZVQ7P)',
+        cta: 'Get Cash App',
       },
       {
         headline: 'Send $5, Get $5 Free',
-        cta: 'Download',
+        cta: 'Download Cash App',
       },
       {
-        headline: 'Get $5 to Start',
-        cta: 'Claim Free',
+        headline: 'Cash App: $5 to Start',
+        cta: 'Try Cash App',
       },
     ],
     largeRectangle: [
@@ -264,30 +264,30 @@ export const affiliateAdCopy: Record<string, AdCopySet> = {
     ],
     leaderboard: [
       {
-        headline: 'Your purchases already qualify for cash back. Average member earns $143/year.',
-        cta: 'Start Earning',
+        headline: 'Rakuten: Your purchases already qualify for cash back. Average member earns $143/year.',
+        cta: 'Join Rakuten Free',
       },
       {
-        headline: '3,500+ stores give you 3-15% cash back. You just have to activate it.',
-        cta: 'Calculate My Rewards',
+        headline: 'Rakuten gives you 3-15% cash back at 3,500+ stores. Just activate it.',
+        cta: 'Get Rakuten',
       },
       {
-        headline: 'Amazon, Target, Nike—all offer cash back. Are you collecting it?',
-        cta: 'Activate Cash Back',
+        headline: 'Amazon, Target, Nike—all offer cash back through Rakuten. Are you collecting it?',
+        cta: 'Try Rakuten Free',
       },
     ],
     mobileBanner: [
       {
-        headline: 'Earn Cash on Purchases',
-        cta: 'Activate Now',
+        headline: 'Rakuten: Cash on Purchases',
+        cta: 'Join Rakuten',
       },
       {
-        headline: '3-15% Back at 3,500+ Stores',
-        cta: 'Start Earning',
+        headline: 'Rakuten: 3-15% Back',
+        cta: 'Get Rakuten Free',
       },
       {
-        headline: '$143/yr Average Earnings',
-        cta: 'Get Cash Back',
+        headline: 'Rakuten: $143/yr Average',
+        cta: 'Try Rakuten',
       },
     ],
     largeRectangle: [
@@ -336,29 +336,29 @@ export const affiliateAdCopy: Record<string, AdCopySet> = {
     leaderboard: [
       {
         headline: 'Your grocery bill just got smaller. Ibotta gives cash back at 500,000+ locations.',
-        cta: 'Download Free',
+        cta: 'Download Ibotta Free',
       },
       {
-        headline: 'Scan your receipt. Get cash. Users save $150+/year on groceries.',
-        cta: 'Start Saving',
-      },
-      {
-        headline: 'Why pay full price? Cash back on things you already buy.',
+        headline: 'Ibotta: Scan your receipt. Get cash. Users save $150+/year on groceries.',
         cta: 'Get Ibotta',
+      },
+      {
+        headline: 'Why pay full price? Ibotta gives cash back on things you already buy.',
+        cta: 'Try Ibotta Free',
       },
     ],
     mobileBanner: [
       {
-        headline: 'Save $150+/yr on Groceries',
-        cta: 'Download Free',
+        headline: 'Ibotta: Save $150+/yr',
+        cta: 'Download Ibotta',
       },
       {
-        headline: 'Cash Back at 500K+ Stores',
-        cta: 'Start Saving',
+        headline: 'Ibotta: 500K+ Stores',
+        cta: 'Get Ibotta Free',
       },
       {
-        headline: 'Stop Paying Full Price',
-        cta: 'Get Ibotta',
+        headline: 'Ibotta: Cash Back',
+        cta: 'Try Ibotta',
       },
     ],
     largeRectangle: [
@@ -407,15 +407,15 @@ export const affiliateAdCopy: Record<string, AdCopySet> = {
     leaderboard: [
       {
         headline: 'You protect your money. NordVPN protects access to it. 14M+ users trust us.',
-        cta: 'Secure Your Data',
+        cta: 'Get NordVPN',
       },
       {
-        headline: 'Every bank login on public WiFi is a risk. Encrypt your connection.',
-        cta: 'Protect My Accounts',
+        headline: 'Every bank login on public WiFi is a risk. NordVPN encrypts your connection.',
+        cta: 'Try NordVPN',
       },
       {
         headline: 'Building wealth? Protect access to your accounts with NordVPN.',
-        cta: 'Get Protected',
+        cta: 'Get NordVPN Now',
       },
     ],
     mobileBanner: [
@@ -424,12 +424,12 @@ export const affiliateAdCopy: Record<string, AdCopySet> = {
         cta: 'Get NordVPN',
       },
       {
-        headline: 'Encrypt Your Finances',
-        cta: 'Secure Now',
+        headline: 'NordVPN: Encrypt Finances',
+        cta: 'Try NordVPN',
       },
       {
         headline: '14M+ Users Trust NordVPN',
-        cta: 'Get Protected',
+        cta: 'Get NordVPN',
       },
     ],
     largeRectangle: [
@@ -478,25 +478,25 @@ export const affiliateAdCopy: Record<string, AdCopySet> = {
     leaderboard: [
       {
         headline: 'You already walk. WeWard pays you for it. Average user earns $75/year.',
-        cta: 'Get Paid to Walk',
+        cta: 'Download WeWard',
       },
       {
         headline: 'Your daily steps are worth money. Convert them to rewards with WeWard.',
-        cta: 'Start Earning',
+        cta: 'Get WeWard Free',
       },
       {
-        headline: '5,000 steps/day = free money. No extra effort required.',
-        cta: 'Download Free',
+        headline: 'WeWard: 5,000 steps/day = free money. No extra effort required.',
+        cta: 'Try WeWard',
       },
     ],
     mobileBanner: [
       {
-        headline: 'Earn $75/yr Walking',
-        cta: 'Download Free',
+        headline: 'WeWard: Earn $75/yr Walking',
+        cta: 'Download WeWard',
       },
       {
-        headline: 'Your Steps = Money',
-        cta: 'Start Earning',
+        headline: 'WeWard: Steps = Money',
+        cta: 'Get WeWard Free',
       },
       {
         headline: 'Get Paid to Walk',
@@ -528,50 +528,50 @@ export const affiliateAdCopy: Record<string, AdCopySet> = {
   'chase-freedom': {
     mediumRectangle: [
       {
-        headline: '$200 Bonus + Unlimited Cash',
+        headline: 'Chase Freedom: $200 Bonus',
         body: '$0 annual fee. 5% on rotating',
         bodyLine2: 'categories. 1% on everything else.',
-        cta: 'Apply Now',
+        cta: 'Apply for Chase Freedom',
       },
       {
-        headline: 'The Math-Friendly Card',
+        headline: 'Chase Freedom: The Math Card',
         body: '$200 bonus. No annual fee.',
         bodyLine2: 'Unlimited 1.5% cash back.',
-        cta: 'Claim $200 Bonus',
+        cta: 'Get Chase Freedom',
       },
       {
-        headline: 'Zero Cost. Real Rewards.',
+        headline: 'Chase Freedom: $0 Fee',
         body: '$0 annual fee means your rewards',
         bodyLine2: 'are pure profit.',
-        cta: 'Start Earning Cash',
+        cta: 'Apply for Chase Freedom',
       },
     ],
     leaderboard: [
       {
-        headline: '$200 bonus + unlimited cash back. $0 annual fee. Pure profit.',
-        cta: 'Apply Now',
+        headline: 'Chase Freedom: $200 bonus + unlimited cash back. $0 annual fee. Pure profit.',
+        cta: 'Apply for Chase Freedom',
       },
       {
-        headline: 'No annual fee means every dollar of cash back is yours. Get $200 to start.',
-        cta: 'Claim Bonus',
+        headline: 'Chase Freedom: No annual fee means every dollar of cash back is yours.',
+        cta: 'Get Chase Freedom',
       },
       {
-        headline: '5% rotating categories + 1% everything = optimized rewards. $0 fee.',
-        cta: 'Start Earning',
+        headline: 'Chase Freedom: 5% rotating categories + 1% everything. $0 fee.',
+        cta: 'Apply for Chase Freedom',
       },
     ],
     mobileBanner: [
       {
-        headline: '$200 Bonus. $0 Fee.',
-        cta: 'Apply Now',
+        headline: 'Chase Freedom: $200 Bonus',
+        cta: 'Apply for Chase',
       },
       {
-        headline: 'Unlimited Cash Back',
-        cta: 'Claim $200',
+        headline: 'Chase Freedom: $0 Fee',
+        cta: 'Get Chase Freedom',
       },
       {
-        headline: '5% + 1% Cash Back',
-        cta: 'Get Started',
+        headline: 'Chase Freedom: 5% + 1%',
+        cta: 'Apply Now at Chase',
       },
     ],
     largeRectangle: [
@@ -599,50 +599,50 @@ export const affiliateAdCopy: Record<string, AdCopySet> = {
   'capital-one-venture-x': {
     mediumRectangle: [
       {
-        headline: '2X Miles on Everything',
+        headline: 'Venture X: 2X Miles on Everything',
         body: 'Every dollar = 2 miles. Plus $300',
         bodyLine2: 'annual travel credit covers the fee.',
-        cta: 'Start Your Journey',
+        cta: 'Apply for Venture X',
       },
       {
-        headline: 'Your Goals Need a Destination',
+        headline: 'Capital One Venture X',
         body: 'Earn unlimited 2X miles. Use them',
         bodyLine2: 'to reward yourself for hitting targets.',
-        cta: 'Apply Now',
+        cta: 'Get Venture X',
       },
       {
-        headline: 'Premium Rewards. Net-Zero Fee.',
+        headline: 'Venture X: Net-Zero Fee',
         body: '$300 travel credit + 10K anniversary',
         bodyLine2: 'miles offset the $395 annual fee.',
-        cta: 'Calculate Your Rewards',
+        cta: 'Apply for Venture X',
       },
     ],
     leaderboard: [
       {
-        headline: 'Unlimited 2X miles on every purchase. $300 credit offsets the fee.',
-        cta: 'Apply Now',
+        headline: 'Capital One Venture X: Unlimited 2X miles on every purchase. $300 credit offsets the fee.',
+        cta: 'Apply for Venture X',
       },
       {
-        headline: 'Your financial goals deserve a reward. Earn 2X miles on everything.',
-        cta: 'Start Earning Miles',
+        headline: 'Capital One Venture X: Your financial goals deserve a reward. Earn 2X miles.',
+        cta: 'Get Venture X',
       },
       {
-        headline: '$300 travel credit + 10K annual miles = net-positive premium card.',
-        cta: 'Calculate Your Rewards',
+        headline: 'Capital One Venture X: $300 travel credit + 10K annual miles = net-positive premium card.',
+        cta: 'Apply for Venture X',
       },
     ],
     mobileBanner: [
       {
-        headline: '2X Miles + $300 Credit',
-        cta: 'Apply Now',
+        headline: 'Venture X: 2X Miles',
+        cta: 'Apply for Venture X',
       },
       {
-        headline: 'Unlimited Travel Rewards',
-        cta: 'Get Started',
+        headline: 'Venture X: $300 Credit',
+        cta: 'Get Venture X',
       },
       {
-        headline: 'Earn on Every Purchase',
-        cta: 'Learn More',
+        headline: 'Venture X: Travel Rewards',
+        cta: 'Apply for Venture X',
       },
     ],
     largeRectangle: [
@@ -670,50 +670,50 @@ export const affiliateAdCopy: Record<string, AdCopySet> = {
   'discover-card': {
     mediumRectangle: [
       {
-        headline: 'Get $100 for Your First Purchase',
+        headline: 'Discover: $100 First Purchase',
         body: 'We both get $100 when you apply.',
         bodyLine2: 'No annual fee. Ever.',
-        cta: 'Claim My Bonus',
+        cta: 'Apply for Discover',
       },
       {
-        headline: '$100 Bonus. $0 Fee. Simple.',
+        headline: 'Discover: $100 Bonus. $0 Fee.',
         body: '5% cash back on rotating categories.',
         bodyLine2: '1% on everything else.',
-        cta: 'Apply Now',
+        cta: 'Get Discover Card',
       },
       {
-        headline: 'No Annual Fee. Period.',
+        headline: 'Discover: No Annual Fee. Ever.',
         body: '$100 bonus + matched cash back',
         bodyLine2: 'your first year doubles your rewards.',
-        cta: 'Get $100 Free',
+        cta: 'Apply for Discover',
       },
     ],
     leaderboard: [
       {
-        headline: '$100 bonus on your first purchase. $0 annual fee. We both win.',
-        cta: 'Claim $100',
+        headline: 'Discover Card: $100 bonus on your first purchase. $0 annual fee. We both win.',
+        cta: 'Apply for Discover',
       },
       {
-        headline: 'First year cash back match doubles your rewards. Plus $100 bonus.',
-        cta: 'Apply Now',
+        headline: 'Discover Card: First year cash back match doubles your rewards. Plus $100 bonus.',
+        cta: 'Get Discover Card',
       },
       {
-        headline: '5% rotating + 1% everything + $100 bonus + $0 fee = smart math.',
-        cta: 'Get Started',
+        headline: 'Discover Card: 5% rotating + 1% everything + $100 bonus + $0 fee.',
+        cta: 'Apply for Discover',
       },
     ],
     mobileBanner: [
       {
-        headline: 'Get $100 on 1st Purchase',
-        cta: 'Claim Bonus',
+        headline: 'Discover: $100 Bonus',
+        cta: 'Apply for Discover',
       },
       {
-        headline: '$0 Fee. $100 Bonus.',
-        cta: 'Apply Now',
+        headline: 'Discover: $0 Fee',
+        cta: 'Get Discover Card',
       },
       {
-        headline: 'Double Cash Back Year 1',
-        cta: 'Get Started',
+        headline: 'Discover: 2X Cash Back',
+        cta: 'Apply for Discover',
       },
     ],
     largeRectangle: [
@@ -741,50 +741,50 @@ export const affiliateAdCopy: Record<string, AdCopySet> = {
   'amazon-prime-card': {
     mediumRectangle: [
       {
-        headline: '$150 Amazon Gift Card Instantly',
+        headline: 'Amazon Prime Card: $150 Instant',
         body: 'Approved? $150 hits your account',
         bodyLine2: 'immediately. No waiting.',
-        cta: 'Claim Your $150',
+        cta: 'Get Amazon Prime Card',
       },
       {
-        headline: '5% Back on Amazon. Always.',
+        headline: 'Amazon Prime Card: 5% Back',
         body: 'Prime members earn 5% on every',
         bodyLine2: 'Amazon purchase. No limits.',
-        cta: 'Get $150 Instantly',
+        cta: 'Apply for Prime Card',
       },
       {
-        headline: 'Instant $150 + 5% Back',
+        headline: 'Amazon Prime Card: $150 + 5%',
         body: 'If you shop Amazon, this card',
         bodyLine2: 'pays for itself immediately.',
-        cta: 'Apply Now',
+        cta: 'Get Amazon Prime Card',
       },
     ],
     leaderboard: [
       {
-        headline: '$150 Amazon gift card instantly upon approval. 5% back on all Amazon purchases.',
-        cta: 'Claim $150',
+        headline: 'Amazon Prime Card: $150 gift card instantly upon approval. 5% back on all Amazon purchases.',
+        cta: 'Get Amazon Prime Card',
       },
       {
-        headline: 'If you spend on Amazon, you should be earning 5% back. Plus $150 instant.',
-        cta: 'Apply Now',
+        headline: 'Amazon Prime Card: If you spend on Amazon, you should be earning 5% back. Plus $150.',
+        cta: 'Apply for Prime Card',
       },
       {
-        headline: 'No waiting. $150 gift card the moment you are approved. 5% back ongoing.',
-        cta: 'Get $150 Instantly',
+        headline: 'Amazon Prime Card: $150 gift card the moment you are approved. 5% back ongoing.',
+        cta: 'Get Amazon Prime Card',
       },
     ],
     mobileBanner: [
       {
-        headline: '$150 Instantly on Approval',
-        cta: 'Claim Now',
+        headline: 'Prime Card: $150 Instant',
+        cta: 'Get Prime Card',
       },
       {
-        headline: '5% Back on Amazon',
-        cta: 'Apply Now',
+        headline: 'Prime Card: 5% on Amazon',
+        cta: 'Apply for Prime Card',
       },
       {
-        headline: 'Instant $150 Gift Card',
-        cta: 'Get Started',
+        headline: 'Prime Card: $150 + 5%',
+        cta: 'Get Prime Card',
       },
     ],
     largeRectangle: [
