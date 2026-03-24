@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 import SCorpOptimizer from '@/components/apps/SCorpOptimizer';
 import { createBrowserClient } from '@/lib/supabase/client';
-import { StickySidebarAd } from '@/components/monetization';
+import { InlineAd } from '@/components/monetization';
 import { trackToolVisit } from '@/lib/useRecentTools';
 import { Breadcrumb } from '@/components/ui';
 
@@ -47,16 +47,11 @@ function SCorpOptimizerPageInner() {
           </p>
         </div>
 
-        {/* Main content with sidebar layout */}
-        <div className="flex gap-8">
-          {/* Calculator - Main content area */}
-          <div className="flex-1 min-w-0">
-            <SCorpOptimizer isLoggedIn={isLoggedIn} initialValues={initialValues} />
-          </div>
+        {/* Inline Ad - Full width above calculator */}
+        <InlineAd context="s-corp-optimizer" className="mb-8" />
 
-          {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}
-          <StickySidebarAd context="s-corp-optimizer" />
-        </div>
+        {/* Calculator - Full width */}
+        <SCorpOptimizer isLoggedIn={isLoggedIn} initialValues={initialValues} />
       </div>
 
       {/* FOOTER */}

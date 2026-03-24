@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
-import { StickySidebarAd } from '@/components/monetization';
+import { InlineAd } from '@/components/monetization';
 import SaveScenarioButton from '@/components/apps/SaveScenarioButton';
 import { trackToolVisit } from '@/lib/useRecentTools';
 import { Breadcrumb } from '@/components/ui';
@@ -412,6 +412,9 @@ const App = () => {
           </div>
         )}
 
+        {/* Inline Ad - Full width above calculator */}
+        <InlineAd context="budget" className="mb-8" />
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
         {/* Sidebar / Controls */}
@@ -544,9 +547,6 @@ const App = () => {
               </div>
             </div>
           </section>
-
-          {/* Sticky Sidebar Ad */}
-          <StickySidebarAd context="budget" />
 
           {/* Pro Feature: Auto-Optimize */}
           <div className={`relative overflow-hidden p-6 rounded-2xl shadow-xl ${hasProFeatures ? 'bg-indigo-900 shadow-indigo-100' : 'bg-slate-200'} text-white`}>

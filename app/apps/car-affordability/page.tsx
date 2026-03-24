@@ -4,7 +4,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import CarAffordability from '@/components/apps/CarAffordability';
 import { createBrowserClient } from '@/lib/supabase/client';
-import { StickySidebarAd } from '@/components/monetization';
+import { InlineAd } from '@/components/monetization';
 import { trackToolVisit } from '@/lib/useRecentTools';
 import { Breadcrumb } from '@/components/ui';
 
@@ -48,16 +48,11 @@ function CarAffordabilityPageInner() {
           </p>
         </div>
 
-        {/* Main content with sidebar layout */}
-        <div className="flex gap-8">
-          {/* Calculator - Main content area */}
-          <div className="flex-1 min-w-0">
-            <CarAffordability isLoggedIn={isLoggedIn} initialValues={initialValues} />
-          </div>
+        {/* Inline Ad - Full width above calculator */}
+        <InlineAd context="car-affordability" className="mb-8" />
 
-          {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}
-          <StickySidebarAd context="car-affordability" />
-        </div>
+        {/* Calculator - Full width */}
+        <CarAffordability isLoggedIn={isLoggedIn} initialValues={initialValues} />
       </div>
 
       {/* FOOTER */}

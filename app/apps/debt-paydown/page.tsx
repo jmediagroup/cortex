@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import DebtPaydownOptimizer from '@/components/apps/DebtPaydownOptimizer';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
-import { StickySidebarAd } from '@/components/monetization';
+import { InlineAd } from '@/components/monetization';
 import { trackToolVisit } from '@/lib/useRecentTools';
 import { Breadcrumb } from '@/components/ui';
 
@@ -83,16 +83,11 @@ function DebtPaydownPageInner() {
           </p>
         </div>
 
-        {/* Main content with sidebar layout */}
-        <div className="flex gap-8">
-          {/* Calculator - Main content area */}
-          <div className="flex-1 min-w-0">
-            <DebtPaydownOptimizer isPro={isPro} onUpgrade={() => router.push('/pricing')} isLoggedIn={isLoggedIn} initialValues={initialValues} />
-          </div>
+        {/* Inline Ad - Full width above calculator */}
+        <InlineAd context="debt-paydown" className="mb-8" />
 
-          {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}
-          <StickySidebarAd context="debt-paydown" />
-        </div>
+        {/* Calculator - Full width */}
+        <DebtPaydownOptimizer isPro={isPro} onUpgrade={() => router.push('/pricing')} isLoggedIn={isLoggedIn} initialValues={initialValues} />
       </div>
 
       {/* FOOTER */}

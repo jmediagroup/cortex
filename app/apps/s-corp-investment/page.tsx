@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import SCorpInvestmentOptimizer from '@/components/apps/SCorpInvestmentOptimizer';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
-import { StickySidebarAd } from '@/components/monetization';
+import { InlineAd } from '@/components/monetization';
 import { trackToolVisit } from '@/lib/useRecentTools';
 import { Breadcrumb } from '@/components/ui';
 
@@ -81,21 +81,16 @@ function SCorpInvestmentPageInner() {
           </p>
         </div>
 
-        {/* Main content with sidebar layout */}
-        <div className="flex gap-8">
-          {/* Calculator - Main content area */}
-          <div className="flex-1 min-w-0">
-            <SCorpInvestmentOptimizer
-              isPro={isPro}
-              onUpgrade={() => router.push('/pricing')}
-              isLoggedIn={isLoggedIn}
-              initialValues={initialValues}
-            />
-          </div>
+        {/* Inline Ad - Full width above calculator */}
+        <InlineAd context="s-corp-investment" className="mb-8" />
 
-          {/* Sticky Sidebar Ad - Desktop only (renders nothing for paying users) */}
-          <StickySidebarAd context="s-corp-investment" />
-        </div>
+        {/* Calculator - Full width */}
+        <SCorpInvestmentOptimizer
+          isPro={isPro}
+          onUpgrade={() => router.push('/pricing')}
+          isLoggedIn={isLoggedIn}
+          initialValues={initialValues}
+        />
       </div>
 
       {/* FOOTER */}

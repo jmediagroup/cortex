@@ -7,6 +7,7 @@ export { default as AdContainer } from './AdContainer';
 // IAB-Compliant Ad Components
 export { default as IABAd } from './IABAd';
 export { default as StickySidebarAd } from './StickySidebarAd';
+export { default as InlineAd } from './InlineAd';
 export { default as BelowResultsAd } from './BelowResultsAd';
 export { default as MobileBannerAd } from './MobileBannerAd';
 
