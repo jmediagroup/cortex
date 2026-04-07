@@ -9,7 +9,7 @@ export default function Breadcrumb({ toolName }: BreadcrumbProps) {
   return (
     <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm mb-6">
       <Link
-        href="/dashboard"
+        href="/"
         className="flex items-center gap-1.5 text-slate-400 hover:text-slate-600 transition-colors"
       >
         <Home size={14} />

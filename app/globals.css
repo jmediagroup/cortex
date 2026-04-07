@@ -227,10 +227,12 @@ body {
 
 .animate-card-in {
   animation: cardFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform, opacity;
 }
 
 .animate-chart-in {
   animation: chartDraw 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: opacity, stroke-dashoffset;
 }
 
 /* Staggered animation delays for grid children */
@@ -243,6 +245,7 @@ body {
 
 /* Shimmer for skeleton loading */
 .animate-shimmer {
+  will-change: background-position;
   background: linear-gradient(
     90deg,
     var(--surface-tertiary) 25%,
@@ -331,9 +334,11 @@ body {
 
 .animate-float {
   animation: float 6s ease-in-out infinite;
+  will-change: transform;
 }
 
 .animate-float-delayed {
   animation: float 6s ease-in-out infinite;
+  will-change: transform;
   animation-delay: -3s;
 }

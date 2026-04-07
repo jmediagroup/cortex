@@ -56,6 +56,33 @@ export function SkeletonTransaction({ className = '' }: SkeletonProps) {
   );
 }
 
+export function CalculatorSkeleton() {
+  return (
+    <div className="mx-auto w-full max-w-7xl px-4 py-6 md:px-6 lg:px-8">
+      <Skeleton className="h-4 w-40 mb-6" />
+      <div className="flex flex-col gap-6 lg:flex-row">
+        <main className="min-w-0 flex-1">
+          <div className="flex flex-col gap-5">
+            <Skeleton className="h-8 w-64 mb-2" />
+            <div className="rounded-[var(--radius-xl)] border border-[var(--border-primary)] bg-[var(--surface-primary)] p-6" style={{ boxShadow: 'var(--shadow-card)' }}>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div><Skeleton className="h-4 w-24 mb-2" /><Skeleton className="h-10 w-full rounded-[var(--radius-md)]" /></div>
+                <div><Skeleton className="h-4 w-24 mb-2" /><Skeleton className="h-10 w-full rounded-[var(--radius-md)]" /></div>
+                <div><Skeleton className="h-4 w-24 mb-2" /><Skeleton className="h-10 w-full rounded-[var(--radius-md)]" /></div>
+                <div><Skeleton className="h-4 w-24 mb-2" /><Skeleton className="h-10 w-full rounded-[var(--radius-md)]" /></div>
+              </div>
+            </div>
+            <SkeletonChart />
+          </div>
+        </main>
+        <aside className="w-full shrink-0 lg:w-80">
+          <SkeletonCard />
+        </aside>
+      </div>
+    </div>
+  );
+}
+
 export function SkeletonDashboard() {
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-6 md:px-6 lg:px-8">

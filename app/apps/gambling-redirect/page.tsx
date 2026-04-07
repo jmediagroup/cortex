@@ -1,13 +1,17 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Sparkles, Lock } from 'lucide-react';
-import GamblingRedirect from '@/components/apps/GamblingRedirect';
+const GamblingRedirect = dynamic(() => import('@/components/apps/GamblingRedirect'), { ssr: false });
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { trackToolVisit } from '@/lib/useRecentTools';
-import { Breadcrumb } from '@/components/ui';
+import { Breadcrumb, CalculatorSkeleton } from '@/components/ui';
+import CalculatorSEOContent from '@/components/seo/CalculatorSEOContent';
+import RelatedTools from '@/components/seo/RelatedTools';
+import { CALCULATOR_CONTENT, getRelatedTools } from '@/lib/calculator-content';
 
 function GamblingRedirectPageInner() {
   const router = useRouter();
@@ -116,6 +120,12 @@ function GamblingRedirectPageInner() {
         <GamblingRedirect isPro={isPro} onUpgrade={() => router.push('/pricing')} isLoggedIn={hasSession === true} initialValues={initialValues} />
       </div>
 
+      {/* SEO & AEO Content */}
+      <div className="max-w-7xl mx-auto px-6">
+        <CalculatorSEOContent content={CALCULATOR_CONTENT['gambling-redirect']} />
+        <RelatedTools tools={getRelatedTools('gambling-redirect')} />
+      </div>
+
       {/* FOOTER */}
       <footer className="max-w-7xl mx-auto px-6 py-10 text-center border-t border-slate-100 mt-8">
         <p className="text-xs text-slate-400 font-medium mb-2">Information for educational purposes only. Past market performance does not guarantee future results.</p>
@@ -134,7 +144,7 @@ function GamblingRedirectPageInner() {
 
 export default function GamblingRedirectPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<CalculatorSkeleton />}>
       <GamblingRedirectPageInner />
     </Suspense>
   );

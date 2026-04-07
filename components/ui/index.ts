@@ -16,4 +16,5 @@ export {
   SkeletonChart,
   SkeletonTransaction,
   SkeletonDashboard,
+  CalculatorSkeleton,
 } from './Skeleton';

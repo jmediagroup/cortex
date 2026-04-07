@@ -1,14 +1,18 @@
 'use client';
 
 import React, { useEffect, useState, Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Compass } from 'lucide-react';
-import NetWorthEngine from '@/components/apps/NetWorthEngine';
+const NetWorthEngine = dynamic(() => import('@/components/apps/NetWorthEngine'), { ssr: false });
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { StickySidebarAd } from '@/components/monetization';
 import { trackToolVisit } from '@/lib/useRecentTools';
-import { Breadcrumb } from '@/components/ui';
+import { Breadcrumb, CalculatorSkeleton } from '@/components/ui';
+import CalculatorSEOContent from '@/components/seo/CalculatorSEOContent';
+import RelatedTools from '@/components/seo/RelatedTools';
+import { CALCULATOR_CONTENT, getRelatedTools } from '@/lib/calculator-content';
 
 function NetWorthPageInner() {
   const router = useRouter();
@@ -111,6 +115,12 @@ function NetWorthPageInner() {
         </div>
       </div>
 
+      {/* SEO & AEO Content */}
+      <div className="max-w-7xl mx-auto px-6">
+        <CalculatorSEOContent content={CALCULATOR_CONTENT['net-worth']} />
+        <RelatedTools tools={getRelatedTools('net-worth')} />
+      </div>
+
       <footer className="max-w-7xl mx-auto px-6 py-10 text-center border-t border-slate-100 mt-8">
         <div className="max-w-2xl mx-auto">
           <p className="text-sm text-slate-400 font-medium mb-3 italic">
@@ -134,7 +144,7 @@ function NetWorthPageInner() {
 
 export default function NetWorthPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<CalculatorSkeleton />}>
       <NetWorthPageInner />
     </Suspense>
   );

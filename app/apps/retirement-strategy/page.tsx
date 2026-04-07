@@ -1,14 +1,18 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Sparkles, Lock } from 'lucide-react';
-import RetirementStrategyEngine from '@/components/apps/RetirementStrategyEngine';
+const RetirementStrategyEngine = dynamic(() => import('@/components/apps/RetirementStrategyEngine'), { ssr: false });
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { StickySidebarAd } from '@/components/monetization';
 import { trackToolVisit } from '@/lib/useRecentTools';
-import { Breadcrumb } from '@/components/ui';
+import { Breadcrumb, CalculatorSkeleton } from '@/components/ui';
+import CalculatorSEOContent from '@/components/seo/CalculatorSEOContent';
+import RelatedTools from '@/components/seo/RelatedTools';
+import { CALCULATOR_CONTENT, getRelatedTools } from '@/lib/calculator-content';
 
 function RetirementStrategyPageInner() {
   const router = useRouter();
@@ -145,6 +149,12 @@ function RetirementStrategyPageInner() {
         </div>
       </div>
 
+      {/* SEO & AEO Content */}
+      <div className="max-w-7xl mx-auto px-6">
+        <CalculatorSEOContent content={CALCULATOR_CONTENT['retirement-strategy']} />
+        <RelatedTools tools={getRelatedTools('retirement-strategy')} />
+      </div>
+
       {/* FOOTER */}
       <footer className="max-w-7xl mx-auto px-6 py-10 text-center border-t border-slate-100 mt-8">
         <p className="text-xs text-slate-400 font-medium">&copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.</p>
@@ -162,7 +172,7 @@ function RetirementStrategyPageInner() {
 
 export default function RetirementStrategyPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<CalculatorSkeleton />}>
       <RetirementStrategyPageInner />
     </Suspense>
   );

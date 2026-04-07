@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { generateCalculatorJsonLd } from '@/lib/calculator-content';
 
 export const metadata: Metadata = {
   title: 'Car Affordability Calculator - 20/3/8 Rule Auto Loan Tool',
@@ -27,10 +28,22 @@ export const metadata: Metadata = {
   },
 };
 
+const jsonLd = generateCalculatorJsonLd('car-affordability');
+
 export default function CarAffordabilityLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+      {children}
+    </>
+  );
 }

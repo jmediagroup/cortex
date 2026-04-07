@@ -1,13 +1,17 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-import SCorpOptimizer from '@/components/apps/SCorpOptimizer';
+const SCorpOptimizer = dynamic(() => import('@/components/apps/SCorpOptimizer'), { ssr: false });
 import { createBrowserClient } from '@/lib/supabase/client';
 import { StickySidebarAd } from '@/components/monetization';
 import { trackToolVisit } from '@/lib/useRecentTools';
-import { Breadcrumb } from '@/components/ui';
+import { Breadcrumb, CalculatorSkeleton } from '@/components/ui';
+import CalculatorSEOContent from '@/components/seo/CalculatorSEOContent';
+import RelatedTools from '@/components/seo/RelatedTools';
+import { CALCULATOR_CONTENT, getRelatedTools } from '@/lib/calculator-content';
 
 function SCorpOptimizerPageInner() {
   const router = useRouter();
@@ -59,6 +63,12 @@ function SCorpOptimizerPageInner() {
         </div>
       </div>
 
+      {/* SEO & AEO Content */}
+      <div className="max-w-7xl mx-auto px-6">
+        <CalculatorSEOContent content={CALCULATOR_CONTENT['s-corp-optimizer']} />
+        <RelatedTools tools={getRelatedTools('s-corp-optimizer')} />
+      </div>
+
       {/* FOOTER */}
       <footer className="max-w-7xl mx-auto px-6 py-10 text-center border-t border-slate-100 mt-8">
         <p className="text-xs text-slate-400 font-medium">&copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.</p>
@@ -76,7 +86,7 @@ function SCorpOptimizerPageInner() {
 
 export default function SCorpOptimizerPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<CalculatorSkeleton />}>
       <SCorpOptimizerPageInner />
     </Suspense>
   );

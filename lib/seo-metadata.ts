@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 
-const BASE_URL = 'https://cortex.io'; // Update with your actual domain
+const BASE_URL = 'https://cortex.vip';
 
 interface SEOConfig {
   title: string;
@@ -64,8 +64,7 @@ export function generateMetadata(config: SEOConfig): Metadata {
       canonical: canonical || BASE_URL,
     },
     verification: {
-      google: 'your-google-verification-code',
-      // Add other verification codes as needed
+      google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION || '',
     },
   };
 }
