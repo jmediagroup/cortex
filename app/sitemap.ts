@@ -28,92 +28,103 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
+  // Use a stable date for static routes to avoid misleading crawlers with
+  // new timestamps on every build. Update this date when content actually changes.
+  const lastUpdated = new Date('2026-04-07');
+
   const staticRoutes: MetadataRoute.Sitemap = [
     // Core pages
     {
       url: baseUrl,
-      lastModified: new Date(),
+      lastModified: lastUpdated,
       changeFrequency: 'weekly',
       priority: 1.0,
     },
     {
       url: `${baseUrl}/pricing`,
-      lastModified: new Date(),
+      lastModified: lastUpdated,
       changeFrequency: 'monthly',
       priority: 0.9,
     },
     // Public Financial Calculators - highest priority for SEO
     {
       url: `${baseUrl}/apps/compound-interest`,
-      lastModified: new Date(),
+      lastModified: lastUpdated,
       changeFrequency: 'weekly',
       priority: 1.0,
     },
     {
       url: `${baseUrl}/apps/budget`,
-      lastModified: new Date(),
+      lastModified: lastUpdated,
       changeFrequency: 'weekly',
       priority: 1.0,
     },
     {
       url: `${baseUrl}/apps/retirement-strategy`,
-      lastModified: new Date(),
+      lastModified: lastUpdated,
       changeFrequency: 'weekly',
       priority: 1.0,
     },
     {
       url: `${baseUrl}/apps/index-fund-visualizer`,
-      lastModified: new Date(),
+      lastModified: lastUpdated,
       changeFrequency: 'weekly',
       priority: 1.0,
     },
     {
       url: `${baseUrl}/apps/gambling-redirect`,
-      lastModified: new Date(),
+      lastModified: lastUpdated,
       changeFrequency: 'weekly',
       priority: 1.0,
     },
     // Additional Financial Calculators
     {
       url: `${baseUrl}/apps/net-worth`,
-      lastModified: new Date(),
+      lastModified: lastUpdated,
       changeFrequency: 'weekly',
       priority: 0.9,
     },
     {
       url: `${baseUrl}/apps/car-affordability`,
-      lastModified: new Date(),
+      lastModified: lastUpdated,
       changeFrequency: 'weekly',
       priority: 0.9,
     },
     {
       url: `${baseUrl}/apps/rent-vs-buy`,
-      lastModified: new Date(),
+      lastModified: lastUpdated,
       changeFrequency: 'weekly',
       priority: 0.9,
     },
     {
       url: `${baseUrl}/apps/debt-paydown`,
-      lastModified: new Date(),
+      lastModified: lastUpdated,
       changeFrequency: 'weekly',
       priority: 0.9,
     },
     {
       url: `${baseUrl}/apps/geographic-arbitrage`,
-      lastModified: new Date(),
+      lastModified: lastUpdated,
       changeFrequency: 'weekly',
       priority: 0.9,
     },
     // Business Calculators
     {
       url: `${baseUrl}/apps/s-corp-optimizer`,
-      lastModified: new Date(),
+      lastModified: lastUpdated,
       changeFrequency: 'weekly',
       priority: 0.8,
     },
     {
       url: `${baseUrl}/apps/s-corp-investment`,
-      lastModified: new Date(),
+      lastModified: lastUpdated,
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    // Coast FIRE
+    {
+      url: `${baseUrl}/apps/coast-fire`,
+      lastModified: lastUpdated,
       changeFrequency: 'weekly',
       priority: 0.8,
     },

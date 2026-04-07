@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { generateCalculatorJsonLd } from '@/lib/calculator-content';
 
 export const metadata: Metadata = {
   title: 'Geographic Arbitrage Calculator - Cost of Living Comparison',
@@ -27,10 +28,22 @@ export const metadata: Metadata = {
   },
 };
 
+const jsonLd = generateCalculatorJsonLd('geographic-arbitrage');
+
 export default function GeographicArbitrageLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+      {children}
+    </>
+  );
 }

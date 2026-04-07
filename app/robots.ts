@@ -21,7 +21,7 @@ export default function robots(): MetadataRoute.Robots {
           '/apps/s-corp-optimizer',
           '/apps/s-corp-investment',
         ],
-        disallow: ['/api/', '/account', '/dashboard'],
+        disallow: ['/api/', '/account', '/dashboard', '/login', '/signup', '/reset-password'],
       },
     ],
     sitemap: 'https://cortex.vip/sitemap.xml',

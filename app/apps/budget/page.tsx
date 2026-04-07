@@ -18,7 +18,10 @@ import { hasProAccess, type Tier } from '@/lib/access-control';
 import { InlineAd } from '@/components/monetization';
 import SaveScenarioButton from '@/components/apps/SaveScenarioButton';
 import { trackToolVisit } from '@/lib/useRecentTools';
-import { Breadcrumb } from '@/components/ui';
+import { Breadcrumb, CalculatorSkeleton } from '@/components/ui';
+import CalculatorSEOContent from '@/components/seo/CalculatorSEOContent';
+import RelatedTools from '@/components/seo/RelatedTools';
+import { CALCULATOR_CONTENT, getRelatedTools } from '@/lib/calculator-content';
 
 // --- Constants & Defaults ---
 const CATEGORIES = {
@@ -816,6 +819,12 @@ const App = () => {
           </div>
         </div>
       )}
+      </div>
+
+      {/* SEO & AEO Content */}
+      <div className="max-w-7xl mx-auto px-6">
+        <CalculatorSEOContent content={CALCULATOR_CONTENT['budget']} />
+        <RelatedTools tools={getRelatedTools('budget')} />
       </div>
 
       <footer className="max-w-7xl mx-auto px-6 py-10 text-center border-t border-slate-100 mt-8">

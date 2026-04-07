@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { generateCalculatorJsonLd } from '@/lib/calculator-content';
 
 export const metadata: Metadata = {
   title: 'Debt Payoff Calculator - Avalanche vs Snowball Method',
@@ -27,10 +28,22 @@ export const metadata: Metadata = {
   },
 };
 
+const jsonLd = generateCalculatorJsonLd('debt-paydown');
+
 export default function DebtPaydownLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+      {children}
+    </>
+  );
 }

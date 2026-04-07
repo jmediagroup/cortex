@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { generateCalculatorJsonLd } from '@/lib/calculator-content';
 
 export const metadata: Metadata = {
   title: 'S-Corp Tax Calculator - Self-Employment Tax Savings Tool',
@@ -27,10 +28,22 @@ export const metadata: Metadata = {
   },
 };
 
+const jsonLd = generateCalculatorJsonLd('s-corp-optimizer');
+
 export default function SCorpOptimizerLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+      {children}
+    </>
+  );
 }

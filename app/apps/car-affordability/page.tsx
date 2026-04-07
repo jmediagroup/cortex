@@ -1,12 +1,16 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
-import CarAffordability from '@/components/apps/CarAffordability';
+const CarAffordability = dynamic(() => import('@/components/apps/CarAffordability'), { ssr: false });
 import { createBrowserClient } from '@/lib/supabase/client';
 import { InlineAd } from '@/components/monetization';
 import { trackToolVisit } from '@/lib/useRecentTools';
-import { Breadcrumb } from '@/components/ui';
+import { Breadcrumb, CalculatorSkeleton } from '@/components/ui';
+import CalculatorSEOContent from '@/components/seo/CalculatorSEOContent';
+import RelatedTools from '@/components/seo/RelatedTools';
+import { CALCULATOR_CONTENT, getRelatedTools } from '@/lib/calculator-content';
 
 function CarAffordabilityPageInner() {
   const router = useRouter();
@@ -55,6 +59,12 @@ function CarAffordabilityPageInner() {
         <CarAffordability isLoggedIn={isLoggedIn} initialValues={initialValues} />
       </div>
 
+      {/* SEO & AEO Content */}
+      <div className="max-w-7xl mx-auto px-6">
+        <CalculatorSEOContent content={CALCULATOR_CONTENT['car-affordability']} />
+        <RelatedTools tools={getRelatedTools('car-affordability')} />
+      </div>
+
       {/* FOOTER */}
       <footer className="max-w-7xl mx-auto px-6 py-10 text-center border-t border-slate-100 mt-8">
         <p className="text-xs text-slate-400 font-medium">&copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.</p>
@@ -72,7 +82,7 @@ function CarAffordabilityPageInner() {
 
 export default function CarAffordabilityPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<CalculatorSkeleton />}>
       <CarAffordabilityPageInner />
     </Suspense>
   );
