@@ -23,6 +23,7 @@ import {
 import SaveScenarioButton from './SaveScenarioButton';
 import Tooltip from '@/components/ui/Tooltip';
 import ProUpsellCard from '@/components/monetization/ProUpsellCard';
+import ProGatedPreview from '@/components/monetization/ProGatedPreview';
 
 interface LocationData {
   taxRate: number;
@@ -170,7 +171,23 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
 
   // PRO FEATURE: Multi-City Wealth Accelerator
   const multiCityAnalysis = useMemo(() => {
-    if (!isPro) return null;
+    if (!isPro) {
+      // Sample data for blurred preview
+      return {
+        destinations: [
+          { location: 'austin', delta: 18500, netSavings: 42000 },
+          { location: 'denver', delta: 15200, netSavings: 38700 },
+          { location: 'raleigh', delta: 22000, netSavings: 45500 },
+          { location: 'nashville', delta: 16800, netSavings: 40300 },
+          { location: 'phoenix', delta: 20100, netSavings: 43600 },
+        ],
+        yearlyTaxWindfall: 8500,
+        mobilityPremium: 125000,
+        lifestyleScore: 72,
+        compoundedArbitrageWealth: 485000,
+        _isPreview: true
+      };
+    }
 
     const incomeNum = typeof annualIncome === 'string' ? parseFloat(annualIncome) || 0 : annualIncome;
 
@@ -610,6 +627,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
           )}
 
           {multiCityAnalysis && (
+            <ProGatedPreview isLocked={!isPro} toolId="geographic-arbitrage">
             <div className="space-y-8">
               <div className="bg-gradient-to-br from-purple-50 to-indigo-50 border-2 border-indigo-100 rounded-3xl p-8 shadow-lg">
                 <div className="flex items-center gap-3 mb-6">
@@ -772,6 +790,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                 </div>
               </div>
             </div>
+            </ProGatedPreview>
           )}
         </div>
       </div>

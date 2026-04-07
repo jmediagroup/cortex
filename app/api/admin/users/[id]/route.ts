@@ -71,7 +71,7 @@ export async function PATCH(
       }
     }
 
-    if (updates.tier && !['free', 'finance_pro', 'elite'].includes(updates.tier)) {
+    if (updates.tier && !['free', 'finance_pro'].includes(updates.tier)) {
       return errorResponse('Invalid tier value', 400);
     }
 

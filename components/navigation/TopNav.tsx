@@ -75,11 +75,9 @@ export default function TopNav({
   };
 
   const tierBadgeColor =
-    userTier === 'elite'
-      ? 'bg-purple-600 text-white'
-      : userTier === 'finance_pro'
-        ? 'bg-[var(--color-accent)] text-white'
-        : 'bg-[var(--surface-tertiary)] text-[var(--text-secondary)]';
+    userTier === 'finance_pro'
+      ? 'bg-[var(--color-accent)] text-white'
+      : 'bg-[var(--surface-tertiary)] text-[var(--text-secondary)]';
 
   return (
     <nav className="hidden md:flex items-center justify-between border-b border-[var(--border-primary)] bg-[var(--surface-primary)] px-6 py-3 sticky top-0 z-50">

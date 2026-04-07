@@ -361,7 +361,7 @@ export default function AppLibrary({ userTier, appOrder }: AppLibraryProps) {
       </div>
 
       {/* Upgrade CTA */}
-      {userTier !== 'elite' && (
+      {userTier !== 'finance_pro' && (
         <div className="mt-6 overflow-hidden rounded-[var(--radius-2xl)] bg-[var(--primary-900)] p-8 text-white shadow-xl md:p-10">
           <div className="absolute right-0 top-0 p-8 opacity-5">
             <Brain size={200} fill="currentColor" />

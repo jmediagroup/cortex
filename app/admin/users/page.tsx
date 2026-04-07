@@ -8,7 +8,7 @@ import { getTierDisplayName } from '@/lib/access-control';
 interface User {
   id: string;
   email: string;
-  tier: 'free' | 'finance_pro' | 'elite';
+  tier: 'free' | 'finance_pro';
   first_name?: string | null;
   last_name?: string | null;
   stripe_customer_id?: string | null;
@@ -114,7 +114,6 @@ export default function AdminUsers() {
     const colors: Record<string, string> = {
       free: 'bg-[var(--surface-tertiary)] text-[var(--text-secondary)]',
       finance_pro: 'bg-indigo-100 text-indigo-700',
-      elite: 'bg-purple-100 text-purple-700',
     };
     return (
       <span className={`rounded-md px-2 py-0.5 text-[10px] font-black uppercase ${colors[tier] || colors.free}`}>
@@ -152,7 +151,6 @@ export default function AdminUsers() {
           <option value="">All tiers</option>
           <option value="free">Free</option>
           <option value="finance_pro">Finance Pro</option>
-          <option value="elite">Elite</option>
         </select>
       </div>
 
@@ -201,7 +199,6 @@ export default function AdminUsers() {
                           >
                             <option value="free">Free</option>
                             <option value="finance_pro">Finance Pro</option>
-                            <option value="elite">Elite</option>
                           </select>
                           <button
                             onClick={() => handleUpdateTier(user.id)}

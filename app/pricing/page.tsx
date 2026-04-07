@@ -30,7 +30,7 @@ const PRICING_PLANS = [
     annualPriceId: null,
   },
   {
-    name: 'Finance Pro',
+    name: 'Pro',
     price: '$9',
     annualPrice: '$90',
     period: 'per month',
@@ -44,38 +44,13 @@ const PRICING_PLANS = [
       'Ad-free experience',
       'Priority support',
     ],
-    cta: 'Get Finance Pro',
+    cta: 'Get Pro',
     tier: 'finance_pro' as const,
     sector: 'finance' as const,
     priceId: process.env.NEXT_PUBLIC_STRIPE_FINANCE_PRO_MONTHLY_PRICE_ID || 'price_PLACEHOLDER',
     annualPriceId: process.env.NEXT_PUBLIC_STRIPE_FINANCE_PRO_ANNUAL_PRICE_ID || 'price_PLACEHOLDER',
     highlighted: true,
     badge: 'Most Popular',
-  },
-  {
-    name: 'Elite',
-    price: '$29',
-    annualPrice: '$290',
-    period: 'per month',
-    annualSavings: 'Save $58/year',
-    description: 'For people who want a thinking system',
-    features: [
-      'Unlocks all current and future apps',
-      'Access across Finance, Health, Education',
-      'Life planning tools as they launch',
-      'Pro access to ALL future sectors',
-      'Ad-free experience',
-      'Premium priority support',
-      'Early access to new features',
-    ],
-    cta: 'Get Elite',
-    tier: 'elite' as const,
-    sector: null,
-    priceId: process.env.NEXT_PUBLIC_STRIPE_ELITE_MONTHLY_PRICE_ID || 'price_PLACEHOLDER',
-    annualPriceId: process.env.NEXT_PUBLIC_STRIPE_ELITE_ANNUAL_PRICE_ID || 'price_PLACEHOLDER',
-    highlighted: false,
-    badge: 'Best Value',
-    special: true,
   },
 ];
 
@@ -190,7 +165,7 @@ export default function PricingPage() {
             Simple, Honest Pricing
           </h1>
           <p className="text-xl text-slate-600 font-medium max-w-2xl mx-auto mb-8">
-            Choose the plan that matches where you are today. Start free, upgrade when precision matters, or unlock everything with Elite.
+            Choose the plan that matches where you are today. Start free, upgrade to Pro when precision matters.
           </p>
 
           {/* BILLING TOGGLE */}
@@ -215,14 +190,14 @@ export default function PricingPage() {
             >
               Annual
               <span className="ml-2 text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">
-                Save up to $58
+                Save $18/year
               </span>
             </button>
           </div>
         </div>
 
         {/* PRICING CARDS */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
           {PRICING_PLANS.map((plan) => {
             const isCurrentPlan = user && plan.tier === userTier;
             const selectedPriceId = billingPeriod === 'annual' && plan.annualPriceId
@@ -236,20 +211,14 @@ export default function PricingPage() {
               <div
                 key={plan.tier}
                 className={`relative bg-white rounded-3xl border-2 p-8 flex flex-col ${
-                  plan.special
-                    ? 'border-purple-300 shadow-2xl shadow-purple-100'
-                    : plan.highlighted
+                  plan.highlighted
                     ? 'border-indigo-300 shadow-xl shadow-indigo-100'
                     : 'border-slate-200'
                 }`}
               >
                 {/* BADGE */}
                 {plan.badge && (
-                  <div className={`absolute -top-4 left-1/2 transform -translate-x-1/2 px-4 py-1 rounded-full text-xs font-black uppercase tracking-wide ${
-                    plan.special
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-indigo-600 text-white'
-                  }`}>
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 px-4 py-1 rounded-full text-xs font-black uppercase tracking-wide bg-indigo-600 text-white">
                     {plan.badge}
                   </div>
                 )}
@@ -277,7 +246,7 @@ export default function PricingPage() {
                 <ul className="space-y-3 mb-8 flex-grow">
                   {plan.features.map((feature, idx) => (
                     <li key={idx} className="flex items-start gap-3">
-                      <Check className={`${plan.special ? 'text-purple-600' : 'text-indigo-600'} flex-shrink-0 mt-0.5`} size={20} />
+                      <Check className="text-indigo-600 flex-shrink-0 mt-0.5" size={20} />
                       <span className="text-sm text-slate-700 font-medium">{feature}</span>
                     </li>
                   ))}
@@ -290,8 +259,6 @@ export default function PricingPage() {
                   className={`w-full py-4 rounded-xl font-black text-lg transition-all flex items-center justify-center gap-2 ${
                     isCurrentPlan
                       ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                      : plan.special
-                      ? 'bg-purple-600 text-white hover:bg-purple-700 shadow-lg hover:shadow-xl'
                       : plan.highlighted
                       ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg hover:shadow-xl'
                       : 'bg-slate-900 text-white hover:bg-slate-800'
@@ -334,15 +301,6 @@ export default function PricingPage() {
           </button>
         </div>
 
-        {/* VALUE PROPOSITION */}
-        <div className="mt-16 text-center">
-          <p className="text-lg text-slate-600 font-medium mb-4">
-            Elite is for people who understand one thing:
-          </p>
-          <p className="text-3xl font-black text-slate-900">
-            Clarity compounds.
-          </p>
-        </div>
       </div>
 
       {/* FOOTER */}

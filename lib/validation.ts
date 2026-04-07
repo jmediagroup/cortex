@@ -43,7 +43,7 @@ export function isAllowedPriceId(priceId: string): boolean {
     process.env.NEXT_PUBLIC_STRIPE_FINANCE_PRO_MONTHLY_PRICE_ID,
     process.env.NEXT_PUBLIC_STRIPE_FINANCE_PRO_ANNUAL_PRICE_ID,
 
-    // Elite
+    // Legacy Elite (kept for existing subscribers)
     process.env.NEXT_PUBLIC_STRIPE_ELITE_MONTHLY_PRICE_ID,
     process.env.NEXT_PUBLIC_STRIPE_ELITE_ANNUAL_PRICE_ID,
 

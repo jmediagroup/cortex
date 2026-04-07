@@ -30,6 +30,7 @@ import {
 import SaveScenarioButton from './SaveScenarioButton';
 import Tooltip from '@/components/ui/Tooltip';
 import ProUpsellCard from '@/components/monetization/ProUpsellCard';
+import ProGatedPreview from '@/components/monetization/ProGatedPreview';
 
 interface IndexFundVisualizerProps {
   isPro?: boolean;
@@ -180,7 +181,14 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
 
   // PRO FEATURE: Fund Comparison Analysis
   const fundComparison = useMemo(() => {
-    if (!isPro) return null;
+    if (!isPro) {
+      // Sample data for blurred preview
+      return [
+        { key: 'VOO_SPY', name: 'S&P 500 (VOO/SPY)', cagr: 10.2, volatility: 15.5, finalBalance: 685000, totalContributions: 220000, gains: 465000 },
+        { key: 'VT', name: 'Total World (VT)', cagr: 8.5, volatility: 14.2, finalBalance: 520000, totalContributions: 220000, gains: 300000 },
+        { key: 'QQQM_VUG', name: 'Growth (QQQM/VUG)', cagr: 12.1, volatility: 19.8, finalBalance: 890000, totalContributions: 220000, gains: 670000 },
+      ];
+    }
 
     const comparisons = Object.entries(FUND_METADATA).map(([key, fund]) => {
       const annualReturn = fund.cagr / 100;
@@ -208,7 +216,17 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
 
   // PRO FEATURE: Risk-Adjusted Analysis
   const riskAnalysis = useMemo(() => {
-    if (!isPro) return null;
+    if (!isPro) {
+      // Sample data for blurred preview
+      return {
+        sharpeRatio: '0.65',
+        maxDrawdownEstimate: '38.8',
+        worstCase: 411000,
+        bestCase: 1027500,
+        median: 651750,
+        _isPreview: true
+      };
+    }
 
     const fund = FUND_METADATA[selectedFund];
     const sharpeRatio = (fund.cagr - 3) / fund.volatility; // Assuming 3% risk-free rate
@@ -557,7 +575,8 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
       )}
 
       {/* PRO FEATURES: Fund Comparison */}
-      {isPro && fundComparison && (
+      {fundComparison && (
+        <ProGatedPreview isLocked={!isPro} toolId="index-fund-visualizer">
         <div className="space-y-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="bg-amber-500 text-white p-3 rounded-2xl">
@@ -672,6 +691,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
             </p>
           </div>
         </div>
+        </ProGatedPreview>
       )}
       {!isPro && <ProUpsellCard toolId="index-fund-visualizer" isLoggedIn={isLoggedIn} />}
     </div>

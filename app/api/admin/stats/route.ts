@@ -28,7 +28,6 @@ export async function GET(request: NextRequest) {
         supabase.from('users').select('*', { count: 'exact', head: true }),
         supabase.from('users').select('*', { count: 'exact', head: true }).eq('tier', 'free'),
         supabase.from('users').select('*', { count: 'exact', head: true }).eq('tier', 'finance_pro'),
-        supabase.from('users').select('*', { count: 'exact', head: true }).eq('tier', 'elite'),
       ]) as Promise<{ count: number | null; error: any }[]>,
 
       // Signups in last 7 days
@@ -83,7 +82,6 @@ export async function GET(request: NextRequest) {
         total: tierCounts[0]?.count || 0,
         free: tierCounts[1]?.count || 0,
         finance_pro: tierCounts[2]?.count || 0,
-        elite: tierCounts[3]?.count || 0,
       },
       signups: {
         last7d: recentSignups?.count || 0,

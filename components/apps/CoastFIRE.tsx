@@ -12,6 +12,7 @@ import {
 import SaveScenarioButton from './SaveScenarioButton';
 import Tooltip from '@/components/ui/Tooltip';
 import ProUpsellCard from '@/components/monetization/ProUpsellCard';
+import ProGatedPreview from '@/components/monetization/ProGatedPreview';
 
 interface CoastFIREProps {
   isPro?: boolean;
@@ -122,7 +123,34 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
 
   // --- PRO FEATURE: Advanced Analytics ---
   const proAnalytics = useMemo(() => {
-    if (!isPro) return null;
+    if (!isPro) {
+      // Sample data for blurred preview
+      return {
+        coastDateAnalysis: [
+          { coastAge: 40, requiredMonthly: 800, freedomYears: 25, totalContributions: 96000, projectedBalance: 250000, requiredBalance: 200000, surplus: 50000, feasible: true },
+          { coastAge: 45, requiredMonthly: 500, freedomYears: 20, totalContributions: 90000, projectedBalance: 350000, requiredBalance: 280000, surplus: 70000, feasible: true },
+        ],
+        baristaScenarios: [
+          { name: 'Full Coast', partTimeIncome: 0, hoursPerWeek: 0, adjustedFIRENumber: 1250000, adjustedCoastNumber: 320000, canCoastNow: false, gapToBarista: 120000, yearsToBarista: 5, coastAge: 40 },
+          { name: 'Part-Time (20hr/wk)', partTimeIncome: 30000, hoursPerWeek: 20, adjustedFIRENumber: 500000, adjustedCoastNumber: 128000, canCoastNow: true, gapToBarista: 0, yearsToBarista: 0, coastAge: 35 },
+        ],
+        flexibilityMetrics: { pessimisticGrowth: 5, pessimisticCoastNumber: 380000, highInflationCoastNumber: 420000, reducedSpendingCoastNumber: 270000 },
+        flexibilityScore: 75,
+        flexibilityGrade: 'A',
+        scenarioResults: { baseCase: true, pessimisticMarket: true, highInflation: false, reducedSpending: true },
+        lifestyleScenarios: [
+          { name: 'Lean FIRE', spendingMultiplier: 0.7, description: 'Minimalist lifestyle', icon: 'leaf', annualSpending: 28000, fireNumber: 700000, coastNumber: 180000, reached: true, progress: 100 },
+          { name: 'Regular FIRE', spendingMultiplier: 1.0, description: 'Current lifestyle', icon: 'home', annualSpending: 40000, fireNumber: 1000000, coastNumber: 256000, reached: false, progress: 78 },
+        ],
+        ssIntegration: { monthlyBenefit: 2000, annualBenefit: 24000, yearsUntilSS: 30, reducedAnnualNeed: 16000, reducedFIRENumber: 400000, reducedCoastNumber: 102000, ssAdjustedCoastReached: true },
+        workOptionalTimeline: [
+          { age: 35, balance: 200000, coastTarget: 256000, isCoastReached: false, monthlyRequired: 500, status: 'Building Phase' },
+          { age: 40, balance: 350000, coastTarget: 320000, isCoastReached: true, monthlyRequired: 0, status: 'Work Optional' },
+        ],
+        opportunityCost: { yearsOfFreedom: 20, potentialEarningsIfWorking: 1600000, savedByCoasting: 240000, hoursSavedPerYear: 2080, totalHoursSaved: 41600 },
+        _isPreview: true
+      };
+    }
 
     const realGrowthRate = calculations.realGrowthRate;
     const nominalRate = inputs.investmentGrowth / 100;
@@ -780,7 +808,8 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
       )}
 
       {/* PRO FEATURES - Unlocked Content */}
-      {isPro && proAnalytics && (
+      {proAnalytics && (
+        <ProGatedPreview isLocked={!isPro} toolId="coast-fire">
         <div className="space-y-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="bg-amber-500 text-white p-3 rounded-2xl">
@@ -1212,6 +1241,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
             </div>
           </div>
         </div>
+        </ProGatedPreview>
       )}
       {!isPro && <ProUpsellCard toolId="coast-fire" isLoggedIn={isLoggedIn} />}
     </div>

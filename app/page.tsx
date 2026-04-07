@@ -446,43 +446,10 @@ export default function LandingPage() {
                 href="/pricing"
                 className="block w-full bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-6 py-3 rounded-xl font-bold text-sm text-center hover:from-indigo-700 hover:to-indigo-800 transition-all shadow-md"
               >
-                Get Finance Pro
+                Get Pro
               </a>
             </div>
 
-            {/* ELITE */}
-            <div className="bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 p-7 rounded-2xl shadow-xl text-white relative overflow-hidden flex flex-col">
-              <div className="absolute inset-0 opacity-10 grid-bg" />
-              <div className="relative flex flex-col flex-grow">
-                <div className="mb-6">
-                  <h3 className="text-xl font-black mb-1">Elite</h3>
-                  <p className="text-slate-300 font-medium text-sm mb-5">For people who want a thinking system.</p>
-                  <div>
-                    <span className="text-4xl font-black">$29</span>
-                    <span className="text-slate-300 font-medium text-sm">/month</span>
-                  </div>
-                </div>
-                <ul className="space-y-3 mb-8 flex-grow">
-                  {[
-                    "All current & future finance apps",
-                    "Advanced strategy modeling",
-                    "Priority access to new tools",
-                    "Early access to new features"
-                  ].map((feature, i) => (
-                    <li key={i} className="flex items-start gap-2.5 text-sm">
-                      <Check size={15} className="text-purple-300 mt-0.5 flex-shrink-0" strokeWidth={3} />
-                      <span className="text-slate-200 font-medium">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <a
-                  href="/pricing"
-                  className="block w-full bg-white text-slate-900 px-6 py-3 rounded-xl font-bold text-sm text-center hover:bg-slate-100 transition-all shadow-md"
-                >
-                  Get Elite
-                </a>
-              </div>
-            </div>
           </div>
 
           <div className="text-center mt-10">

@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import SaveScenarioButton from './SaveScenarioButton';
 import ProUpsellCard from '@/components/monetization/ProUpsellCard';
+import ProGatedPreview from '@/components/monetization/ProGatedPreview';
 
 /**
  * CORTEX: NET WORTH ENGINE
@@ -353,7 +354,26 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
 
   // PRO FEATURE: Momentum Intelligence
   const momentumIntelligence = useMemo(() => {
-    if (!isPro) return null;
+    if (!isPro) {
+      // Sample data for blurred preview
+      return {
+        assetGrowthContribution: 18500,
+        savingsContribution: 24000,
+        totalMomentum: 42500,
+        growthPercentage: 43.5,
+        savingsPercentage: 56.5,
+        acceleratedSavings: 2400,
+        accelerationGain: 4800,
+        debtPayments: 1850,
+        annualDebtDrag: 22200,
+        debtDragPercentage: 34.3,
+        tippingPointNetWorth: 342857,
+        yearsToTippingPoint: 6.2,
+        liquidityGap: 0.08,
+        liquidityRisk: 'Moderate',
+        _isPreview: true
+      };
+    }
 
     const submittedAssets = assets.filter(a => a.submitted);
     const submittedLiabilities = liabilities.filter(l => l.submitted);
@@ -1026,6 +1046,7 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
       )}
 
       {momentumIntelligence && (
+        <ProGatedPreview isLocked={!isPro} toolId="net-worth">
         <div className="space-y-8">
           <div className="bg-gradient-to-br from-indigo-50 to-purple-50 border-2 border-indigo-100 rounded-3xl p-8 shadow-lg">
             <div className="flex items-center gap-3 mb-6">
@@ -1187,6 +1208,7 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
             </div>
           </div>
         </div>
+        </ProGatedPreview>
       )}
       {!isPro && <ProUpsellCard toolId="net-worth" isLoggedIn={isLoggedIn} />}
     </div>

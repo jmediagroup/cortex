@@ -10,6 +10,7 @@ import {
 import SaveScenarioButton from './SaveScenarioButton';
 import Tooltip from '@/components/ui/Tooltip';
 import ProUpsellCard from '@/components/monetization/ProUpsellCard';
+import ProGatedPreview from '@/components/monetization/ProGatedPreview';
 
 interface CompoundInterestProps {
   isPro?: boolean;
@@ -54,7 +55,25 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
 
   // PRO FEATURE: Life Impact Analysis
   const lifeImpactAnalysis = useMemo(() => {
-    if (!isPro) return null;
+    if (!isPro) {
+      // Sample data for blurred preview
+      return {
+        delayCost: 185000,
+        delayPercentageLoss: 28.5,
+        requiredIncreasePct: 65,
+        optimizationGain: 142000,
+        annualIncome: 38000,
+        monthlyIncome: 3167,
+        criticalAges: [
+          { age: 35, year: 5, balance: 85000 },
+          { age: 40, year: 10, balance: 195000 },
+          { age: 45, year: 15, balance: 365000 },
+        ],
+        goalSplit: { retirement: 570000, house: 237500, other: 142500 },
+        requiredMonthly: 825,
+        _isPreview: true
+      };
+    }
 
     const rate = inputs.annualReturn / 100;
     const yearlyContribution = inputs.monthlyContribution * 12;
@@ -301,7 +320,8 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
       )}
 
       {/* PRO FEATURES: Life Impact Analyzer */}
-      {isPro && lifeImpactAnalysis && (
+      {lifeImpactAnalysis && (
+        <ProGatedPreview isLocked={!isPro} toolId="compound-interest">
         <div className="space-y-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="bg-amber-500 text-white p-3 rounded-2xl">
@@ -468,6 +488,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
             </div>
           </div>
         </div>
+        </ProGatedPreview>
       )}
       {!isPro && <ProUpsellCard toolId="compound-interest" isLoggedIn={isLoggedIn} />}
     </div>
