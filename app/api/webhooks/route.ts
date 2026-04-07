@@ -13,9 +13,9 @@ function getPriceIdToTierMap(): Record<string, Tier> {
     [process.env.NEXT_PUBLIC_STRIPE_FINANCE_PRO_MONTHLY_PRICE_ID!]: 'finance_pro',
     [process.env.NEXT_PUBLIC_STRIPE_FINANCE_PRO_ANNUAL_PRICE_ID!]: 'finance_pro',
 
-    // Elite (monthly and annual)
-    [process.env.NEXT_PUBLIC_STRIPE_ELITE_MONTHLY_PRICE_ID!]: 'elite',
-    [process.env.NEXT_PUBLIC_STRIPE_ELITE_ANNUAL_PRICE_ID!]: 'elite',
+    // Legacy Elite (maps to finance_pro for backward compatibility)
+    [process.env.NEXT_PUBLIC_STRIPE_ELITE_MONTHLY_PRICE_ID!]: 'finance_pro',
+    [process.env.NEXT_PUBLIC_STRIPE_ELITE_ANNUAL_PRICE_ID!]: 'finance_pro',
 
     // Legacy (maps to finance_pro for backward compatibility)
     [process.env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PRICE_ID!]: 'finance_pro',

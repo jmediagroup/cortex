@@ -4,6 +4,10 @@ export { default as ContextualAd } from './ContextualAd';
 export { default as RotatingAd } from './RotatingAd';
 export { default as AdContainer } from './AdContainer';
 
+// Pro Gating
+export { default as ProGatedPreview } from './ProGatedPreview';
+export { default as ProUpsellCard } from './ProUpsellCard';
+
 // IAB-Compliant Ad Components
 export { default as IABAd } from './IABAd';
 export { default as StickySidebarAd } from './StickySidebarAd';

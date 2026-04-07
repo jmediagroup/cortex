@@ -8,6 +8,7 @@ import {
   TrendingUp, TrendingDown, AlertTriangle, Info, Target, Calendar, ArrowUpRight, Lock, Zap, Clock, ArrowRight
 } from 'lucide-react';
 import ProUpsellCard from '@/components/monetization/ProUpsellCard';
+import ProGatedPreview from '@/components/monetization/ProGatedPreview';
 
 interface GamblingRedirectProps {
   isPro?: boolean;
@@ -54,7 +55,23 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
 
   // PRO FEATURE: Advanced Analysis
   const proAnalysis = useMemo(() => {
-    if (!isPro) return null;
+    if (!isPro) {
+      // Sample data for blurred preview
+      return {
+        totalWagered: 930000,
+        expectedLoss: 74400,
+        realCostEstimate: 315000,
+        annualIncome: 24000,
+        monthlyIncome: 2000,
+        milestones: [
+          { name: 'Emergency Fund (6 months)', cost: 18000, yearsToReach: 3 },
+          { name: 'Used Car (Cash)', cost: 15000, yearsToReach: 2 },
+          { name: 'House Down Payment', cost: 60000, yearsToReach: 8 },
+        ],
+        breakEvenYear: 4,
+        _isPreview: true
+      };
+    }
 
     const rate = inputs.marketReturn / 100;
     const yearlyContribution = inputs.monthlyBet * 12;
@@ -395,7 +412,8 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
       )}
 
       {/* PRO FEATURES: Recovery Roadmap Analyzer */}
-      {isPro && proAnalysis && (
+      {proAnalysis && (
+        <ProGatedPreview isLocked={!isPro} toolId="gambling-redirect">
         <div className="space-y-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="bg-amber-500 text-white p-3 rounded-2xl">
@@ -508,6 +526,7 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
             </div>
           </div>
         </div>
+        </ProGatedPreview>
       )}
 
       {/* Call to Action */}

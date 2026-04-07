@@ -40,7 +40,7 @@ export default function ProUpsellCard({ toolId, isLoggedIn }: ProUpsellCardProps
         </div>
         <h3 className="text-2xl font-black mb-2">Unlock Pro</h3>
         <p className="text-emerald-100 font-medium text-sm mb-6 max-w-lg">
-          Get deeper insights and advanced modeling tools to make smarter financial decisions.
+          Unlock the full analysis with advanced modeling tools to make smarter financial decisions.
         </p>
         <div className="space-y-3 mb-8">
           {benefits.map((benefit, i) => (

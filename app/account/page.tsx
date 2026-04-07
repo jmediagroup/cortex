@@ -367,7 +367,7 @@ export default function AccountPage() {
                 <p className="text-3xl font-black text-slate-900 uppercase">{getTierDisplayName(userTier)}</p>
               </div>
               <div className={`px-4 py-2 rounded-xl font-black text-sm bg-${getTierColor(userTier)}-600 text-white`}>
-                {userTier === 'elite' ? '$29/month' : userTier === 'finance_pro' ? '$9/month' : '$0/month'}
+                {userTier === 'finance_pro' ? '$9/month' : '$0/month'}
               </div>
             </div>
           </div>

@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 const SCorpOptimizer = dynamic(() => import('@/components/apps/SCorpOptimizer'), { ssr: false });
 import { createBrowserClient } from '@/lib/supabase/client';
+import { hasProAccess, type Tier } from '@/lib/access-control';
 import { InlineAd } from '@/components/monetization';
 import { trackToolVisit } from '@/lib/useRecentTools';
 import { Breadcrumb, CalculatorSkeleton } from '@/components/ui';
@@ -17,6 +18,7 @@ function SCorpOptimizerPageInner() {
   const router = useRouter();
   const supabase = createBrowserClient();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isPro, setIsPro] = useState(false);
   const searchParams = useSearchParams();
   const [initialValues, setInitialValues] = useState<Record<string, unknown> | undefined>();
 
@@ -24,6 +26,18 @@ function SCorpOptimizerPageInner() {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setIsLoggedIn(!!session);
+
+      if (session) {
+        const { data: userData } = await supabase
+          .from('users')
+          .select('tier')
+          .eq('id', session.user.id)
+          .single() as { data: { tier: Tier } | null };
+
+        if (userData?.tier) {
+          setIsPro(hasProAccess('finance', userData.tier));
+        }
+      }
     };
     checkAuth();
   }, [supabase]);
@@ -55,7 +69,7 @@ function SCorpOptimizerPageInner() {
         <InlineAd context="s-corp-optimizer" className="mb-8" />
 
         {/* Calculator - Full width */}
-        <SCorpOptimizer isLoggedIn={isLoggedIn} initialValues={initialValues} />
+        <SCorpOptimizer isPro={isPro} onUpgrade={() => router.push('/pricing')} isLoggedIn={isLoggedIn} initialValues={initialValues} />
       </div>
 
       {/* SEO & AEO Content */}

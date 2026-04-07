@@ -5,7 +5,7 @@ import { Users, TrendingUp, CreditCard, Activity, Loader2 } from 'lucide-react';
 import { createBrowserClient } from '@/lib/supabase/client';
 
 interface Stats {
-  users: { total: number; free: number; finance_pro: number; elite: number };
+  users: { total: number; free: number; finance_pro: number };
   signups: { last7d: number; last30d: number };
   events: { last7d: number };
   revenue: { mrr: number };
@@ -124,8 +124,7 @@ export default function AdminOverview() {
         <div className="space-y-3">
           {[
             { label: 'Free', count: stats?.users.free || 0, color: '#94a3b8' },
-            { label: 'Finance Pro', count: stats?.users.finance_pro || 0, color: 'var(--color-accent)' },
-            { label: 'Elite', count: stats?.users.elite || 0, color: '#9333ea' },
+            { label: 'Pro', count: stats?.users.finance_pro || 0, color: 'var(--color-accent)' },
           ].map((tier) => {
             const pct = stats?.users.total ? Math.round((tier.count / stats.users.total) * 100) : 0;
             return (
@@ -179,14 +178,14 @@ export default function AdminOverview() {
             <div className="flex items-center justify-between">
               <span className="text-sm text-[var(--text-secondary)]">Paid users</span>
               <span className="text-sm font-bold text-[var(--text-primary)]">
-                {(stats?.users.finance_pro || 0) + (stats?.users.elite || 0)}
+                {(stats?.users.finance_pro || 0)}
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-[var(--text-secondary)]">Conversion rate</span>
               <span className="text-sm font-bold text-[var(--text-primary)]">
                 {stats?.users.total
-                  ? (((stats.users.finance_pro + stats.users.elite) / stats.users.total) * 100).toFixed(1)
+                  ? ((stats.users.finance_pro / stats.users.total) * 100).toFixed(1)
                   : '0.0'}%
               </span>
             </div>

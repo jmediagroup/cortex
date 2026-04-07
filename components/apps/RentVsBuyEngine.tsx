@@ -10,6 +10,7 @@ import {
 import SaveScenarioButton from './SaveScenarioButton';
 import Tooltip from '@/components/ui/Tooltip';
 import ProUpsellCard from '@/components/monetization/ProUpsellCard';
+import ProGatedPreview from '@/components/monetization/ProGatedPreview';
 
 interface RentVsBuyEngineProps {
   isPro?: boolean;
@@ -133,7 +134,27 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
 
   // PRO FEATURE: Lifecycle Housing Strategy
   const lifecycleAnalysis = useMemo(() => {
-    if (!isPro) return null;
+    if (!isPro) {
+      // Sample data for blurred preview
+      return {
+        moves: {
+          transactionCosts: 72000,
+          singleHomeTransactionCost: 36000,
+          extraFriction: 36000
+        },
+        marketTimingRisk: 225000,
+        bestCase: 562500,
+        worstCase: 337500,
+        totalHiddenCosts: 185000,
+        monthlyHiddenDrag: 1028,
+        mobilityPremium: 50000,
+        mobilityAdjustedRentNW: 480000,
+        geoArbitrageGain: 108000,
+        hcolRent: 3750,
+        lcolHomePrice: 270000,
+        _isPreview: true
+      };
+    }
 
     // Scenario 1: 3-Move Lifecycle (Starter → Family Home → Downsize)
     const threeMoveSim = () => {
@@ -485,7 +506,8 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
       )}
 
       {/* PRO FEATURES: Lifecycle Housing Strategy */}
-      {isPro && lifecycleAnalysis && (
+      {lifecycleAnalysis && (
+        <ProGatedPreview isLocked={!isPro} toolId="rent-vs-buy">
         <div className="space-y-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="bg-purple-600 text-white p-3 rounded-2xl">
@@ -711,6 +733,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
             </div>
           </div>
         </div>
+        </ProGatedPreview>
       )}
 
       {/* Footer Note */}

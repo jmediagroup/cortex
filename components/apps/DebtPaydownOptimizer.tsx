@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import SaveScenarioButton from './SaveScenarioButton';
 import ProUpsellCard from '@/components/monetization/ProUpsellCard';
+import ProGatedPreview from '@/components/monetization/ProGatedPreview';
 
 interface Debt {
   id: number;
@@ -189,7 +190,25 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
 
   // PRO FEATURE: Opportunity Cost Rebalancer
   const opportunityAnalysis = useMemo(() => {
-    if (!isPro) return null;
+    if (!isPro) {
+      // Sample data for blurred preview
+      return {
+        investmentValue: 48000,
+        remainingDebtValue: 12000,
+        netInvestStrategy: 36000,
+        opportunityCostGap: 36000,
+        taxBenefit: 1250,
+        flexibilityScore: 42,
+        refinanceSavings: 8500,
+        highRateDebts: 2,
+        initialDTI: 65,
+        monthsToTargetDTI: 18,
+        recommendedStrategy: 'Pay aggressive on 2 high-rate debt(s), minimum on 1 low-rate',
+        lowRateDebts: 1,
+        highRateDebts2: 2,
+        _isPreview: true
+      };
+    }
 
     // 1. Investment vs Paydown Comparison
     // Scenario A: Pay minimum + invest difference
@@ -644,7 +663,8 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
       )}
 
       {/* PRO FEATURES: Opportunity Cost Rebalancer */}
-      {isPro && opportunityAnalysis && (
+      {opportunityAnalysis && (
+        <ProGatedPreview isLocked={!isPro} toolId="debt-paydown">
         <div className="space-y-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="bg-emerald-600 text-white p-3 rounded-2xl">
@@ -974,6 +994,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
             </div>
           </div>
         </div>
+        </ProGatedPreview>
       )}
       {!isPro && <ProUpsellCard toolId="debt-paydown" isLoggedIn={isLoggedIn} />}
     </div>
