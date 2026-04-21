@@ -5,10 +5,11 @@
 
 /* Fonts loaded via next/font in app/layout.tsx (no CDN @import). */
 
-:root {
-  /* ============================================================
-     TRUST & GROWTH PALETTE
-     ============================================================ */
+/* Matches :root and any nested [data-theme="dark"] subtree so the
+   dashboard and app surfaces can force-dark regardless of the
+   marketing theme selection. */
+:root,
+[data-theme="dark"] {
 
   /* ---------- CORE 5 TONES ---------- */
   --obsidian:      #0A0E14;   /* Midnight Obsidian — deep bg, primary text (inverted) */

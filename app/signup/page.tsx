@@ -1,9 +1,19 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
-import { Zap, Mail, Lock, ArrowRight, Loader2, ShieldCheck, Check } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
+import { ArrowRight, Check, Loader2, Lock, Mail } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { createBrowserClient } from '@/lib/supabase/client';
+import {
+  AuthShell,
+  AuthField,
+  authInputStyle,
+  authErrorStyle,
+  authSuccessStyle,
+  authPrimaryBtn,
+  authSecondaryBtn,
+} from '@/components/auth/AuthShell';
 
 function SignupForm() {
   const [email, setEmail] = useState('');
@@ -16,18 +26,15 @@ function SignupForm() {
   const [resendLoading, setResendLoading] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
   const router = useRouter();
-  const searchParams = useSearchParams();
   const supabase = createBrowserClient();
 
-  // Check if user is already logged in
   useEffect(() => {
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        router.push('/dashboard');
-      }
-    };
-    checkSession();
+    (async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (session) router.push('/dashboard');
+    })();
   }, [router, supabase]);
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -36,67 +43,49 @@ function SignupForm() {
     setError(null);
 
     try {
-      // Sign up new user
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`,
-        },
+        options: { emailRedirectTo: `${window.location.origin}/dashboard` },
       });
-
-      if (signUpError) {
-        throw signUpError;
-      }
-
+      if (signUpError) throw signUpError;
       if (data.user) {
-        // Create user record in users table via API route (uses service role to bypass RLS)
         try {
           await fetch('/api/create-user-record', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              userId: data.user.id,
-              email: data.user.email || '',
-            }),
+            body: JSON.stringify({ userId: data.user.id, email: data.user.email || '' }),
           });
         } catch (insertErr) {
-          // Log but don't block signup - the trigger may have already created the record
           console.error('Error creating user record:', insertErr);
         }
-
-        // Show confirmation screen
-        setError(null);
-        setLoading(false);
         setUserEmail(email);
         setSignupComplete(true);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const e = err as { message?: string };
       console.error('Signup error:', err);
-      setError(err.message || 'An error occurred. Please try again.');
+      setError(e.message || 'An error occurred. Please try again.');
+    } finally {
       setLoading(false);
     }
   };
 
   const handleResend = async () => {
     if (resendCooldown > 0 || resendLoading) return;
-
     setResendLoading(true);
     setResendSuccess(false);
     setError(null);
 
     try {
-      const { error } = await supabase.auth.resend({
+      const { error: resendError } = await supabase.auth.resend({
         type: 'signup',
         email: userEmail,
       });
-
-      if (error) throw error;
-
+      if (resendError) throw resendError;
       setResendSuccess(true);
       setResendCooldown(60);
 
-      // Start countdown
       const interval = setInterval(() => {
         setResendCooldown((prev) => {
           if (prev <= 1) {
@@ -106,9 +95,10 @@ function SignupForm() {
           return prev - 1;
         });
       }, 1000);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const e = err as { message?: string };
       console.error('Resend error:', err);
-      setError(err.message || 'Failed to resend verification email. Please try again.');
+      setError(e.message || 'Failed to resend verification email. Please try again.');
     } finally {
       setResendLoading(false);
     }
@@ -124,65 +114,93 @@ function SignupForm() {
     setResendCooldown(0);
   };
 
-  // Confirmation screen after successful signup
   if (signupComplete) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-900">
-        <div className="max-w-lg w-full bg-white rounded-[3rem] shadow-2xl border border-slate-200 overflow-hidden p-10 lg:p-12 text-center">
-          {/* Mail Icon */}
-          <div className="mx-auto h-20 w-20 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-3xl flex items-center justify-center mb-8 shadow-xl shadow-indigo-200">
-            <Mail size={40} className="text-white" />
+      <AuthShell>
+        <div style={{ textAlign: 'center' }}>
+          <div
+            style={{
+              margin: '0 auto 20px',
+              width: 56,
+              height: 56,
+              borderRadius: 'var(--radius-md)',
+              background: 'var(--emerald-tint)',
+              border: '1px solid var(--emerald-border)',
+              color: 'var(--emerald-500)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 0 24px var(--cta-glow-soft)',
+            }}
+          >
+            <Mail size={26} />
           </div>
-
-          {/* Heading */}
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-3">
-            Check Your Email
+          <div className="eyebrow" style={{ marginBottom: 10, color: 'var(--emerald-500)' }}>
+            CHECK YOUR EMAIL
+          </div>
+          <h1
+            style={{
+              fontSize: 22,
+              fontWeight: 700,
+              color: 'var(--text-primary)',
+              letterSpacing: '-0.02em',
+              margin: '0 0 12px',
+            }}
+          >
+            Verify your account.
           </h1>
-
-          {/* Email display */}
-          <p className="text-slate-500 font-medium mb-6">
-            We&apos;ve sent a verification link to
+          <p
+            style={{
+              fontSize: 14,
+              color: 'var(--text-secondary)',
+              lineHeight: 1.6,
+              margin: '0 0 16px',
+            }}
+          >
+            We sent a verification link to{' '}
+            <span
+              style={{
+                color: 'var(--emerald-500)',
+                fontWeight: 600,
+                fontFamily: 'var(--font-mono)',
+              }}
+            >
+              {userEmail}
+            </span>
+            .
           </p>
-          <p className="text-indigo-600 font-black text-lg mb-8 bg-indigo-50 py-3 px-6 rounded-2xl inline-block">
-            {userEmail}
+          <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '0 0 20px' }}>
+            The link expires in 24 hours.
           </p>
 
-          {/* Instructions */}
-          <p className="text-slate-600 font-medium mb-8 leading-relaxed">
-            Click the link in your email to verify your account.
-            <br />
-            <span className="text-slate-400 text-sm">The link will expire in 24 hours.</span>
-          </p>
-
-          {/* Success message */}
           {resendSuccess && (
-            <div className="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-700 px-6 py-4 rounded-2xl flex items-center justify-center gap-3 animate-in fade-in slide-in-from-top-1">
-              <Check size={20} />
-              <span className="font-bold">Verification email sent!</span>
+            <div style={{ ...authSuccessStyle, width: '100%', marginBottom: 16 }}>
+              <Check size={14} /> Verification email sent.
             </div>
           )}
-
-          {/* Error message */}
           {error && (
-            <div className="mb-6 bg-rose-50 text-rose-600 p-4 rounded-2xl text-sm font-bold border border-rose-100 animate-in fade-in slide-in-from-top-1">
+            <div style={{ ...authErrorStyle, marginBottom: 16 }}>
               {error}
             </div>
           )}
 
-          {/* Resend button */}
-          <div className="mb-6">
-            <p className="text-slate-400 text-sm font-medium mb-3">
+          <div style={{ marginBottom: 16 }}>
+            <p style={{ fontSize: 13, color: 'var(--text-tertiary)', margin: '0 0 6px' }}>
               Didn&apos;t receive the email?
             </p>
             <button
+              type="button"
               onClick={handleResend}
               disabled={resendCooldown > 0 || resendLoading}
-              className="text-indigo-600 font-bold hover:text-indigo-500 disabled:text-slate-400 transition-colors inline-flex items-center gap-2"
+              style={{
+                ...authSecondaryBtn,
+                opacity: resendCooldown > 0 || resendLoading ? 0.5 : 1,
+                cursor: resendCooldown > 0 || resendLoading ? 'not-allowed' : 'pointer',
+              }}
             >
               {resendLoading ? (
                 <>
-                  <Loader2 className="animate-spin" size={16} />
-                  Sending...
+                  <Loader2 size={12} className="animate-spin" /> Sending...
                 </>
               ) : resendCooldown > 0 ? (
                 `Resend in ${resendCooldown}s`
@@ -192,187 +210,149 @@ function SignupForm() {
             </button>
           </div>
 
-          {/* Start over link */}
-          <div className="pt-6 border-t border-slate-100">
+          <div style={{ paddingTop: 16, borderTop: '1px solid var(--border-subtle)' }}>
             <button
+              type="button"
               onClick={handleStartOver}
-              className="text-slate-500 font-medium hover:text-slate-700 transition-colors text-sm"
+              style={{
+                ...authSecondaryBtn,
+                color: 'var(--text-tertiary)',
+                fontSize: 12,
+              }}
             >
               Wrong email? Start over
             </button>
           </div>
-
-          {/* Security badge */}
-          <div className="mt-8 flex items-center justify-center gap-2 text-slate-400">
-            <ShieldCheck size={14} />
-            <span className="text-[10px] font-black uppercase tracking-widest">Bank-grade security</span>
-          </div>
         </div>
-      </div>
+      </AuthShell>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-900">
-      <div className="max-w-5xl w-full grid lg:grid-cols-2 gap-0 bg-white rounded-[3rem] shadow-2xl border border-slate-200 overflow-hidden">
-
-        {/* Left Side - Benefits */}
-        <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-10 lg:p-12 text-white flex flex-col justify-center">
-          <div className="h-14 w-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-8 shadow-lg">
-            <Zap fill="currentColor" size={28} />
+    <AuthShell>
+      <form onSubmit={handleSignup} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <div>
+          <div className="eyebrow" style={{ marginBottom: 10, color: 'var(--emerald-500)' }}>
+            ● GET STARTED
           </div>
-
-          <h1 className="text-4xl font-black mb-4 tracking-tight leading-tight">
-            Start Building Your Financial Future
+          <h1
+            style={{
+              fontSize: 24,
+              fontWeight: 700,
+              color: 'var(--text-primary)',
+              letterSpacing: '-0.02em',
+              margin: '0 0 8px',
+            }}
+          >
+            Create your Cortex account.
           </h1>
-          <p className="text-indigo-100 font-medium mb-8 leading-relaxed">
-            Join thousands using Cortex to make smarter money decisions with precision tools designed for long-term thinking.
+          <p style={{ fontSize: 14, color: 'var(--text-tertiary)', margin: 0 }}>
+            Free forever. No credit card required.
           </p>
-
-          <div className="space-y-4">
-            <div className="flex items-start gap-3">
-              <div className="bg-white/20 backdrop-blur-sm rounded-lg p-1.5 mt-0.5">
-                <Check size={16} strokeWidth={3} />
-              </div>
-              <div>
-                <h3 className="font-bold mb-1">10 Financial Calculators</h3>
-                <p className="text-indigo-100 text-sm">Access our complete suite of financial planning tools</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <div className="bg-white/20 backdrop-blur-sm rounded-lg p-1.5 mt-0.5">
-                <Check size={16} strokeWidth={3} />
-              </div>
-              <div>
-                <h3 className="font-bold mb-1">Smart Optimization</h3>
-                <p className="text-indigo-100 text-sm">AI-powered budget optimization and scenario modeling</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <div className="bg-white/20 backdrop-blur-sm rounded-lg p-1.5 mt-0.5">
-                <Check size={16} strokeWidth={3} />
-              </div>
-              <div>
-                <h3 className="font-bold mb-1">Free to Start</h3>
-                <p className="text-indigo-100 text-sm">No credit card required. Upgrade when you need more power.</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-10 pt-8 border-t border-white/20">
-            <p className="text-indigo-100 text-sm font-medium">
-              "The best financial planning tools I've ever used. Clear, powerful, and actually useful."
-            </p>
-            <p className="text-white font-bold mt-2 text-sm">— Cortex User</p>
-          </div>
         </div>
 
-        {/* Right Side - Signup Form */}
-        <div className="p-10 lg:p-12 flex flex-col justify-center">
-          <div className="mb-8">
-            <h2 className="text-3xl font-black text-slate-900 tracking-tight mb-2">
-              Create Your Account
-            </h2>
-            <p className="text-slate-500 font-medium text-sm">
-              Get instant access to all calculators
-            </p>
-          </div>
+        {error && <div style={authErrorStyle}>{error}</div>}
 
-          {/* Signup Form */}
-          <form className="space-y-5" onSubmit={handleSignup}>
-            {error && (
-              <div className="bg-rose-50 text-rose-600 p-4 rounded-2xl text-sm font-bold border border-rose-100 animate-in fade-in slide-in-from-top-1">
-                {error}
-              </div>
-            )}
+        <AuthField label="Email address" icon={<Mail size={16} />}>
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="name@example.com"
+            style={authInputStyle}
+            autoComplete="email"
+          />
+        </AuthField>
 
-            <div className="space-y-2">
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                Email Address
-              </label>
-              <div className="relative group">
-                <Mail className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 placeholder:text-slate-300"
-                  placeholder="name@example.com"
-                />
-              </div>
-            </div>
+        <AuthField
+          label="Password"
+          icon={<Lock size={16} />}
+          hint="Minimum 6 characters."
+        >
+          <input
+            type="password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
+            style={authInputStyle}
+            minLength={6}
+            autoComplete="new-password"
+          />
+        </AuthField>
 
-            <div className="space-y-2">
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                Password
-              </label>
-              <div className="relative group">
-                <Lock className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 placeholder:text-slate-300"
-                  placeholder="••••••••"
-                  minLength={6}
-                />
-              </div>
-              <p className="text-xs text-slate-400 ml-1 font-medium">Minimum 6 characters</p>
-            </div>
+        <button type="submit" disabled={loading} style={{ ...authPrimaryBtn, opacity: loading ? 0.7 : 1 }}>
+          {loading ? (
+            <>
+              <Loader2 size={16} className="animate-spin" /> Creating account...
+            </>
+          ) : (
+            <>
+              Create account <ArrowRight size={16} />
+            </>
+          )}
+        </button>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-5 rounded-2xl transition-all shadow-xl shadow-indigo-100 flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed group"
-            >
-              {loading ? <Loader2 className="animate-spin" size={20} /> : (
-                <>
-                  Create My Free Account
-                  <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-                </>
-              )}
-            </button>
+        <p
+          style={{
+            fontSize: 11,
+            color: 'var(--text-muted)',
+            textAlign: 'center',
+            margin: 0,
+          }}
+        >
+          By creating an account you agree to our{' '}
+          <Link
+            href="/terms"
+            style={{ color: 'var(--emerald-500)', textDecoration: 'underline' }}
+          >
+            terms
+          </Link>
+          .
+        </p>
 
-            <p className="text-xs text-slate-400 text-center font-medium">
-              By creating an account, you agree to our Terms of Service
-            </p>
-          </form>
-
-          {/* Sign In Link */}
-          <div className="text-center mt-6 pt-6 border-t border-slate-100">
-            <p className="text-sm text-slate-600 font-medium">
-              Already have an account?{' '}
-              <button
-                onClick={() => router.push('/login')}
-                className="text-indigo-600 font-bold hover:text-indigo-500 transition-colors"
-              >
-                Sign in
-              </button>
-            </p>
-          </div>
-
-          {/* Security Assurance */}
-          <div className="mt-6 flex items-center justify-center gap-2 text-slate-400">
-            <ShieldCheck size={14} />
-            <span className="text-[10px] font-black uppercase tracking-widest">Bank-grade security</span>
-          </div>
+        <div
+          style={{
+            textAlign: 'center',
+            fontSize: 13,
+            color: 'var(--text-tertiary)',
+            paddingTop: 8,
+            borderTop: '1px solid var(--border-subtle)',
+          }}
+        >
+          Already have an account?{' '}
+          <Link
+            href="/login"
+            style={{ color: 'var(--emerald-500)', fontWeight: 600, textDecoration: 'none' }}
+          >
+            Sign in
+          </Link>
         </div>
-      </div>
-    </div>
+      </form>
+    </AuthShell>
   );
 }
 
 export default function SignupPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <AuthShell>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 40,
+              color: 'var(--text-tertiary)',
+            }}
+          >
+            <Loader2 className="animate-spin" size={24} />
+          </div>
+        </AuthShell>
+      }
+    >
       <SignupForm />
     </Suspense>
   );

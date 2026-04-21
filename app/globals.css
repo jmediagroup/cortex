@@ -99,8 +99,12 @@
    the old var names. Point them at the new tokens so they
    render plausibly until each component is rebuilt.
    Remove entries from this block as components migrate.
+   Also applies to nested `[data-theme="dark"]` subtrees so the
+   dashboard/app force-dark shell uses the dark variants of
+   any legacy components.
    ============================================================ */
-:root {
+:root,
+[data-theme="dark"] {
   --background: var(--bg-canvas);
   --foreground: var(--text-primary);
 
@@ -341,6 +345,28 @@
 .theme-toggle:focus-visible .theme-toggle-track {
   outline: 2px solid var(--emerald-500);
   outline-offset: 2px;
+}
+
+/* ============================================================
+   App shell responsive — side nav / mobile tab bar swap.
+   ============================================================ */
+@media (max-width: 900px) {
+  .app-side-nav { display: none !important; }
+  .app-mobile-tab-bar { display: flex !important; }
+  .app-top-bar-logo { display: inline-flex !important; }
+}
+
+@media (max-width: 900px) {
+  .marketing-nav-center { display: none !important; }
+  .marketing-nav-signin { display: none !important; }
+  .marketing-nav-burger { display: inline-flex !important; }
+}
+@media (max-width: 900px) {
+  .marketing-hero-grid { grid-template-columns: 1fr !important; gap: 56px !important; }
+  .marketing-hero-preview { order: -1; }
+  .marketing-articles-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+  .marketing-enterprise-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+  .dashboard-chart-grid { grid-template-columns: 1fr !important; }
 }
 
 /* ============================================================

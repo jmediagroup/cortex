@@ -1,10 +1,19 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
-import { Zap, Mail, Lock, ArrowRight, Loader2, ShieldCheck, ArrowLeft, Check } from 'lucide-react';
+import { Suspense, useEffect, useState } from 'react';
+import { ArrowLeft, ArrowRight, Loader2, Lock, Mail } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { trackEvent } from '@/lib/analytics';
+import {
+  AuthShell,
+  AuthField,
+  authInputStyle,
+  authErrorStyle,
+  authPrimaryBtn,
+  authSecondaryBtn,
+} from '@/components/auth/AuthShell';
+import { MarketingIcon } from '@/components/marketing/Icons';
 
 function AuthForm() {
   const [isLogin, setIsLogin] = useState(true);
@@ -18,10 +27,11 @@ function AuthForm() {
   const searchParams = useSearchParams();
   const supabase = createBrowserClient();
 
-  // Check if user is already logged in
   useEffect(() => {
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (session) {
         const redirect = searchParams.get('redirect') || '/dashboard';
         router.push(redirect);
@@ -37,76 +47,52 @@ function AuthForm() {
 
     try {
       if (isLogin) {
-        // Sign in existing user
-        const { data, error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-        if (signInError) {
-          throw signInError;
-        }
-
+        const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+        if (signInError) throw signInError;
         if (data.session) {
-          // Track login event
           await trackEvent('user_login', {}, true);
-
-          // Redirect to original destination or dashboard
           const redirect = searchParams.get('redirect') || '/dashboard';
           router.push(redirect);
         }
       } else {
-        // Sign up new user
         const { data, error: signUpError } = await supabase.auth.signUp({
           email,
           password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/dashboard`,
-          },
+          options: { emailRedirectTo: `${window.location.origin}/dashboard` },
         });
-
-        if (signUpError) {
-          throw signUpError;
-        }
-
+        if (signUpError) throw signUpError;
         if (data.user) {
-          // Create user record in users table via API route (uses service role to bypass RLS)
           try {
             await fetch('/api/create-user-record', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                userId: data.user.id,
-                email: data.user.email || '',
-              }),
+              body: JSON.stringify({ userId: data.user.id, email: data.user.email || '' }),
             });
           } catch (insertErr) {
-            // Log but don't block signup - the trigger may have already created the record
             console.error('Error creating user record:', insertErr);
           }
-
-          // Track signup event
           await trackEvent('user_signup', { tier: 'free' }, true);
-
-          // Show success message
           setError(null);
           setLoading(false);
-          alert('Account created! Please check your email to confirm your account.');
+          alert('Account created. Check your email to confirm.');
           setIsLogin(true);
           setPassword('');
         }
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const e = err as { message?: string; code?: string };
       console.error('Auth error:', err);
-      setError(err.message || 'An error occurred. Please try again.');
+      setError(e.message || 'An error occurred. Please try again.');
       setLoading(false);
-
-      // Track error
-      await trackEvent('error_occurred', {
-        error_message: err.message,
-        error_code: err.code || 'unknown',
-        context: isLogin ? 'login' : 'signup',
-      }, true);
+      await trackEvent(
+        'error_occurred',
+        {
+          error_message: e.message ?? 'unknown',
+          error_code: e.code || 'unknown',
+          context: isLogin ? 'login' : 'signup',
+        },
+        true,
+      );
     }
   };
 
@@ -114,19 +100,17 @@ function AuthForm() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`,
       });
-
-      if (error) throw error;
-
+      if (resetError) throw resetError;
       setResetEmailSent(true);
       await trackEvent('password_reset_requested', {}, true);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const e = err as { message?: string };
       console.error('Password reset error:', err);
-      setError(err.message || 'Failed to send reset email. Please try again.');
+      setError(e.message || 'Failed to send reset email. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -139,249 +123,252 @@ function AuthForm() {
     setPassword('');
   };
 
-  // Password reset email sent confirmation
   if (resetEmailSent) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-900">
-        <div className="max-w-md w-full bg-white p-10 rounded-[3rem] shadow-2xl border border-slate-200 text-center">
-          {/* Mail Icon */}
-          <div className="mx-auto h-20 w-20 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-3xl flex items-center justify-center mb-8 shadow-xl shadow-indigo-200">
-            <Mail size={40} className="text-white" />
-          </div>
-
-          {/* Heading */}
-          <h2 className="text-3xl font-black text-slate-900 tracking-tight mb-3">
-            Check Your Email
-          </h2>
-
-          {/* Email display */}
-          <p className="text-slate-500 font-medium mb-6">
-            We&apos;ve sent a password reset link to
-          </p>
-          <p className="text-indigo-600 font-black text-lg mb-8 bg-indigo-50 py-3 px-6 rounded-2xl inline-block">
-            {email}
-          </p>
-
-          {/* Instructions */}
-          <p className="text-slate-600 font-medium mb-8 leading-relaxed">
-            Click the link in your email to reset your password.
-            <br />
-            <span className="text-slate-400 text-sm">The link will expire in 24 hours.</span>
-          </p>
-
-          {/* Back to login */}
-          <button
-            onClick={handleBackToLogin}
-            className="text-indigo-600 font-bold hover:text-indigo-500 transition-colors inline-flex items-center gap-2"
+      <AuthShell>
+        <div style={{ textAlign: 'center' }}>
+          <div
+            style={{
+              margin: '0 auto 20px',
+              width: 56,
+              height: 56,
+              borderRadius: 'var(--radius-md)',
+              background: 'var(--emerald-tint)',
+              border: '1px solid var(--emerald-border)',
+              color: 'var(--emerald-500)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 0 24px var(--cta-glow-soft)',
+            }}
           >
-            <ArrowLeft size={16} />
-            Back to sign in
-          </button>
-
-          {/* Security badge */}
-          <div className="mt-8 pt-8 border-t border-slate-100 flex items-center justify-center gap-2 text-slate-400">
-            <ShieldCheck size={14} />
-            <span className="text-[10px] font-black uppercase tracking-widest">Bank-grade security</span>
+            <Mail size={26} />
           </div>
+          <div className="eyebrow" style={{ marginBottom: 10, color: 'var(--emerald-500)' }}>
+            CHECK YOUR EMAIL
+          </div>
+          <h1
+            style={{
+              fontSize: 22,
+              fontWeight: 700,
+              color: 'var(--text-primary)',
+              letterSpacing: '-0.02em',
+              margin: '0 0 12px',
+            }}
+          >
+            We sent a reset link.
+          </h1>
+          <p
+            style={{
+              fontSize: 14,
+              color: 'var(--text-secondary)',
+              lineHeight: 1.6,
+              margin: '0 0 16px',
+            }}
+          >
+            We sent a password reset link to{' '}
+            <span
+              style={{
+                color: 'var(--emerald-500)',
+                fontWeight: 600,
+                fontFamily: 'var(--font-mono)',
+              }}
+            >
+              {email}
+            </span>
+            .
+          </p>
+          <p
+            style={{
+              fontSize: 12,
+              color: 'var(--text-muted)',
+              margin: '0 0 24px',
+            }}
+          >
+            The link expires in 24 hours.
+          </p>
+          <button type="button" onClick={handleBackToLogin} style={authSecondaryBtn}>
+            <ArrowLeft size={14} /> Back to sign in
+          </button>
         </div>
-      </div>
+      </AuthShell>
     );
   }
 
-  // Forgot password form
   if (isForgotPassword) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-900">
-        <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-[3rem] shadow-2xl border border-slate-200">
-          {/* Header */}
-          <div className="text-center">
-            <div className="mx-auto h-14 w-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg shadow-indigo-200">
-              <Lock size={28} />
+      <AuthShell>
+        <form onSubmit={handleForgotPassword} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <div>
+            <div className="eyebrow" style={{ marginBottom: 10, color: 'var(--text-tertiary)' }}>
+              RESET PASSWORD
             </div>
-            <h2 className="text-3xl font-black text-slate-900 tracking-tight leading-tight">
-              Reset Password
-            </h2>
-            <p className="text-slate-500 mt-2 font-medium text-sm">
-              Enter your email and we&apos;ll send you a reset link
+            <h1
+              style={{
+                fontSize: 24,
+                fontWeight: 700,
+                color: 'var(--text-primary)',
+                letterSpacing: '-0.02em',
+                margin: '0 0 8px',
+              }}
+            >
+              Forgot your password?
+            </h1>
+            <p style={{ fontSize: 14, color: 'var(--text-tertiary)', margin: 0 }}>
+              Enter your email and we&apos;ll send a reset link.
             </p>
           </div>
 
-          {/* Form */}
-          <form className="mt-8 space-y-6" onSubmit={handleForgotPassword}>
-            {error && (
-              <div className="bg-rose-50 text-rose-600 p-4 rounded-2xl text-sm font-bold border border-rose-100 animate-in fade-in slide-in-from-top-1">
-                {error}
-              </div>
+          {error && <div style={authErrorStyle}>{error}</div>}
+
+          <AuthField label="Email address" icon={<Mail size={16} />}>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="name@example.com"
+              style={authInputStyle}
+            />
+          </AuthField>
+
+          <button type="submit" disabled={loading} style={{ ...authPrimaryBtn, opacity: loading ? 0.7 : 1 }}>
+            {loading ? (
+              <>
+                <Loader2 size={16} className="animate-spin" /> Sending...
+              </>
+            ) : (
+              <>
+                Send reset link <MarketingIcon name="arrowRight" size={14} />
+              </>
             )}
+          </button>
 
-            <div className="space-y-2">
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                Email Address
-              </label>
-              <div className="relative group">
-                <Mail className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 placeholder:text-slate-300"
-                  placeholder="name@example.com"
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-5 rounded-2xl transition-all shadow-xl shadow-indigo-100 flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed group"
-            >
-              {loading ? <Loader2 className="animate-spin" size={20} /> : (
-                <>
-                  Send Reset Link
-                  <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-                </>
-              )}
-            </button>
-          </form>
-
-          {/* Back to login */}
-          <div className="text-center pt-2">
-            <button
-              onClick={handleBackToLogin}
-              className="text-xs font-bold text-indigo-600 hover:text-indigo-500 transition-colors px-6 py-3 rounded-2xl hover:bg-indigo-50 active:scale-95 inline-flex items-center gap-2"
-            >
-              <ArrowLeft size={14} />
-              Back to sign in
-            </button>
-          </div>
-
-          {/* Security badge */}
-          <div className="pt-8 border-t border-slate-100 flex items-center justify-center gap-2 text-slate-400">
-            <ShieldCheck size={14} />
-            <span className="text-[10px] font-black uppercase tracking-widest">Bank-grade security</span>
-          </div>
-        </div>
-      </div>
+          <button type="button" onClick={handleBackToLogin} style={{ ...authSecondaryBtn, alignSelf: 'center' }}>
+            <ArrowLeft size={14} /> Back to sign in
+          </button>
+        </form>
+      </AuthShell>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-900">
-      <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-[3rem] shadow-2xl border border-slate-200">
-
-        {/* Branding Header */}
-        <div className="text-center">
-          <div className="mx-auto h-14 w-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg shadow-indigo-200 transition-transform hover:scale-105">
-            <Zap fill="currentColor" size={28} />
+    <AuthShell>
+      <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <div>
+          <div className="eyebrow" style={{ marginBottom: 10, color: 'var(--text-tertiary)' }}>
+            {isLogin ? 'WELCOME BACK' : 'GET STARTED'}
           </div>
-          <h2 className="text-3xl font-black text-slate-900 tracking-tight leading-tight">
-            {isLogin ? 'Welcome Back' : 'Get Started'}
-          </h2>
-          <p className="text-slate-500 mt-2 font-medium text-sm">
+          <h1
+            style={{
+              fontSize: 24,
+              fontWeight: 700,
+              color: 'var(--text-primary)',
+              letterSpacing: '-0.02em',
+              margin: '0 0 8px',
+            }}
+          >
+            {isLogin ? 'Sign in to Cortex.' : 'Create your account.'}
+          </h1>
+          <p style={{ fontSize: 14, color: 'var(--text-tertiary)', margin: 0 }}>
             {isLogin
-              ? 'Access your mathematical strategy engine'
-              : 'Start optimizing your wealth with precision'}
+              ? 'Pick up where you left off.'
+              : 'Access the full suite of decision-support tools.'}
           </p>
         </div>
 
-        {/* Authentication Form */}
-        <form className="mt-8 space-y-6" onSubmit={handleAuth}>
-          {error && (
-            <div className="bg-rose-50 text-rose-600 p-4 rounded-2xl text-sm font-bold border border-rose-100 animate-in fade-in slide-in-from-top-1">
-              {error}
-            </div>
-          )}
+        {error && <div style={authErrorStyle}>{error}</div>}
 
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                Email Address
-              </label>
-              <div className="relative group">
-                <Mail className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 placeholder:text-slate-300"
-                  placeholder="name@example.com"
-                />
-              </div>
-            </div>
+        <AuthField label="Email address" icon={<Mail size={16} />}>
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="name@example.com"
+            style={authInputStyle}
+            autoComplete="email"
+          />
+        </AuthField>
 
-            <div className="space-y-2">
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                Password
-              </label>
-              <div className="relative group">
-                <Lock className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 placeholder:text-slate-300"
-                  placeholder="••••••••"
-                  minLength={6}
-                />
-              </div>
-              {isLogin && (
-                <div className="text-right">
-                  <button
-                    type="button"
-                    onClick={() => setIsForgotPassword(true)}
-                    className="text-xs font-bold text-indigo-600 hover:text-indigo-500 transition-colors"
-                  >
-                    Forgot password?
-                  </button>
-                </div>
-              )}
-            </div>
+        <AuthField label="Password" icon={<Lock size={16} />}>
+          <input
+            type="password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
+            style={authInputStyle}
+            minLength={6}
+            autoComplete={isLogin ? 'current-password' : 'new-password'}
+          />
+        </AuthField>
+
+        {isLogin && (
+          <div style={{ marginTop: -6, textAlign: 'right' }}>
+            <button
+              type="button"
+              onClick={() => setIsForgotPassword(true)}
+              style={{ ...authSecondaryBtn, fontSize: 12 }}
+            >
+              Forgot password?
+            </button>
           </div>
+        )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-5 rounded-2xl transition-all shadow-xl shadow-indigo-100 flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed group"
-          >
-            {loading ? <Loader2 className="animate-spin" size={20} /> : (
-              <>
-                {isLogin ? 'Sign In to Cortex' : 'Create My Account'}
-                <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-              </>
-            )}
-          </button>
-        </form>
+        <button type="submit" disabled={loading} style={{ ...authPrimaryBtn, opacity: loading ? 0.7 : 1 }}>
+          {loading ? (
+            <>
+              <Loader2 size={16} className="animate-spin" /> {isLogin ? 'Signing in...' : 'Creating account...'}
+            </>
+          ) : (
+            <>
+              {isLogin ? 'Sign in' : 'Create account'} <ArrowRight size={16} />
+            </>
+          )}
+        </button>
 
-        {/* Form Toggle */}
-        <div className="text-center pt-2">
+        <div
+          style={{
+            textAlign: 'center',
+            fontSize: 13,
+            color: 'var(--text-tertiary)',
+            paddingTop: 8,
+          }}
+        >
+          {isLogin ? 'New to Cortex?' : 'Already have an account?'}{' '}
           <button
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-xs font-bold text-indigo-600 hover:text-indigo-500 transition-colors px-6 py-3 rounded-2xl hover:bg-indigo-50 active:scale-95"
+            type="button"
+            onClick={() => setIsLogin((v) => !v)}
+            style={{ ...authSecondaryBtn, display: 'inline' }}
           >
-            {isLogin ? "New here? Create an account" : 'Already a member? Sign in'}
+            {isLogin ? 'Create an account' : 'Sign in'}
           </button>
         </div>
-
-        {/* Security Assurance */}
-        <div className="pt-8 border-t border-slate-100 flex items-center justify-center gap-2 text-slate-400">
-          <ShieldCheck size={14} />
-          <span className="text-[10px] font-black uppercase tracking-widest">Bank-grade security</span>
-        </div>
-      </div>
-    </div>
+      </form>
+    </AuthShell>
   );
 }
 
 export default function AuthPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <AuthShell>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 40,
+              color: 'var(--text-tertiary)',
+            }}
+          >
+            <Loader2 className="animate-spin" size={24} />
+          </div>
+        </AuthShell>
+      }
+    >
       <AuthForm />
     </Suspense>
   );
