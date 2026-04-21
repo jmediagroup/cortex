@@ -249,7 +249,7 @@ export default function SaveScenarioButton({
               <div className="w-12 h-12 bg-[var(--bg-card)]/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-3">
                 <Crown size={24} />
               </div>
-              <h3 className="text-xl font-black mb-1">Save More Scenarios</h3>
+              <h3 className="text-xl font-bold mb-1">Save More Scenarios</h3>
               <p className="text-[var(--mist-100)] text-sm">
                 Free accounts can save 1 scenario per tool. Upgrade to Pro for unlimited saves across all tools.
               </p>

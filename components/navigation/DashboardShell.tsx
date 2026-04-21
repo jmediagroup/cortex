@@ -43,7 +43,7 @@ export default function DashboardShell({
               <path d="M12 12v6" />
             </svg>
           </div>
-          <span className="font-black text-base tracking-tight text-[var(--text-primary)]">
+          <span className="font-bold text-base tracking-tight text-[var(--text-primary)]">
             Cortex
           </span>
         </div>

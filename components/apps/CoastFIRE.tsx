@@ -419,7 +419,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
               ) : (
                 <Anchor size={40} className="text-[var(--color-warning)]" />
               )}
-              <span className="text-3xl md:text-4xl font-black tracking-tight">
+              <span className="text-3xl md:text-4xl font-bold tracking-tight">
                 {calculations.hasReachedCoast ? "YOU'VE REACHED COAST FIRE!" : "BUILDING MOMENTUM"}
               </span>
             </div>
@@ -431,8 +431,8 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
           </div>
 
           <div className={`text-right ${calculations.hasReachedCoast ? 'bg-[var(--emerald-500)]/30' : 'bg-[var(--bg-section)]'} p-6 rounded-2xl min-w-[240px]`}>
-            <p className="text-[10px] opacity-80 font-black uppercase tracking-widest mb-1">Your Coast FIRE Number</p>
-            <p className="text-3xl font-black">{formatCurrency(calculations.coastFIRENumber)}</p>
+            <p className="text-[10px] opacity-80 font-semibold uppercase tracking-widest mb-1">Your Coast FIRE Number</p>
+            <p className="text-3xl font-bold">{formatCurrency(calculations.coastFIRENumber)}</p>
             <p className="text-xs mt-1 opacity-70 italic">Inflation-adjusted target</p>
           </div>
         </div>
@@ -476,8 +476,8 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
           <div className="bg-[var(--emerald-50)] w-10 h-10 rounded-full flex items-center justify-center mb-3">
             <Target className="text-[var(--emerald-500)]" size={20} />
           </div>
-          <p className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-1">FIRE Target</p>
-          <p className="text-xl font-black text-[var(--text-primary)]">{formatCurrency(calculations.targetFIRENumber)}</p>
+          <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1">FIRE Target</p>
+          <p className="text-xl font-bold text-[var(--text-primary)]">{formatCurrency(calculations.targetFIRENumber)}</p>
           <p className="text-xs text-[var(--text-muted)] mt-1">at {inputs.withdrawalRate}% withdrawal</p>
         </div>
 
@@ -485,8 +485,8 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
           <div className="bg-[var(--emerald-50)] w-10 h-10 rounded-full flex items-center justify-center mb-3">
             <Calendar className="text-[var(--emerald-500)]" size={20} />
           </div>
-          <p className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-1">Years to Retirement</p>
-          <p className="text-xl font-black text-[var(--text-primary)]">{calculations.yearsToRetire}</p>
+          <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1">Years to Retirement</p>
+          <p className="text-xl font-bold text-[var(--text-primary)]">{calculations.yearsToRetire}</p>
           <p className="text-xs text-[var(--text-muted)] mt-1">Age {inputs.currentAge} → {inputs.retirementAge}</p>
         </div>
 
@@ -494,8 +494,8 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
           <div className="bg-[var(--emerald-50)] w-10 h-10 rounded-full flex items-center justify-center mb-3">
             <TrendingUp className="text-[var(--emerald-500)]" size={20} />
           </div>
-          <p className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-1">Projected at Retirement</p>
-          <p className="text-xl font-black text-[var(--text-primary)]">{formatCurrency(calculations.projectedAtRetirement)}</p>
+          <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1">Projected at Retirement</p>
+          <p className="text-xl font-bold text-[var(--text-primary)]">{formatCurrency(calculations.projectedAtRetirement)}</p>
           <p className="text-xs text-[var(--text-muted)] mt-1">with current contributions</p>
         </div>
 
@@ -503,8 +503,8 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
           <div className="bg-[var(--bg-card)]/20 w-10 h-10 rounded-full flex items-center justify-center mb-3">
             <DollarSign className="text-white" size={20} />
           </div>
-          <p className="text-[10px] font-black text-[var(--mist-200)] uppercase tracking-widest mb-1">Est. Annual Income</p>
-          <p className="text-xl font-black">{formatCurrency(calculations.estAnnualIncome)}</p>
+          <p className="text-[10px] font-bold text-[var(--mist-200)] uppercase tracking-widest mb-1">Est. Annual Income</p>
+          <p className="text-xl font-bold">{formatCurrency(calculations.estAnnualIncome)}</p>
           <p className="text-xs text-[var(--mist-200)] mt-1">sustainable withdrawal</p>
         </div>
       </div>
@@ -513,14 +513,14 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
         {/* Input Sidebar */}
         <aside className="lg:col-span-4 space-y-6">
           <div className="bg-[var(--bg-card)] p-8 rounded-[2.5rem] border border-[var(--border-default)] shadow-sm space-y-6">
-            <h3 className="text-sm font-black text-[var(--text-primary)] uppercase tracking-widest flex items-center gap-2">
+            <h3 className="text-sm font-bold text-[var(--text-primary)] uppercase tracking-widest flex items-center gap-2">
               <Calculator size={16} className="text-[var(--emerald-500)]" /> Your Numbers
             </h3>
 
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] font-black text-[var(--text-muted)] uppercase mb-1">Current Age</label>
+                  <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Current Age</label>
                   <input
                     type="number"
                     name="currentAge"
@@ -530,7 +530,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-black text-[var(--text-muted)] uppercase mb-1">Retirement Age</label>
+                  <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Retirement Age</label>
                   <input
                     type="number"
                     name="retirementAge"
@@ -542,7 +542,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
               </div>
 
               <div>
-                <label className="block text-[10px] font-black text-[var(--text-muted)] uppercase mb-1">Current Investments ($)</label>
+                <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Current Investments ($)</label>
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-[var(--text-muted)] font-bold">$</span>
                   <input
@@ -556,7 +556,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
               </div>
 
               <div>
-                <label className="block text-[10px] font-black text-[var(--text-muted)] uppercase mb-1">Monthly Contribution ($)</label>
+                <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Monthly Contribution ($)</label>
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-[var(--text-muted)] font-bold">$</span>
                   <input
@@ -570,7 +570,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
               </div>
 
               <div>
-                <label className="block text-[10px] font-black text-[var(--text-muted)] uppercase mb-1">Annual Spending in Retirement ($)</label>
+                <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Annual Spending in Retirement ($)</label>
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-[var(--text-muted)] font-bold">$</span>
                   <input
@@ -584,7 +584,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
               </div>
 
               <div className="pt-4 border-t border-[var(--border-subtle)]">
-                <h4 className="text-[10px] font-black text-[var(--text-tertiary)] uppercase tracking-widest mb-3">
+                <h4 className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-widest mb-3">
                   Advanced Assumptions
                 </h4>
 
@@ -640,7 +640,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
 
           {/* Educational Snippet */}
           <div className="bg-[var(--obsidian-800)] text-white p-8 rounded-[2.5rem] shadow-xl">
-            <h4 className="font-black text-sm uppercase tracking-widest mb-4 flex items-center gap-2">
+            <h4 className="font-bold text-sm uppercase tracking-widest mb-4 flex items-center gap-2">
               <Info size={16} className="text-[var(--emerald-400)]" /> What is Coast FIRE?
             </h4>
             <p className="text-sm font-medium leading-relaxed text-[var(--emerald-50)] mb-4">
@@ -659,12 +659,12 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
         <main className="lg:col-span-8 bg-[var(--bg-card)] p-8 rounded-[3rem] border border-[var(--border-default)] shadow-sm overflow-hidden">
           <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
             <div>
-              <h3 className="text-xl font-black text-[var(--text-primary)] flex items-center gap-2">
+              <h3 className="text-xl font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <TrendingUp className="text-[var(--emerald-500)]" /> Portfolio Projection
               </h3>
               <p className="text-sm text-[var(--text-tertiary)] font-medium">Your path with vs. without future contributions</p>
             </div>
-            <div className="flex flex-wrap gap-4 text-[10px] font-black uppercase">
+            <div className="flex flex-wrap gap-4 text-[10px] font-semibold uppercase">
               <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-[var(--emerald-500)]" /> Current Plan</div>
               <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-[var(--color-info)]" /> Coasting Only</div>
               <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-[var(--bg-glass-strong)]" /> FIRE Target</div>
@@ -769,7 +769,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-6">
               <Lock size={24} />
-              <h3 className="text-3xl font-black">Coast FIRE Command Center</h3>
+              <h3 className="text-3xl font-bold">Coast FIRE Command Center</h3>
             </div>
             <p className="text-[var(--color-warning-soft)] text-lg font-medium mb-8 max-w-3xl leading-relaxed">
               Unlock advanced Cortex analytics that reveal hidden pathways to financial freedom. See exactly when you can coast, explore Barista FIRE options, and stress-test your plan against multiple scenarios.
@@ -777,28 +777,28 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
             <div className="grid md:grid-cols-4 gap-4 mb-8">
               <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-5 border border-white/20">
                 <Clock size={24} className="mb-3" />
-                <h4 className="font-black text-sm mb-2">Coast Date Optimizer</h4>
+                <h4 className="font-bold text-sm mb-2">Coast Date Optimizer</h4>
                 <p className="text-[var(--color-warning-soft)] text-xs font-medium">Find your optimal coast age with contribution trade-offs</p>
               </div>
               <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-5 border border-white/20">
                 <Coffee size={24} className="mb-3" />
-                <h4 className="font-black text-sm mb-2">Barista FIRE Paths</h4>
+                <h4 className="font-bold text-sm mb-2">Barista FIRE Paths</h4>
                 <p className="text-[var(--color-warning-soft)] text-xs font-medium">Explore part-time work scenarios that accelerate freedom</p>
               </div>
               <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-5 border border-white/20">
                 <ShieldCheck size={24} className="mb-3" />
-                <h4 className="font-black text-sm mb-2">Flexibility Score</h4>
+                <h4 className="font-bold text-sm mb-2">Flexibility Score</h4>
                 <p className="text-[var(--color-warning-soft)] text-xs font-medium">Stress-test your plan against market and inflation shocks</p>
               </div>
               <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-5 border border-white/20">
                 <Flame size={24} className="mb-3" />
-                <h4 className="font-black text-sm mb-2">Lifestyle Scenarios</h4>
+                <h4 className="font-bold text-sm mb-2">Lifestyle Scenarios</h4>
                 <p className="text-[var(--color-warning-soft)] text-xs font-medium">Compare Lean, Regular, Chubby, and Fat FIRE targets</p>
               </div>
             </div>
             <button
               onClick={onUpgrade}
-              className="bg-[var(--bg-card)] text-[var(--color-warning)] px-8 py-4 rounded-2xl font-black hover:bg-[var(--color-warning-soft)] transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
+              className="bg-[var(--bg-card)] text-[var(--color-warning)] px-8 py-4 rounded-2xl font-bold hover:bg-[var(--color-warning-soft)] transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
             >
               <Zap size={20} fill="currentColor" />
               Upgrade to Cortex Pro - $9/month
@@ -816,19 +816,19 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
               <Zap size={24} />
             </div>
             <div>
-              <h3 className="text-2xl font-black text-[var(--text-primary)]">Coast FIRE Command Center</h3>
+              <h3 className="text-2xl font-bold text-[var(--text-primary)]">Coast FIRE Command Center</h3>
               <p className="text-[var(--text-tertiary)] font-medium">Advanced Cortex analytics for financial freedom</p>
             </div>
           </div>
 
           {/* Pro Input Section */}
           <div className="bg-gradient-to-br from-[var(--obsidian-900)] to-[var(--obsidian-800)] rounded-[3rem] p-8 text-white">
-            <h4 className="font-black text-sm uppercase tracking-widest mb-6 flex items-center gap-2">
+            <h4 className="font-bold text-sm uppercase tracking-widest mb-6 flex items-center gap-2">
               <Sparkles size={16} className="text-[var(--color-warning)]" /> Pro Inputs
             </h4>
             <div className="grid md:grid-cols-3 gap-6">
               <div>
-                <label className="block text-[10px] font-black text-[var(--text-muted)] uppercase mb-2">Current Annual Income ($)</label>
+                <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-2">Current Annual Income ($)</label>
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-[var(--text-tertiary)] font-bold">$</span>
                   <input
@@ -841,7 +841,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                 </div>
               </div>
               <div>
-                <label className="block text-[10px] font-black text-[var(--text-muted)] uppercase mb-2">Social Security Start Age</label>
+                <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-2">Social Security Start Age</label>
                 <input
                   type="number"
                   name="socialSecurityAge"
@@ -851,7 +851,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                 />
               </div>
               <div>
-                <label className="block text-[10px] font-black text-[var(--text-muted)] uppercase mb-2">Est. Monthly SS Benefit ($)</label>
+                <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-2">Est. Monthly SS Benefit ($)</label>
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-[var(--text-tertiary)] font-bold">$</span>
                   <input
@@ -877,11 +877,11 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                 <Gauge size={32} />
               </div>
               <div className="flex-1">
-                <h4 className="text-2xl font-black text-[var(--text-primary)] mb-1">Coast Flexibility Score</h4>
+                <h4 className="text-2xl font-bold text-[var(--text-primary)] mb-1">Coast Flexibility Score</h4>
                 <p className="text-[var(--text-secondary)] font-medium">How resilient is your coast position against adverse scenarios?</p>
               </div>
               <div className="text-right">
-                <div className={`text-5xl font-black ${
+                <div className={`text-5xl font-bold ${
                   proAnalytics.flexibilityScore >= 75 ? 'text-[var(--emerald-500)]' :
                   proAnalytics.flexibilityScore >= 50 ? 'text-[var(--color-warning)]' :
                   'text-[var(--crimson-500)]'
@@ -910,7 +910,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                     ) : (
                       <AlertTriangle size={18} className="text-[var(--crimson-500)]" />
                     )}
-                    <span className="font-black text-sm text-[var(--text-primary)]">{scenario.label}</span>
+                    <span className="font-bold text-sm text-[var(--text-primary)]">{scenario.label}</span>
                   </div>
                   <p className="text-xs text-[var(--text-tertiary)]">{scenario.desc}</p>
                 </div>
@@ -918,7 +918,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
             </div>
 
             <div className="mt-6 p-4 bg-[var(--obsidian-800)] text-white rounded-2xl">
-              <p className="text-xs font-black text-[var(--mist-200)] mb-1">CORTEX INSIGHT</p>
+              <p className="text-xs font-bold text-[var(--mist-200)] mb-1">CORTEX INSIGHT</p>
               <p className="text-sm font-medium">
                 {proAnalytics.flexibilityScore >= 75
                   ? "Your coast position is highly resilient. You're protected against most adverse scenarios."
@@ -936,7 +936,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                 <Coffee size={32} />
               </div>
               <div>
-                <h4 className="text-2xl font-black mb-2">Barista FIRE Analysis</h4>
+                <h4 className="text-2xl font-bold mb-2">Barista FIRE Analysis</h4>
                 <p className="text-[var(--color-warning-soft)] font-medium">
                   What if you switched to part-time work instead of waiting for full Coast FIRE?
                 </p>
@@ -951,7 +951,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                     : 'bg-[var(--bg-card)]/10 border-white/20'
                 }`}>
                   <div className="flex items-center justify-between mb-3">
-                    <h5 className={`font-black text-sm ${scenario.canCoastNow ? 'text-[var(--text-primary)]' : 'text-white'}`}>
+                    <h5 className={`font-bold text-sm ${scenario.canCoastNow ? 'text-[var(--text-primary)]' : 'text-white'}`}>
                       {scenario.name}
                     </h5>
                     {scenario.canCoastNow && (
@@ -961,7 +961,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                   <p className={`text-xs mb-3 ${scenario.canCoastNow ? 'text-[var(--text-tertiary)]' : 'text-[var(--color-warning-soft)]'}`}>
                     {scenario.hoursPerWeek > 0 ? `${scenario.hoursPerWeek} hrs/week @ $${Math.round(scenario.partTimeIncome / 52 / scenario.hoursPerWeek)}/hr` : 'No work required'}
                   </p>
-                  <div className={`text-lg font-black mb-1 ${scenario.canCoastNow ? 'text-[var(--emerald-500)]' : 'text-white'}`}>
+                  <div className={`text-lg font-bold mb-1 ${scenario.canCoastNow ? 'text-[var(--emerald-500)]' : 'text-white'}`}>
                     {scenario.canCoastNow ? 'Available Now!' : `${scenario.yearsToBarista} years away`}
                   </div>
                   <p className={`text-xs ${scenario.canCoastNow ? 'text-[var(--text-muted)]' : 'text-[var(--color-warning-soft)]'}`}>
@@ -972,7 +972,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
             </div>
 
             <div className="mt-6 p-4 bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl border border-white/20">
-              <p className="text-xs font-black text-[var(--color-warning)] mb-1">CORTEX INSIGHT</p>
+              <p className="text-xs font-bold text-[var(--color-warning)] mb-1">CORTEX INSIGHT</p>
               <p className="text-sm font-medium">
                 {proAnalytics.baristaScenarios.some(s => s.canCoastNow && s.hoursPerWeek > 0)
                   ? `You could switch to part-time work today! Consider the "${proAnalytics.baristaScenarios.find(s => s.canCoastNow && s.hoursPerWeek > 0)?.name}" option for immediate freedom with some income.`
@@ -988,7 +988,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                 <Clock size={32} />
               </div>
               <div>
-                <h4 className="text-2xl font-black text-[var(--text-primary)] mb-1">Coast Date Optimizer</h4>
+                <h4 className="text-2xl font-bold text-[var(--text-primary)] mb-1">Coast Date Optimizer</h4>
                 <p className="text-[var(--text-secondary)] font-medium">
                   Explore different coast ages and see the contribution trade-offs
                 </p>
@@ -999,11 +999,11 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-[var(--border-default)]">
-                    <th className="text-left py-3 px-4 font-black text-[var(--text-tertiary)] text-xs uppercase">Coast Age</th>
-                    <th className="text-right py-3 px-4 font-black text-[var(--text-tertiary)] text-xs uppercase">Monthly Needed</th>
-                    <th className="text-right py-3 px-4 font-black text-[var(--text-tertiary)] text-xs uppercase">Total to Save</th>
-                    <th className="text-right py-3 px-4 font-black text-[var(--text-tertiary)] text-xs uppercase">Freedom Years</th>
-                    <th className="text-center py-3 px-4 font-black text-[var(--text-tertiary)] text-xs uppercase">Status</th>
+                    <th className="text-left py-3 px-4 font-bold text-[var(--text-tertiary)] text-xs uppercase">Coast Age</th>
+                    <th className="text-right py-3 px-4 font-bold text-[var(--text-tertiary)] text-xs uppercase">Monthly Needed</th>
+                    <th className="text-right py-3 px-4 font-bold text-[var(--text-tertiary)] text-xs uppercase">Total to Save</th>
+                    <th className="text-right py-3 px-4 font-bold text-[var(--text-tertiary)] text-xs uppercase">Freedom Years</th>
+                    <th className="text-center py-3 px-4 font-bold text-[var(--text-tertiary)] text-xs uppercase">Status</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1047,7 +1047,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
             </div>
 
             <div className="mt-6 p-4 bg-[var(--obsidian-800)] text-white rounded-2xl">
-              <p className="text-xs font-black text-[var(--mist-200)] mb-1">CORTEX INSIGHT</p>
+              <p className="text-xs font-bold text-[var(--mist-200)] mb-1">CORTEX INSIGHT</p>
               <p className="text-sm font-medium">
                 {calculations.hasReachedCoast
                   ? "You've already reached Coast FIRE! Every dollar you save now accelerates your timeline or increases your retirement income."
@@ -1063,7 +1063,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                 <Flame size={32} />
               </div>
               <div>
-                <h4 className="text-2xl font-black text-[var(--text-primary)] mb-1">FIRE Lifestyle Scenarios</h4>
+                <h4 className="text-2xl font-bold text-[var(--text-primary)] mb-1">FIRE Lifestyle Scenarios</h4>
                 <p className="text-[var(--text-secondary)] font-medium">
                   See how different spending levels affect your coast timeline
                 </p>
@@ -1078,7 +1078,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                     : 'bg-[var(--bg-section)] border-[var(--border-default)]'
                 }`}>
                   <div className="flex items-center justify-between mb-4">
-                    <h5 className="font-black text-[var(--text-primary)]">{scenario.name}</h5>
+                    <h5 className="font-bold text-[var(--text-primary)]">{scenario.name}</h5>
                     {scenario.reached && <CheckCircle2 size={20} className="text-[var(--emerald-500)]" />}
                   </div>
                   <p className="text-xs text-[var(--text-tertiary)] mb-4">{scenario.description}</p>
@@ -1122,7 +1122,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                 <ShieldCheck size={32} />
               </div>
               <div>
-                <h4 className="text-2xl font-black mb-2">Social Security Integration</h4>
+                <h4 className="text-2xl font-bold mb-2">Social Security Integration</h4>
                 <p className="text-[var(--mist-100)] font-medium">
                   How Social Security changes your Coast FIRE calculation
                 </p>
@@ -1132,17 +1132,17 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
             <div className="grid md:grid-cols-3 gap-6">
               <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                 <p className="text-[var(--mist-200)] text-xs font-bold mb-2">Expected SS Benefit</p>
-                <p className="text-3xl font-black">{formatCurrency(proAnalytics.ssIntegration.monthlyBenefit)}/mo</p>
+                <p className="text-3xl font-bold">{formatCurrency(proAnalytics.ssIntegration.monthlyBenefit)}/mo</p>
                 <p className="text-[var(--mist-200)] text-xs mt-2">Starting at age {inputs.socialSecurityAge}</p>
               </div>
               <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                 <p className="text-[var(--mist-200)] text-xs font-bold mb-2">Reduced FIRE Target</p>
-                <p className="text-3xl font-black">{formatCurrency(proAnalytics.ssIntegration.reducedFIRENumber)}</p>
+                <p className="text-3xl font-bold">{formatCurrency(proAnalytics.ssIntegration.reducedFIRENumber)}</p>
                 <p className="text-[var(--mist-200)] text-xs mt-2">After SS kicks in</p>
               </div>
               <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                 <p className="text-[var(--mist-200)] text-xs font-bold mb-2">SS-Adjusted Coast #</p>
-                <p className="text-3xl font-black">{formatCurrency(proAnalytics.ssIntegration.reducedCoastNumber)}</p>
+                <p className="text-3xl font-bold">{formatCurrency(proAnalytics.ssIntegration.reducedCoastNumber)}</p>
                 <p className="text-[var(--mist-200)] text-xs mt-2">
                   {proAnalytics.ssIntegration.ssAdjustedCoastReached
                     ? '✓ You\'ve reached this!'
@@ -1152,7 +1152,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
             </div>
 
             <div className="mt-6 p-4 bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl border border-white/20">
-              <p className="text-xs font-black text-[var(--mist-200)] mb-1">CORTEX INSIGHT</p>
+              <p className="text-xs font-bold text-[var(--mist-200)] mb-1">CORTEX INSIGHT</p>
               <p className="text-sm font-medium">
                 {proAnalytics.ssIntegration.ssAdjustedCoastReached
                   ? "When factoring in Social Security, you've already hit your adjusted Coast number! SS will cover part of your expenses, reducing what you need from investments."
@@ -1168,7 +1168,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                 <Briefcase size={32} />
               </div>
               <div>
-                <h4 className="text-2xl font-black text-[var(--text-primary)] mb-1">Work Optional Timeline</h4>
+                <h4 className="text-2xl font-bold text-[var(--text-primary)] mb-1">Work Optional Timeline</h4>
                 <p className="text-[var(--text-secondary)] font-medium">
                   Track your journey from mandatory work to complete freedom
                 </p>

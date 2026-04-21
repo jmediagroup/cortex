@@ -459,7 +459,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                 <Wallet size={80} />
               </div>
               <p className="text-[var(--mist-100)] text-xs font-bold uppercase tracking-widest mb-2">Monthly Delta</p>
-              <h3 className="text-3xl font-black tabular-nums">
+              <h3 className="text-3xl font-bold tabular-nums">
                 ${Math.round(savingsDelta / 12).toLocaleString()}
               </h3>
               <p className="text-xs text-[var(--mist-200)]/80 mt-3 font-medium leading-relaxed">Incremental monthly liquidity created by arbitrage.</p>
@@ -467,7 +467,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
 
             <div className="bg-[var(--bg-card)] p-7 rounded-3xl border border-[var(--border-default)]/60 shadow-sm transition-all hover:border-[var(--emerald-border)]">
               <p className="text-[var(--text-tertiary)] text-xs font-bold uppercase tracking-widest mb-2">Wealth Gap</p>
-              <h3 className="text-3xl font-black text-[var(--emerald-500)] tabular-nums">
+              <h3 className="text-3xl font-bold text-[var(--emerald-500)] tabular-nums">
                 ${projectionData[projectionData.length - 1].difference.toLocaleString()}
               </h3>
               <p className="text-xs text-[var(--text-muted)] mt-3 font-medium leading-relaxed">The total opportunity cost of your current location.</p>
@@ -475,7 +475,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
 
             <div className="bg-[var(--bg-card)] p-7 rounded-3xl border border-[var(--border-default)]/60 shadow-sm transition-all hover:border-[var(--emerald-border)]">
               <p className="text-[var(--text-tertiary)] text-xs font-bold uppercase tracking-widest mb-2">Burn Rate</p>
-              <h3 className="text-3xl font-black text-[var(--text-primary)] tabular-nums">
+              <h3 className="text-3xl font-bold text-[var(--text-primary)] tabular-nums">
                 {Math.round((targetMetrics.totalExpenses / currentMetrics.totalExpenses) * 100)}%
               </h3>
               <p className="text-xs text-[var(--text-muted)] mt-3 font-medium leading-relaxed">{targetLoc} cost relative to {currentLoc}.</p>
@@ -560,7 +560,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                 <div className="pt-5 border-t border-[var(--border-subtle)] flex justify-between items-end">
                   <div>
                     <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase block tracking-widest">Yearly Surplus</span>
-                    <span className="text-2xl font-black text-[var(--text-primary)] tabular-nums">${Math.round(currentMetrics.netSavings).toLocaleString()}</span>
+                    <span className="text-2xl font-bold text-[var(--text-primary)] tabular-nums">${Math.round(currentMetrics.netSavings).toLocaleString()}</span>
                   </div>
                 </div>
               </div>
@@ -579,7 +579,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                 <div className="pt-5 border-t border-[var(--border-subtle)] flex justify-between items-end">
                   <div>
                     <span className="text-[10px] font-bold text-[var(--emerald-400)] uppercase block tracking-widest">Yearly Surplus</span>
-                    <span className="text-2xl font-black text-[var(--emerald-500)] tabular-nums">${Math.round(targetMetrics.netSavings).toLocaleString()}</span>
+                    <span className="text-2xl font-bold text-[var(--emerald-500)] tabular-nums">${Math.round(targetMetrics.netSavings).toLocaleString()}</span>
                   </div>
                 </div>
               </div>
@@ -597,7 +597,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                       <div className="w-12 h-12 bg-[var(--bg-card)]/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
                         <Zap size={24} className="text-white" />
                       </div>
-                      <h3 className="text-2xl font-black">Multi-City Wealth Accelerator</h3>
+                      <h3 className="text-2xl font-bold">Multi-City Wealth Accelerator</h3>
                     </div>
                     <p className="text-white/90 text-base font-medium mb-6 leading-relaxed">
                       Unlock the full power of geographic arbitrage. See your top 5 destinations ranked by wealth acceleration,
@@ -616,7 +616,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                     </div>
                     <button
                       onClick={onUpgrade}
-                      className="bg-[var(--bg-card)] text-[var(--color-warning)] px-8 py-4 rounded-2xl font-black text-lg hover:bg-[var(--color-warning-soft)] transition-all shadow-xl hover:shadow-2xl hover:scale-105 active:scale-100"
+                      className="bg-[var(--bg-card)] text-[var(--color-warning)] px-8 py-4 rounded-2xl font-bold text-lg hover:bg-[var(--color-warning-soft)] transition-all shadow-xl hover:shadow-2xl hover:scale-105 active:scale-100"
                     >
                       Upgrade to Pro
                     </button>
@@ -634,7 +634,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                   <div className="w-10 h-10 bg-[var(--emerald-500)] rounded-xl flex items-center justify-center">
                     <Plane size={20} className="text-white" />
                   </div>
-                  <h3 className="text-xl font-black text-[var(--text-primary)]">Top 5 Arbitrage Destinations</h3>
+                  <h3 className="text-xl font-bold text-[var(--text-primary)]">Top 5 Arbitrage Destinations</h3>
                 </div>
                 <p className="text-[var(--emerald-500)] font-medium mb-6 leading-relaxed">
                   These cities maximize your savings delta while accounting for adjusted income, cost of living, and tax structures.
@@ -644,7 +644,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                   {multiCityAnalysis.destinations.map((dest, idx) => (
                     <div key={idx} className="bg-[var(--bg-card)] rounded-2xl p-5 border border-[var(--emerald-border-soft)] flex items-center justify-between group hover:border-[var(--emerald-border)] transition-all">
                       <div className="flex items-center gap-4">
-                        <div className="w-8 h-8 bg-[var(--emerald-100)] text-[var(--emerald-500)] rounded-lg flex items-center justify-center font-black text-sm">
+                        <div className="w-8 h-8 bg-[var(--emerald-100)] text-[var(--emerald-500)] rounded-lg flex items-center justify-center font-bold text-sm">
                           {idx + 1}
                         </div>
                         <div>
@@ -654,7 +654,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                       </div>
                       <div className="text-right">
                         <p className="text-xs text-[var(--text-tertiary)] font-semibold uppercase tracking-wider mb-1">Delta</p>
-                        <p className="text-2xl font-black text-[var(--emerald-500)]">+${Math.round(dest.delta).toLocaleString()}</p>
+                        <p className="text-2xl font-bold text-[var(--emerald-500)]">+${Math.round(dest.delta).toLocaleString()}</p>
                       </div>
                     </div>
                   ))}
@@ -663,7 +663,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                   <div className="flex items-start gap-3">
                     <Zap size={20} className="flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="font-black text-sm uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
+                      <p className="font-bold text-sm uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
                       <p className="text-[var(--mist-100)] text-sm font-medium leading-relaxed">
                         The #1 destination delivers ${Math.round(multiCityAnalysis.destinations[0].delta).toLocaleString()} more in annual savings than your current location.
                         Over {years} years, this compounds to ${Math.round(multiCityAnalysis.compoundedArbitrageWealth - projectionData[projectionData.length - 1].current).toLocaleString()} in extra wealth.
@@ -679,7 +679,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                     <div className="w-10 h-10 bg-[var(--emerald-500)] rounded-xl flex items-center justify-center">
                       <DollarSign size={20} className="text-white" />
                     </div>
-                    <h3 className="text-xl font-black text-[var(--emerald-500)]">Tax Migration Windfall</h3>
+                    <h3 className="text-xl font-bold text-[var(--emerald-500)]">Tax Migration Windfall</h3>
                   </div>
                   <p className="text-[var(--emerald-500)] font-medium mb-6 leading-relaxed">
                     Quantifies the pure state income tax savings by moving to a lower-tax jurisdiction. This is money that would
@@ -687,7 +687,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                   </p>
                   <div className="bg-[var(--bg-card)] rounded-2xl p-6 border border-[var(--emerald-border-soft)] mb-5">
                     <p className="text-xs text-[var(--text-tertiary)] font-semibold uppercase tracking-wider mb-2">Annual Tax Savings</p>
-                    <p className="text-4xl font-black text-[var(--emerald-500)] mb-3">${Math.round(multiCityAnalysis.yearlyTaxWindfall).toLocaleString()}</p>
+                    <p className="text-4xl font-bold text-[var(--emerald-500)] mb-3">${Math.round(multiCityAnalysis.yearlyTaxWindfall).toLocaleString()}</p>
                     <p className="text-sm text-[var(--text-secondary)] font-medium">
                       Current state tax rate: <span className="font-bold text-[var(--text-primary)]">{(LOCATION_PRESETS[currentLoc].taxRate * 100).toFixed(1)}%</span>
                     </p>
@@ -696,7 +696,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                     <div className="flex items-start gap-3">
                       <Zap size={18} className="flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="font-black text-xs uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
+                        <p className="font-bold text-xs uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
                         <p className="text-[var(--emerald-100)] text-sm font-medium leading-relaxed">
                           Moving to a zero-tax state like Texas, Florida, or Nevada would save you ${Math.round(multiCityAnalysis.yearlyTaxWindfall).toLocaleString()}/year
                           in pure tax arbitrage, assuming comparable cost of living.
@@ -711,7 +711,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                     <div className="w-10 h-10 bg-[var(--crimson-500)] rounded-xl flex items-center justify-center">
                       <TrendingDown size={20} className="text-white" />
                     </div>
-                    <h3 className="text-xl font-black text-[var(--crimson-500)]">Career Mobility Premium</h3>
+                    <h3 className="text-xl font-bold text-[var(--crimson-500)]">Career Mobility Premium</h3>
                   </div>
                   <p className="text-[var(--crimson-500)] font-medium mb-6 leading-relaxed">
                     Moving away from high-cost hubs may cost you career trajectory and networking advantages. This metric quantifies
@@ -719,7 +719,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                   </p>
                   <div className="bg-[var(--bg-card)] rounded-2xl p-6 border border-[var(--crimson-border)] mb-5">
                     <p className="text-xs text-[var(--text-tertiary)] font-semibold uppercase tracking-wider mb-2">Net Premium After Trajectory Loss</p>
-                    <p className={`text-4xl font-black mb-3 ${multiCityAnalysis.mobilityPremium >= 0 ? 'text-[var(--emerald-500)]' : 'text-[var(--crimson-500)]'}`}>
+                    <p className={`text-4xl font-bold mb-3 ${multiCityAnalysis.mobilityPremium >= 0 ? 'text-[var(--emerald-500)]' : 'text-[var(--crimson-500)]'}`}>
                       {multiCityAnalysis.mobilityPremium >= 0 ? '+' : ''}${Math.round(multiCityAnalysis.mobilityPremium).toLocaleString()}
                     </p>
                     <p className="text-sm text-[var(--text-secondary)] font-medium">
@@ -730,7 +730,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                     <div className="flex items-start gap-3">
                       <Zap size={18} className="flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="font-black text-xs uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
+                        <p className="font-bold text-xs uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
                         <p className="text-[var(--crimson-100)] text-sm font-medium leading-relaxed">
                           {multiCityAnalysis.mobilityPremium >= 0
                             ? `Even accounting for career trajectory loss, arbitrage still nets you ${Math.abs(Math.round(multiCityAnalysis.mobilityPremium)).toLocaleString()} in extra wealth.`
@@ -747,7 +747,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                   <div className="w-10 h-10 bg-[var(--obsidian-700)] rounded-xl flex items-center justify-center">
                     <TrendingUp size={20} className="text-white" />
                   </div>
-                  <h3 className="text-xl font-black text-[var(--text-primary)]">Lifestyle Compression Score</h3>
+                  <h3 className="text-xl font-bold text-[var(--text-primary)]">Lifestyle Compression Score</h3>
                 </div>
                 <p className="text-[var(--text-secondary)] font-medium mb-6 leading-relaxed">
                   Measures how much lifestyle quality you may be sacrificing to achieve arbitrage gains. A score below 50 indicates
@@ -756,7 +756,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                 <div className="bg-[var(--bg-card)] rounded-2xl p-6 border border-[var(--border-default)] mb-5">
                   <div className="flex items-center justify-between mb-4">
                     <p className="text-xs text-[var(--text-tertiary)] font-semibold uppercase tracking-wider">Compression Score</p>
-                    <p className="text-4xl font-black text-[var(--text-primary)]">{multiCityAnalysis.lifestyleScore}</p>
+                    <p className="text-4xl font-bold text-[var(--text-primary)]">{multiCityAnalysis.lifestyleScore}</p>
                   </div>
                   <div className="w-full bg-[var(--bg-glass-strong)] rounded-full h-3 overflow-hidden">
                     <div
@@ -777,7 +777,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                   <div className="flex items-start gap-3">
                     <Zap size={18} className="flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="font-black text-xs uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
+                      <p className="font-bold text-xs uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
                       <p className="text-[var(--text-muted)] text-sm font-medium leading-relaxed">
                         {multiCityAnalysis.lifestyleScore >= 75
                           ? 'Your target location maintains a sustainable lifestyle while delivering arbitrage gains. Low risk of burnout or regret.'

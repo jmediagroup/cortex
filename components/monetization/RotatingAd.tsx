@@ -90,15 +90,15 @@ export default function RotatingAd({
   if (variant === 'banner') {
     return (
       <div className={`relative ${className}`}>
-        <div className="bg-gradient-to-r from-slate-800/80 to-indigo-900/30 border border-slate-700/50 rounded-lg p-4">
+        <div className="bg-gradient-to-r from-[var(--obsidian-800)]/80 to-[var(--obsidian-800)]/30 border border-[var(--border-strong)]/50 rounded-lg p-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex-1">
-              <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">Recommended Tool</p>
+              <p className="text-xs text-[var(--text-tertiary)] uppercase tracking-wide mb-1">Recommended Tool</p>
               <p className="text-white font-medium">{currentAffiliate.name}</p>
               {currentAffiliate.tagline && (
-                <p className="text-sm text-indigo-400">{currentAffiliate.tagline}</p>
+                <p className="text-sm text-[var(--emerald-400)]">{currentAffiliate.tagline}</p>
               )}
-              <p className="text-sm text-slate-400 mt-1">{currentAffiliate.description}</p>
+              <p className="text-sm text-[var(--text-muted)] mt-1">{currentAffiliate.description}</p>
             </div>
             <AffiliateLink affiliate={currentAffiliate} variant="button" className="flex-shrink-0">
               Learn More
@@ -113,8 +113,8 @@ export default function RotatingAd({
                 onClick={() => setCurrentIndex(index)}
                 className={`w-2 h-2 rounded-full transition-all ${
                   index === currentIndex
-                    ? 'bg-indigo-500 w-4'
-                    : 'bg-slate-600 hover:bg-slate-500'
+                    ? 'bg-[var(--emerald-400)] w-4'
+                    : 'bg-[var(--text-secondary)] hover:bg-[var(--text-tertiary)]'
                 }`}
                 aria-label={`Show affiliate ${index + 1}`}
               />
@@ -137,8 +137,8 @@ export default function RotatingAd({
               onClick={() => setCurrentIndex(index)}
               className={`w-2 h-2 rounded-full transition-all ${
                 index === currentIndex
-                  ? 'bg-indigo-500 w-4'
-                  : 'bg-slate-300 hover:bg-slate-400'
+                  ? 'bg-[var(--emerald-400)] w-4'
+                  : 'bg-[var(--bg-glass-strong)] hover:bg-[var(--text-tertiary)]'
               }`}
               aria-label={`Show affiliate ${index + 1}`}
             />

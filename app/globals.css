@@ -80,9 +80,11 @@
   --shadow-emerald: var(--emerald-glow);
   --shadow-crimson: var(--crimson-glow);
 
-  /* Fonts */
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-mono);
+  /* Fonts — prefer the next/font-managed Inter + JetBrains Mono, fall back
+     to tokens.css's literal stacks so the utility still resolves if
+     next/font fails to load. */
+  --font-sans: var(--font-inter, 'Inter'), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: var(--font-jetbrains, 'JetBrains Mono'), ui-monospace, 'SF Mono', Menlo, monospace;
 
   /* Motion */
   --ease-out-expo: var(--ease-out-expo);
@@ -143,11 +145,8 @@
   --chart-purple-area: rgba(191, 90, 242, 0.15);
   --chart-green-area: var(--chart-emerald-area);
 
-  /* next/font variables are injected onto <body> by app/layout.tsx.
-     Prefer the next/font-managed faces; tokens.css's literal
-     'Inter' / 'JetBrains Mono' act as fallbacks. */
-  --font-sans: var(--font-inter), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-mono: var(--font-jetbrains), 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  /* Font overrides live in the @theme block above so Tailwind's
+     `font-sans` / `font-mono` utilities pick up the right stack. */
 }
 
 /* ============================================================
@@ -220,6 +219,30 @@
   outline: 2px solid var(--emerald-500);
   outline-offset: 2px;
   border-radius: var(--radius-md);
+}
+
+/* Global focus-visible fallback — every interactive element gets an
+   emerald outline unless it opts out via `.focus-ring-none`. Components
+   that render their own bespoke focus treatment (theme toggle, etc.)
+   should keep doing so; this is the safety net for the long tail. */
+:where(a, button, [role="button"], input, select, textarea, summary,
+       [tabindex]:not([tabindex="-1"])):focus-visible {
+  outline: 2px solid var(--emerald-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-md);
+}
+
+/* Inputs that explicitly clear `outline: none` in their inline styles
+   need the focus ring restored via box-shadow (outline in :focus-visible
+   above handles most cases, but `outline: none` inline wins against
+   the shorthand `outline`). */
+:where(input, select, textarea):focus-visible {
+  box-shadow: 0 0 0 2px var(--emerald-500), 0 0 0 4px var(--bg-canvas);
+}
+
+.focus-ring-none:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 /* ============================================================
@@ -370,7 +393,9 @@
 }
 
 /* ============================================================
-   Reduced motion — disable non-essential animations.
+   Reduced motion — disable long non-essential animations and
+   transitions across the app. Keep sub-120ms interactions so
+   focus/click feedback still registers.
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
   .animate-card-in,
@@ -385,6 +410,14 @@
   .theme-toggle-icon {
     animation: none !important;
     transition: none !important;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
   }
 }
 

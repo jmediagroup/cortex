@@ -113,24 +113,24 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
             <AlertCircle className="text-[var(--color-info)]" size={28} />
           </div>
           <div>
-            <h3 className="text-xl font-black text-[var(--color-info)] mb-2">The 20/3/8 Car-Buying Rule</h3>
+            <h3 className="text-xl font-bold text-[var(--color-info)] mb-2">The 20/3/8 Car-Buying Rule</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
               <div className="flex items-start gap-2">
-                <div className="font-black text-3xl text-[var(--color-info)]">20%</div>
+                <div className="font-bold text-3xl text-[var(--color-info)]">20%</div>
                 <div className="text-[var(--color-info)] font-medium mt-1">
                   <div className="font-bold">Down Payment</div>
                   Put at least 20% down to reduce loan amount
                 </div>
               </div>
               <div className="flex items-start gap-2">
-                <div className="font-black text-3xl text-[var(--color-info)]">3</div>
+                <div className="font-bold text-3xl text-[var(--color-info)]">3</div>
                 <div className="text-[var(--color-info)] font-medium mt-1">
                   <div className="font-bold">Years to Pay Off</div>
                   Finance for no more than 36 months
                 </div>
               </div>
               <div className="flex items-start gap-2">
-                <div className="font-black text-3xl text-[var(--color-info)]">8%</div>
+                <div className="font-bold text-3xl text-[var(--color-info)]">8%</div>
                 <div className="text-[var(--color-info)] font-medium mt-1">
                   <div className="font-bold">of Pre-Tax Income</div>
                   Monthly payment should not exceed 8% of gross income
@@ -145,7 +145,7 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
         {/* LEFT COLUMN - INPUTS */}
         <div className="space-y-6">
           <div className="bg-[var(--bg-card)] rounded-[2.5rem] p-8 border-2 border-[var(--border-default)] shadow-sm">
-            <h3 className="text-2xl font-black text-[var(--text-primary)] mb-6 flex items-center gap-3">
+            <h3 className="text-2xl font-bold text-[var(--text-primary)] mb-6 flex items-center gap-3">
               <DollarSign className="text-[var(--emerald-500)]" size={28} />
               Your Financial Info
             </h3>
@@ -236,9 +236,9 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
           <div className="bg-gradient-to-br from-[var(--emerald-500)] to-[var(--emerald-600)] rounded-[3rem] p-10 text-white shadow-2xl border-2 border-[var(--emerald-border)]">
             <div className="flex items-center gap-3 mb-4">
               <Car className="text-[var(--mist-200)]" size={32} />
-              <h3 className="text-xl font-black tracking-tight">Maximum Car Price</h3>
+              <h3 className="text-xl font-bold tracking-tight">Maximum Car Price</h3>
             </div>
-            <div className="text-6xl font-black mb-2 tracking-tight">
+            <div className="text-6xl font-bold mb-2 tracking-tight">
               ${calculations.maxCarPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}
             </div>
             <p className="text-[var(--mist-100)] font-medium text-sm">
@@ -250,21 +250,21 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-[var(--bg-card)] rounded-2xl p-6 border-2 border-[var(--border-default)]">
               <div className="text-xs font-bold text-[var(--text-tertiary)] uppercase tracking-wider mb-1">Down Payment ({inputs.downPaymentPercent}%)</div>
-              <div className="text-2xl font-black text-[var(--text-primary)]">
+              <div className="text-2xl font-bold text-[var(--text-primary)]">
                 ${calculations.userDownPaymentAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </div>
             </div>
 
             <div className="bg-[var(--bg-card)] rounded-2xl p-6 border-2 border-[var(--border-default)]">
               <div className="text-xs font-bold text-[var(--text-tertiary)] uppercase tracking-wider mb-1">Loan Amount</div>
-              <div className="text-2xl font-black text-[var(--text-primary)]">
+              <div className="text-2xl font-bold text-[var(--text-primary)]">
                 ${calculations.userLoanAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </div>
             </div>
 
             <div className="bg-[var(--bg-card)] rounded-2xl p-6 border-2 border-[var(--border-default)]">
               <div className="text-xs font-bold text-[var(--text-tertiary)] uppercase tracking-wider mb-1">Monthly Payment</div>
-              <div className="text-2xl font-black text-[var(--text-primary)]">
+              <div className="text-2xl font-bold text-[var(--text-primary)]">
                 ${calculations.userMonthlyPayment.toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </div>
               <div className="text-xs text-[var(--text-tertiary)] font-medium mt-1">
@@ -274,7 +274,7 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
 
             <div className="bg-[var(--bg-card)] rounded-2xl p-6 border-2 border-[var(--border-default)]">
               <div className="text-xs font-bold text-[var(--text-tertiary)] uppercase tracking-wider mb-1">Total Interest</div>
-              <div className="text-2xl font-black text-[var(--text-primary)]">
+              <div className="text-2xl font-bold text-[var(--text-primary)]">
                 ${calculations.totalInterest.toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </div>
               <div className="text-xs text-[var(--text-tertiary)] font-medium mt-1">Over 3 years</div>
@@ -294,7 +294,7 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
                 <AlertCircle className="text-[var(--color-warning)]" size={24} />
               )}
               <div>
-                <h4 className={`font-black text-lg mb-2 ${
+                <h4 className={`font-bold text-lg mb-2 ${
                   calculations.meetsAllRules ? 'text-[var(--emerald-500)]' : 'text-[var(--color-warning)]'
                 }`}>
                   {calculations.meetsAllRules ? '20/3/8 Rule Status: PASS' : '20/3/8 Rule Status: WARNING'}
@@ -328,32 +328,32 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
 
       {/* Additional Details */}
       <div className="bg-[var(--bg-section)] rounded-[2.5rem] p-8 border-2 border-[var(--border-default)]">
-        <h3 className="text-xl font-black text-[var(--text-primary)] mb-4 flex items-center gap-3">
+        <h3 className="text-xl font-bold text-[var(--text-primary)] mb-4 flex items-center gap-3">
           <Calendar className="text-[var(--text-secondary)]" size={24} />
           Loan Summary (3-Year Term)
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-center">
           <div>
             <div className="text-xs font-bold text-[var(--text-tertiary)] uppercase tracking-wider mb-2">Total Paid</div>
-            <div className="text-2xl font-black text-[var(--text-primary)]">
+            <div className="text-2xl font-bold text-[var(--text-primary)]">
               ${calculations.totalPaid.toLocaleString(undefined, { maximumFractionDigits: 0 })}
             </div>
           </div>
           <div>
             <div className="text-xs font-bold text-[var(--text-tertiary)] uppercase tracking-wider mb-2">Principal</div>
-            <div className="text-2xl font-black text-[var(--text-primary)]">
+            <div className="text-2xl font-bold text-[var(--text-primary)]">
               ${calculations.userLoanAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })}
             </div>
           </div>
           <div>
             <div className="text-xs font-bold text-[var(--text-tertiary)] uppercase tracking-wider mb-2">Interest</div>
-            <div className="text-2xl font-black text-[var(--text-primary)]">
+            <div className="text-2xl font-bold text-[var(--text-primary)]">
               ${calculations.totalInterest.toLocaleString(undefined, { maximumFractionDigits: 0 })}
             </div>
           </div>
           <div>
             <div className="text-xs font-bold text-[var(--text-tertiary)] uppercase tracking-wider mb-2">APR</div>
-            <div className="text-2xl font-black text-[var(--text-primary)]">{inputs.interestRate}%</div>
+            <div className="text-2xl font-bold text-[var(--text-primary)]">{inputs.interestRate}%</div>
           </div>
         </div>
       </div>

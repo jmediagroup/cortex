@@ -263,20 +263,20 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
       {/* Metrics Header */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border-default)] shadow-sm">
-          <p className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-1">Estimated Final Value</p>
-          <h4 className="text-2xl font-black text-[var(--text-primary)]">{formatCurrency(finalStats.steady)}</h4>
+          <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1">Estimated Final Value</p>
+          <h4 className="text-2xl font-bold text-[var(--text-primary)]">{formatCurrency(finalStats.steady)}</h4>
           <p className="text-xs font-bold text-[var(--emerald-500)] mt-1">
             {FUND_METADATA[selectedFund].cagr}% CAGR
           </p>
         </div>
         <div className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border-default)] shadow-sm">
-          <p className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-1">Total Net Gains</p>
-          <h4 className="text-2xl font-black text-[var(--emerald-500)]">+{formatCurrency(totalGains)}</h4>
+          <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1">Total Net Gains</p>
+          <h4 className="text-2xl font-bold text-[var(--emerald-500)]">+{formatCurrency(totalGains)}</h4>
           <p className="text-xs text-[var(--text-muted)] mt-1">From {formatCurrency(finalStats.invested)} invested</p>
         </div>
         <div className="bg-[var(--emerald-500)] p-6 rounded-3xl shadow-lg text-white">
-          <p className="text-[10px] font-black text-[var(--mist-200)] uppercase tracking-widest mb-1">Simulated Outcome</p>
-          <h4 className={`text-2xl font-black ${finalStats.simulated > finalStats.steady ? 'text-[var(--emerald-400)]' : 'text-[var(--color-warning)]'}`}>
+          <p className="text-[10px] font-bold text-[var(--mist-200)] uppercase tracking-widest mb-1">Simulated Outcome</p>
+          <h4 className={`text-2xl font-bold ${finalStats.simulated > finalStats.steady ? 'text-[var(--emerald-400)]' : 'text-[var(--color-warning)]'}`}>
             {formatCurrency(finalStats.simulated)}
           </h4>
           <p className="text-xs text-[var(--mist-200)] mt-1">Includes variance</p>
@@ -290,7 +290,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
 
             {/* Fund Selector */}
             <div>
-              <h3 className="text-sm font-black text-[var(--text-primary)] uppercase tracking-widest mb-4 flex items-center gap-2">
+              <h3 className="text-sm font-bold text-[var(--text-primary)] uppercase tracking-widest mb-4 flex items-center gap-2">
                 <TrendingUp size={16} className="text-[var(--emerald-500)]" /> Choose Fund
               </h3>
               <div className="grid grid-cols-1 gap-2">
@@ -329,7 +329,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
             <div className="space-y-4">
               <div>
                 <div className="flex justify-between mb-2">
-                  <label className="text-[10px] font-black text-[var(--text-muted)] uppercase flex items-center gap-1">
+                  <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase flex items-center gap-1">
                     <DollarSign className="w-3 h-3" /> Initial Principal
                   </label>
                   <span className="text-sm font-mono font-bold text-[var(--emerald-500)]">{formatCurrency(principal)}</span>
@@ -343,7 +343,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
 
               <div>
                 <div className="flex justify-between mb-2">
-                  <label className="text-[10px] font-black text-[var(--text-muted)] uppercase flex items-center gap-1">
+                  <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase flex items-center gap-1">
                     <TrendingUp className="w-3 h-3" /> Regular Contribution
                   </label>
                   <span className="text-sm font-mono font-bold text-[var(--emerald-500)]">{formatCurrency(contribution)}</span>
@@ -367,7 +367,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
 
               <div>
                 <div className="flex justify-between mb-2">
-                  <label className="text-[10px] font-black text-[var(--text-muted)] uppercase flex items-center gap-1">
+                  <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase flex items-center gap-1">
                     <Calendar className="w-3 h-3" /> Time Horizon
                   </label>
                   <span className="text-sm font-mono font-bold text-[var(--emerald-500)]">{duration} Years</span>
@@ -406,7 +406,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
           </div>
 
           <div className="bg-[var(--obsidian-800)] text-white p-8 rounded-[2.5rem] shadow-xl">
-            <h4 className="font-black text-sm uppercase tracking-widest mb-4 flex items-center gap-2">
+            <h4 className="font-bold text-sm uppercase tracking-widest mb-4 flex items-center gap-2">
               <Info size={16} className="text-[var(--emerald-400)]" /> Key Insight
             </h4>
             <p className="text-xs font-medium leading-relaxed opacity-80">
@@ -421,7 +421,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
         <main className="lg:col-span-8 space-y-6">
           <div className="bg-[var(--bg-card)] p-8 rounded-[3rem] border border-[var(--border-default)] shadow-sm overflow-hidden">
             <div className="flex flex-wrap items-center justify-between mb-8 gap-4">
-              <h3 className="text-xl font-black text-[var(--text-primary)] flex items-center gap-2">
+              <h3 className="text-xl font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <TrendingUp className="text-[var(--emerald-500)]" /> Growth Forecast
               </h3>
               <div className="flex gap-4 text-[10px] font-bold uppercase tracking-wider">
@@ -499,7 +499,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
           <div className="bg-[var(--obsidian-800)] text-white p-8 rounded-[2.5rem] shadow-lg">
             <div className="flex items-center gap-2 mb-6">
               <Info className="w-5 h-5 text-[var(--emerald-400)]" />
-              <h3 className="font-black text-lg">Investor Insights</h3>
+              <h3 className="font-bold text-lg">Investor Insights</h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-[var(--text-muted)]">
               <div className="space-y-3">
@@ -541,7 +541,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-6">
               <Lock size={24} />
-              <h3 className="text-3xl font-black">Advanced Fund Analysis</h3>
+              <h3 className="text-3xl font-bold">Advanced Fund Analysis</h3>
             </div>
             <p className="text-[var(--color-warning-soft)] text-lg font-medium mb-8 max-w-3xl leading-relaxed">
               Unlock professional-grade insights: side-by-side fund comparison, risk-adjusted returns, Monte Carlo projections, and portfolio optimization recommendations.
@@ -549,23 +549,23 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
             <div className="grid md:grid-cols-3 gap-6 mb-8">
               <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                 <Target size={24} className="mb-3" />
-                <h4 className="font-black text-sm mb-2">Fund Comparison</h4>
+                <h4 className="font-bold text-sm mb-2">Fund Comparison</h4>
                 <p className="text-[var(--color-warning-soft)] text-xs font-medium">Compare all major index funds head-to-head with your exact parameters</p>
               </div>
               <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                 <AlertTriangle size={24} className="mb-3" />
-                <h4 className="font-black text-sm mb-2">Risk Analysis</h4>
+                <h4 className="font-bold text-sm mb-2">Risk Analysis</h4>
                 <p className="text-[var(--color-warning-soft)] text-xs font-medium">Sharpe ratios, max drawdown estimates, and volatility-adjusted returns</p>
               </div>
               <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                 <Sparkles size={24} className="mb-3" />
-                <h4 className="font-black text-sm mb-2">Monte Carlo Projections</h4>
+                <h4 className="font-bold text-sm mb-2">Monte Carlo Projections</h4>
                 <p className="text-[var(--color-warning-soft)] text-xs font-medium">See best-case, worst-case, and median outcomes across thousands of simulations</p>
               </div>
             </div>
             <button
               onClick={onUpgrade}
-              className="bg-[var(--bg-card)] text-[var(--color-warning)] px-8 py-4 rounded-2xl font-black hover:bg-[var(--color-warning-soft)] transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
+              className="bg-[var(--bg-card)] text-[var(--color-warning)] px-8 py-4 rounded-2xl font-bold hover:bg-[var(--color-warning-soft)] transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
             >
               <Zap size={20} fill="currentColor" />
               Upgrade to Pro - $9/month
@@ -583,7 +583,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
               <Zap size={24} />
             </div>
             <div>
-              <h3 className="text-2xl font-black text-[var(--text-primary)]">Advanced Fund Analysis</h3>
+              <h3 className="text-2xl font-bold text-[var(--text-primary)]">Advanced Fund Analysis</h3>
               <p className="text-[var(--text-tertiary)] font-medium">Professional-grade comparison and risk metrics</p>
             </div>
           </div>
@@ -595,7 +595,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
                 <Target size={32} />
               </div>
               <div className="flex-1">
-                <h4 className="text-2xl font-black text-[var(--text-primary)] mb-3">Head-to-Head Comparison</h4>
+                <h4 className="text-2xl font-bold text-[var(--text-primary)] mb-3">Head-to-Head Comparison</h4>
                 <p className="text-[var(--text-secondary)] font-medium text-lg leading-relaxed mb-6">
                   With your settings ({formatCurrency(principal)} initial + {formatCurrency(contribution)}/{frequency === 'monthly' ? 'mo' : 'yr'} for {duration} years):
                 </p>
@@ -605,7 +605,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
                       key={fund.key}
                       className={`flex items-center gap-4 p-4 rounded-2xl border ${fund.key === selectedFund ? 'border-[var(--emerald-border)] bg-[var(--emerald-50)]' : 'border-[var(--border-default)] bg-[var(--bg-section)]'}`}
                     >
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center font-black text-sm ${index === 0 ? 'bg-[var(--color-warning)] text-[var(--color-warning)]' : 'bg-[var(--bg-glass-strong)] text-[var(--text-secondary)]'}`}>
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${index === 0 ? 'bg-[var(--color-warning)] text-[var(--color-warning)]' : 'bg-[var(--bg-glass-strong)] text-[var(--text-secondary)]'}`}>
                         {index + 1}
                       </div>
                       <div className="flex-1">
@@ -613,7 +613,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
                         <div className="text-xs text-[var(--text-tertiary)]">CAGR: {fund.cagr}% | Volatility: {fund.volatility}%</div>
                       </div>
                       <div className="text-right">
-                        <div className="text-xl font-black text-[var(--text-primary)]">{formatCurrency(fund.finalBalance)}</div>
+                        <div className="text-xl font-bold text-[var(--text-primary)]">{formatCurrency(fund.finalBalance)}</div>
                         <div className="text-xs text-[var(--emerald-500)] font-bold">+{formatCurrency(fund.gains)} gains</div>
                       </div>
                     </div>
@@ -631,21 +631,21 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
                   <AlertTriangle size={32} />
                 </div>
                 <div className="flex-1">
-                  <h4 className="text-2xl font-black mb-3">Risk-Adjusted Analysis</h4>
+                  <h4 className="text-2xl font-bold mb-3">Risk-Adjusted Analysis</h4>
                   <p className="text-[var(--mist-50)] font-medium text-lg leading-relaxed mb-6">
                     Understanding risk is just as important as understanding returns.
                   </p>
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                       <p className="text-[var(--mist-100)] text-sm font-bold mb-2">Sharpe Ratio</p>
-                      <p className="text-4xl font-black">{riskAnalysis.sharpeRatio}</p>
+                      <p className="text-4xl font-bold">{riskAnalysis.sharpeRatio}</p>
                       <p className="text-[var(--mist-100)] text-xs font-medium mt-2">
                         {parseFloat(riskAnalysis.sharpeRatio) > 0.5 ? 'Good risk-adjusted returns' : 'Moderate risk-adjusted returns'}
                       </p>
                     </div>
                     <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                       <p className="text-[var(--mist-100)] text-sm font-bold mb-2">Est. Max Drawdown</p>
-                      <p className="text-4xl font-black">-{riskAnalysis.maxDrawdownEstimate}%</p>
+                      <p className="text-4xl font-bold">-{riskAnalysis.maxDrawdownEstimate}%</p>
                       <p className="text-[var(--mist-100)] text-xs font-medium mt-2">
                         Potential peak-to-trough decline
                       </p>
@@ -654,19 +654,19 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
                 </div>
               </div>
               <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-                <p className="text-sm font-black text-[var(--mist-100)] mb-4">MONTE CARLO PROJECTION RANGE</p>
+                <p className="text-sm font-bold text-[var(--mist-100)] mb-4">MONTE CARLO PROJECTION RANGE</p>
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
                     <p className="text-xs text-[var(--mist-200)] font-bold mb-1">Worst Case (5th %ile)</p>
-                    <p className="text-2xl font-black text-[var(--crimson-400)]">{formatCurrency(riskAnalysis.worstCase)}</p>
+                    <p className="text-2xl font-bold text-[var(--crimson-400)]">{formatCurrency(riskAnalysis.worstCase)}</p>
                   </div>
                   <div>
                     <p className="text-xs text-[var(--mist-200)] font-bold mb-1">Median (50th %ile)</p>
-                    <p className="text-2xl font-black text-white">{formatCurrency(riskAnalysis.median)}</p>
+                    <p className="text-2xl font-bold text-white">{formatCurrency(riskAnalysis.median)}</p>
                   </div>
                   <div>
                     <p className="text-xs text-[var(--mist-200)] font-bold mb-1">Best Case (95th %ile)</p>
-                    <p className="text-2xl font-black text-[var(--emerald-400)]">{formatCurrency(riskAnalysis.bestCase)}</p>
+                    <p className="text-2xl font-bold text-[var(--emerald-400)]">{formatCurrency(riskAnalysis.bestCase)}</p>
                   </div>
                 </div>
               </div>
@@ -677,7 +677,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
           <div className="bg-[var(--obsidian-900)] rounded-[2.5rem] p-8 text-white">
             <div className="flex items-center gap-2 mb-4">
               <Sparkles className="w-5 h-5 text-[var(--color-warning)]" />
-              <h4 className="font-black text-lg">CORTEX Recommendation</h4>
+              <h4 className="font-bold text-lg">CORTEX Recommendation</h4>
             </div>
             <p className="text-[var(--text-muted)] font-medium leading-relaxed">
               Based on your {duration}-year time horizon and {formatCurrency(contribution)}/{frequency === 'monthly' ? 'month' : 'year'} contribution capacity,

@@ -359,7 +359,7 @@ const App = () => {
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-3">
                   <Sparkles size={24} />
-                  <h3 className="text-2xl font-black">Unlock 7 More Financial Calculators</h3>
+                  <h3 className="text-2xl font-bold">Unlock 7 More Financial Calculators</h3>
                 </div>
                 <p className="text-[var(--mist-100)] font-medium mb-4">
                   Create a free account to access our complete suite of financial tools: Net Worth Tracker, Debt Paydown Optimizer, S-Corp calculators, and more.
@@ -755,7 +755,7 @@ const App = () => {
               <div className="w-16 h-16 bg-[var(--bg-card)]/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-4">
                 <Crown size={32} />
               </div>
-              <h2 className="text-2xl font-black mb-2">Unlock Auto-Optimize</h2>
+              <h2 className="text-2xl font-bold mb-2">Unlock Auto-Optimize</h2>
               <p className="text-[var(--mist-100)] text-sm font-medium">
                 Advanced budget optimization requires Finance Pro or Elite tier.
               </p>
@@ -790,12 +790,12 @@ const App = () => {
               <div className="grid grid-cols-2 gap-4 mb-6">
                 <div className="border-2 border-[var(--emerald-border)] rounded-2xl p-4 text-center">
                   <p className="text-xs text-[var(--text-tertiary)] mb-1">Finance Pro</p>
-                  <p className="text-3xl font-black text-[var(--emerald-500)]">$9</p>
+                  <p className="text-3xl font-bold text-[var(--emerald-500)]">$9</p>
                   <p className="text-xs text-[var(--text-tertiary)]">/month</p>
                 </div>
                 <div className="border-2 border-[var(--emerald-border)] rounded-2xl p-4 text-center bg-gradient-to-br from-[var(--emerald-50)] to-[var(--emerald-50)]">
                   <p className="text-xs text-[var(--emerald-500)] font-bold mb-1">Elite (Best Value)</p>
-                  <p className="text-3xl font-black text-[var(--emerald-500)]">$29</p>
+                  <p className="text-3xl font-bold text-[var(--emerald-500)]">$29</p>
                   <p className="text-xs text-[var(--text-tertiary)]">/month</p>
                 </div>
               </div>

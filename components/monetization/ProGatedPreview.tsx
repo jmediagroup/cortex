@@ -47,27 +47,27 @@ export default function ProGatedPreview({ isLocked, toolId, previewLabel, childr
 
       {/* Overlay with upgrade CTA */}
       <div className="absolute inset-0 flex items-center justify-center z-10">
-        <div className="bg-white/95 backdrop-blur-sm border border-slate-200 rounded-2xl p-8 max-w-md mx-4 shadow-2xl text-center">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-indigo-100 mb-4">
-            <Lock size={20} className="text-indigo-600" />
+        <div className="bg-[var(--bg-card)]/95 backdrop-blur-sm border border-[var(--border-default)] rounded-2xl p-8 max-w-md mx-4 shadow-2xl text-center">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[var(--emerald-100)] mb-4">
+            <Lock size={20} className="text-[var(--emerald-500)]" />
           </div>
-          <h3 className="text-lg font-black text-slate-900 mb-1">
+          <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">
             {previewLabel || 'Unlock Pro Analysis'}
           </h3>
-          <p className="text-sm text-slate-500 mb-4">
+          <p className="text-sm text-[var(--text-tertiary)] mb-4">
             Upgrade to see the full breakdown
           </p>
           <div className="space-y-2 mb-6 text-left">
             {benefits.map((benefit, i) => (
               <div key={i} className="flex items-center gap-2">
-                <Sparkles size={12} className="text-indigo-500 flex-shrink-0" />
-                <span className="text-xs font-medium text-slate-600">{benefit}</span>
+                <Sparkles size={12} className="text-[var(--emerald-400)] flex-shrink-0" />
+                <span className="text-xs font-medium text-[var(--text-secondary)]">{benefit}</span>
               </div>
             ))}
           </div>
           <button
             onClick={() => router.push('/pricing')}
-            className="w-full bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-indigo-700 transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+            className="w-full bg-[var(--emerald-500)] text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-[var(--emerald-500)] transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
           >
             Upgrade to Pro
             <ArrowRight size={16} />

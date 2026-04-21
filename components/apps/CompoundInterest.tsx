@@ -168,19 +168,19 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
       {/* Metrics Header */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border-default)] shadow-sm">
-          <p className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-1">Total Future Value</p>
-          <h4 className="text-2xl font-black text-[var(--text-primary)]">${finalStats.balance.toLocaleString()}</h4>
+          <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1">Total Future Value</p>
+          <h4 className="text-2xl font-bold text-[var(--text-primary)]">${finalStats.balance.toLocaleString()}</h4>
           <p className="text-xs font-bold text-[var(--emerald-500)] mt-1 flex items-center gap-1">
             <ArrowUpRight size={12} /> After {inputs.years} years
           </p>
         </div>
         <div className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border-default)] shadow-sm">
-          <p className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-1">Total Contributions</p>
-          <h4 className="text-2xl font-black text-[var(--text-primary)]">${finalStats.contributions.toLocaleString()}</h4>
+          <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1">Total Contributions</p>
+          <h4 className="text-2xl font-bold text-[var(--text-primary)]">${finalStats.contributions.toLocaleString()}</h4>
         </div>
         <div className="bg-[var(--emerald-500)] p-6 rounded-3xl shadow-lg text-white">
-          <p className="text-[10px] font-black text-[var(--mist-200)] uppercase tracking-widest mb-1">Total Interest Earned</p>
-          <h4 className="text-2xl font-black text-white">${finalStats.interest.toLocaleString()}</h4>
+          <p className="text-[10px] font-bold text-[var(--mist-200)] uppercase tracking-widest mb-1">Total Interest Earned</p>
+          <h4 className="text-2xl font-bold text-white">${finalStats.interest.toLocaleString()}</h4>
         </div>
       </div>
 
@@ -188,35 +188,35 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
         {/* Input Sidebar */}
         <aside className="lg:col-span-4 space-y-6">
           <div className="bg-[var(--bg-card)] p-8 rounded-[2.5rem] border border-[var(--border-default)] shadow-sm space-y-6">
-            <h3 className="text-sm font-black text-[var(--text-primary)] uppercase tracking-widest mb-6 flex items-center gap-2">
+            <h3 className="text-sm font-bold text-[var(--text-primary)] uppercase tracking-widest mb-6 flex items-center gap-2">
               <Calculator size={16} className="text-[var(--emerald-500)]" /> Variables
             </h3>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-[10px] font-black text-[var(--text-muted)] uppercase mb-1">Initial Principal</label>
+                <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Initial Principal</label>
                 <div className="relative">
                   <span className="absolute left-4 top-2.5 text-[var(--text-muted)] font-bold">$</span>
                   <input type="number" name="principal" value={inputs.principal} onChange={handleInputChange} className="w-full pl-8 pr-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
                 </div>
               </div>
               <div>
-                <label className="block text-[10px] font-black text-[var(--text-muted)] uppercase mb-1">Monthly Contribution</label>
+                <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Monthly Contribution</label>
                 <div className="relative">
                   <span className="absolute left-4 top-2.5 text-[var(--text-muted)] font-bold">$</span>
                   <input type="number" name="monthlyContribution" value={inputs.monthlyContribution} onChange={handleInputChange} className="w-full pl-8 pr-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
                 </div>
               </div>
               <div>
-                <label className="block text-[10px] font-black text-[var(--text-muted)] uppercase mb-1">Avg. Return Rate (%)</label>
+                <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Avg. Return Rate (%)</label>
                 <input type="number" name="annualReturn" value={inputs.annualReturn} onChange={handleInputChange} className="w-full px-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
               </div>
               <div>
-                <label className="block text-[10px] font-black text-[var(--text-muted)] uppercase mb-1">Investment Horizon (Years)</label>
+                <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Investment Horizon (Years)</label>
                 <input type="number" name="years" value={inputs.years} onChange={handleInputChange} className="w-full px-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
               </div>
               <div>
-                <label className="block text-[10px] font-black text-[var(--text-muted)] uppercase mb-1">
+                <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">
                   Compound Frequency
                   <Tooltip content="How often interest is calculated and added to your balance. More frequent compounding means slightly higher returns." />
                 </label>
@@ -235,7 +235,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
           </div>
 
           <div className="bg-[var(--obsidian-800)] text-white p-8 rounded-[2.5rem] shadow-xl">
-            <h4 className="font-black text-sm uppercase tracking-widest mb-4 flex items-center gap-2">
+            <h4 className="font-bold text-sm uppercase tracking-widest mb-4 flex items-center gap-2">
               <Info size={16} className="text-[var(--emerald-400)]" /> The Rule of 72
             </h4>
             <p className="text-xs font-medium leading-relaxed opacity-80">
@@ -247,14 +247,14 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
         {/* Chart View */}
         <main className="lg:col-span-8 bg-[var(--bg-card)] p-8 rounded-[3rem] border border-[var(--border-default)] shadow-sm overflow-hidden">
           <div className="flex items-center justify-between mb-8">
-            <h3 className="text-xl font-black text-[var(--text-primary)] flex items-center gap-2">
+            <h3 className="text-xl font-bold text-[var(--text-primary)] flex items-center gap-2">
               <TrendingUp className="text-[var(--emerald-500)]" /> Growth Trajectory
             </h3>
             <div className="flex gap-4">
-              <div className="flex items-center gap-2 text-[10px] font-black text-[var(--text-muted)] uppercase">
+              <div className="flex items-center gap-2 text-[10px] font-bold text-[var(--text-muted)] uppercase">
                 <div className="w-3 h-3 rounded-full bg-[var(--emerald-500)]" /> Total Balance
               </div>
-              <div className="flex items-center gap-2 text-[10px] font-black text-[var(--text-muted)] uppercase">
+              <div className="flex items-center gap-2 text-[10px] font-bold text-[var(--text-muted)] uppercase">
                 <div className="w-3 h-3 rounded-full bg-[var(--bg-glass-strong)]" /> Basis
               </div>
             </div>
@@ -286,7 +286,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-6">
               <Lock size={24} />
-              <h3 className="text-3xl font-black">Life Impact Analyzer</h3>
+              <h3 className="text-3xl font-bold">Life Impact Analyzer</h3>
             </div>
             <p className="text-[var(--color-warning-soft)] text-lg font-medium mb-8 max-w-3xl leading-relaxed">
               Unlock advanced insights that reveal the invisible consequences of your decisions. See what delaying costs you, what optimization gains you, and how to align your savings with life goals.
@@ -294,23 +294,23 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
             <div className="grid md:grid-cols-3 gap-6 mb-8">
               <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                 <AlertTriangle size={24} className="mb-3" />
-                <h4 className="font-black text-sm mb-2">Delay Cost Analysis</h4>
+                <h4 className="font-bold text-sm mb-2">Delay Cost Analysis</h4>
                 <p className="text-[var(--color-warning-soft)] text-xs font-medium">See exactly how much waiting 5 years costs in real dollars and required contribution increases</p>
               </div>
               <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                 <Target size={24} className="mb-3" />
-                <h4 className="font-black text-sm mb-2">Withdrawal Strategy</h4>
+                <h4 className="font-bold text-sm mb-2">Withdrawal Strategy</h4>
                 <p className="text-[var(--color-warning-soft)] text-xs font-medium">Calculate sustainable income from your future portfolio using proven withdrawal rates</p>
               </div>
               <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                 <Clock size={24} className="mb-3" />
-                <h4 className="font-black text-sm mb-2">Critical Milestones</h4>
+                <h4 className="font-bold text-sm mb-2">Critical Milestones</h4>
                 <p className="text-[var(--color-warning-soft)] text-xs font-medium">Identify key ages where momentum matters most for reaching your wealth targets</p>
               </div>
             </div>
             <button
               onClick={onUpgrade}
-              className="bg-[var(--bg-card)] text-[var(--color-warning)] px-8 py-4 rounded-2xl font-black hover:bg-[var(--color-warning-soft)] transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
+              className="bg-[var(--bg-card)] text-[var(--color-warning)] px-8 py-4 rounded-2xl font-bold hover:bg-[var(--color-warning-soft)] transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
             >
               <Zap size={20} fill="currentColor" />
               Upgrade to Pro - $9/month
@@ -328,7 +328,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
               <Zap size={24} />
             </div>
             <div>
-              <h3 className="text-2xl font-black text-[var(--text-primary)]">Life Impact Analyzer</h3>
+              <h3 className="text-2xl font-bold text-[var(--text-primary)]">Life Impact Analyzer</h3>
               <p className="text-[var(--text-tertiary)] font-medium">Advanced insights that reveal invisible consequences</p>
             </div>
           </div>
@@ -340,21 +340,21 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
                 <AlertTriangle size={32} />
               </div>
               <div className="flex-1">
-                <h4 className="text-2xl font-black mb-3">The Cost of Waiting</h4>
+                <h4 className="text-2xl font-bold mb-3">The Cost of Waiting</h4>
                 <p className="text-[var(--crimson-50)] font-medium text-lg leading-relaxed mb-6">
                   If you delay starting this investment strategy by 5 years, here's what happens:
                 </p>
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                     <p className="text-[var(--crimson-100)] text-sm font-bold mb-2">Wealth Lost</p>
-                    <p className="text-4xl font-black">${Math.round(lifeImpactAnalysis.delayCost).toLocaleString()}</p>
+                    <p className="text-4xl font-bold">${Math.round(lifeImpactAnalysis.delayCost).toLocaleString()}</p>
                     <p className="text-[var(--crimson-100)] text-xs font-medium mt-2">
                       That's {lifeImpactAnalysis.delayPercentageLoss.toFixed(1)}% of your potential outcome
                     </p>
                   </div>
                   <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                     <p className="text-[var(--crimson-100)] text-sm font-bold mb-2">Required Contribution Increase</p>
-                    <p className="text-4xl font-black">+{lifeImpactAnalysis.requiredIncreasePct.toFixed(0)}%</p>
+                    <p className="text-4xl font-bold">+{lifeImpactAnalysis.requiredIncreasePct.toFixed(0)}%</p>
                     <p className="text-[var(--crimson-100)] text-xs font-medium mt-2">
                       You'd need ${Math.round(lifeImpactAnalysis.requiredMonthly).toLocaleString()}/mo instead of ${inputs.monthlyContribution.toLocaleString()}/mo
                     </p>
@@ -363,7 +363,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
               </div>
             </div>
             <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-              <p className="text-sm font-black text-[var(--crimson-100)] mb-2">CORTEX INSIGHT</p>
+              <p className="text-sm font-bold text-[var(--crimson-100)] mb-2">CORTEX INSIGHT</p>
               <p className="font-medium text-white">
                 Time is more valuable than amount. Starting today with ${inputs.monthlyContribution}/mo beats waiting 5 years and saving {lifeImpactAnalysis.requiredIncreasePct.toFixed(0)}% more per month.
               </p>
@@ -377,7 +377,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
                 <TrendingUp size={32} />
               </div>
               <div className="flex-1">
-                <h4 className="text-2xl font-black mb-3">Optimization Opportunity</h4>
+                <h4 className="text-2xl font-bold mb-3">Optimization Opportunity</h4>
                 <p className="text-[var(--emerald-50)] font-medium text-lg leading-relaxed mb-6">
                   What if you could increase your monthly contribution by just 20%?
                 </p>
@@ -385,17 +385,17 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <p className="text-[var(--emerald-100)] text-sm font-bold mb-1">Current Strategy</p>
-                      <p className="text-2xl font-black">${inputs.monthlyContribution.toLocaleString()}/mo</p>
+                      <p className="text-2xl font-bold">${inputs.monthlyContribution.toLocaleString()}/mo</p>
                     </div>
                     <ArrowRight size={32} className="text-white/60" />
                     <div>
                       <p className="text-[var(--emerald-100)] text-sm font-bold mb-1">Optimized Strategy</p>
-                      <p className="text-2xl font-black">${Math.round(inputs.monthlyContribution * 1.2).toLocaleString()}/mo</p>
+                      <p className="text-2xl font-bold">${Math.round(inputs.monthlyContribution * 1.2).toLocaleString()}/mo</p>
                     </div>
                   </div>
                   <div className="border-t border-white/20 pt-4">
                     <p className="text-[var(--emerald-100)] text-sm font-bold mb-2">Additional Wealth Created</p>
-                    <p className="text-4xl font-black mb-2">${Math.round(lifeImpactAnalysis.optimizationGain).toLocaleString()}</p>
+                    <p className="text-4xl font-bold mb-2">${Math.round(lifeImpactAnalysis.optimizationGain).toLocaleString()}</p>
                     <p className="text-[var(--emerald-100)] text-xs font-medium">
                       Just +${Math.round(inputs.monthlyContribution * 0.2).toLocaleString()}/mo compounds to an extra ${Math.round(lifeImpactAnalysis.optimizationGain).toLocaleString()} over {inputs.years} years
                     </p>
@@ -412,26 +412,26 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
                 <Target size={32} />
               </div>
               <div className="flex-1">
-                <h4 className="text-2xl font-black text-[var(--text-primary)] mb-3">Withdrawal Strategy Preview</h4>
+                <h4 className="text-2xl font-bold text-[var(--text-primary)] mb-3">Withdrawal Strategy Preview</h4>
                 <p className="text-[var(--text-secondary)] font-medium text-lg leading-relaxed mb-6">
-                  Your future portfolio of <span className="font-black text-[var(--text-primary)]">${finalStats.balance.toLocaleString()}</span> can sustainably support:
+                  Your future portfolio of <span className="font-bold text-[var(--text-primary)]">${finalStats.balance.toLocaleString()}</span> can sustainably support:
                 </p>
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="bg-[var(--emerald-50)] rounded-2xl p-6 border border-[var(--emerald-border-soft)]">
                     <p className="text-[var(--emerald-500)] text-sm font-bold mb-2">Annual Income (4% Rule)</p>
-                    <p className="text-4xl font-black text-[var(--text-primary)]">${Math.round(lifeImpactAnalysis.annualIncome).toLocaleString()}</p>
+                    <p className="text-4xl font-bold text-[var(--text-primary)]">${Math.round(lifeImpactAnalysis.annualIncome).toLocaleString()}</p>
                     <p className="text-[var(--text-tertiary)] text-xs font-medium mt-2">Adjusted for inflation</p>
                   </div>
                   <div className="bg-[var(--emerald-50)] rounded-2xl p-6 border border-[var(--emerald-border-soft)]">
                     <p className="text-[var(--emerald-500)] text-sm font-bold mb-2">Monthly Income</p>
-                    <p className="text-4xl font-black text-[var(--text-primary)]">${Math.round(lifeImpactAnalysis.monthlyIncome).toLocaleString()}</p>
+                    <p className="text-4xl font-bold text-[var(--text-primary)]">${Math.round(lifeImpactAnalysis.monthlyIncome).toLocaleString()}</p>
                     <p className="text-[var(--text-tertiary)] text-xs font-medium mt-2">Sustainable for 30+ years</p>
                   </div>
                 </div>
               </div>
             </div>
             <div className="bg-[var(--obsidian-800)] text-white rounded-2xl p-6">
-              <p className="text-xs font-black text-[var(--mist-200)] mb-2">THE 4% RULE</p>
+              <p className="text-xs font-bold text-[var(--mist-200)] mb-2">THE 4% RULE</p>
               <p className="text-sm font-medium text-[var(--mist-50)]">
                 Research shows withdrawing 4% annually from a balanced portfolio historically sustains wealth for 30+ years through market cycles. This is your "work optional" number.
               </p>
@@ -445,7 +445,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
                 <Calculator size={32} />
               </div>
               <div className="flex-1">
-                <h4 className="text-2xl font-black text-[var(--text-primary)] mb-3">Multi-Goal Allocation Example</h4>
+                <h4 className="text-2xl font-bold text-[var(--text-primary)] mb-3">Multi-Goal Allocation Example</h4>
                 <p className="text-[var(--text-secondary)] font-medium text-lg leading-relaxed mb-6">
                   How your ${finalStats.balance.toLocaleString()} portfolio could be strategically allocated:
                 </p>
@@ -453,8 +453,8 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
                   <div className="flex items-center gap-4">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-black text-[var(--text-secondary)]">Retirement (60%)</span>
-                        <span className="text-lg font-black text-[var(--text-primary)]">${Math.round(lifeImpactAnalysis.goalSplit.retirement).toLocaleString()}</span>
+                        <span className="text-sm font-bold text-[var(--text-secondary)]">Retirement (60%)</span>
+                        <span className="text-lg font-bold text-[var(--text-primary)]">${Math.round(lifeImpactAnalysis.goalSplit.retirement).toLocaleString()}</span>
                       </div>
                       <div className="h-3 bg-[var(--bg-glass)] rounded-full overflow-hidden">
                         <div className="h-full bg-gradient-to-r from-[var(--emerald-500)] to-[var(--emerald-500)] w-[60%]"></div>
@@ -464,8 +464,8 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
                   <div className="flex items-center gap-4">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-black text-[var(--text-secondary)]">Home Purchase (25%)</span>
-                        <span className="text-lg font-black text-[var(--text-primary)]">${Math.round(lifeImpactAnalysis.goalSplit.house).toLocaleString()}</span>
+                        <span className="text-sm font-bold text-[var(--text-secondary)]">Home Purchase (25%)</span>
+                        <span className="text-lg font-bold text-[var(--text-primary)]">${Math.round(lifeImpactAnalysis.goalSplit.house).toLocaleString()}</span>
                       </div>
                       <div className="h-3 bg-[var(--bg-glass)] rounded-full overflow-hidden">
                         <div className="h-full bg-gradient-to-r from-[var(--emerald-500)] to-[var(--color-info)] w-[25%]"></div>
@@ -475,8 +475,8 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
                   <div className="flex items-center gap-4">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-black text-[var(--text-secondary)]">Other Goals (15%)</span>
-                        <span className="text-lg font-black text-[var(--text-primary)]">${Math.round(lifeImpactAnalysis.goalSplit.other).toLocaleString()}</span>
+                        <span className="text-sm font-bold text-[var(--text-secondary)]">Other Goals (15%)</span>
+                        <span className="text-lg font-bold text-[var(--text-primary)]">${Math.round(lifeImpactAnalysis.goalSplit.other).toLocaleString()}</span>
                       </div>
                       <div className="h-3 bg-[var(--bg-glass)] rounded-full overflow-hidden">
                         <div className="h-full bg-gradient-to-r from-[var(--color-warning)] to-[var(--color-warning)] w-[15%]"></div>

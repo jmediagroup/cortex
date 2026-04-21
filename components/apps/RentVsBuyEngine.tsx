@@ -360,7 +360,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                 <div className="col-span-1 md:col-span-2">
                   <p className="text-[var(--mist-200)] text-xs font-semibold uppercase mb-1">The Verdict</p>
                   <div className="flex items-center gap-3">
-                    <div className={`px-4 py-1 rounded-full text-lg font-black uppercase tracking-tighter ${winner === 'Buy' ? 'bg-[var(--emerald-500)] text-white' : 'bg-[var(--crimson-500)] text-white'}`}>
+                    <div className={`px-4 py-1 rounded-full text-lg font-semibold uppercase tracking-tighter ${winner === 'Buy' ? 'bg-[var(--emerald-500)] text-white' : 'bg-[var(--crimson-500)] text-white'}`}>
                       {winner} Wins
                     </div>
                     <p className="text-white text-sm">
@@ -472,7 +472,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-6">
               <Lock size={24} />
-              <h3 className="text-3xl font-black">Lifecycle Housing Strategy</h3>
+              <h3 className="text-3xl font-bold">Lifecycle Housing Strategy</h3>
             </div>
             <p className="text-[var(--mist-50)] text-lg font-medium mb-8 max-w-3xl leading-relaxed">
               Unlock advanced simulations that reveal the long-term wealth impact of housing decisions across multiple moves, market conditions, and life stages.
@@ -480,23 +480,23 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
             <div className="grid md:grid-cols-3 gap-6 mb-8">
               <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                 <Repeat size={24} className="mb-3" />
-                <h4 className="font-black text-sm mb-2">3-Move Simulation</h4>
+                <h4 className="font-bold text-sm mb-2">3-Move Simulation</h4>
                 <p className="text-[var(--mist-100)] text-xs font-medium">Model starter home → family home → downsize to see how transaction costs compound</p>
               </div>
               <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                 <DollarSign size={24} className="mb-3" />
-                <h4 className="font-black text-sm mb-2">Hidden Drag Calculator</h4>
+                <h4 className="font-bold text-sm mb-2">Hidden Drag Calculator</h4>
                 <p className="text-[var(--mist-100)] text-xs font-medium">Quantify all the costs beyond your mortgage: maintenance, property tax, HOA, closing costs</p>
               </div>
               <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                 <MapPin size={24} className="mb-3" />
-                <h4 className="font-black text-sm mb-2">Mobility Premium</h4>
+                <h4 className="font-bold text-sm mb-2">Mobility Premium</h4>
                 <p className="text-[var(--mist-100)] text-xs font-medium">Calculate the career optionality value of staying flexible vs. being locked into a property</p>
               </div>
             </div>
             <button
               onClick={onUpgrade}
-              className="bg-[var(--bg-card)] text-[var(--emerald-500)] px-8 py-4 rounded-2xl font-black hover:bg-[var(--emerald-50)] transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
+              className="bg-[var(--bg-card)] text-[var(--emerald-500)] px-8 py-4 rounded-2xl font-bold hover:bg-[var(--emerald-50)] transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
             >
               <Zap size={20} fill="currentColor" />
               Upgrade to Pro - $9/month
@@ -514,7 +514,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
               <Zap size={24} />
             </div>
             <div>
-              <h3 className="text-2xl font-black text-[var(--text-primary)]">Lifecycle Housing Strategy</h3>
+              <h3 className="text-2xl font-bold text-[var(--text-primary)]">Lifecycle Housing Strategy</h3>
               <p className="text-[var(--text-tertiary)] font-medium">Long-term wealth impact across multiple life stages</p>
             </div>
           </div>
@@ -526,7 +526,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                 <Repeat size={32} />
               </div>
               <div className="flex-1">
-                <h4 className="text-2xl font-black mb-3">The 3-Move Reality</h4>
+                <h4 className="text-2xl font-bold mb-3">The 3-Move Reality</h4>
                 <p className="text-[var(--crimson-50)] font-medium text-lg leading-relaxed mb-6">
                   Most people don't buy one house and stay forever. Let's model a realistic lifecycle:
                 </p>
@@ -556,14 +556,14 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                     <p className="text-[var(--crimson-100)] text-sm font-bold mb-2">Total Transaction Friction</p>
-                    <p className="text-4xl font-black">{formatCurrency(lifecycleAnalysis.moves.transactionCosts)}</p>
+                    <p className="text-4xl font-bold">{formatCurrency(lifecycleAnalysis.moves.transactionCosts)}</p>
                     <p className="text-[var(--crimson-100)] text-xs font-medium mt-2">
                       Closing costs + realtor fees across 3 purchases and 2 sales
                     </p>
                   </div>
                   <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                     <p className="text-[var(--crimson-100)] text-sm font-bold mb-2">vs. Single Home</p>
-                    <p className="text-4xl font-black">{formatCurrency(lifecycleAnalysis.moves.singleHomeTransactionCost)}</p>
+                    <p className="text-4xl font-bold">{formatCurrency(lifecycleAnalysis.moves.singleHomeTransactionCost)}</p>
                     <p className="text-[var(--crimson-100)] text-xs font-medium mt-2">
                       Extra friction cost: {formatCurrency(lifecycleAnalysis.moves.extraFriction)}
                     </p>
@@ -572,7 +572,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
               </div>
             </div>
             <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-              <p className="text-sm font-black text-[var(--crimson-100)] mb-2">CORTEX INSIGHT</p>
+              <p className="text-sm font-bold text-[var(--crimson-100)] mb-2">CORTEX INSIGHT</p>
               <p className="font-medium text-white">
                 Over 3 expected moves, renting preserves {formatCurrency(lifecycleAnalysis.moves.extraFriction + nwDiff)} more wealth due to transaction costs and mobility value—even with "wasted" rent.
               </p>
@@ -586,43 +586,43 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                 <DollarSign size={32} />
               </div>
               <div className="flex-1">
-                <h4 className="text-2xl font-black text-[var(--text-primary)] mb-3">The Hidden Drag</h4>
+                <h4 className="text-2xl font-bold text-[var(--text-primary)] mb-3">The Hidden Drag</h4>
                 <p className="text-[var(--text-secondary)] font-medium text-lg leading-relaxed mb-6">
                   Your mortgage payment is just the beginning. Here are ALL the costs of ownership over {years} years:
                 </p>
                 <div className="space-y-3 mb-6">
                   <div className="flex items-center justify-between p-4 bg-[var(--bg-section)] rounded-xl">
                     <span className="font-bold text-[var(--text-secondary)]">Maintenance ({maintenanceRate}% annually)</span>
-                    <span className="font-black text-[var(--text-primary)]">{formatCurrency(purchasePrice * (maintenanceRate / 100) * years)}</span>
+                    <span className="font-bold text-[var(--text-primary)]">{formatCurrency(purchasePrice * (maintenanceRate / 100) * years)}</span>
                   </div>
                   <div className="flex items-center justify-between p-4 bg-[var(--bg-section)] rounded-xl">
                     <span className="font-bold text-[var(--text-secondary)]">Property Tax ({propertyTax}% annually)</span>
-                    <span className="font-black text-[var(--text-primary)]">{formatCurrency(purchasePrice * (propertyTax / 100) * years)}</span>
+                    <span className="font-bold text-[var(--text-primary)]">{formatCurrency(purchasePrice * (propertyTax / 100) * years)}</span>
                   </div>
                   <div className="flex items-center justify-between p-4 bg-[var(--bg-section)] rounded-xl">
                     <span className="font-bold text-[var(--text-secondary)]">Insurance (0.5% annually)</span>
-                    <span className="font-black text-[var(--text-primary)]">{formatCurrency(purchasePrice * 0.005 * years)}</span>
+                    <span className="font-bold text-[var(--text-primary)]">{formatCurrency(purchasePrice * 0.005 * years)}</span>
                   </div>
                   <div className="flex items-center justify-between p-4 bg-[var(--bg-section)] rounded-xl">
                     <span className="font-bold text-[var(--text-secondary)]">HOA/Condo Fees (est.)</span>
-                    <span className="font-black text-[var(--text-primary)]">{formatCurrency(3600 * years)}</span>
+                    <span className="font-bold text-[var(--text-primary)]">{formatCurrency(3600 * years)}</span>
                   </div>
                   <div className="flex items-center justify-between p-4 bg-[var(--bg-section)] rounded-xl">
                     <span className="font-bold text-[var(--text-secondary)]">Closing Costs ({buyingCosts}%)</span>
-                    <span className="font-black text-[var(--text-primary)]">{formatCurrency(purchasePrice * (buyingCosts / 100))}</span>
+                    <span className="font-bold text-[var(--text-primary)]">{formatCurrency(purchasePrice * (buyingCosts / 100))}</span>
                   </div>
                   <div className="flex items-center justify-between p-4 bg-[var(--bg-section)] rounded-xl">
                     <span className="font-bold text-[var(--text-secondary)]">Future Selling Costs ({sellingCosts}%)</span>
-                    <span className="font-black text-[var(--text-primary)]">{formatCurrency(currentYearData.homeValue * (sellingCosts / 100))}</span>
+                    <span className="font-bold text-[var(--text-primary)]">{formatCurrency(currentYearData.homeValue * (sellingCosts / 100))}</span>
                   </div>
                   <div className="flex items-center justify-between p-4 bg-gradient-to-r from-[var(--color-warning-soft)] to-[var(--crimson-100)] rounded-xl border-2 border-[var(--color-warning-soft)]">
-                    <span className="font-black text-[var(--text-primary)] text-lg">Total Hidden Drag</span>
-                    <span className="font-black text-[var(--color-warning)] text-2xl">{formatCurrency(lifecycleAnalysis.totalHiddenCosts)}</span>
+                    <span className="font-bold text-[var(--text-primary)] text-lg">Total Hidden Drag</span>
+                    <span className="font-bold text-[var(--color-warning)] text-2xl">{formatCurrency(lifecycleAnalysis.totalHiddenCosts)}</span>
                   </div>
                 </div>
                 <div className="bg-[var(--color-warning-soft)] rounded-2xl p-6 border border-[var(--color-warning-soft)]">
                   <p className="text-[var(--color-warning)] text-sm font-bold mb-2">Monthly Hidden Drag</p>
-                  <p className="text-4xl font-black text-[var(--text-primary)]">{formatCurrency(lifecycleAnalysis.monthlyHiddenDrag)}/mo</p>
+                  <p className="text-4xl font-bold text-[var(--text-primary)]">{formatCurrency(lifecycleAnalysis.monthlyHiddenDrag)}/mo</p>
                   <p className="text-[var(--text-tertiary)] text-xs font-medium mt-2">
                     This is ON TOP of your {formatCurrency((purchasePrice - (purchasePrice * downPaymentPct / 100)) * (mortgageRate / 100 / 12))} monthly mortgage payment
                   </p>
@@ -638,12 +638,12 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                 <MapPin size={32} />
               </div>
               <div className="flex-1">
-                <h4 className="text-2xl font-black mb-3">The Mobility Premium</h4>
+                <h4 className="text-2xl font-bold mb-3">The Mobility Premium</h4>
                 <p className="text-[var(--emerald-50)] font-medium text-lg leading-relaxed mb-6">
                   Renting isn't just flexibility—it's career optionality with real dollar value.
                 </p>
                 <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 mb-6">
-                  <h5 className="font-black mb-4">Real-World Scenario:</h5>
+                  <h5 className="font-bold mb-4">Real-World Scenario:</h5>
                   <ul className="space-y-3 text-[var(--emerald-50)]">
                     <li className="flex items-start gap-3">
                       <div className="w-2 h-2 rounded-full bg-[var(--emerald-400)] mt-2 shrink-0"></div>
@@ -662,11 +662,11 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                     <p className="text-[var(--emerald-100)] text-sm font-bold mb-2">Standard Rent Net Worth</p>
-                    <p className="text-4xl font-black">{formatCurrency(currentYearData.rentNetWorth)}</p>
+                    <p className="text-4xl font-bold">{formatCurrency(currentYearData.rentNetWorth)}</p>
                   </div>
                   <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                     <p className="text-[var(--emerald-100)] text-sm font-bold mb-2">Mobility-Adjusted Value</p>
-                    <p className="text-4xl font-black">{formatCurrency(lifecycleAnalysis.mobilityAdjustedRentNW)}</p>
+                    <p className="text-4xl font-bold">{formatCurrency(lifecycleAnalysis.mobilityAdjustedRentNW)}</p>
                     <p className="text-[var(--emerald-100)] text-xs font-medium mt-2">
                       +{formatCurrency(lifecycleAnalysis.mobilityPremium)} opportunity value
                     </p>
@@ -675,7 +675,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
               </div>
             </div>
             <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-              <p className="text-sm font-black text-[var(--emerald-100)] mb-2">CORTEX INSIGHT</p>
+              <p className="text-sm font-bold text-[var(--emerald-100)] mb-2">CORTEX INSIGHT</p>
               <p className="font-medium text-white">
                 Career mobility has quantifiable value. Being locked into a property when a life-changing opportunity appears has a real cost that traditional rent vs. buy calculators ignore.
               </p>
@@ -689,7 +689,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                 <TrendingUp size={32} />
               </div>
               <div className="flex-1">
-                <h4 className="text-2xl font-black text-[var(--text-primary)] mb-3">Market Timing Scenarios</h4>
+                <h4 className="text-2xl font-bold text-[var(--text-primary)] mb-3">Market Timing Scenarios</h4>
                 <p className="text-[var(--text-secondary)] font-medium text-lg leading-relaxed mb-6">
                   Housing markets fluctuate. Here's your outcome range based on historical data:
                 </p>
@@ -697,7 +697,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                   <div>
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-sm font-bold text-[var(--text-tertiary)]">Best Case (Buy at Bottom)</span>
-                      <span className="text-lg font-black text-[var(--emerald-500)]">{formatCurrency(lifecycleAnalysis.bestCase)}</span>
+                      <span className="text-lg font-bold text-[var(--emerald-500)]">{formatCurrency(lifecycleAnalysis.bestCase)}</span>
                     </div>
                     <div className="w-full bg-[var(--bg-glass)] rounded-full h-3">
                       <div className="h-3 bg-gradient-to-r from-[var(--emerald-400)] to-[var(--emerald-600)] rounded-full" style={{ width: '100%' }}></div>
@@ -706,7 +706,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                   <div>
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-sm font-bold text-[var(--text-tertiary)]">Your Scenario (Current Inputs)</span>
-                      <span className="text-lg font-black text-[var(--emerald-500)]">{formatCurrency(currentYearData.buyNetWorth)}</span>
+                      <span className="text-lg font-bold text-[var(--emerald-500)]">{formatCurrency(currentYearData.buyNetWorth)}</span>
                     </div>
                     <div className="w-full bg-[var(--bg-glass)] rounded-full h-3">
                       <div className="h-3 bg-gradient-to-r from-[var(--emerald-400)] to-[var(--emerald-500)] rounded-full" style={{ width: '80%' }}></div>
@@ -715,7 +715,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                   <div>
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-sm font-bold text-[var(--text-tertiary)]">Worst Case (Buy at Peak)</span>
-                      <span className="text-lg font-black text-[var(--crimson-500)]">{formatCurrency(lifecycleAnalysis.worstCase)}</span>
+                      <span className="text-lg font-bold text-[var(--crimson-500)]">{formatCurrency(lifecycleAnalysis.worstCase)}</span>
                     </div>
                     <div className="w-full bg-[var(--bg-glass)] rounded-full h-3">
                       <div className="h-3 bg-gradient-to-r from-[var(--crimson-400)] to-[var(--crimson-500)] rounded-full" style={{ width: '60%' }}></div>
@@ -724,7 +724,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                 </div>
                 <div className="bg-[var(--color-warning-soft)] rounded-2xl p-6 border border-[var(--glass-border-strong)] mt-6">
                   <p className="text-[var(--color-warning)] text-sm font-bold mb-2">Market Timing Risk</p>
-                  <p className="text-4xl font-black text-[var(--text-primary)] mb-2">{formatCurrency(lifecycleAnalysis.marketTimingRisk)}</p>
+                  <p className="text-4xl font-bold text-[var(--text-primary)] mb-2">{formatCurrency(lifecycleAnalysis.marketTimingRisk)}</p>
                   <p className="text-[var(--text-secondary)] text-sm font-medium">
                     The spread between buying at the right time vs. the wrong time. Renters are insulated from this volatility.
                   </p>

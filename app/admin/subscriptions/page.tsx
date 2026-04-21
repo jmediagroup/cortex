@@ -60,15 +60,15 @@ export default function AdminSubscriptions() {
 
   const statusBadge = (status: string | null) => {
     const colors: Record<string, string> = {
-      active: 'bg-green-100 text-green-700',
-      trialing: 'bg-blue-100 text-blue-700',
-      past_due: 'bg-yellow-100 text-yellow-700',
-      canceled: 'bg-red-100 text-red-700',
+      active: 'bg-[var(--emerald-100)] text-[var(--emerald-500)]',
+      trialing: 'bg-[var(--color-info-soft)] text-[var(--color-info)]',
+      past_due: 'bg-[var(--color-warning-soft)] text-[var(--color-warning)]',
+      canceled: 'bg-[var(--crimson-100)] text-[var(--crimson-500)]',
       incomplete: 'bg-gray-100 text-gray-700',
     };
     const s = status || 'unknown';
     return (
-      <span className={`rounded-md px-2 py-0.5 text-[10px] font-black uppercase ${colors[s] || 'bg-gray-100 text-gray-600'}`}>
+      <span className={`rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase ${colors[s] || 'bg-gray-100 text-gray-600'}`}>
         {s}
       </span>
     );
@@ -85,7 +85,7 @@ export default function AdminSubscriptions() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-black tracking-tight text-[var(--text-primary)]">Subscriptions</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">Subscriptions</h1>
         <p className="text-sm text-[var(--text-tertiary)] font-medium mt-1">
           {data?.total || 0} subscribers
         </p>
@@ -97,12 +97,12 @@ export default function AdminSubscriptions() {
         style={{ boxShadow: 'var(--shadow-card)' }}
       >
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-md)] bg-green-100 text-green-600">
+          <div className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-md)] bg-[var(--emerald-100)] text-[var(--emerald-500)]">
             <DollarSign size={20} />
           </div>
           <div>
             <p className="text-xs font-bold uppercase tracking-wider text-[var(--text-tertiary)]">Monthly Recurring Revenue</p>
-            <p className="text-3xl font-black text-[var(--text-primary)]">${(data?.mrr || 0).toFixed(2)}</p>
+            <p className="text-3xl font-bold text-[var(--text-primary)]">${(data?.mrr || 0).toFixed(2)}</p>
           </div>
         </div>
       </div>
@@ -121,12 +121,12 @@ export default function AdminSubscriptions() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-[var(--border-secondary)] bg-[var(--surface-secondary)]">
-                  <th className="text-left px-4 py-3 text-[10px] font-black uppercase tracking-wider text-[var(--text-tertiary)]">Email</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-black uppercase tracking-wider text-[var(--text-tertiary)]">Tier</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-black uppercase tracking-wider text-[var(--text-tertiary)]">Status</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-black uppercase tracking-wider text-[var(--text-tertiary)]">Amount</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-black uppercase tracking-wider text-[var(--text-tertiary)]">Renews</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-black uppercase tracking-wider text-[var(--text-tertiary)]">Canceling</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Email</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Tier</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Status</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Amount</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Renews</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Canceling</th>
                 </tr>
               </thead>
               <tbody>

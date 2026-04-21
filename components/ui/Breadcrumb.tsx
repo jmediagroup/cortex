@@ -10,13 +10,13 @@ export default function Breadcrumb({ toolName }: BreadcrumbProps) {
     <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm mb-6">
       <Link
         href="/"
-        className="flex items-center gap-1.5 text-slate-400 hover:text-slate-600 transition-colors"
+        className="flex items-center gap-1.5 text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors"
       >
         <Home size={14} />
         <span>Apps</span>
       </Link>
-      <ChevronRight size={14} className="text-slate-300" />
-      <span className="text-slate-600 font-medium">{toolName}</span>
+      <ChevronRight size={14} className="text-[var(--text-muted)]" />
+      <span className="text-[var(--text-secondary)] font-medium">{toolName}</span>
     </nav>
   );
 }

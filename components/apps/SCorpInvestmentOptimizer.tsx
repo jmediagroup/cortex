@@ -174,13 +174,13 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
       <div className="flex items-center justify-center min-h-[600px]">
         <div className="max-w-md text-center p-12 bg-[var(--color-warning-soft)] border-2 border-[var(--glass-border-strong)] rounded-[3rem]">
           <Lock className="mx-auto text-[var(--color-warning)] mb-4" size={48} />
-          <h3 className="text-2xl font-black text-[var(--color-warning)] mb-3">Pro Feature</h3>
+          <h3 className="text-2xl font-bold text-[var(--color-warning)] mb-3">Pro Feature</h3>
           <p className="text-[var(--color-warning)] font-medium mb-6">
             The S-Corp Investment Optimizer is available exclusively to Pro subscribers. Upgrade to access advanced business tax optimization tools.
           </p>
           <button
             onClick={onUpgrade}
-            className="bg-[var(--emerald-500)] hover:bg-[var(--emerald-500)] text-white font-black py-3 px-8 rounded-2xl transition-colors"
+            className="bg-[var(--emerald-500)] hover:bg-[var(--emerald-500)] text-white font-bold py-3 px-8 rounded-2xl transition-colors"
           >
             Upgrade to Pro
           </button>
@@ -210,7 +210,7 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
             <Shield className="text-[var(--emerald-500)]" size={28} />
           </div>
           <div>
-            <h3 className="text-xl font-black text-[var(--emerald-500)] mb-2">S-Corp Investment Strategy</h3>
+            <h3 className="text-xl font-bold text-[var(--emerald-500)] mb-2">S-Corp Investment Strategy</h3>
             <p className="text-[var(--emerald-500)] font-medium text-sm leading-relaxed">
               As an S-Corp owner, you can maximize retirement savings through strategic allocation across employee deferrals,
               company matching, IRA contributions, and HSA. This optimizer uses 2026 IRS limits and shows your 30-year wealth projection
@@ -225,7 +225,7 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
         <div className="lg:col-span-4 space-y-6">
           {/* Business & Tax Profile */}
           <div className="bg-[var(--bg-card)] rounded-[2.5rem] p-8 border-2 border-[var(--border-default)] shadow-sm">
-            <h3 className="text-xl font-black text-[var(--text-primary)] mb-6 flex items-center gap-3">
+            <h3 className="text-xl font-bold text-[var(--text-primary)] mb-6 flex items-center gap-3">
               <DollarSign className="text-[var(--emerald-500)]" size={24} />
               Business & Tax Profile
             </h3>
@@ -287,7 +287,7 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
 
           {/* Monthly Contributions */}
           <div className="bg-[var(--bg-card)] rounded-[2.5rem] p-8 border-2 border-[var(--color-info-soft)] border-t-4 shadow-sm">
-            <h3 className="text-xl font-black text-[var(--color-info)] mb-6 flex items-center gap-3">
+            <h3 className="text-xl font-bold text-[var(--color-info)] mb-6 flex items-center gap-3">
               <PiggyBank className="text-[var(--color-info)]" size={24} />
               Monthly Contributions
             </h3>
@@ -377,7 +377,7 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
 
           {/* Projection Parameters */}
           <div className="bg-[var(--bg-card)] rounded-[2.5rem] p-8 border-2 border-[var(--border-default)] shadow-sm">
-            <h3 className="text-sm font-black text-[var(--text-tertiary)] uppercase tracking-widest mb-4">Projection Parameters</h3>
+            <h3 className="text-sm font-bold text-[var(--text-tertiary)] uppercase tracking-widest mb-4">Projection Parameters</h3>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -424,19 +424,19 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-gradient-to-br from-[var(--emerald-600)] to-[var(--emerald-700)] rounded-[2.5rem] p-8 text-white shadow-xl">
               <p className="text-xs font-bold uppercase text-[var(--emerald-100)] mb-2">Total Monthly Outlay</p>
-              <div className="text-4xl font-black mb-1">${calculations.totalMonthly.toLocaleString()}</div>
+              <div className="text-4xl font-bold mb-1">${calculations.totalMonthly.toLocaleString()}</div>
               <p className="text-xs text-[var(--emerald-100)]">Gross investment</p>
             </div>
 
             <div className="bg-[var(--bg-card)] rounded-[2.5rem] p-8 border-2 border-[var(--emerald-border)] shadow-md">
               <p className="text-xs font-bold uppercase text-[var(--text-tertiary)] mb-2">Monthly Tax Savings</p>
-              <div className="text-4xl font-black text-[var(--emerald-500)] mb-1">${Math.round(calculations.monthlyTaxSavings).toLocaleString()}</div>
+              <div className="text-4xl font-bold text-[var(--emerald-500)] mb-1">${Math.round(calculations.monthlyTaxSavings).toLocaleString()}</div>
               <p className="text-xs text-[var(--text-tertiary)]">Net cost: <span className="font-bold text-[var(--text-secondary)]">${Math.round(calculations.netMonthlyCost).toLocaleString()}/mo</span></p>
             </div>
 
             <div className="bg-[var(--emerald-50)] rounded-[2.5rem] p-8 border-2 border-[var(--emerald-border)] shadow-md">
               <p className="text-xs font-bold uppercase text-[var(--emerald-400)] mb-2">30-Year Wealth</p>
-              <div className="text-4xl font-black text-[var(--emerald-500)] mb-1">${Math.round(calculations.totalBalance).toLocaleString()}</div>
+              <div className="text-4xl font-bold text-[var(--emerald-500)] mb-1">${Math.round(calculations.totalBalance).toLocaleString()}</div>
               <p className="text-xs text-[var(--emerald-400)]">Estimated balance</p>
             </div>
           </div>
@@ -445,7 +445,7 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Growth Chart */}
             <div className="bg-[var(--bg-card)] rounded-[2.5rem] p-8 border-2 border-[var(--border-default)] shadow-sm">
-              <h3 className="text-sm font-black text-[var(--text-tertiary)] uppercase tracking-widest mb-4">30-Year Growth</h3>
+              <h3 className="text-sm font-bold text-[var(--text-tertiary)] uppercase tracking-widest mb-4">30-Year Growth</h3>
               <ResponsiveContainer width="100%" height={250}>
                 <LineChart data={calculations.projectionData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#48484A" />
@@ -471,7 +471,7 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
 
             {/* Tax Breakdown Pie */}
             <div className="bg-[var(--bg-card)] rounded-[2.5rem] p-8 border-2 border-[var(--border-default)] shadow-sm">
-              <h3 className="text-sm font-black text-[var(--text-tertiary)] uppercase tracking-widest mb-4">Tax & Cost Breakdown</h3>
+              <h3 className="text-sm font-bold text-[var(--text-tertiary)] uppercase tracking-widest mb-4">Tax & Cost Breakdown</h3>
               <ResponsiveContainer width="100%" height={250}>
                 <PieChart>
                   <Pie
@@ -503,7 +503,7 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
           {/* Annual Allocation Summary */}
           <div className="bg-[var(--bg-card)] rounded-[2.5rem] border-2 border-[var(--border-default)] shadow-sm overflow-hidden">
             <div className="p-6 border-b-2 border-[var(--border-subtle)] bg-[var(--bg-section)]">
-              <h3 className="font-black text-[var(--text-secondary)]">Annual Allocation Summary</h3>
+              <h3 className="font-bold text-[var(--text-secondary)]">Annual Allocation Summary</h3>
             </div>
             <div className="p-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -517,14 +517,14 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
                       <div className="flex items-center gap-3">
                         <div className="w-2 h-12 rounded-full" style={{ backgroundColor: allocation.color }}></div>
                         <div>
-                          <h4 className="text-sm font-black text-[var(--text-primary)]">{allocation.name}</h4>
+                          <h4 className="text-sm font-bold text-[var(--text-primary)]">{allocation.name}</h4>
                           <span className={`text-[10px] uppercase font-bold ${allocation.isTaxDeductible ? 'text-[var(--emerald-500)]' : 'text-[var(--text-muted)]'}`}>
                             {allocation.isTaxDeductible ? '✓ Tax Deductible' : 'No Immediate Savings'}
                           </span>
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="font-black text-[var(--text-primary)] text-lg">${annualAmount.toLocaleString()}</div>
+                        <div className="font-bold text-[var(--text-primary)] text-lg">${annualAmount.toLocaleString()}</div>
                         {annualSavings > 0 && (
                           <div className="text-[10px] text-[var(--emerald-500)] font-bold">
                             Est. ${Math.round(annualSavings).toLocaleString()} Savings

@@ -70,18 +70,18 @@ export default function SCorpOptimizer({ isPro = false, onUpgrade, isLoggedIn = 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border-default)] shadow-sm">
-          <p className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-1">Est. Payroll Tax Savings</p>
-          <h4 className="text-3xl font-black text-[var(--emerald-500)]">${Math.round(stats.savings).toLocaleString()}</h4>
+          <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1">Est. Payroll Tax Savings</p>
+          <h4 className="text-3xl font-bold text-[var(--emerald-500)]">${Math.round(stats.savings).toLocaleString()}</h4>
           <p className="text-xs font-bold text-[var(--text-tertiary)] mt-1">vs. Sole Proprietorship</p>
         </div>
         <div className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border-default)] shadow-sm">
-          <p className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-1">Max Distribution</p>
-          <h4 className="text-3xl font-black text-[var(--emerald-500)]">${Math.round(stats.distributions).toLocaleString()}</h4>
+          <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1">Max Distribution</p>
+          <h4 className="text-3xl font-bold text-[var(--emerald-500)]">${Math.round(stats.distributions).toLocaleString()}</h4>
           <p className="text-xs font-bold text-[var(--text-tertiary)] mt-1">FICA-exempt income</p>
         </div>
         <div className="bg-[var(--emerald-500)] p-6 rounded-3xl shadow-lg text-white">
-          <p className="text-[10px] font-black text-[var(--mist-200)] uppercase tracking-widest mb-1">Tax Efficiency</p>
-          <h4 className="text-3xl font-black text-white">{Math.round(stats.efficiency)}%</h4>
+          <p className="text-[10px] font-bold text-[var(--mist-200)] uppercase tracking-widest mb-1">Tax Efficiency</p>
+          <h4 className="text-3xl font-bold text-white">{Math.round(stats.efficiency)}%</h4>
           <p className="text-xs font-bold text-[var(--mist-100)] mt-1">Reduction in SE Taxes</p>
         </div>
       </div>
@@ -90,20 +90,20 @@ export default function SCorpOptimizer({ isPro = false, onUpgrade, isLoggedIn = 
         {/* Sidebar */}
         <aside className="lg:col-span-4 space-y-6">
           <div className="bg-[var(--bg-card)] p-8 rounded-[2.5rem] border border-[var(--border-default)] shadow-sm space-y-6">
-            <h3 className="text-sm font-black text-[var(--text-primary)] uppercase tracking-widest mb-6 flex items-center gap-2">
+            <h3 className="text-sm font-bold text-[var(--text-primary)] uppercase tracking-widest mb-6 flex items-center gap-2">
               <Scale size={16} className="text-[var(--color-warning)]" /> Business Data
             </h3>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-[10px] font-black text-[var(--text-muted)] uppercase mb-1">Annual Net Profit</label>
+                <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Annual Net Profit</label>
                 <div className="relative">
                   <span className="absolute left-4 top-2.5 text-[var(--text-muted)] font-bold">$</span>
                   <input type="number" value={profit} onChange={(e) => setProfit(parseFloat(e.target.value) || 0)} className="w-full pl-8 pr-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--color-warning)]" />
                 </div>
               </div>
               <div>
-                <label className="block text-[10px] font-black text-[var(--text-muted)] uppercase mb-1">Proposed Reasonable Salary<Tooltip content="The IRS requires S-Corp owners to pay themselves a reasonable salary. This is typically 40-60% of net profit." /></label>
+                <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Proposed Reasonable Salary<Tooltip content="The IRS requires S-Corp owners to pay themselves a reasonable salary. This is typically 40-60% of net profit." /></label>
                 <div className="relative">
                   <span className="absolute left-4 top-2.5 text-[var(--text-muted)] font-bold">$</span>
                   <input type="number" value={salary} onChange={(e) => setSalary(parseFloat(e.target.value) || 0)} className="w-full pl-8 pr-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--color-warning)]" />
@@ -122,7 +122,7 @@ export default function SCorpOptimizer({ isPro = false, onUpgrade, isLoggedIn = 
 
         {/* Comparison Chart */}
         <main className="lg:col-span-8 bg-[var(--bg-card)] p-8 rounded-[3rem] border border-[var(--border-default)] shadow-sm">
-          <h3 className="text-xl font-black text-[var(--text-primary)] mb-8 flex items-center gap-2">
+          <h3 className="text-xl font-bold text-[var(--text-primary)] mb-8 flex items-center gap-2">
             <Zap className="text-[var(--color-warning)]" fill="currentColor" /> Tax Structure Comparison
           </h3>
           <div className="h-[400px]">

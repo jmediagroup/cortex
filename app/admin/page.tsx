@@ -47,7 +47,7 @@ export default function AdminOverview() {
 
   if (error) {
     return (
-      <div className="rounded-[var(--radius-xl)] border border-red-200 bg-red-50 p-6 text-red-600 text-sm font-medium">
+      <div className="rounded-[var(--radius-xl)] border border-[var(--crimson-border)] bg-[var(--crimson-50)] p-6 text-[var(--crimson-500)] text-sm font-medium">
         {error}
       </div>
     );
@@ -87,7 +87,7 @@ export default function AdminOverview() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-black tracking-tight text-[var(--text-primary)]">Dashboard</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">Dashboard</h1>
         <p className="text-sm text-[var(--text-tertiary)] font-medium mt-1">Overview of your platform metrics</p>
       </div>
 
@@ -110,7 +110,7 @@ export default function AdminOverview() {
                 <kpi.icon size={16} />
               </div>
             </div>
-            <p className="text-2xl font-black text-[var(--text-primary)]">{kpi.value}</p>
+            <p className="text-2xl font-bold text-[var(--text-primary)]">{kpi.value}</p>
           </div>
         ))}
       </div>

@@ -75,7 +75,7 @@ export default function AdminAnalytics() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-[var(--text-primary)]">Analytics</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">Analytics</h1>
           <p className="text-sm text-[var(--text-tertiary)] font-medium mt-1">
             {totalEvents.toLocaleString()} events in the last {days} days
           </p>
@@ -176,9 +176,9 @@ export default function AdminAnalytics() {
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-[var(--surface-secondary)] border-b border-[var(--border-secondary)]">
-                <th className="text-left px-4 py-2.5 text-[10px] font-black uppercase tracking-wider text-[var(--text-tertiary)]">Type</th>
-                <th className="text-left px-4 py-2.5 text-[10px] font-black uppercase tracking-wider text-[var(--text-tertiary)]">Page</th>
-                <th className="text-left px-4 py-2.5 text-[10px] font-black uppercase tracking-wider text-[var(--text-tertiary)]">Time</th>
+                <th className="text-left px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Type</th>
+                <th className="text-left px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Page</th>
+                <th className="text-left px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Time</th>
               </tr>
             </thead>
             <tbody>

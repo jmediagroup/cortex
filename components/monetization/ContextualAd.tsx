@@ -67,12 +67,12 @@ export default function ContextualAd({
 
   if (variant === 'banner') {
     return (
-      <div className={`bg-gradient-to-r from-slate-800/80 to-indigo-900/30 border border-slate-700/50 rounded-lg p-4 ${className}`}>
+      <div className={`bg-gradient-to-r from-[var(--obsidian-800)]/80 to-[var(--obsidian-800)]/30 border border-[var(--border-strong)]/50 rounded-lg p-4 ${className}`}>
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex-1">
-            <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">Recommended Tool</p>
+            <p className="text-xs text-[var(--text-tertiary)] uppercase tracking-wide mb-1">Recommended Tool</p>
             <p className="text-white font-medium">{affiliates.primary.name}</p>
-            <p className="text-sm text-slate-400 mt-1">{affiliates.primary.description}</p>
+            <p className="text-sm text-[var(--text-muted)] mt-1">{affiliates.primary.description}</p>
           </div>
           <AffiliateLink affiliate={affiliates.primary} variant="button" className="flex-shrink-0">
             Learn More
@@ -85,7 +85,7 @@ export default function ContextualAd({
   if (variant === 'sidebar') {
     return (
       <div className={`space-y-3 ${className}`}>
-        <p className="text-xs text-slate-500 uppercase tracking-wide">Recommended</p>
+        <p className="text-xs text-[var(--text-tertiary)] uppercase tracking-wide">Recommended</p>
         <AffiliateLink affiliate={affiliates.primary} variant="card" />
         {affiliates.secondary && (
           <AffiliateLink affiliate={affiliates.secondary} variant="card" />

@@ -299,7 +299,7 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
             <Zap size={24} fill="currentColor" />
             <span className="font-bold tracking-widest uppercase text-sm">Wealth Architecture</span>
           </div>
-          <h1 className="text-4xl font-black text-[var(--text-primary)]">Drawdown Strategy Engine <span className="text-[var(--emerald-500)]">v2</span></h1>
+          <h1 className="text-4xl font-bold text-[var(--text-primary)]">Drawdown Strategy Engine <span className="text-[var(--emerald-500)]">v2</span></h1>
           <p className="text-[var(--text-tertiary)] max-w-xl mt-2">Manage Social Security timing and Roth conversion ladders to maximize portfolio longevity.</p>
         </div>
 
@@ -427,7 +427,7 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
                     Auto-Optimize Conversions
                     {!isPro && <Lock size={12} className="text-[var(--color-warning)]" />}
                   </p>
-                  <p className="text-[10px] text-[var(--emerald-500)] uppercase font-black">Fill tax brackets optimally</p>
+                  <p className="text-[10px] text-[var(--emerald-500)] uppercase font-semibold">Fill tax brackets optimally</p>
                 </div>
                 <input
                   type="checkbox"
@@ -441,7 +441,7 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
               {!isPro && (
                 <button
                   onClick={onUpgrade}
-                  className="w-full mt-3 bg-[var(--color-warning)] hover:bg-[var(--color-warning)] text-[var(--text-primary)] text-xs font-black py-2 rounded-xl flex items-center justify-center gap-2 transition-transform active:scale-95"
+                  className="w-full mt-3 bg-[var(--color-warning)] hover:bg-[var(--color-warning)] text-[var(--text-primary)] text-xs font-bold py-2 rounded-xl flex items-center justify-center gap-2 transition-transform active:scale-95"
                 >
                   <Zap size={14} fill="currentColor" /> Upgrade to Pro
                 </button>
@@ -457,7 +457,7 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
                     <button
                       key={idx}
                       onClick={() => setInputs(p => ({...p, targetBracketIndex: idx}))}
-                      className={`py-2 px-1 rounded-xl text-xs font-black transition-all ${inputs.targetBracketIndex === idx ? 'bg-[var(--emerald-500)] text-white shadow-lg' : 'bg-[var(--bg-card)] text-[var(--emerald-500)] hover:bg-[var(--emerald-100)]'}`}
+                      className={`py-2 px-1 rounded-xl text-xs font-bold transition-all ${inputs.targetBracketIndex === idx ? 'bg-[var(--emerald-500)] text-white shadow-lg' : 'bg-[var(--bg-card)] text-[var(--emerald-500)] hover:bg-[var(--emerald-100)]'}`}
                     >
                       {TAX_BRACKETS[idx].label}
                     </button>
@@ -527,7 +527,7 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
               <div className="flex items-center gap-3 mb-6">
                 <Calendar className="text-[var(--emerald-500)]" size={28} />
                 <div>
-                  <h3 className="text-xl font-black text-[var(--text-primary)]">Your Conversion Action Plan</h3>
+                  <h3 className="text-xl font-bold text-[var(--text-primary)]">Your Conversion Action Plan</h3>
                   <p className="text-sm text-[var(--emerald-500)] font-medium">Year-by-year Roth conversion strategy</p>
                 </div>
               </div>
@@ -536,11 +536,11 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
                 {conversionYears.slice(0, 10).map((conv, idx) => (
                   <div key={idx} className="bg-[var(--bg-card)] rounded-2xl p-4 border-2 border-[var(--emerald-border-soft)] flex items-center justify-between hover:border-[var(--emerald-border)] transition-colors">
                     <div className="flex items-center gap-4">
-                      <div className="bg-[var(--emerald-100)] text-[var(--emerald-500)] font-black text-sm rounded-xl px-3 py-2 min-w-[80px] text-center">
+                      <div className="bg-[var(--emerald-100)] text-[var(--emerald-500)] font-bold text-sm rounded-xl px-3 py-2 min-w-[80px] text-center">
                         Age {conv.age}
                       </div>
                       <div>
-                        <div className="font-black text-[var(--text-primary)]">Convert ${conv.amount.toLocaleString()}</div>
+                        <div className="font-bold text-[var(--text-primary)]">Convert ${conv.amount.toLocaleString()}</div>
                         <div className="text-xs text-[var(--text-tertiary)] font-medium">
                           Taxable income: ${Math.round(conv.taxableIncome).toLocaleString()} • Tax owed: ${Math.round(conv.taxes).toLocaleString()}
                         </div>
@@ -562,7 +562,7 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
                 <div className="flex items-start gap-2">
                   <Info className="text-[var(--color-info)] mt-0.5" size={16} />
                   <div className="text-xs text-[var(--color-info)] font-medium">
-                    <strong className="font-black">How to implement:</strong> Each year listed above, convert the specified amount from your Traditional IRA/401(k) to your Roth IRA.
+                    <strong className="font-bold">How to implement:</strong> Each year listed above, convert the specified amount from your Traditional IRA/401(k) to your Roth IRA.
                     You'll pay taxes on the conversion that year, but all future growth and withdrawals will be tax-free. Ensure you have cash in your taxable account to pay the taxes.
                   </div>
                 </div>
@@ -576,7 +576,7 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
                   <button
                       key={s}
                       onClick={() => setInputs(p => ({...p, strategy: s}))}
-                      className={`flex-1 py-3 px-4 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${inputs.strategy === s ? 'bg-[var(--bg-card)] text-[var(--emerald-500)] shadow-md' : 'text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]'}`}
+                      className={`flex-1 py-3 px-4 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all ${inputs.strategy === s ? 'bg-[var(--bg-card)] text-[var(--emerald-500)] shadow-md' : 'text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]'}`}
                   >
                       {s.replace('-', ' ')}
                   </button>
@@ -587,17 +587,17 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border-default)]">
                   <p className="text-xs font-bold text-[var(--text-muted)] uppercase mb-1">Total Lifetime Taxes</p>
-                  <p className="text-2xl font-black text-[var(--text-primary)]">${Math.round(stats.totalTaxes).toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-[var(--text-primary)]">${Math.round(stats.totalTaxes).toLocaleString()}</p>
               </div>
               <div className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border-default)]">
                   <p className="text-xs font-bold text-[var(--text-muted)] uppercase mb-1">Portfolio Longevity</p>
-                  <p className={`text-2xl font-black ${stats.failAge ? 'text-[var(--crimson-500)]' : 'text-[var(--emerald-500)]'}`}>
+                  <p className={`text-2xl font-bold ${stats.failAge ? 'text-[var(--crimson-500)]' : 'text-[var(--emerald-500)]'}`}>
                       {stats.failAge ? `Age ${stats.failAge}` : `${inputs.retirementEndAge}+ Years`}
                   </p>
               </div>
               <div className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border-default)]">
                   <p className="text-xs font-bold text-[var(--text-muted)] uppercase mb-1">Estate Value</p>
-                  <p className="text-2xl font-black text-[var(--emerald-500)]">
+                  <p className="text-2xl font-bold text-[var(--emerald-500)]">
                       ${Math.round(simulationResults[simulationResults.length - 1].totalBalance).toLocaleString()}
                   </p>
               </div>
@@ -606,7 +606,7 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
           {/* Balance Chart */}
           <div className="bg-[var(--bg-card)] p-8 rounded-[2rem] border border-[var(--border-default)] shadow-sm">
             <div className="flex items-center justify-between mb-8">
-                <h3 className="text-xl font-black flex items-center gap-2">
+                <h3 className="text-xl font-bold flex items-center gap-2">
                   <UserCheck className="text-[var(--emerald-500)]" />
                   Asset Depletion Model
                 </h3>
@@ -636,7 +636,7 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
 
           {/* Income Mix Bar Chart */}
           <div className="bg-[var(--bg-card)] p-8 rounded-[2rem] border border-[var(--border-default)] shadow-sm">
-              <h3 className="text-xl font-black mb-6">Annual Income Composition</h3>
+              <h3 className="text-xl font-bold mb-6">Annual Income Composition</h3>
               <div className="h-[300px]">
                   <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={simulationResults}>

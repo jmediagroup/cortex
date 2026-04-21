@@ -205,17 +205,17 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
       <div className="flex flex-wrap gap-3">
         <div className="bg-[var(--bg-card)] border border-[var(--border-default)] p-4 rounded-3xl shadow-sm flex items-center gap-4">
           <div className="text-right">
-            <p className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest flex items-center justify-end gap-1">
+            <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest flex items-center justify-end gap-1">
               Tax Savings <TrendingDown size={10} className="text-[var(--emerald-500)]"/>
             </p>
-            <p className="text-xl font-black text-[var(--emerald-500)]">${Math.round(stats.taxDelta).toLocaleString()}</p>
+            <p className="text-xl font-bold text-[var(--emerald-500)]">${Math.round(stats.taxDelta).toLocaleString()}</p>
           </div>
           <div className="w-px h-8 bg-[var(--bg-glass-strong)]" />
           <div className="text-right">
-            <p className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest flex items-center justify-end gap-1">
+            <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest flex items-center justify-end gap-1">
               Legacy Gain <TrendingUp size={10} className="text-[var(--emerald-400)]"/>
             </p>
-            <p className="text-xl font-black text-[var(--emerald-500)]">${Math.round(stats.legacyDelta).toLocaleString()}</p>
+            <p className="text-xl font-bold text-[var(--emerald-500)]">${Math.round(stats.legacyDelta).toLocaleString()}</p>
           </div>
         </div>
       </div>
@@ -229,7 +229,7 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
               <RefreshCw size={120} />
             </div>
 
-            <h3 className="text-lg font-black mb-6 flex items-center gap-2">
+            <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
               <Scale size={20} /> Optimization Strategy
             </h3>
 
@@ -240,7 +240,7 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
                     Auto-Optimize Ladder
                     {!isPro && <Lock size={12} className="text-[var(--color-warning)]" />}
                   </p>
-                  <p className="text-[10px] text-[var(--mist-200)] uppercase font-black">Maximize tax brackets</p>
+                  <p className="text-[10px] text-[var(--mist-200)] uppercase font-semibold">Maximize tax brackets</p>
                 </div>
                 <input
                   type="checkbox" name="isAutoOptimize"
@@ -253,7 +253,7 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
               {!isPro && (
                 <button
                   onClick={onUpgrade}
-                  className="w-full bg-[var(--color-warning)] hover:bg-[var(--color-warning)] text-[var(--text-primary)] text-xs font-black py-2 rounded-xl flex items-center justify-center gap-2 transition-transform active:scale-95"
+                  className="w-full bg-[var(--color-warning)] hover:bg-[var(--color-warning)] text-[var(--text-primary)] text-xs font-bold py-2 rounded-xl flex items-center justify-center gap-2 transition-transform active:scale-95"
                 >
                   <Zap size={14} fill="currentColor" /> Upgrade to Pro for Auto-Optimization
                 </button>
@@ -267,7 +267,7 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
                       <button
                         key={idx}
                         onClick={() => setInputs(p => ({...p, targetBracketIndex: idx}))}
-                        className={`py-2 px-1 rounded-xl text-xs font-black transition-all ${inputs.targetBracketIndex === idx ? 'bg-[var(--bg-card)] text-[var(--text-primary)] shadow-lg' : 'bg-[var(--emerald-600)] text-[var(--mist-200)] hover:bg-[var(--emerald-500)]'}`}
+                        className={`py-2 px-1 rounded-xl text-xs font-bold transition-all ${inputs.targetBracketIndex === idx ? 'bg-[var(--bg-card)] text-[var(--text-primary)] shadow-lg' : 'bg-[var(--emerald-600)] text-[var(--mist-200)] hover:bg-[var(--emerald-500)]'}`}
                       >
                         {TAX_BRACKETS[idx].label}
                       </button>
@@ -300,10 +300,10 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
             </div>
 
             <div className="pt-4 border-t border-[var(--border-subtle)]">
-              <h3 className="text-xs font-black text-[var(--text-muted)] uppercase tracking-widest mb-4">Portfolio Breakdown</h3>
+              <h3 className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-widest mb-4">Portfolio Breakdown</h3>
               {['taxable', 'traditional', 'roth'].map(t => (
                 <div key={t} className="flex items-center justify-between mb-2">
-                  <span className="text-[10px] font-black uppercase text-[var(--text-muted)]">{t}</span>
+                  <span className="text-[10px] font-semibold uppercase text-[var(--text-muted)]">{t}</span>
                   <input type="number" name={`balances.${t}`} value={inputs.balances[t as keyof typeof inputs.balances]} onChange={handleInputChange} className="bg-[var(--bg-section)] border-none text-right font-bold w-32 px-3 py-1 rounded-lg" />
                 </div>
               ))}
@@ -311,7 +311,7 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
 
             <div className="pt-4 border-t border-[var(--border-subtle)]">
               <div className={`flex items-center justify-between ${!isPro ? 'opacity-50' : ''}`}>
-                <label className="text-xs font-black text-[var(--text-muted)] uppercase flex items-center gap-2">
+                <label className="text-xs font-bold text-[var(--text-muted)] uppercase flex items-center gap-2">
                   Compare Mode
                   {!isPro && <Lock size={12} />}
                 </label>
@@ -338,24 +338,24 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in slide-in-from-bottom-2">
               <div className="bg-[var(--emerald-50)] border border-[var(--emerald-border-soft)] p-6 rounded-[2rem] flex items-center justify-between">
                 <div>
-                  <p className="text-[var(--emerald-500)] font-black text-lg">Total Tax Savings</p>
+                  <p className="text-[var(--emerald-500)] font-bold text-lg">Total Tax Savings</p>
                   <p className="text-[var(--emerald-500)] text-xs font-bold uppercase">Optimized vs. Baseline</p>
                 </div>
-                <p className="text-3xl font-black text-[var(--emerald-500)] tracking-tighter">${Math.round(stats.taxDelta).toLocaleString()}</p>
+                <p className="text-3xl font-bold text-[var(--emerald-500)] tracking-tighter">${Math.round(stats.taxDelta).toLocaleString()}</p>
               </div>
               <div className="bg-[var(--emerald-50)] border border-[var(--emerald-border-soft)] p-6 rounded-[2rem] flex items-center justify-between">
                 <div>
-                  <p className="text-[var(--text-primary)] font-black text-lg">Added Estate Legacy</p>
+                  <p className="text-[var(--text-primary)] font-bold text-lg">Added Estate Legacy</p>
                   <p className="text-[var(--emerald-500)] text-xs font-bold uppercase">Optimized vs. Baseline</p>
                 </div>
-                <p className="text-3xl font-black text-[var(--emerald-500)] tracking-tighter">${Math.round(stats.legacyDelta).toLocaleString()}</p>
+                <p className="text-3xl font-bold text-[var(--emerald-500)] tracking-tighter">${Math.round(stats.legacyDelta).toLocaleString()}</p>
               </div>
             </div>
           )}
 
           {/* Performance Over Time */}
           <div className="bg-[var(--bg-card)] p-8 rounded-[3rem] border border-[var(--border-default)] shadow-sm relative overflow-hidden">
-            <h3 className="text-xl font-black text-[var(--text-primary)] mb-8 flex items-center gap-2">
+            <h3 className="text-xl font-bold text-[var(--text-primary)] mb-8 flex items-center gap-2">
               <History className="text-[var(--emerald-400)]" /> Portfolio Value Comparison
             </h3>
             <div className="h-[400px]">
@@ -382,11 +382,11 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
                   <div className="w-12 h-12 bg-[var(--color-warning-soft)] text-[var(--color-warning)] rounded-2xl flex items-center justify-center mx-auto mb-4">
                     <Lock size={24} />
                   </div>
-                  <h4 className="font-black text-[var(--text-primary)] mb-2">Comparison Locked</h4>
+                  <h4 className="font-bold text-[var(--text-primary)] mb-2">Comparison Locked</h4>
                   <p className="text-xs text-[var(--text-tertiary)] font-medium mb-6">Upgrade to Pro to see how your strategy compares to doing nothing.</p>
                   <button
                     onClick={onUpgrade}
-                    className="w-full bg-[var(--emerald-500)] text-white font-black py-3 rounded-xl hover:bg-[var(--emerald-500)] transition-colors shadow-lg"
+                    className="w-full bg-[var(--emerald-500)] text-white font-bold py-3 rounded-xl hover:bg-[var(--emerald-500)] transition-colors shadow-lg"
                   >
                     Unlock Comparison
                   </button>
@@ -400,10 +400,10 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
             <div className="absolute top-0 right-0 p-8 opacity-10">
               <ArrowLeftRight size={120} />
             </div>
-            <h3 className="text-2xl font-black mb-8 relative z-10">Strategic Insights</h3>
+            <h3 className="text-2xl font-bold mb-8 relative z-10">Strategic Insights</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10">
               <div>
-                <p className="text-[var(--mist-200)] font-black text-xs uppercase tracking-widest mb-4">Standard Logic</p>
+                <p className="text-[var(--mist-200)] font-bold text-xs uppercase tracking-widest mb-4">Standard Logic</p>
                 <ul className="space-y-3">
                   <li className="flex gap-3 text-sm font-medium opacity-80">
                     <div className="bg-[var(--emerald-600)] p-1 rounded h-fit mt-1 text-[var(--crimson-400)]"><TrendingUp size={12}/></div>
@@ -412,7 +412,7 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
                 </ul>
               </div>
               <div>
-                <p className="text-[var(--emerald-400)] font-black text-xs uppercase tracking-widest mb-4">Active Strategy</p>
+                <p className="text-[var(--emerald-400)] font-bold text-xs uppercase tracking-widest mb-4">Active Strategy</p>
                 <ul className="space-y-3">
                   <li className="flex gap-3 text-sm font-medium">
                     <div className="bg-[var(--obsidian-700)] p-1 rounded h-fit mt-1 text-[var(--emerald-400)]"><TrendingDown size={12}/></div>
@@ -423,8 +423,8 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
             </div>
             <div className="mt-12 pt-8 border-t border-[var(--emerald-border)] flex flex-col md:flex-row justify-between items-center gap-4">
               <div className="text-center md:text-left">
-                <p className="text-[var(--emerald-400)] font-black text-xs uppercase mb-1 tracking-widest">Net Result</p>
-                <p className="text-3xl font-black">
+                <p className="text-[var(--emerald-400)] font-bold text-xs uppercase mb-1 tracking-widest">Net Result</p>
+                <p className="text-3xl font-bold">
                   {isPro ? (
                     stats.legacyDelta > 0 ? (
                       <><span className="text-[var(--emerald-400)]">+${Math.round(stats.legacyDelta/1000).toLocaleString()}k</span> Efficiency Gain</>
@@ -438,7 +438,7 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
               </div>
               <button
                 onClick={() => !isPro ? onUpgrade?.() : setInputs(p => ({...p, targetBracketIndex: p.targetBracketIndex === 1 ? 2 : 1}))}
-                className="bg-[var(--emerald-500)] hover:bg-[var(--emerald-400)] text-white font-black px-8 py-4 rounded-3xl transition-all shadow-lg text-sm uppercase tracking-widest"
+                className="bg-[var(--emerald-500)] hover:bg-[var(--emerald-400)] text-white font-bold px-8 py-4 rounded-3xl transition-all shadow-lg text-sm uppercase tracking-widest"
               >
                 {!isPro ? "Upgrade to Unlock" : "Switch Target Bracket"}
               </button>

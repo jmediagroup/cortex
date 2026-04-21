@@ -17,7 +17,7 @@ const cards: CreditCard[] = [
     number: '8364  9375  0930  7302',
     holder: 'Primary Account',
     expiry: '12 / 27',
-    bgClass: 'from-slate-800 to-slate-950',
+    bgClass: 'from-[var(--obsidian-800)] to-[var(--obsidian-950)]',
   },
   {
     id: '2',
@@ -31,7 +31,7 @@ const cards: CreditCard[] = [
     number: '5521  8832  1100  4467',
     holder: 'Savings Account',
     expiry: '03 / 29',
-    bgClass: 'from-emerald-600 to-emerald-900',
+    bgClass: 'from-[var(--emerald-600)] to-emerald-900',
   },
 ];
 
@@ -72,10 +72,10 @@ export default function CreditCardWidget({ className = '' }: CreditCardWidgetPro
         >
           {/* Chip */}
           <div className="mb-6 flex items-center justify-between">
-            <div className="h-8 w-10 rounded-md bg-white/20 backdrop-blur-sm" />
+            <div className="h-8 w-10 rounded-md bg-[var(--bg-card)]/20 backdrop-blur-sm" />
             {/* Add button */}
             <button
-              className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 text-white transition-colors hover:bg-white/30"
+              className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--bg-card)]/20 text-white transition-colors hover:bg-[var(--bg-card)]/30"
               aria-label="Add new card"
             >
               <Plus size={14} />

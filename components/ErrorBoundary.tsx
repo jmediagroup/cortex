@@ -69,23 +69,23 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       // Default error UI
       return (
         <div className="min-h-[400px] flex items-center justify-center p-8">
-          <div className="max-w-md w-full bg-red-50 border border-red-200 rounded-lg p-6">
+          <div className="max-w-md w-full bg-[var(--crimson-50)] border border-[var(--crimson-border)] rounded-lg p-6">
             <div className="flex items-start gap-4">
-              <AlertCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
+              <AlertCircle className="w-6 h-6 text-[var(--crimson-500)] flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-red-900 mb-2">
+                <h3 className="text-lg font-semibold text-[var(--crimson-500)] mb-2">
                   Something went wrong
                 </h3>
-                <p className="text-sm text-red-700 mb-4">
+                <p className="text-sm text-[var(--crimson-500)] mb-4">
                   An error occurred while processing your calculation. Please try again.
                 </p>
 
                 {process.env.NODE_ENV === 'development' && this.state.error && (
                   <details className="mb-4">
-                    <summary className="text-xs font-medium text-red-800 cursor-pointer hover:underline">
+                    <summary className="text-xs font-medium text-[var(--crimson-500)] cursor-pointer hover:underline">
                       Error details (dev only)
                     </summary>
-                    <pre className="mt-2 text-xs bg-red-100 p-2 rounded overflow-auto max-h-40">
+                    <pre className="mt-2 text-xs bg-[var(--crimson-100)] p-2 rounded overflow-auto max-h-40">
                       {this.state.error.toString()}
                       {this.state.errorInfo?.componentStack}
                     </pre>
@@ -94,7 +94,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
                 <button
                   onClick={this.handleReset}
-                  className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+                  className="flex items-center gap-2 px-4 py-2 bg-[var(--crimson-500)] text-white rounded-lg hover:bg-[var(--crimson-500)] transition-colors text-sm font-medium"
                 >
                   <RefreshCw className="w-4 h-4" />
                   Try Again
@@ -121,17 +121,17 @@ export function ErrorFallback({
   resetErrorBoundary: () => void;
 }) {
   return (
-    <div className="rounded-lg border border-red-200 bg-red-50 p-6">
+    <div className="rounded-lg border border-[var(--crimson-border)] bg-[var(--crimson-50)] p-6">
       <div className="flex items-start gap-3">
-        <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+        <AlertCircle className="w-5 h-5 text-[var(--crimson-500)] flex-shrink-0 mt-0.5" />
         <div className="flex-1">
-          <h4 className="font-semibold text-red-900 mb-1">Calculation Error</h4>
-          <p className="text-sm text-red-700 mb-3">
+          <h4 className="font-semibold text-[var(--crimson-500)] mb-1">Calculation Error</h4>
+          <p className="text-sm text-[var(--crimson-500)] mb-3">
             {error.message || 'An unexpected error occurred'}
           </p>
           <button
             onClick={resetErrorBoundary}
-            className="text-sm font-medium text-red-600 hover:text-red-700 underline"
+            className="text-sm font-medium text-[var(--crimson-500)] hover:text-[var(--crimson-500)] underline"
           >
             Reset and try again
           </button>
