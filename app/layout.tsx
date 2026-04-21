@@ -1,18 +1,26 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
+import { cookies } from "next/headers";
 import Script from "next/script";
 import "./globals.css";
 import WebVitals from "@/components/WebVitals";
 import Analytics from "@/components/Analytics";
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
+import { ThemeScript } from "@/components/theme/ThemeScript";
+import { THEME_COOKIE, THEME_DEFAULT, isTheme, type Theme } from "@/lib/theme";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
+  display: "swap",
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains",
   subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -69,7 +77,6 @@ export const metadata: Metadata = {
   manifest: '/manifest.webmanifest',
 };
 
-// JSON-LD structured data for Organization and WebSite
 const jsonLd = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -129,14 +136,19 @@ const jsonLd = {
   ],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const cookieTheme = cookieStore.get(THEME_COOKIE)?.value;
+  const initialTheme: Theme | null = isTheme(cookieTheme) ? cookieTheme : null;
+
   return (
-    <html lang="en">
+    <html lang="en" data-theme={initialTheme ?? undefined} suppressHydrationWarning>
       <head>
+        <ThemeScript />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-0PQ1RZVNTS"
           strategy="afterInteractive"
@@ -155,11 +167,13 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}
       >
-        <WebVitals />
-        <Analytics />
-        {children}
+        <ThemeProvider initialTheme={initialTheme ?? THEME_DEFAULT}>
+          <WebVitals />
+          <Analytics />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
