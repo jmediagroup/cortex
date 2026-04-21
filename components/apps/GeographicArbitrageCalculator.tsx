@@ -299,8 +299,8 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
     return (
       <div className="mb-6 group">
         <div className="flex justify-between items-center mb-2">
-          <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-            {Icon && <Icon size={16} className="text-indigo-500" />}
+          <label className="text-sm font-semibold text-[var(--text-secondary)] flex items-center gap-2">
+            {Icon && <Icon size={16} className="text-[var(--emerald-400)]" />}
             {label}
             {tooltip && <Tooltip content={tooltip} />}
           </label>
@@ -310,7 +310,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
             type="button"
             onClick={handleDecrement}
             disabled={value <= min}
-            className="flex-shrink-0 w-10 h-10 rounded-lg border-2 border-slate-200 bg-white hover:bg-slate-50 hover:border-indigo-300 active:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center font-bold text-slate-600 hover:text-indigo-600"
+            className="flex-shrink-0 w-10 h-10 rounded-lg border-2 border-[var(--border-default)] bg-[var(--bg-card)] hover:bg-[var(--bg-section)] hover:border-[var(--emerald-border)] active:bg-[var(--bg-glass)] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center font-bold text-[var(--text-secondary)] hover:text-[var(--emerald-500)]"
           >
             −
           </button>
@@ -319,10 +319,10 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
               type="text"
               value={value.toLocaleString()}
               onChange={handleInputChange}
-              className="w-full px-4 py-2.5 text-center font-bold text-lg rounded-lg border-2 border-slate-200 bg-slate-50 hover:bg-white hover:border-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all tabular-nums"
+              className="w-full px-4 py-2.5 text-center font-bold text-lg rounded-lg border-2 border-[var(--border-default)] bg-[var(--bg-section)] hover:bg-[var(--bg-card)] hover:border-[var(--emerald-border)] focus:outline-none focus:ring-2 focus:ring-[var(--emerald-200)] focus:border-[var(--emerald-border)] transition-all tabular-nums"
             />
             {suffix && (
-              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-slate-400 pointer-events-none">
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-[var(--text-muted)] pointer-events-none">
                 {suffix}
               </span>
             )}
@@ -331,12 +331,12 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
             type="button"
             onClick={handleIncrement}
             disabled={value >= max}
-            className="flex-shrink-0 w-10 h-10 rounded-lg border-2 border-slate-200 bg-white hover:bg-slate-50 hover:border-indigo-300 active:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center font-bold text-slate-600 hover:text-indigo-600"
+            className="flex-shrink-0 w-10 h-10 rounded-lg border-2 border-[var(--border-default)] bg-[var(--bg-card)] hover:bg-[var(--bg-section)] hover:border-[var(--emerald-border)] active:bg-[var(--bg-glass)] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center font-bold text-[var(--text-secondary)] hover:text-[var(--emerald-500)]"
           >
             +
           </button>
         </div>
-        <div className="mt-1.5 flex justify-between text-xs text-slate-400 font-medium">
+        <div className="mt-1.5 flex justify-between text-xs text-[var(--text-muted)] font-medium">
           <span>Min: {min.toLocaleString()}</span>
           <span>Max: {max.toLocaleString()}</span>
         </div>
@@ -353,11 +353,11 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
   const LocationSelector = ({ label, value, onChange }: LocationSelectorProps) => (
     <div className="mb-6 relative group">
       <div className="flex justify-between items-center mb-2">
-        <label className="text-sm font-semibold text-slate-700 block">{label}</label>
+        <label className="text-sm font-semibold text-[var(--text-secondary)] block">{label}</label>
         <div className="relative">
-          <Info size={14} className="text-slate-400 hover:text-indigo-600 cursor-help transition-colors" />
-          <div className="absolute right-0 bottom-full mb-2 w-72 bg-slate-900 text-white text-[11px] p-4 rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-20 pointer-events-none leading-relaxed border border-slate-700">
-            <p className="font-bold text-indigo-400 border-b border-slate-700 pb-2 mb-2 uppercase tracking-wider">{value} Regional Profile</p>
+          <Info size={14} className="text-[var(--text-muted)] hover:text-[var(--emerald-500)] cursor-help transition-colors" />
+          <div className="absolute right-0 bottom-full mb-2 w-72 bg-[var(--obsidian-900)] text-white text-[11px] p-4 rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-20 pointer-events-none leading-relaxed border border-[var(--border-strong)]">
+            <p className="font-bold text-[var(--emerald-400)] border-b border-[var(--border-strong)] pb-2 mb-2 uppercase tracking-wider">{value} Regional Profile</p>
             {LOCATION_PRESETS[value].note}
           </div>
         </div>
@@ -366,11 +366,11 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
         <select
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full p-3.5 rounded-xl border-2 border-slate-100 bg-slate-50 hover:bg-white hover:border-indigo-100 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none appearance-none cursor-pointer transition-all font-medium text-slate-800"
+          className="w-full p-3.5 rounded-xl border-2 border-[var(--border-subtle)] bg-[var(--bg-section)] hover:bg-[var(--bg-card)] hover:border-[var(--emerald-border-soft)] focus:ring-4 focus:ring-[var(--emerald-100)] focus:border-[var(--emerald-border)] outline-none appearance-none cursor-pointer transition-all font-medium text-[var(--text-primary)]"
         >
           {sortedLocationKeys.map(loc => <option key={loc} value={loc}>{loc}</option>)}
         </select>
-        <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+        <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--text-muted)]">
           <ChevronRight size={18} className="rotate-90" />
         </div>
       </div>
@@ -395,21 +395,21 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Controls Panel */}
         <div className="lg:col-span-4 space-y-6">
-          <section className="bg-white p-7 rounded-3xl shadow-sm border border-slate-200/60 ring-1 ring-slate-100">
-            <h2 className="text-lg font-extrabold mb-8 flex items-center gap-2 text-slate-800">
-              <Briefcase size={22} className="text-indigo-600" />
+          <section className="bg-[var(--bg-card)] p-7 rounded-3xl shadow-sm border border-[var(--border-default)]/60 ring-1 ring-[var(--border-subtle)]">
+            <h2 className="text-lg font-extrabold mb-8 flex items-center gap-2 text-[var(--text-primary)]">
+              <Briefcase size={22} className="text-[var(--emerald-500)]" />
               Input Economics
             </h2>
             <LocationSelector label="Source Geography" value={currentLoc} onChange={setCurrentLoc} />
             <LocationSelector label="Target Geography" value={targetLoc} onChange={setTargetLoc} />
 
             <div className="mb-6">
-              <label className="text-sm font-semibold text-slate-700 flex items-center gap-2 mb-2">
-                <DollarSign size={16} className="text-indigo-500" />
+              <label className="text-sm font-semibold text-[var(--text-secondary)] flex items-center gap-2 mb-2">
+                <DollarSign size={16} className="text-[var(--emerald-400)]" />
                 Current Gross Salary
               </label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">$</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]">$</span>
                 <input
                   type="text"
                   inputMode="decimal"
@@ -428,10 +428,10 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                       : Math.max(40000, annualIncome);
                     setAnnualIncome(numValue);
                   }}
-                  className="w-full pl-7 pr-4 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="w-full pl-7 pr-4 py-2.5 bg-[var(--bg-section)] border-2 border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--emerald-200)] focus:border-[var(--emerald-border)] outline-none font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
               </div>
-              <div className="mt-1.5 text-xs text-slate-400 font-medium">
+              <div className="mt-1.5 text-xs text-[var(--text-muted)] font-medium">
                 <span>Min: 40,000</span>
               </div>
             </div>
@@ -439,9 +439,9 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
             <SliderField label="Retention Ratio" icon={ArrowRightLeft} value={incomeAdjustment} onChange={setIncomeAdjustment} min={50} max={150} suffix="%" tooltip="The percentage of your income you keep after taxes and cost of living. Higher means more wealth-building potential." />
           </section>
 
-          <section className="bg-white p-7 rounded-3xl shadow-sm border border-slate-200/60 ring-1 ring-slate-100">
-            <h2 className="text-lg font-extrabold mb-8 flex items-center gap-2 text-slate-800">
-              <TrendingUp size={22} className="text-indigo-600" />
+          <section className="bg-[var(--bg-card)] p-7 rounded-3xl shadow-sm border border-[var(--border-default)]/60 ring-1 ring-[var(--border-subtle)]">
+            <h2 className="text-lg font-extrabold mb-8 flex items-center gap-2 text-[var(--text-primary)]">
+              <TrendingUp size={22} className="text-[var(--emerald-500)]" />
               Variables & Lifestyle
             </h2>
             <SliderField label="Housing Standard" icon={Home} value={lifestyle.housing} onChange={(v) => setLifestyle({...lifestyle, housing: v})} tooltip="Your relative housing quality preference (1-10). Higher means you want comparable or better housing in the new city." />
@@ -454,45 +454,45 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
         {/* Results Display */}
         <div className="lg:col-span-8 space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-indigo-600 text-white p-7 rounded-3xl shadow-xl shadow-indigo-200/40 relative overflow-hidden group">
+            <div className="bg-[var(--emerald-500)] text-white p-7 rounded-3xl shadow-xl shadow-[0_0_24px_var(--cta-glow-soft)]/40 relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
                 <Wallet size={80} />
               </div>
-              <p className="text-indigo-100 text-xs font-bold uppercase tracking-widest mb-2">Monthly Delta</p>
+              <p className="text-[var(--mist-100)] text-xs font-bold uppercase tracking-widest mb-2">Monthly Delta</p>
               <h3 className="text-3xl font-black tabular-nums">
                 ${Math.round(savingsDelta / 12).toLocaleString()}
               </h3>
-              <p className="text-xs text-indigo-200/80 mt-3 font-medium leading-relaxed">Incremental monthly liquidity created by arbitrage.</p>
+              <p className="text-xs text-[var(--mist-200)]/80 mt-3 font-medium leading-relaxed">Incremental monthly liquidity created by arbitrage.</p>
             </div>
 
-            <div className="bg-white p-7 rounded-3xl border border-slate-200/60 shadow-sm transition-all hover:border-emerald-200">
-              <p className="text-slate-500 text-xs font-bold uppercase tracking-widest mb-2">Wealth Gap</p>
-              <h3 className="text-3xl font-black text-emerald-600 tabular-nums">
+            <div className="bg-[var(--bg-card)] p-7 rounded-3xl border border-[var(--border-default)]/60 shadow-sm transition-all hover:border-[var(--emerald-border)]">
+              <p className="text-[var(--text-tertiary)] text-xs font-bold uppercase tracking-widest mb-2">Wealth Gap</p>
+              <h3 className="text-3xl font-black text-[var(--emerald-500)] tabular-nums">
                 ${projectionData[projectionData.length - 1].difference.toLocaleString()}
               </h3>
-              <p className="text-xs text-slate-400 mt-3 font-medium leading-relaxed">The total opportunity cost of your current location.</p>
+              <p className="text-xs text-[var(--text-muted)] mt-3 font-medium leading-relaxed">The total opportunity cost of your current location.</p>
             </div>
 
-            <div className="bg-white p-7 rounded-3xl border border-slate-200/60 shadow-sm transition-all hover:border-indigo-200">
-              <p className="text-slate-500 text-xs font-bold uppercase tracking-widest mb-2">Burn Rate</p>
-              <h3 className="text-3xl font-black text-slate-800 tabular-nums">
+            <div className="bg-[var(--bg-card)] p-7 rounded-3xl border border-[var(--border-default)]/60 shadow-sm transition-all hover:border-[var(--emerald-border)]">
+              <p className="text-[var(--text-tertiary)] text-xs font-bold uppercase tracking-widest mb-2">Burn Rate</p>
+              <h3 className="text-3xl font-black text-[var(--text-primary)] tabular-nums">
                 {Math.round((targetMetrics.totalExpenses / currentMetrics.totalExpenses) * 100)}%
               </h3>
-              <p className="text-xs text-slate-400 mt-3 font-medium leading-relaxed">{targetLoc} cost relative to {currentLoc}.</p>
+              <p className="text-xs text-[var(--text-muted)] mt-3 font-medium leading-relaxed">{targetLoc} cost relative to {currentLoc}.</p>
             </div>
           </div>
 
-          <div className="bg-white p-8 rounded-3xl border border-slate-200/60 shadow-sm overflow-hidden">
+          <div className="bg-[var(--bg-card)] p-8 rounded-3xl border border-[var(--border-default)]/60 shadow-sm overflow-hidden">
             <div className="flex items-center justify-between mb-10">
-              <h3 className="text-xl font-extrabold text-slate-800">Compounded Trajectory</h3>
+              <h3 className="text-xl font-extrabold text-[var(--text-primary)]">Compounded Trajectory</h3>
               <div className="flex gap-4">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-indigo-600"></div>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Arbitrage</span>
+                  <div className="w-3 h-3 rounded-full bg-[var(--emerald-500)]"></div>
+                  <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-tighter">Arbitrage</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-slate-200"></div>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Current</span>
+                  <div className="w-3 h-3 rounded-full bg-[var(--bg-glass-strong)]"></div>
+                  <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-tighter">Current</span>
                 </div>
               </div>
             </div>
@@ -501,34 +501,34 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                 <AreaChart data={projectionData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorTarget" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.15}/>
-                      <stop offset="95%" stopColor="#4f46e5" stopOpacity={0.02}/>
+                      <stop offset="5%" stopColor="#00F0A0" stopOpacity={0.15}/>
+                      <stop offset="95%" stopColor="#00F0A0" stopOpacity={0.02}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#f1f5f9" />
+                  <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#2C2C2E" />
                   <XAxis
                     dataKey="year"
                     axisLine={false}
                     tickLine={false}
-                    tick={{fill: '#94a3b8', fontSize: 11, fontWeight: 600}}
+                    tick={{fill: '#8E8E93', fontSize: 11, fontWeight: 600}}
                     dy={15}
                   />
                   <YAxis
                     axisLine={false}
                     tickLine={false}
-                    tick={{fill: '#94a3b8', fontSize: 11, fontWeight: 600}}
+                    tick={{fill: '#8E8E93', fontSize: 11, fontWeight: 600}}
                     tickFormatter={(val) => `$${(val/1000).toFixed(0)}k`}
                     dx={-10}
                   />
                   <ChartTooltip
-                    cursor={{stroke: '#4f46e5', strokeWidth: 1, strokeDasharray: '3 3'}}
+                    cursor={{stroke: '#00F0A0', strokeWidth: 1, strokeDasharray: '3 3'}}
                     contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)', padding: '12px'}}
                     formatter={(val: number) => [`$${val.toLocaleString()}`, '']}
                   />
                   <Area
                     type="monotone"
                     dataKey="target"
-                    stroke="#4f46e5"
+                    stroke="#00F0A0"
                     strokeWidth={4}
                     fill="url(#colorTarget)"
                     animationDuration={isDragging ? 0 : 400}
@@ -536,7 +536,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                   <Area
                     type="monotone"
                     dataKey="current"
-                    stroke="#cbd5e1"
+                    stroke="#6D6D72"
                     strokeWidth={2}
                     strokeDasharray="6 6"
                     fill="transparent"
@@ -548,38 +548,38 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-white p-7 rounded-3xl border border-slate-200/60 shadow-sm group hover:ring-1 hover:ring-slate-200 transition-all">
-              <h4 className="font-extrabold text-slate-800 mb-6 flex items-center gap-2">
-                <MapPin size={18} className="text-slate-300" />
-                {currentLoc} <span className="text-[10px] bg-slate-100 text-slate-400 py-0.5 px-2 rounded-full uppercase tracking-widest ml-auto">Baseline</span>
+            <div className="bg-[var(--bg-card)] p-7 rounded-3xl border border-[var(--border-default)]/60 shadow-sm group hover:ring-1 hover:ring-[var(--border-default)] transition-all">
+              <h4 className="font-extrabold text-[var(--text-primary)] mb-6 flex items-center gap-2">
+                <MapPin size={18} className="text-[var(--text-muted)]" />
+                {currentLoc} <span className="text-[10px] bg-[var(--bg-glass)] text-[var(--text-muted)] py-0.5 px-2 rounded-full uppercase tracking-widest ml-auto">Baseline</span>
               </h4>
               <div className="space-y-4">
                 <BreakdownRow label="Take-Home Pay" value={currentMetrics.takeHome} />
-                <BreakdownRow label="Housing (Yearly)" value={currentMetrics.housingCost} color="text-red-500" />
-                <BreakdownRow label="Regional COL" value={currentMetrics.dailyCosts} color="text-red-500" />
-                <div className="pt-5 border-t border-slate-100 flex justify-between items-end">
+                <BreakdownRow label="Housing (Yearly)" value={currentMetrics.housingCost} color="text-[var(--crimson-500)]" />
+                <BreakdownRow label="Regional COL" value={currentMetrics.dailyCosts} color="text-[var(--crimson-500)]" />
+                <div className="pt-5 border-t border-[var(--border-subtle)] flex justify-between items-end">
                   <div>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase block tracking-widest">Yearly Surplus</span>
-                    <span className="text-2xl font-black text-slate-800 tabular-nums">${Math.round(currentMetrics.netSavings).toLocaleString()}</span>
+                    <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase block tracking-widest">Yearly Surplus</span>
+                    <span className="text-2xl font-black text-[var(--text-primary)] tabular-nums">${Math.round(currentMetrics.netSavings).toLocaleString()}</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white p-7 rounded-3xl border-2 border-indigo-100 shadow-lg shadow-indigo-100/20 relative group overflow-hidden">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-50 rounded-bl-full -mr-10 -mt-10 opacity-40"></div>
-              <h4 className="font-extrabold text-slate-800 mb-6 flex items-center gap-2">
-                <MapPin size={18} className="text-indigo-600" />
-                {targetLoc} <span className="text-[10px] bg-indigo-600 text-white py-0.5 px-2 rounded-full uppercase tracking-widest ml-auto">Target</span>
+            <div className="bg-[var(--bg-card)] p-7 rounded-3xl border-2 border-[var(--emerald-border-soft)] shadow-lg shadow-[0_0_16px_var(--cta-glow-soft)]/20 relative group overflow-hidden">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-[var(--emerald-50)] rounded-bl-full -mr-10 -mt-10 opacity-40"></div>
+              <h4 className="font-extrabold text-[var(--text-primary)] mb-6 flex items-center gap-2">
+                <MapPin size={18} className="text-[var(--emerald-500)]" />
+                {targetLoc} <span className="text-[10px] bg-[var(--emerald-500)] text-white py-0.5 px-2 rounded-full uppercase tracking-widest ml-auto">Target</span>
               </h4>
               <div className="space-y-4">
                 <BreakdownRow label="Adjusted Take-Home" value={targetMetrics.takeHome} />
-                <BreakdownRow label="Housing (Yearly)" value={targetMetrics.housingCost} color="text-red-500" />
-                <BreakdownRow label="Regional COL" value={targetMetrics.dailyCosts} color="text-red-500" />
-                <div className="pt-5 border-t border-slate-100 flex justify-between items-end">
+                <BreakdownRow label="Housing (Yearly)" value={targetMetrics.housingCost} color="text-[var(--crimson-500)]" />
+                <BreakdownRow label="Regional COL" value={targetMetrics.dailyCosts} color="text-[var(--crimson-500)]" />
+                <div className="pt-5 border-t border-[var(--border-subtle)] flex justify-between items-end">
                   <div>
-                    <span className="text-[10px] font-bold text-indigo-400 uppercase block tracking-widest">Yearly Surplus</span>
-                    <span className="text-2xl font-black text-indigo-600 tabular-nums">${Math.round(targetMetrics.netSavings).toLocaleString()}</span>
+                    <span className="text-[10px] font-bold text-[var(--emerald-400)] uppercase block tracking-widest">Yearly Surplus</span>
+                    <span className="text-2xl font-black text-[var(--emerald-500)] tabular-nums">${Math.round(targetMetrics.netSavings).toLocaleString()}</span>
                   </div>
                 </div>
               </div>
@@ -588,13 +588,13 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
 
           {/* PRO FEATURES SECTION */}
           {!isPro && (
-            <div className="bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500 rounded-3xl p-8 shadow-2xl shadow-orange-200/50 text-white relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+            <div className="bg-gradient-to-br from-[var(--color-warning)] via-[var(--color-warning)] to-[var(--crimson-500)] rounded-3xl p-8 shadow-2xl shadow-[0_0_24px_var(--color-warning-soft)] text-white relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--bg-card)]/10 rounded-full -mr-32 -mt-32 blur-3xl"></div>
               <div className="relative">
                 <div className="flex items-start justify-between gap-6">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                      <div className="w-12 h-12 bg-[var(--bg-card)]/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
                         <Zap size={24} className="text-white" />
                       </div>
                       <h3 className="text-2xl font-black">Multi-City Wealth Accelerator</h3>
@@ -604,19 +604,19 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                       calculate tax migration windfalls, quantify career mobility trade-offs, and discover compounding leverage opportunities.
                     </p>
                     <div className="flex flex-wrap gap-3 mb-6">
-                      <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-xl text-sm font-bold border border-white/30">
+                      <div className="bg-[var(--bg-card)]/20 backdrop-blur-sm px-4 py-2 rounded-xl text-sm font-bold border border-white/30">
                         Top 5 Arbitrage Destinations
                       </div>
-                      <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-xl text-sm font-bold border border-white/30">
+                      <div className="bg-[var(--bg-card)]/20 backdrop-blur-sm px-4 py-2 rounded-xl text-sm font-bold border border-white/30">
                         Tax Migration Analysis
                       </div>
-                      <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-xl text-sm font-bold border border-white/30">
+                      <div className="bg-[var(--bg-card)]/20 backdrop-blur-sm px-4 py-2 rounded-xl text-sm font-bold border border-white/30">
                         Career Mobility Premium
                       </div>
                     </div>
                     <button
                       onClick={onUpgrade}
-                      className="bg-white text-orange-600 px-8 py-4 rounded-2xl font-black text-lg hover:bg-orange-50 transition-all shadow-xl hover:shadow-2xl hover:scale-105 active:scale-100"
+                      className="bg-[var(--bg-card)] text-[var(--color-warning)] px-8 py-4 rounded-2xl font-black text-lg hover:bg-[var(--color-warning-soft)] transition-all shadow-xl hover:shadow-2xl hover:scale-105 active:scale-100"
                     >
                       Upgrade to Pro
                     </button>
@@ -629,42 +629,42 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
           {multiCityAnalysis && (
             <ProGatedPreview isLocked={!isPro} toolId="geographic-arbitrage">
             <div className="space-y-8">
-              <div className="bg-gradient-to-br from-purple-50 to-indigo-50 border-2 border-indigo-100 rounded-3xl p-8 shadow-lg">
+              <div className="bg-gradient-to-br from-[var(--emerald-50)] to-[var(--emerald-50)] border-2 border-[var(--emerald-border-soft)] rounded-3xl p-8 shadow-lg">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center">
+                  <div className="w-10 h-10 bg-[var(--emerald-500)] rounded-xl flex items-center justify-center">
                     <Plane size={20} className="text-white" />
                   </div>
-                  <h3 className="text-xl font-black text-indigo-900">Top 5 Arbitrage Destinations</h3>
+                  <h3 className="text-xl font-black text-[var(--text-primary)]">Top 5 Arbitrage Destinations</h3>
                 </div>
-                <p className="text-indigo-700 font-medium mb-6 leading-relaxed">
+                <p className="text-[var(--emerald-500)] font-medium mb-6 leading-relaxed">
                   These cities maximize your savings delta while accounting for adjusted income, cost of living, and tax structures.
                   Each represents an optimized wealth acceleration opportunity.
                 </p>
                 <div className="space-y-3">
                   {multiCityAnalysis.destinations.map((dest, idx) => (
-                    <div key={idx} className="bg-white rounded-2xl p-5 border border-indigo-100 flex items-center justify-between group hover:border-indigo-300 transition-all">
+                    <div key={idx} className="bg-[var(--bg-card)] rounded-2xl p-5 border border-[var(--emerald-border-soft)] flex items-center justify-between group hover:border-[var(--emerald-border)] transition-all">
                       <div className="flex items-center gap-4">
-                        <div className="w-8 h-8 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center font-black text-sm">
+                        <div className="w-8 h-8 bg-[var(--emerald-100)] text-[var(--emerald-500)] rounded-lg flex items-center justify-center font-black text-sm">
                           {idx + 1}
                         </div>
                         <div>
-                          <h4 className="font-bold text-slate-800">{dest.location}</h4>
-                          <p className="text-xs text-slate-500 font-medium">Net Savings: ${Math.round(dest.netSavings).toLocaleString()}/year</p>
+                          <h4 className="font-bold text-[var(--text-primary)]">{dest.location}</h4>
+                          <p className="text-xs text-[var(--text-tertiary)] font-medium">Net Savings: ${Math.round(dest.netSavings).toLocaleString()}/year</p>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-1">Delta</p>
-                        <p className="text-2xl font-black text-emerald-600">+${Math.round(dest.delta).toLocaleString()}</p>
+                        <p className="text-xs text-[var(--text-tertiary)] font-semibold uppercase tracking-wider mb-1">Delta</p>
+                        <p className="text-2xl font-black text-[var(--emerald-500)]">+${Math.round(dest.delta).toLocaleString()}</p>
                       </div>
                     </div>
                   ))}
                 </div>
-                <div className="mt-6 bg-indigo-600 rounded-2xl p-5 text-white">
+                <div className="mt-6 bg-[var(--emerald-500)] rounded-2xl p-5 text-white">
                   <div className="flex items-start gap-3">
                     <Zap size={20} className="flex-shrink-0 mt-0.5" />
                     <div>
                       <p className="font-black text-sm uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
-                      <p className="text-indigo-100 text-sm font-medium leading-relaxed">
+                      <p className="text-[var(--mist-100)] text-sm font-medium leading-relaxed">
                         The #1 destination delivers ${Math.round(multiCityAnalysis.destinations[0].delta).toLocaleString()} more in annual savings than your current location.
                         Over {years} years, this compounds to ${Math.round(multiCityAnalysis.compoundedArbitrageWealth - projectionData[projectionData.length - 1].current).toLocaleString()} in extra wealth.
                       </p>
@@ -674,30 +674,30 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="bg-gradient-to-br from-teal-50 to-emerald-50 border-2 border-emerald-100 rounded-3xl p-8 shadow-lg">
+                <div className="bg-gradient-to-br from-[var(--color-info-soft)] to-[var(--emerald-50)] border-2 border-[var(--emerald-border-soft)] rounded-3xl p-8 shadow-lg">
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center">
+                    <div className="w-10 h-10 bg-[var(--emerald-500)] rounded-xl flex items-center justify-center">
                       <DollarSign size={20} className="text-white" />
                     </div>
-                    <h3 className="text-xl font-black text-emerald-900">Tax Migration Windfall</h3>
+                    <h3 className="text-xl font-black text-[var(--emerald-500)]">Tax Migration Windfall</h3>
                   </div>
-                  <p className="text-emerald-700 font-medium mb-6 leading-relaxed">
+                  <p className="text-[var(--emerald-500)] font-medium mb-6 leading-relaxed">
                     Quantifies the pure state income tax savings by moving to a lower-tax jurisdiction. This is money that would
                     otherwise evaporate to state coffers.
                   </p>
-                  <div className="bg-white rounded-2xl p-6 border border-emerald-100 mb-5">
-                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-2">Annual Tax Savings</p>
-                    <p className="text-4xl font-black text-emerald-600 mb-3">${Math.round(multiCityAnalysis.yearlyTaxWindfall).toLocaleString()}</p>
-                    <p className="text-sm text-slate-600 font-medium">
-                      Current state tax rate: <span className="font-bold text-slate-800">{(LOCATION_PRESETS[currentLoc].taxRate * 100).toFixed(1)}%</span>
+                  <div className="bg-[var(--bg-card)] rounded-2xl p-6 border border-[var(--emerald-border-soft)] mb-5">
+                    <p className="text-xs text-[var(--text-tertiary)] font-semibold uppercase tracking-wider mb-2">Annual Tax Savings</p>
+                    <p className="text-4xl font-black text-[var(--emerald-500)] mb-3">${Math.round(multiCityAnalysis.yearlyTaxWindfall).toLocaleString()}</p>
+                    <p className="text-sm text-[var(--text-secondary)] font-medium">
+                      Current state tax rate: <span className="font-bold text-[var(--text-primary)]">{(LOCATION_PRESETS[currentLoc].taxRate * 100).toFixed(1)}%</span>
                     </p>
                   </div>
-                  <div className="bg-emerald-600 rounded-2xl p-5 text-white">
+                  <div className="bg-[var(--emerald-500)] rounded-2xl p-5 text-white">
                     <div className="flex items-start gap-3">
                       <Zap size={18} className="flex-shrink-0 mt-0.5" />
                       <div>
                         <p className="font-black text-xs uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
-                        <p className="text-emerald-100 text-sm font-medium leading-relaxed">
+                        <p className="text-[var(--emerald-100)] text-sm font-medium leading-relaxed">
                           Moving to a zero-tax state like Texas, Florida, or Nevada would save you ${Math.round(multiCityAnalysis.yearlyTaxWindfall).toLocaleString()}/year
                           in pure tax arbitrage, assuming comparable cost of living.
                         </p>
@@ -706,32 +706,32 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-rose-50 to-pink-50 border-2 border-rose-100 rounded-3xl p-8 shadow-lg">
+                <div className="bg-gradient-to-br from-[var(--crimson-50)] to-[var(--emerald-50)] border-2 border-[var(--crimson-border)] rounded-3xl p-8 shadow-lg">
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 bg-rose-600 rounded-xl flex items-center justify-center">
+                    <div className="w-10 h-10 bg-[var(--crimson-500)] rounded-xl flex items-center justify-center">
                       <TrendingDown size={20} className="text-white" />
                     </div>
-                    <h3 className="text-xl font-black text-rose-900">Career Mobility Premium</h3>
+                    <h3 className="text-xl font-black text-[var(--crimson-500)]">Career Mobility Premium</h3>
                   </div>
-                  <p className="text-rose-700 font-medium mb-6 leading-relaxed">
+                  <p className="text-[var(--crimson-500)] font-medium mb-6 leading-relaxed">
                     Moving away from high-cost hubs may cost you career trajectory and networking advantages. This metric quantifies
                     the trade-off between savings and long-term earning potential.
                   </p>
-                  <div className="bg-white rounded-2xl p-6 border border-rose-100 mb-5">
-                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-2">Net Premium After Trajectory Loss</p>
-                    <p className={`text-4xl font-black mb-3 ${multiCityAnalysis.mobilityPremium >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                  <div className="bg-[var(--bg-card)] rounded-2xl p-6 border border-[var(--crimson-border)] mb-5">
+                    <p className="text-xs text-[var(--text-tertiary)] font-semibold uppercase tracking-wider mb-2">Net Premium After Trajectory Loss</p>
+                    <p className={`text-4xl font-black mb-3 ${multiCityAnalysis.mobilityPremium >= 0 ? 'text-[var(--emerald-500)]' : 'text-[var(--crimson-500)]'}`}>
                       {multiCityAnalysis.mobilityPremium >= 0 ? '+' : ''}${Math.round(multiCityAnalysis.mobilityPremium).toLocaleString()}
                     </p>
-                    <p className="text-sm text-slate-600 font-medium">
+                    <p className="text-sm text-[var(--text-secondary)] font-medium">
                       Assumes ~7% cumulative salary trajectory loss over {years} years
                     </p>
                   </div>
-                  <div className="bg-rose-600 rounded-2xl p-5 text-white">
+                  <div className="bg-[var(--crimson-500)] rounded-2xl p-5 text-white">
                     <div className="flex items-start gap-3">
                       <Zap size={18} className="flex-shrink-0 mt-0.5" />
                       <div>
                         <p className="font-black text-xs uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
-                        <p className="text-rose-100 text-sm font-medium leading-relaxed">
+                        <p className="text-[var(--crimson-100)] text-sm font-medium leading-relaxed">
                           {multiCityAnalysis.mobilityPremium >= 0
                             ? `Even accounting for career trajectory loss, arbitrage still nets you ${Math.abs(Math.round(multiCityAnalysis.mobilityPremium)).toLocaleString()} in extra wealth.`
                             : `The savings from arbitrage may not offset the career trajectory loss. Consider hybrid strategies like 5-year sprints in hubs.`}
@@ -742,43 +742,43 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-slate-50 to-slate-100 border-2 border-slate-200 rounded-3xl p-8 shadow-lg">
+              <div className="bg-gradient-to-br from-[var(--bg-section)] to-[var(--bg-glass)] border-2 border-[var(--border-default)] rounded-3xl p-8 shadow-lg">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 bg-slate-700 rounded-xl flex items-center justify-center">
+                  <div className="w-10 h-10 bg-[var(--obsidian-700)] rounded-xl flex items-center justify-center">
                     <TrendingUp size={20} className="text-white" />
                   </div>
-                  <h3 className="text-xl font-black text-slate-900">Lifestyle Compression Score</h3>
+                  <h3 className="text-xl font-black text-[var(--text-primary)]">Lifestyle Compression Score</h3>
                 </div>
-                <p className="text-slate-700 font-medium mb-6 leading-relaxed">
+                <p className="text-[var(--text-secondary)] font-medium mb-6 leading-relaxed">
                   Measures how much lifestyle quality you may be sacrificing to achieve arbitrage gains. A score below 50 indicates
                   significant compression; above 75 suggests sustainable lifestyle maintenance.
                 </p>
-                <div className="bg-white rounded-2xl p-6 border border-slate-200 mb-5">
+                <div className="bg-[var(--bg-card)] rounded-2xl p-6 border border-[var(--border-default)] mb-5">
                   <div className="flex items-center justify-between mb-4">
-                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Compression Score</p>
-                    <p className="text-4xl font-black text-slate-800">{multiCityAnalysis.lifestyleScore}</p>
+                    <p className="text-xs text-[var(--text-tertiary)] font-semibold uppercase tracking-wider">Compression Score</p>
+                    <p className="text-4xl font-black text-[var(--text-primary)]">{multiCityAnalysis.lifestyleScore}</p>
                   </div>
-                  <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
+                  <div className="w-full bg-[var(--bg-glass-strong)] rounded-full h-3 overflow-hidden">
                     <div
                       className={`h-full transition-all ${
-                        multiCityAnalysis.lifestyleScore >= 75 ? 'bg-emerald-500' :
-                        multiCityAnalysis.lifestyleScore >= 50 ? 'bg-amber-500' :
-                        'bg-rose-500'
+                        multiCityAnalysis.lifestyleScore >= 75 ? 'bg-[var(--emerald-500)]' :
+                        multiCityAnalysis.lifestyleScore >= 50 ? 'bg-[var(--color-warning)]' :
+                        'bg-[var(--crimson-500)]'
                       }`}
                       style={{ width: `${Math.min(100, multiCityAnalysis.lifestyleScore)}%` }}
                     ></div>
                   </div>
-                  <div className="flex justify-between mt-2 text-xs font-bold text-slate-400">
+                  <div className="flex justify-between mt-2 text-xs font-bold text-[var(--text-muted)]">
                     <span>High Compression</span>
                     <span>Sustainable</span>
                   </div>
                 </div>
-                <div className="bg-slate-700 rounded-2xl p-5 text-white">
+                <div className="bg-[var(--obsidian-700)] rounded-2xl p-5 text-white">
                   <div className="flex items-start gap-3">
                     <Zap size={18} className="flex-shrink-0 mt-0.5" />
                     <div>
                       <p className="font-black text-xs uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
-                      <p className="text-slate-300 text-sm font-medium leading-relaxed">
+                      <p className="text-[var(--text-muted)] text-sm font-medium leading-relaxed">
                         {multiCityAnalysis.lifestyleScore >= 75
                           ? 'Your target location maintains a sustainable lifestyle while delivering arbitrage gains. Low risk of burnout or regret.'
                           : multiCityAnalysis.lifestyleScore >= 50
@@ -805,9 +805,9 @@ interface BreakdownRowProps {
   color?: string;
 }
 
-const BreakdownRow = ({ label, value, color = "text-slate-600" }: BreakdownRowProps) => (
+const BreakdownRow = ({ label, value, color = "text-[var(--text-secondary)]" }: BreakdownRowProps) => (
   <div className="flex justify-between text-sm items-center">
-    <span className="text-slate-400 font-medium">{label}</span>
+    <span className="text-[var(--text-muted)] font-medium">{label}</span>
     <span className={`font-bold tabular-nums ${color}`}>${Math.round(value).toLocaleString()}</span>
   </div>
 );

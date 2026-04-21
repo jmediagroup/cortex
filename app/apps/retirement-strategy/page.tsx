@@ -1,167 +1,56 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import { Suspense } from 'react';
 import dynamic from 'next/dynamic';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Sparkles, Lock } from 'lucide-react';
-const RetirementStrategyEngine = dynamic(() => import('@/components/apps/RetirementStrategyEngine'), { ssr: false });
-import { createBrowserClient } from '@/lib/supabase/client';
-import { hasProAccess, type Tier } from '@/lib/access-control';
+import { useRouter } from 'next/navigation';
 import { InlineAd } from '@/components/monetization';
-import { trackToolVisit } from '@/lib/useRecentTools';
 import { Breadcrumb, CalculatorSkeleton } from '@/components/ui';
 import CalculatorSEOContent from '@/components/seo/CalculatorSEOContent';
 import RelatedTools from '@/components/seo/RelatedTools';
 import { CALCULATOR_CONTENT, getRelatedTools } from '@/lib/calculator-content';
+import { ToolLayout, ToolUpsellCta } from '@/components/app/ToolLayout';
+import { useToolPageData } from '@/lib/useToolPageData';
+
+const RetirementStrategyEngine = dynamic(() => import('@/components/apps/RetirementStrategyEngine'), { ssr: false });
 
 function RetirementStrategyPageInner() {
   const router = useRouter();
-  const supabase = createBrowserClient();
-  const [isPro, setIsPro] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [hasSession, setHasSession] = useState(false);
-  const searchParams = useSearchParams();
-  const [initialValues, setInitialValues] = useState<Record<string, unknown> | undefined>();
-
-  // Fetch user tier from database (optional - no redirect)
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setHasSession(!!session);
-
-      if (session) {
-        // Fetch user tier from database if logged in
-        const { data: userData } = await supabase
-          .from('users')
-          .select('tier')
-          .eq('id', session.user.id)
-          .single() as { data: { tier: Tier } | null };
-
-        if (userData?.tier) {
-          setIsPro(hasProAccess('finance', userData.tier));
-        }
-      }
-
-      setLoading(false);
-    };
-
-    checkAuth();
-  }, [router, supabase]);
-
-  useEffect(() => {
-    const token = searchParams.get('scenario');
-    if (!token) return;
-    fetch(`/api/scenarios/shared/${token}`)
-      .then(res => res.ok ? res.json() : null)
-      .then(data => { if (data?.scenario?.inputs) setInitialValues(data.scenario.inputs); })
-      .catch(() => {});
-  }, [searchParams]);
-
-  useEffect(() => { trackToolVisit('retirement-strategy', 'Retirement Strategy Engine', '/apps/retirement-strategy'); }, []);
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-32">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-slate-500 font-medium text-sm">Loading...</p>
-        </div>
-      </div>
-    );
-  }
+  const { hasSession, isPro, initialValues } = useToolPageData({
+    toolId: 'retirement-strategy',
+    toolName: 'Retirement Strategy Engine',
+    toolPath: '/apps/retirement-strategy',
+  });
 
   return (
-    <>
-      {/* MAIN CONTENT */}
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        <Breadcrumb toolName="Retirement Strategy Calculator" />
-        {!hasSession && (
-          <div className="bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-700 rounded-2xl p-8 mb-8 text-white shadow-xl relative overflow-hidden">
-            <div className="absolute inset-0 opacity-5 grid-bg pointer-events-none" />
-            <div className="flex items-start justify-between gap-6">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-3">
-                  <Sparkles size={24} />
-                  <h3 className="text-2xl font-black">Unlock 7 More Financial Calculators</h3>
-                </div>
-                <p className="text-indigo-100 font-medium mb-4">
-                  Create a free account to access our complete suite of financial tools: Net Worth Tracker, Debt Paydown Optimizer, Car Affordability, Rent vs Buy, and more.
-                </p>
-                <div className="flex flex-wrap items-center gap-4">
-                  <button
-                    onClick={() => router.push('/signup')}
-                    className="bg-white text-indigo-600 px-6 py-3 rounded-xl font-bold hover:bg-indigo-50 transition-all shadow-md"
-                  >
-                    Create Free Account
-                  </button>
-                  <button
-                    onClick={() => router.push('/pricing')}
-                    className="text-white border-2 border-white px-6 py-3 rounded-xl font-bold hover:bg-white/10 transition-all"
-                  >
-                    View All Tools
-                  </button>
-                </div>
-              </div>
-              <div className="hidden lg:block">
-                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-                  <div className="space-y-3 text-sm">
-                    <div className="flex items-center gap-2">
-                      <Lock size={14} className="text-indigo-200" />
-                      <span className="text-indigo-50 font-semibold">Net Worth Tracker</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Lock size={14} className="text-indigo-200" />
-                      <span className="text-indigo-50 font-semibold">Debt Paydown</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Lock size={14} className="text-indigo-200" />
-                      <span className="text-indigo-50 font-semibold">Car Affordability</span>
-                    </div>
-                    <div className="text-indigo-200 text-xs font-bold mt-3">+ 4 more tools</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="bg-gradient-to-br from-purple-50 to-white border border-purple-100/80 rounded-2xl p-8 mb-8 shadow-sm">
-          <h2 className="text-2xl font-black text-purple-900 mb-3">Retirement Drawdown Strategy</h2>
-          <p className="text-purple-700 font-medium">
-            Comprehensive simulation of retirement portfolio withdrawals with RMD calculations, Roth conversion ladder optimization, and Social Security integration. Model multiple withdrawal strategies and stress-test against market volatility.
-          </p>
-        </div>
-
-        {/* Inline Ad - Full width above calculator */}
-        <InlineAd context="retirement-strategy" className="mb-8" />
-
-        {/* Calculator - Full width */}
-        <RetirementStrategyEngine
-          isPro={isPro}
-          onUpgrade={() => router.push('/pricing')}
-          isLoggedIn={hasSession}
-          initialValues={initialValues}
-        />
-      </div>
-
-      {/* SEO & AEO Content */}
-      <div className="max-w-7xl mx-auto px-6">
-        <CalculatorSEOContent content={CALCULATOR_CONTENT['retirement-strategy']} />
-        <RelatedTools tools={getRelatedTools('retirement-strategy')} />
-      </div>
-
-      {/* FOOTER */}
-      <footer className="max-w-7xl mx-auto px-6 py-10 text-center border-t border-slate-100 mt-8">
-        <p className="text-xs text-slate-400 font-medium">&copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.</p>
-        <div className="flex items-center justify-center gap-3 mt-2">
-          <a href="/articles" className="text-slate-400 hover:text-slate-600 transition-colors text-xs">Articles</a>
-          <span className="text-slate-200">|</span>
-          <a href="/pricing" className="text-slate-400 hover:text-slate-600 transition-colors text-xs">Pricing</a>
-          <span className="text-slate-200">|</span>
-          <a href="/terms" className="text-slate-400 hover:text-slate-600 transition-colors text-xs">Terms & Privacy</a>
-        </div>
-      </footer>
-    </>
+    <ToolLayout
+      eyebrow="FINANCE · RETIREMENT"
+      title="Retirement strategy engine."
+      sub="Decumulation planning with Roth conversions, tax optimization, and sequence-of-returns risk modeled."
+      breadcrumb={<Breadcrumb toolName="Retirement Strategy Engine" />}
+      cta={
+        !hasSession ? (
+          <ToolUpsellCta
+            headline="Retire with the math in front of you."
+            sub="A free account unlocks the full suite — pair this with Coast FIRE, Net Worth, and Budget to plan the transition."
+          />
+        ) : null
+      }
+      narration="Most people retire by feel. You just modeled the actual sequence — and the tax bill that comes with it."
+      footer={
+        <>
+          <CalculatorSEOContent content={CALCULATOR_CONTENT['retirement-strategy']} />
+          <RelatedTools tools={getRelatedTools('retirement-strategy')} />
+        </>
+      }
+    >
+      <InlineAd context="retirement-strategy" className="mb-6" />
+      <RetirementStrategyEngine
+        isPro={isPro}
+        onUpgrade={() => router.push('/pricing')}
+        isLoggedIn={hasSession}
+        initialValues={initialValues}
+      />
+    </ToolLayout>
   );
 }
 
