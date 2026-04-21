@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<title>Cortex — Tools for Long-Term Thinking</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script>
+  // Apply saved theme BEFORE paint to avoid flash
+  (function() {
+    try {
+      var t = localStorage.getItem('cortex-theme');
+      if (t === 'light' || t === 'dark') {
+        document.documentElement.setAttribute('data-theme', t);
+      }
+    } catch(e) {}
+  })();
+</script>
+<link rel="stylesheet" href="../../colors_and_type.css">
+<style>
+  html, body { margin:0; padding:0; background: var(--bg-canvas); color: var(--text-primary); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  *, *::before, *::after { box-sizing: border-box; }
+  a { -webkit-tap-highlight-color: transparent; }
+  ::selection { background: rgba(0,240,160,0.3); color: #fff; }
+  @keyframes float {
+    0%,100% { transform: translateY(0) }
+    50%     { transform: translateY(-8px) }
+  }
+  @media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr !important; gap: 56px !important; }
+    .nav-center { display: none !important; }
+  }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="Icons.jsx"></script>
+<script type="text/babel" src="Nav.jsx"></script>
+<script type="text/babel" src="Hero.jsx"></script>
+<script type="text/babel" src="Tools.jsx"></script>
+<script type="text/babel" src="Blocks.jsx"></script>
+<script type="text/babel">
+function App() {
+  return (
+    <div>
+      <Nav/>
+      <Hero/>
+      <ToolGrid/>
+      <Philosophy/>
+      <Pricing/>
+      <PrinciplesCTA/>
+      <Footer/>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

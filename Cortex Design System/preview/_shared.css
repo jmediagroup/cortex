@@ -1,0 +1,56 @@
+/* Shared styles for Cortex Design System preview cards — dark */
+@import url('../colors_and_type.css');
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--obsidian-900);
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "cv11", "ss01";
+}
+.card {
+  width: 100%;
+  padding: 24px;
+  background: var(--obsidian-900);
+  color: var(--text-primary);
+}
+.row  { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.col  { display: flex; flex-direction: column; gap: 12px; }
+.grid { display: grid; gap: 12px; }
+
+.swatch {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 12px;
+  min-height: 84px;
+  color: #F5F5F7;
+}
+.swatch .name { font-size: 11px; font-weight: 600; letter-spacing: 0.02em; }
+.swatch .hex  { font-family: var(--font-mono); font-size: 10px; opacity: 0.75; margin-top: 2px; }
+
+.mini-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-tertiary);
+}
+.tok {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+.frost {
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-inset-top), var(--shadow-card);
+}

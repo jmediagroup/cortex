@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Cortex Mobile</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../../colors_and_type.css">
+<style>
+html,body{margin:0;padding:0;background:#05070A;font-family:var(--font-sans);color:#F5F5F7;-webkit-font-smoothing:antialiased;min-height:100vh}
+*{box-sizing:border-box}
+.phone{width:390px;height:844px;margin:16px auto;border-radius:54px;background:#0A0E14;border:10px solid #1C1C1E;box-shadow:0 30px 80px rgba(0,0,0,0.6), 0 0 120px rgba(0,240,160,0.08);position:relative;overflow:hidden}
+.phone::before{content:"";position:absolute;top:10px;left:50%;transform:translateX(-50%);width:120px;height:32px;background:#0A0E14;border-radius:20px;z-index:100}
+.scroll{width:100%;height:100%;overflow-y:auto;overflow-x:hidden}
+.scroll::-webkit-scrollbar{display:none}
+.scroll{scrollbar-width:none}
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="phone"><div class="scroll"><div id="root"></div></div></div>
+<script type="text/babel" src="Icons.jsx"></script>
+<script type="text/babel" src="Chrome.jsx"></script>
+<script type="text/babel" src="PulseCard.jsx"></script>
+<script type="text/babel" src="SmartAmount.jsx"></script>
+<script type="text/babel" src="SafeToSpend.jsx"></script>
+<script type="text/babel" src="Sankey.jsx"></script>
+<script type="text/babel" src="GhostChart.jsx"></script>
+<script type="text/babel" src="TransactionRow.jsx"></script>
+<script type="text/babel" src="App.jsx"></script>
+</body>
+</html>

@@ -1,0 +1,405 @@
+/* ============================================================
+   CORTEX — Colors & Type
+   "Trust & Growth" dark palette + Inter Variable
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* ============================================================
+     TRUST & GROWTH PALETTE
+     ============================================================ */
+
+  /* ---------- CORE 5 TONES ---------- */
+  --obsidian:      #0A0E14;   /* Midnight Obsidian — deep bg, primary text (inverted) */
+  --emerald:       #00F0A0;   /* Electric Emerald — positive growth, Save actions */
+  --crimson:       #FF3B30;   /* Crimson Pulse — overspending, Debt alerts */
+  --frosted-slate: #1C1C1E;   /* Frosted Slate — card bg, elevated surfaces */
+  --silver-mist:   #8E8E93;   /* Silver Mist — secondary labels, inactive */
+
+  /* ---------- OBSIDIAN SCALE (backgrounds + depth) ---------- */
+  --obsidian-950: #05070A;    /* page background (deepest) */
+  --obsidian-900: #0A0E14;    /* primary bg */
+  --obsidian-800: #121620;    /* elevated section */
+  --obsidian-700: #1C1C1E;    /* Frosted Slate — card base */
+  --obsidian-600: #26262A;    /* card hover / raised */
+  --obsidian-500: #3A3A3D;    /* dividers, tertiary surface */
+  --obsidian-400: #565659;    /* disabled */
+
+  /* ---------- EMERALD SCALE (positive / save) ---------- */
+  --emerald-50:  rgba(0, 240, 160, 0.08);
+  --emerald-100: rgba(0, 240, 160, 0.16);
+  --emerald-200: rgba(0, 240, 160, 0.28);
+  --emerald-400: #33F3B3;
+  --emerald-500: #00F0A0;      /* Electric Emerald */
+  --emerald-600: #00C285;
+  --emerald-700: #009466;
+  --emerald-glow: 0 0 32px rgba(0, 240, 160, 0.45);
+
+  /* ---------- CRIMSON SCALE (negative / debt) ---------- */
+  --crimson-50:  rgba(255, 59, 48, 0.08);
+  --crimson-100: rgba(255, 59, 48, 0.16);
+  --crimson-200: rgba(255, 59, 48, 0.28);
+  --crimson-400: #FF6B63;
+  --crimson-500: #FF3B30;      /* Crimson Pulse */
+  --crimson-600: #E02A20;
+  --crimson-glow: 0 0 24px rgba(255, 59, 48, 0.4);
+
+  /* ---------- NEUTRALS — Silver Mist scale ---------- */
+  --mist-50:  #F5F5F7;   /* highest-contrast text on dark */
+  --mist-100: #E5E5EA;
+  --mist-200: #C7C7CC;
+  --mist-300: #AEAEB2;
+  --mist-400: #8E8E93;   /* Silver Mist */
+  --mist-500: #6D6D72;
+  --mist-600: #48484A;
+  --mist-700: #2C2C2E;
+  --mist-800: #1C1C1E;
+
+  /* ---------- SEMANTIC ALIASES ---------- */
+  --color-positive:       var(--emerald-500);
+  --color-positive-soft:  var(--emerald-100);
+  --color-negative:       var(--crimson-500);
+  --color-negative-soft:  var(--crimson-100);
+  --color-accent:         var(--emerald-500);
+  --color-accent-soft:    var(--emerald-100);
+  --color-warning:        #FFB800;
+  --color-warning-soft:   rgba(255, 184, 0, 0.12);
+  --color-info:           #5AC8FA;
+  --color-info-soft:      rgba(90, 200, 250, 0.12);
+
+  /* ---------- SURFACES ---------- */
+  --bg-canvas:      var(--obsidian-950);  /* body / viewport */
+  --bg-page:        var(--obsidian-900);  /* primary bg */
+  --bg-section:     var(--obsidian-800);  /* elevated section */
+  --bg-card:        var(--obsidian-700);  /* Frosted Slate card */
+  --bg-card-hover:  var(--obsidian-600);
+  --bg-raised:      var(--obsidian-600);
+
+  /* Frosted glass card — 20% opacity white on dark, with blur */
+  --bg-glass:        rgba(255, 255, 255, 0.06);
+  --bg-glass-strong: rgba(255, 255, 255, 0.10);
+  --glass-border:    rgba(255, 255, 255, 0.08);
+  --glass-border-strong: rgba(255, 255, 255, 0.14);
+  --glass-blur:      blur(20px) saturate(180%);
+
+  /* ---------- BORDERS ---------- */
+  --border-subtle:    rgba(255, 255, 255, 0.06);
+  --border-default:   rgba(255, 255, 255, 0.10);
+  --border-strong:    rgba(255, 255, 255, 0.16);
+
+  /* ---------- TEXT ---------- */
+  --text-primary:    #F5F5F7;   /* near-white */
+  --text-secondary:  var(--mist-300);
+  --text-tertiary:   var(--mist-400);
+  --text-muted:      var(--mist-500);
+  --text-inverse:    var(--obsidian-900);
+
+  /* ---------- CHART PALETTE ---------- */
+  --chart-emerald: var(--emerald-500);
+  --chart-crimson: var(--crimson-500);
+  --chart-info:    #5AC8FA;
+  --chart-purple:  #BF5AF2;
+  --chart-amber:   #FFB800;
+  --chart-pink:    #FF66C4;
+  --chart-emerald-area: rgba(0, 240, 160, 0.18);
+  --chart-crimson-area: rgba(255, 59, 48, 0.15);
+  /* Sankey flow colors (Needs/Wants/Investments) */
+  --sankey-needs:        #5AC8FA;
+  --sankey-wants:        #BF5AF2;
+  --sankey-investments:  var(--emerald-500);
+  --sankey-income:       var(--mist-200);
+
+  /* ---------- SHADOWS (dark UI — mostly glow) ---------- */
+  --shadow-card:       0 2px 8px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-card-hover: 0 8px 24px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.3);
+  --shadow-elevated:   0 16px 48px rgba(0, 0, 0, 0.6), 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-emerald:    var(--emerald-glow);
+  --shadow-crimson:    var(--crimson-glow);
+  --shadow-inset-top:  inset 0 1px 0 rgba(255, 255, 255, 0.06);  /* glass hairline */
+
+  /* ---------- RADII ---------- */
+  --radius-xs:   0.375rem;   /*  6 — tiny chips */
+  --radius-sm:   0.625rem;   /* 10 — inputs, small */
+  --radius-md:   0.875rem;   /* 14 */
+  --radius-lg:   1.25rem;    /* 20 */
+  --radius-xl:   1.5rem;     /* 24 — Pulse card */
+  --radius-2xl:  2rem;       /* 32 */
+  --radius-3xl:  2.5rem;     /* 40 */
+  --radius-full: 9999px;
+
+  /* ---------- SPACING (4pt grid) ---------- */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  /* ============================================================
+     TYPE — Inter Variable (primary) + JetBrains Mono (numeric)
+     ============================================================ */
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* Scale — sized for mobile-first finance UI per spec */
+  --text-hero:        clamp(2.5rem, 7vw, 4rem);   /* 40–64 */
+  --text-display:     2rem;       /* 32 — Net Worth hero balance */
+  --text-h1:          1.75rem;    /* 28 */
+  --text-h2:          1.375rem;   /* 22 */
+  --text-h3:          1.125rem;   /* 18 */
+  --text-body:        1rem;       /* 16 — transaction descriptions */
+  --text-sm:          0.875rem;   /* 14 */
+  --text-mono:        0.875rem;   /* 14 — numeric data, IBANs */
+  --text-xs:          0.75rem;    /* 12 — meta, pills */
+  --text-eyebrow:     0.6875rem;  /* 11 — uppercase labels */
+
+  --weight-regular: 400;
+  --weight-medium:  500;
+  --weight-semi:    600;
+  --weight-bold:    700;
+  --weight-black:   900;
+
+  --leading-tight:  1.1;
+  --leading-snug:   1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.65;
+
+  --tracking-tighter: -0.03em;  /* hero, display balance */
+  --tracking-tight:   -0.015em;
+  --tracking-normal:  0;
+  --tracking-wide:    0.04em;
+  --tracking-widest:  0.14em;   /* eyebrow labels */
+
+  /* ---------- MOTION ---------- */
+  --ease-out-expo:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart:   cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-spring-soft: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast:    120ms;
+  --dur-base:    200ms;
+  --dur-slow:    320ms;
+  --dur-vault:   520ms; /* "Vault" transition */
+
+  /* ---------- THEME-AWARE GLOW INTENSITY ---------- */
+  --aurora-emerald: rgba(0, 240, 160, 0.22);
+  --aurora-info:    rgba(90, 200, 250, 0.12);
+  --aurora-crimson: rgba(255, 59, 48, 0.07);
+  --grid-line:      rgba(255, 255, 255, 0.025);
+  --cta-glow-ring:  rgba(0, 240, 160, 0.40);
+  --cta-glow-soft:  rgba(0, 240, 160, 0.35);
+  --cta-glow-strong:rgba(0, 240, 160, 0.55);
+  --emerald-wash:   rgba(0, 240, 160, 0.08);
+  --featured-halo:  rgba(0, 240, 160, 0.12);
+  --emerald-tint:   rgba(0, 240, 160, 0.15);
+  --emerald-tint-soft: rgba(0, 240, 160, 0.10);
+  --emerald-border: rgba(0, 240, 160, 0.28);
+  --emerald-border-soft: rgba(0, 240, 160, 0.20);
+  --emerald-border-faint: rgba(0, 240, 160, 0.10);
+  --crimson-tint:   rgba(255, 59, 48, 0.12);
+  --crimson-border: rgba(255, 59, 48, 0.28);
+  --select-bg:      rgba(0, 240, 160, 0.30);
+
+  /* eyebrows — needs to work on both themes */
+  --text-eyebrow-color: var(--mist-300);
+}
+
+/* ============================================================
+   LIGHT THEME — token overrides
+   Same system, flipped surfaces. Kept warm to avoid sterile UI.
+   ============================================================ */
+[data-theme="light"] {
+  /* surfaces — warm off-white, slight paper feel */
+  --bg-canvas:       #F7F7F3;
+  --bg-page:         #FAFAF7;
+  --bg-section:      #F2F2EE;
+  --bg-card:         #FFFFFF;
+  --bg-card-hover:   #FAFAF7;
+  --bg-raised:       #FFFFFF;
+
+  /* frosted glass over light — nearly opaque white */
+  --bg-glass:        rgba(255, 255, 255, 0.70);
+  --bg-glass-strong: rgba(255, 255, 255, 0.88);
+  --glass-border:    rgba(10, 14, 20, 0.08);
+  --glass-border-strong: rgba(10, 14, 20, 0.12);
+
+  /* borders */
+  --border-subtle:   rgba(10, 14, 20, 0.06);
+  --border-default:  rgba(10, 14, 20, 0.10);
+  --border-strong:   rgba(10, 14, 20, 0.16);
+
+  /* text — obsidian on paper */
+  --text-primary:    #0A0E14;
+  --text-secondary:  #48484A;
+  --text-tertiary:   #6D6D72;
+  --text-muted:      #8E8E93;
+  --text-inverse:    #F5F5F7;
+
+  /* emerald — slightly deeper for AA on white */
+  --emerald-500: #00A674;
+  --emerald-400: #00C285;
+  --emerald-600: #00875A;
+  --emerald-700: #006945;
+  --emerald-glow: 0 0 18px rgba(0, 166, 116, 0.30);
+
+  /* shadows — real shadows, not glows */
+  --shadow-card:       0 1px 2px rgba(10, 14, 20, 0.04), 0 1px 3px rgba(10, 14, 20, 0.05);
+  --shadow-card-hover: 0 4px 16px rgba(10, 14, 20, 0.08), 0 2px 6px rgba(10, 14, 20, 0.05);
+  --shadow-elevated:   0 12px 40px rgba(10, 14, 20, 0.10), 0 4px 12px rgba(10, 14, 20, 0.06);
+  --shadow-inset-top:  inset 0 1px 0 rgba(255, 255, 255, 0.60);
+
+  /* ambient atmosphere — much dialed down for light */
+  --aurora-emerald: rgba(0, 166, 116, 0.12);
+  --aurora-info:    rgba(90, 200, 250, 0.08);
+  --aurora-crimson: rgba(255, 59, 48, 0.04);
+  --grid-line:      rgba(10, 14, 20, 0.04);
+
+  /* CTA — emerald button, more subdued glow on light */
+  --cta-glow-ring:  rgba(0, 166, 116, 0.35);
+  --cta-glow-soft:  rgba(0, 166, 116, 0.20);
+  --cta-glow-strong:rgba(0, 166, 116, 0.35);
+
+  --emerald-wash:   rgba(0, 166, 116, 0.06);
+  --featured-halo:  rgba(0, 166, 116, 0.10);
+  --emerald-tint:   rgba(0, 166, 116, 0.10);
+  --emerald-tint-soft: rgba(0, 166, 116, 0.06);
+  --emerald-border: rgba(0, 166, 116, 0.25);
+  --emerald-border-soft: rgba(0, 166, 116, 0.18);
+  --emerald-border-faint: rgba(0, 166, 116, 0.12);
+  --crimson-tint:   rgba(255, 59, 48, 0.08);
+  --crimson-border: rgba(255, 59, 48, 0.22);
+  --select-bg:      rgba(0, 166, 116, 0.22);
+
+  /* eyebrow in light — darker mist so labels read */
+  --text-eyebrow-color: #48484A;
+
+  /* emerald scale aliases re-point */
+  --emerald-50:  rgba(0, 166, 116, 0.06);
+  --emerald-100: rgba(0, 166, 116, 0.12);
+  --emerald-200: rgba(0, 166, 116, 0.22);
+}
+
+/* Respect OS preference by default if user hasn't set one */
+@media (prefers-color-scheme: light) {
+  html:not([data-theme]) { /* noop; explicit attribute wins */ }
+}
+
+::selection {
+  background: var(--select-bg);
+  color: var(--text-primary);
+}
+
+/* ============================================================
+   BASE — dark canvas by default
+   ============================================================ */
+html, body {
+  background: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "cv11" 1, "ss01" 1; /* Inter stylistic sets */
+}
+
+/* ============================================================
+   SEMANTIC TYPE RULES
+   ============================================================ */
+
+.h-hero {
+  font-family: var(--font-display);
+  font-size: var(--text-hero);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tighter);
+  color: var(--text-primary);
+}
+
+.h-display, .balance-hero {
+  font-family: var(--font-display);
+  font-size: var(--text-display);  /* 32 */
+  font-weight: var(--weight-semi); /* 600 per spec */
+  line-height: 1.05;
+  letter-spacing: var(--tracking-tighter);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+
+h1, .h1 {
+  font-family: var(--font-sans);
+  font-size: var(--text-h1);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--text-primary);
+}
+
+h2, .h2 {
+  font-family: var(--font-sans);
+  font-size: var(--text-h2);
+  font-weight: var(--weight-semi);
+  letter-spacing: var(--tracking-tight);
+  color: var(--text-primary);
+}
+
+h3, .h3 {
+  font-family: var(--font-sans);
+  font-size: var(--text-h3);
+  font-weight: var(--weight-semi);
+  color: var(--text-primary);
+}
+
+p, .body {
+  font-family: var(--font-sans);
+  font-size: var(--text-body);      /* 16 */
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-normal);
+  color: var(--text-secondary);
+}
+
+.body-sm {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-regular);
+  color: var(--text-secondary);
+}
+
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: var(--text-eyebrow);
+  font-weight: var(--weight-semi);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+  color: var(--text-eyebrow-color);
+}
+
+.num, code, .mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);     /* 14 */
+  font-weight: var(--weight-medium);
+  font-feature-settings: "tnum" 1, "zero" 1, "ss02" 1;
+}
+
+/* ============================================================
+   UTILITY — frosted glass card mixin
+   ============================================================ */
+.glass-card {
+  background: var(--bg-glass);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card), var(--shadow-inset-top);
+}
+
+.glass-card--strong {
+  background: var(--bg-glass-strong);
+  border-color: var(--glass-border-strong);
+}
+
+.delta-up   { color: var(--emerald-500); }
+.delta-down { color: var(--crimson-500); }
