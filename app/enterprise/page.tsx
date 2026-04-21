@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Building2,
   Mail,
@@ -8,18 +10,16 @@ import {
   Phone,
   MessageSquare,
   Users,
-  ArrowRight,
   Loader2,
-  Check,
   ShieldCheck,
-  Sparkles,
   Globe,
   Zap,
-  BarChart3
+  BarChart3,
 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { trackEvent } from '@/lib/analytics';
 import { COMPANY_SIZES } from '@/lib/validation';
+import { MarketingShell } from '@/components/marketing/MarketingShell';
+import { MarketingIcon } from '@/components/marketing/Icons';
 
 export default function EnterprisePage() {
   const router = useRouter();
@@ -27,7 +27,6 @@ export default function EnterprisePage() {
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
 
-  // Form fields
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -48,9 +47,7 @@ export default function EnterprisePage() {
     try {
       const response = await fetch('/api/enterprise-lead', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           firstName,
           lastName,
@@ -63,351 +60,562 @@ export default function EnterprisePage() {
       });
 
       const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Failed to submit form');
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to submit form');
-      }
-
-      // Track successful submission
-      await trackEvent('enterprise_form_submitted', {
-        company_size: companySize,
-      }, true);
-
+      await trackEvent('enterprise_form_submitted', { company_size: companySize }, true);
       setSubmitted(true);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'An error occurred. Please try again.';
       console.error('Form submission error:', err);
-      setError(err.message || 'An error occurred. Please try again.');
+      setError(msg);
     } finally {
       setLoading(false);
     }
   };
 
-  // Success screen
   if (submitted) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-900">
-        <div className="max-w-lg w-full bg-white rounded-[3rem] shadow-2xl border border-slate-200 overflow-hidden p-10 lg:p-12 text-center">
-          {/* Success Icon */}
-          <div className="mx-auto h-20 w-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-3xl flex items-center justify-center mb-8 shadow-xl shadow-emerald-200">
-            <Check size={40} className="text-white" strokeWidth={3} />
-          </div>
-
-          {/* Heading */}
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-3">
-            Thank You!
-          </h1>
-
-          {/* Message */}
-          <p className="text-slate-600 font-medium mb-8 leading-relaxed">
-            We&apos;ve received your request and a member of our team will be in touch within 1-2 business days to discuss your enterprise needs.
-          </p>
-
-          {/* What to expect */}
-          <div className="bg-slate-50 rounded-2xl p-6 text-left mb-8">
-            <p className="text-sm font-black text-slate-400 uppercase tracking-widest mb-4">
-              What happens next
-            </p>
-            <ul className="space-y-3">
-              <li className="flex items-start gap-3">
-                <div className="bg-indigo-100 rounded-lg p-1 mt-0.5">
-                  <Check size={14} className="text-indigo-600" strokeWidth={3} />
-                </div>
-                <span className="text-sm text-slate-700 font-medium">
-                  Our team will review your requirements
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="bg-indigo-100 rounded-lg p-1 mt-0.5">
-                  <Check size={14} className="text-indigo-600" strokeWidth={3} />
-                </div>
-                <span className="text-sm text-slate-700 font-medium">
-                  We&apos;ll reach out to schedule a discovery call
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="bg-indigo-100 rounded-lg p-1 mt-0.5">
-                  <Check size={14} className="text-indigo-600" strokeWidth={3} />
-                </div>
-                <span className="text-sm text-slate-700 font-medium">
-                  You&apos;ll receive a custom proposal tailored to your needs
-                </span>
-              </li>
-            </ul>
-          </div>
-
-          {/* Back to home */}
-          <button
-            onClick={() => router.push('/')}
-            className="text-indigo-600 font-bold hover:text-indigo-500 transition-colors inline-flex items-center gap-2"
+      <MarketingShell>
+        <section
+          className="hero-gradient"
+          style={{
+            minHeight: '80vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '96px 24px',
+          }}
+        >
+          <div
+            style={{
+              maxWidth: 560,
+              width: '100%',
+              background: 'var(--bg-glass)',
+              backdropFilter: 'var(--glass-blur)',
+              WebkitBackdropFilter: 'var(--glass-blur)',
+              border: '1px solid var(--glass-border)',
+              borderRadius: 'var(--radius-2xl)',
+              padding: '48px 40px',
+              boxShadow: 'var(--shadow-elevated), var(--shadow-inset-top)',
+              textAlign: 'center',
+            }}
           >
-            Back to Home
-            <ArrowRight size={16} />
-          </button>
-
-          {/* Security badge */}
-          <div className="mt-8 flex items-center justify-center gap-2 text-slate-400">
-            <ShieldCheck size={14} />
-            <span className="text-[10px] font-black uppercase tracking-widest">Your data is secure</span>
+            <div
+              style={{
+                margin: '0 auto 24px',
+                width: 72,
+                height: 72,
+                borderRadius: 18,
+                background: 'var(--emerald-tint)',
+                border: '1px solid var(--emerald-border)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--emerald-500)',
+                boxShadow: '0 0 32px var(--cta-glow-soft)',
+              }}
+            >
+              <MarketingIcon name="check" size={32} stroke={2.5} />
+            </div>
+            <h1
+              className="h-hero"
+              style={{ fontSize: 32, margin: '0 0 12px' }}
+            >
+              Thank you.
+            </h1>
+            <p
+              style={{
+                color: 'var(--text-secondary)',
+                lineHeight: 1.6,
+                margin: '0 0 28px',
+              }}
+            >
+              We&apos;ve received your request. A member of our team will be in touch within 1–2 business days to discuss your enterprise needs.
+            </p>
+            <div
+              style={{
+                background: 'var(--bg-glass-strong)',
+                border: '1px solid var(--glass-border-strong)',
+                borderRadius: 'var(--radius-lg)',
+                padding: 20,
+                textAlign: 'left',
+                marginBottom: 28,
+              }}
+            >
+              <div
+                className="eyebrow"
+                style={{ marginBottom: 12, color: 'var(--text-tertiary)' }}
+              >
+                WHAT HAPPENS NEXT
+              </div>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {[
+                  'Our team will review your requirements',
+                  'We’ll reach out to schedule a discovery call',
+                  'You’ll receive a custom proposal tailored to your needs',
+                ].map((item) => (
+                  <li
+                    key={item}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: 10,
+                      color: 'var(--text-secondary)',
+                      fontSize: 13,
+                      lineHeight: 1.55,
+                    }}
+                  >
+                    <span
+                      aria-hidden="true"
+                      style={{
+                        flexShrink: 0,
+                        marginTop: 2,
+                        width: 16,
+                        height: 16,
+                        borderRadius: '50%',
+                        background: 'var(--emerald-tint)',
+                        border: '1px solid var(--emerald-border)',
+                        color: 'var(--emerald-500)',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <MarketingIcon name="check" size={9} stroke={2.5} />
+                    </span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <button
+              type="button"
+              onClick={() => router.push('/')}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                background: 'transparent',
+                border: 0,
+                color: 'var(--emerald-500)',
+                fontWeight: 600,
+                fontSize: 14,
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+              }}
+            >
+              Back to home <MarketingIcon name="arrowRight" size={14} />
+            </button>
           </div>
-        </div>
-      </div>
+        </section>
+      </MarketingShell>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-900">
-      <div className="max-w-5xl w-full grid lg:grid-cols-2 gap-0 bg-white rounded-[3rem] shadow-2xl border border-slate-200 overflow-hidden">
+    <MarketingShell>
+      <section
+        className="hero-gradient"
+        style={{ padding: '80px 24px', position: 'relative' }}
+      >
+        <div
+          style={{
+            maxWidth: 1100,
+            margin: '0 auto',
+            display: 'grid',
+            gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)',
+            gap: 48,
+            alignItems: 'start',
+          }}
+          className="marketing-enterprise-grid"
+        >
+          <div>
+            <div
+              className="eyebrow"
+              style={{ marginBottom: 16, color: 'var(--emerald-500)' }}
+            >
+              ● ENTERPRISE
+            </div>
+            <h1
+              className="h-hero"
+              style={{ margin: '0 0 20px', fontSize: 'clamp(36px,5vw,52px)' }}
+            >
+              Enterprise solutions for your organization.
+            </h1>
+            <p
+              style={{
+                fontSize: 17,
+                color: 'var(--text-secondary)',
+                lineHeight: 1.6,
+                margin: '0 0 32px',
+              }}
+            >
+              Custom integrations, white-label deployments, and dedicated support for organizations that need precision financial tools at scale.
+            </p>
 
-        {/* Left Side - Value Proposition */}
-        <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-10 lg:p-12 text-white flex flex-col justify-center">
-          <div className="h-14 w-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-8 shadow-lg">
-            <Sparkles fill="currentColor" size={28} />
-          </div>
-
-          <h1 className="text-4xl font-black mb-4 tracking-tight leading-tight">
-            Enterprise Solutions for Your Organization
-          </h1>
-          <p className="text-indigo-100 font-medium mb-8 leading-relaxed">
-            Custom integrations, white-label solutions, and dedicated support for organizations that need precision financial tools at scale.
-          </p>
-
-          <div className="space-y-4">
-            <div className="flex items-start gap-3">
-              <div className="bg-white/20 backdrop-blur-sm rounded-lg p-1.5 mt-0.5">
-                <Globe size={16} strokeWidth={3} />
-              </div>
-              <div>
-                <h3 className="font-bold mb-1">White-Label Solutions</h3>
-                <p className="text-indigo-100 text-sm">Fully branded tools deployed on your domain</p>
-              </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {[
+                {
+                  icon: <Globe size={16} />,
+                  title: 'White-label solutions',
+                  desc: 'Fully branded tools deployed on your domain.',
+                },
+                {
+                  icon: <Zap size={16} />,
+                  title: 'Custom integrations',
+                  desc: 'API access and integrations with your existing systems.',
+                },
+                {
+                  icon: <BarChart3 size={16} />,
+                  title: 'Advanced analytics',
+                  desc: 'Detailed usage analytics and reporting dashboards.',
+                },
+                {
+                  icon: <Users size={16} />,
+                  title: 'Dedicated support',
+                  desc: 'Priority support with a named account manager.',
+                },
+              ].map((feat) => (
+                <div
+                  key={feat.title}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: 14,
+                    padding: 16,
+                    background: 'var(--bg-glass)',
+                    border: '1px solid var(--glass-border)',
+                    borderRadius: 'var(--radius-lg)',
+                  }}
+                >
+                  <div
+                    style={{
+                      flexShrink: 0,
+                      width: 34,
+                      height: 34,
+                      borderRadius: 10,
+                      background: 'var(--emerald-tint)',
+                      border: '1px solid var(--emerald-border)',
+                      color: 'var(--emerald-500)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {feat.icon}
+                  </div>
+                  <div>
+                    <h3
+                      style={{
+                        fontSize: 14,
+                        fontWeight: 600,
+                        color: 'var(--text-primary)',
+                        margin: '0 0 4px',
+                      }}
+                    >
+                      {feat.title}
+                    </h3>
+                    <p
+                      style={{
+                        fontSize: 13,
+                        color: 'var(--text-tertiary)',
+                        margin: 0,
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      {feat.desc}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
 
-            <div className="flex items-start gap-3">
-              <div className="bg-white/20 backdrop-blur-sm rounded-lg p-1.5 mt-0.5">
-                <Zap size={16} strokeWidth={3} />
-              </div>
-              <div>
-                <h3 className="font-bold mb-1">Custom Integrations</h3>
-                <p className="text-indigo-100 text-sm">API access and integrations with your existing systems</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <div className="bg-white/20 backdrop-blur-sm rounded-lg p-1.5 mt-0.5">
-                <BarChart3 size={16} strokeWidth={3} />
-              </div>
-              <div>
-                <h3 className="font-bold mb-1">Advanced Analytics</h3>
-                <p className="text-indigo-100 text-sm">Detailed usage analytics and reporting dashboards</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <div className="bg-white/20 backdrop-blur-sm rounded-lg p-1.5 mt-0.5">
-                <Users size={16} strokeWidth={3} />
-              </div>
-              <div>
-                <h3 className="font-bold mb-1">Dedicated Support</h3>
-                <p className="text-indigo-100 text-sm">Priority support with a dedicated account manager</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-10 pt-8 border-t border-white/20">
-            <p className="text-indigo-100 text-sm font-medium">
+            <p
+              style={{
+                fontSize: 12,
+                color: 'var(--text-muted)',
+                lineHeight: 1.55,
+                marginTop: 32,
+                paddingTop: 20,
+                borderTop: '1px solid var(--border-subtle)',
+              }}
+            >
               Trusted by financial advisors, HR teams, and organizations that value clarity in decision-making.
             </p>
           </div>
-        </div>
 
-        {/* Right Side - Lead Capture Form */}
-        <div className="p-10 lg:p-12 flex flex-col justify-center">
-          <div className="mb-8">
-            <h2 className="text-3xl font-black text-slate-900 tracking-tight mb-2">
-              Let&apos;s Talk
-            </h2>
-            <p className="text-slate-500 font-medium text-sm">
-              Tell us about your needs and we&apos;ll create a custom solution
-            </p>
-          </div>
+          <form
+            onSubmit={handleSubmit}
+            style={{
+              background: 'var(--bg-glass-strong)',
+              backdropFilter: 'var(--glass-blur)',
+              WebkitBackdropFilter: 'var(--glass-blur)',
+              border: '1px solid var(--glass-border-strong)',
+              borderRadius: 'var(--radius-2xl)',
+              padding: 32,
+              boxShadow: 'var(--shadow-elevated), var(--shadow-inset-top)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 18,
+            }}
+          >
+            <div>
+              <h2
+                style={{
+                  fontSize: 24,
+                  fontWeight: 700,
+                  color: 'var(--text-primary)',
+                  letterSpacing: '-0.02em',
+                  margin: '0 0 6px',
+                }}
+              >
+                Let&apos;s talk.
+              </h2>
+              <p
+                style={{
+                  fontSize: 13,
+                  color: 'var(--text-tertiary)',
+                  margin: 0,
+                }}
+              >
+                Tell us about your needs and we&apos;ll create a custom solution.
+              </p>
+            </div>
 
-          {/* Lead Form */}
-          <form className="space-y-5" onSubmit={handleSubmit}>
             {error && (
-              <div className="bg-rose-50 text-rose-600 p-4 rounded-2xl text-sm font-bold border border-rose-100 animate-in fade-in slide-in-from-top-1">
+              <div
+                role="alert"
+                style={{
+                  background: 'var(--crimson-tint)',
+                  color: 'var(--crimson-500)',
+                  border: '1px solid var(--crimson-border)',
+                  borderRadius: 'var(--radius-md)',
+                  padding: '12px 14px',
+                  fontSize: 13,
+                  fontWeight: 500,
+                }}
+              >
                 {error}
               </div>
             )}
 
-            {/* Name Row */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                  First Name
-                </label>
-                <div className="relative group">
-                  <User className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
-                  <input
-                    type="text"
-                    required
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 placeholder:text-slate-300"
-                    placeholder="John"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                  Last Name
-                </label>
-                <div className="relative group">
-                  <User className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
-                  <input
-                    type="text"
-                    required
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 placeholder:text-slate-300"
-                    placeholder="Smith"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Email */}
-            <div className="space-y-2">
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                Work Email
-              </label>
-              <div className="relative group">
-                <Mail className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 placeholder:text-slate-300"
-                  placeholder="john@company.com"
-                />
-              </div>
-            </div>
-
-            {/* Company Name */}
-            <div className="space-y-2">
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                Company Name
-              </label>
-              <div className="relative group">
-                <Building2 className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+              <FormField label="First name" icon={<User size={16} />}>
                 <input
                   type="text"
                   required
-                  value={companyName}
-                  onChange={(e) => setCompanyName(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 placeholder:text-slate-300"
-                  placeholder="Acme Inc."
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  placeholder="John"
+                  style={inputStyle}
                 />
-              </div>
-            </div>
-
-            {/* Company Size & Phone Row */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                  Company Size
-                </label>
-                <div className="relative group">
-                  <Users className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-indigo-500 transition-colors pointer-events-none" size={18} />
-                  <select
-                    required
-                    value={companySize}
-                    onChange={(e) => setCompanySize(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 appearance-none cursor-pointer"
-                  >
-                    <option value="" disabled>Select size</option>
-                    {COMPANY_SIZES.map((size) => (
-                      <option key={size} value={size}>
-                        {size} employees
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                  Phone <span className="text-slate-300">(Optional)</span>
-                </label>
-                <div className="relative group">
-                  <Phone className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
-                  <input
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 placeholder:text-slate-300"
-                    placeholder="+1 (555) 000-0000"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Message */}
-            <div className="space-y-2">
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                How can we help?
-              </label>
-              <div className="relative group">
-                <MessageSquare className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
-                <textarea
+              </FormField>
+              <FormField label="Last name" icon={<User size={16} />}>
+                <input
+                  type="text"
                   required
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  rows={4}
-                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 placeholder:text-slate-300 resize-none"
-                  placeholder="Tell us about your use case, number of users, timeline, etc."
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  placeholder="Smith"
+                  style={inputStyle}
                 />
-              </div>
+              </FormField>
             </div>
+
+            <FormField label="Work email" icon={<Mail size={16} />}>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="john@company.com"
+                style={inputStyle}
+              />
+            </FormField>
+
+            <FormField label="Company name" icon={<Building2 size={16} />}>
+              <input
+                type="text"
+                required
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                placeholder="Acme Inc."
+                style={inputStyle}
+              />
+            </FormField>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+              <FormField label="Company size" icon={<Users size={16} />}>
+                <select
+                  required
+                  value={companySize}
+                  onChange={(e) => setCompanySize(e.target.value)}
+                  style={{ ...inputStyle, appearance: 'none', cursor: 'pointer' }}
+                >
+                  <option value="" disabled>
+                    Select size
+                  </option>
+                  {COMPANY_SIZES.map((size) => (
+                    <option key={size} value={size}>
+                      {size} employees
+                    </option>
+                  ))}
+                </select>
+              </FormField>
+              <FormField label="Phone (optional)" icon={<Phone size={16} />}>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+1 (555) 000-0000"
+                  style={inputStyle}
+                />
+              </FormField>
+            </div>
+
+            <FormField label="How can we help?" icon={<MessageSquare size={16} />}>
+              <textarea
+                required
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                rows={4}
+                placeholder="Tell us about your use case, number of users, timeline, etc."
+                style={{ ...inputStyle, resize: 'vertical', paddingTop: 12 }}
+              />
+            </FormField>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-5 rounded-2xl transition-all shadow-xl shadow-indigo-100 flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed group"
+              style={{
+                background: 'var(--emerald-500)',
+                color: 'var(--text-inverse)',
+                border: 0,
+                padding: '14px 20px',
+                borderRadius: 12,
+                fontWeight: 700,
+                fontSize: 14,
+                cursor: loading ? 'not-allowed' : 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+                boxShadow: '0 0 0 1px var(--cta-glow-ring), 0 0 32px var(--cta-glow-soft)',
+                transition: 'all 160ms',
+                fontFamily: 'inherit',
+                opacity: loading ? 0.7 : 1,
+              }}
             >
-              {loading ? <Loader2 className="animate-spin" size={20} /> : (
+              {loading ? (
                 <>
-                  Submit Request
-                  <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                  <Loader2 className="animate-spin" size={16} />
+                  Submitting...
+                </>
+              ) : (
+                <>
+                  Submit request <MarketingIcon name="arrowRight" size={14} />
                 </>
               )}
             </button>
 
-            <p className="text-xs text-slate-400 text-center font-medium">
-              We&apos;ll respond within 1-2 business days
+            <p
+              style={{
+                fontSize: 11,
+                color: 'var(--text-muted)',
+                textAlign: 'center',
+                margin: 0,
+              }}
+            >
+              We&apos;ll respond within 1–2 business days.
             </p>
-          </form>
 
-          {/* Back Link */}
-          <div className="text-center mt-6 pt-6 border-t border-slate-100">
-            <p className="text-sm text-slate-600 font-medium">
+            <div
+              style={{
+                textAlign: 'center',
+                paddingTop: 14,
+                borderTop: '1px solid var(--border-subtle)',
+                fontSize: 13,
+                color: 'var(--text-secondary)',
+              }}
+            >
               Not ready for enterprise?{' '}
-              <button
-                onClick={() => router.push('/pricing')}
-                className="text-indigo-600 font-bold hover:text-indigo-500 transition-colors"
+              <Link
+                href="/pricing"
+                style={{ color: 'var(--emerald-500)', fontWeight: 600, textDecoration: 'none' }}
               >
                 View our plans
-              </button>
-            </p>
-          </div>
+              </Link>
+            </div>
 
-          {/* Security Assurance */}
-          <div className="mt-6 flex items-center justify-center gap-2 text-slate-400">
-            <ShieldCheck size={14} />
-            <span className="text-[10px] font-black uppercase tracking-widest">Your information is secure</span>
-          </div>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: 6,
+                color: 'var(--text-muted)',
+              }}
+            >
+              <ShieldCheck size={14} />
+              <span
+                className="eyebrow"
+                style={{ margin: 0, fontSize: 10, color: 'var(--text-muted)' }}
+              >
+                YOUR INFORMATION IS SECURE
+              </span>
+            </div>
+          </form>
         </div>
+      </section>
+    </MarketingShell>
+  );
+}
+
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '12px 14px 12px 40px',
+  background: 'var(--bg-glass)',
+  border: '1px solid var(--border-default)',
+  borderRadius: 12,
+  color: 'var(--text-primary)',
+  fontSize: 14,
+  fontFamily: 'inherit',
+  outline: 'none',
+  transition: 'all 160ms',
+};
+
+function FormField({
+  label,
+  icon,
+  children,
+}: {
+  label: string;
+  icon: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <span
+        className="eyebrow"
+        style={{ fontSize: 10, color: 'var(--text-tertiary)', margin: 0 }}
+      >
+        {label.toUpperCase()}
+      </span>
+      <div style={{ position: 'relative' }}>
+        <span
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            left: 14,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            color: 'var(--text-tertiary)',
+            pointerEvents: 'none',
+          }}
+        >
+          {icon}
+        </span>
+        {children}
       </div>
     </div>
   );
