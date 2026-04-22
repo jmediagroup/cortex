@@ -13,6 +13,7 @@ import {
   Shield,
   Loader2,
 } from 'lucide-react';
+import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { isAdmin } from '@/lib/admin';
 
@@ -83,9 +84,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </span>
             </div>
           </div>
-          <div className="flex items-center gap-2 text-[var(--text-tertiary)]">
-            <Shield size={14} />
-            <span className="text-xs font-bold uppercase tracking-wider">Admin Panel</span>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 text-[var(--text-tertiary)]">
+              <Shield size={14} />
+              <span className="text-xs font-bold uppercase tracking-wider">Admin Panel</span>
+            </div>
+            <ThemeToggle />
           </div>
         </div>
       </nav>

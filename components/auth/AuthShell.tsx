@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ShieldCheck } from 'lucide-react';
 import { LogoMark } from '@/components/marketing/Nav';
+import { ThemeToggle } from '@/components/theme/ThemeToggle';
 
 type Props = {
   children: React.ReactNode;
@@ -26,8 +27,19 @@ export function AuthShell({ children, footer }: Props) {
         alignItems: 'center',
         justifyContent: 'center',
         gap: 24,
+        position: 'relative',
       }}
     >
+      <div
+        style={{
+          position: 'absolute',
+          top: 20,
+          right: 20,
+          zIndex: 10,
+        }}
+      >
+        <ThemeToggle />
+      </div>
       <Link
         href="/"
         aria-label="Cortex home"
