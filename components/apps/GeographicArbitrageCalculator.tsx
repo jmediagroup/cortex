@@ -588,7 +588,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
 
           {/* PRO FEATURES SECTION */}
           {!isPro && (
-            <div className="bg-gradient-to-br from-[var(--color-warning)] via-[var(--color-warning)] to-[var(--crimson-500)] rounded-3xl p-8 shadow-2xl shadow-[0_0_24px_var(--color-warning-soft)] text-white relative overflow-hidden">
+            <div data-theme="dark" className="bg-gradient-to-br from-[var(--obsidian-900)] via-[var(--emerald-700)] to-[var(--emerald-500)] rounded-3xl p-8 shadow-2xl text-white relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--bg-card)]/10 rounded-full -mr-32 -mt-32 blur-3xl"></div>
               <div className="relative">
                 <div className="flex items-start justify-between gap-6">
@@ -697,7 +697,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                       <Zap size={18} className="flex-shrink-0 mt-0.5" />
                       <div>
                         <p className="font-bold text-xs uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
-                        <p className="text-[var(--emerald-100)] text-sm font-medium leading-relaxed">
+                        <p className="text-white/85 text-sm font-medium leading-relaxed">
                           Moving to a zero-tax state like Texas, Florida, or Nevada would save you ${Math.round(multiCityAnalysis.yearlyTaxWindfall).toLocaleString()}/year
                           in pure tax arbitrage, assuming comparable cost of living.
                         </p>
@@ -731,7 +731,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                       <Zap size={18} className="flex-shrink-0 mt-0.5" />
                       <div>
                         <p className="font-bold text-xs uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
-                        <p className="text-[var(--crimson-100)] text-sm font-medium leading-relaxed">
+                        <p className="text-white/85 text-sm font-medium leading-relaxed">
                           {multiCityAnalysis.mobilityPremium >= 0
                             ? `Even accounting for career trajectory loss, arbitrage still nets you ${Math.abs(Math.round(multiCityAnalysis.mobilityPremium)).toLocaleString()} in extra wealth.`
                             : `The savings from arbitrage may not offset the career trajectory loss. Consider hybrid strategies like 5-year sprints in hubs.`}

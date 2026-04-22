@@ -79,7 +79,7 @@ export default function SCorpOptimizer({ isPro = false, onUpgrade, isLoggedIn = 
           <h4 className="text-3xl font-bold text-[var(--emerald-500)]">${Math.round(stats.distributions).toLocaleString()}</h4>
           <p className="text-xs font-bold text-[var(--text-tertiary)] mt-1">FICA-exempt income</p>
         </div>
-        <div className="bg-[var(--emerald-500)] p-6 rounded-3xl shadow-lg text-white">
+        <div className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] p-6 rounded-3xl shadow-lg text-white">
           <p className="text-[10px] font-bold text-[var(--mist-200)] uppercase tracking-widest mb-1">Tax Efficiency</p>
           <h4 className="text-3xl font-bold text-white">{Math.round(stats.efficiency)}%</h4>
           <p className="text-xs font-bold text-[var(--mist-100)] mt-1">Reduction in SE Taxes</p>

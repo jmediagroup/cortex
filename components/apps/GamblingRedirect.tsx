@@ -266,7 +266,7 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
           </div>
 
           {/* Reality Check Card */}
-          <div className="bg-[var(--obsidian-800)] text-white p-8 rounded-[2.5rem] shadow-xl">
+          <div data-theme="dark" className="bg-[var(--obsidian-800)] text-white p-8 rounded-[2.5rem] shadow-xl">
             <h4 className="font-bold text-sm uppercase tracking-widest mb-4 flex items-center gap-2">
               <AlertTriangle size={16} className="text-[var(--emerald-400)]" /> The Reality Check
             </h4>
@@ -371,7 +371,7 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
 
       {/* PRO FEATURES SECTION */}
       {!isPro && (
-        <div className="bg-gradient-to-br from-[var(--color-warning)] to-[var(--color-warning)] rounded-[3rem] p-12 text-white relative overflow-hidden shadow-2xl">
+        <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] rounded-[3rem] p-12 text-white relative overflow-hidden shadow-2xl">
           <div className="absolute top-0 right-0 p-12 opacity-10 rotate-12">
             <Zap size={200} fill="currentColor" />
           </div>
@@ -380,29 +380,29 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
               <Lock size={24} />
               <h3 className="text-3xl font-bold">Recovery Roadmap Analyzer</h3>
             </div>
-            <p className="text-[var(--color-warning-soft)] text-lg font-medium mb-8 max-w-3xl leading-relaxed">
+            <p className="text-white/85 text-lg font-medium mb-8 max-w-3xl leading-relaxed">
               Unlock advanced insights that show the true cost of gambling, milestone achievements you could reach, and a personalized path to financial freedom.
             </p>
             <div className="grid md:grid-cols-3 gap-6 mb-8">
               <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                 <AlertTriangle size={24} className="mb-3" />
                 <h4 className="font-bold text-sm mb-2">True Cost Analysis</h4>
-                <p className="text-[var(--color-warning-soft)] text-xs font-medium">See the hidden multiplier effect of gambling losses including house edge and churn</p>
+                <p className="text-white/85 text-xs font-medium">See the hidden multiplier effect of gambling losses including house edge and churn</p>
               </div>
               <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                 <Target size={24} className="mb-3" />
                 <h4 className="font-bold text-sm mb-2">Milestone Tracker</h4>
-                <p className="text-[var(--color-warning-soft)] text-xs font-medium">See exactly when you could afford a car, house down payment, or college fund</p>
+                <p className="text-white/85 text-xs font-medium">See exactly when you could afford a car, house down payment, or college fund</p>
               </div>
               <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                 <Clock size={24} className="mb-3" />
                 <h4 className="font-bold text-sm mb-2">Retirement Income</h4>
-                <p className="text-[var(--color-warning-soft)] text-xs font-medium">Calculate sustainable monthly income from your redirected wealth</p>
+                <p className="text-white/85 text-xs font-medium">Calculate sustainable monthly income from your redirected wealth</p>
               </div>
             </div>
             <button
               onClick={onUpgrade}
-              className="bg-[var(--bg-card)] text-[var(--color-warning)] px-8 py-4 rounded-2xl font-bold hover:bg-[var(--color-warning-soft)] transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
+              className="bg-white text-[var(--emerald-700)] px-8 py-4 rounded-2xl font-bold hover:bg-[var(--emerald-50)] transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
             >
               <Zap size={20} fill="currentColor" />
               Upgrade to Pro - $9/month
@@ -416,7 +416,7 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
         <ProGatedPreview isLocked={!isPro} toolId="gambling-redirect">
         <div className="space-y-8">
           <div className="flex items-center gap-3 mb-6">
-            <div className="bg-[var(--color-warning)] text-white p-3 rounded-2xl">
+            <div className="bg-[var(--emerald-500)] text-white p-3 rounded-2xl">
               <Zap size={24} />
             </div>
             <div>
@@ -426,28 +426,28 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
           </div>
 
           {/* True Cost Warning */}
-          <div className="bg-gradient-to-br from-[var(--crimson-500)] to-[var(--color-warning)] rounded-[3rem] p-10 text-white shadow-xl">
+          <div data-theme="dark" className="bg-gradient-to-br from-[var(--crimson-600)] to-[var(--crimson-500)] rounded-[3rem] p-10 text-white shadow-xl">
             <div className="flex items-start gap-4 mb-6">
               <div className="bg-[var(--bg-card)]/20 p-3 rounded-2xl backdrop-blur-sm">
                 <AlertTriangle size={32} />
               </div>
               <div className="flex-1">
                 <h4 className="text-2xl font-bold mb-3">The True Cost of Gambling</h4>
-                <p className="text-[var(--crimson-50)] font-medium text-lg leading-relaxed mb-6">
+                <p className="text-white/90 font-medium text-lg leading-relaxed mb-6">
                   What the sportsbooks don't want you to see:
                 </p>
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-                    <p className="text-[var(--crimson-100)] text-sm font-bold mb-2">Total Amount Wagered (Est.)</p>
+                    <p className="text-white/85 text-sm font-bold mb-2">Total Amount Wagered (Est.)</p>
                     <p className="text-4xl font-bold">{formatCurrency(proAnalysis.totalWagered)}</p>
-                    <p className="text-[var(--crimson-100)] text-xs font-medium mt-2">
+                    <p className="text-white/85 text-xs font-medium mt-2">
                       Based on typical 10x churn on deposits
                     </p>
                   </div>
                   <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-                    <p className="text-[var(--crimson-100)] text-sm font-bold mb-2">Expected Loss to House Edge</p>
+                    <p className="text-white/85 text-sm font-bold mb-2">Expected Loss to House Edge</p>
                     <p className="text-4xl font-bold">{formatCurrency(proAnalysis.expectedLoss)}</p>
-                    <p className="text-[var(--crimson-100)] text-xs font-medium mt-2">
+                    <p className="text-white/85 text-xs font-medium mt-2">
                       At 8% house edge over {inputs.years} years
                     </p>
                   </div>
@@ -455,7 +455,7 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
               </div>
             </div>
             <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-              <p className="text-sm font-bold text-[var(--crimson-100)] mb-2">CORTEX INSIGHT</p>
+              <p className="text-sm font-bold text-white/85 mb-2">CORTEX INSIGHT</p>
               <p className="font-medium text-white">
                 Problem gamblers typically spend 3.5x their stated "budget." That could mean a real cost of {formatCurrency(proAnalysis.realCostEstimate)} over {inputs.years} years.
               </p>
@@ -464,14 +464,14 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
 
           {/* Milestone Achievements */}
           {proAnalysis.milestones.length > 0 && (
-            <div className="bg-gradient-to-br from-[var(--emerald-500)] to-[var(--color-info)] rounded-[3rem] p-10 text-white shadow-xl">
+            <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--color-info)] rounded-[3rem] p-10 text-white shadow-xl">
               <div className="flex items-start gap-4 mb-6">
                 <div className="bg-[var(--bg-card)]/20 p-3 rounded-2xl backdrop-blur-sm">
                   <Target size={32} />
                 </div>
                 <div className="flex-1">
                   <h4 className="text-2xl font-bold mb-3">Life Milestones You Could Reach</h4>
-                  <p className="text-[var(--emerald-50)] font-medium text-lg leading-relaxed mb-6">
+                  <p className="text-white/85 font-medium text-lg leading-relaxed mb-6">
                     By redirecting your betting budget to investing:
                   </p>
                   <div className="space-y-4">
@@ -479,11 +479,11 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
                       <div key={idx} className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 flex items-center justify-between">
                         <div>
                           <p className="font-bold text-lg">{milestone.name}</p>
-                          <p className="text-[var(--emerald-100)] text-sm font-medium">{formatCurrency(milestone.cost)}</p>
+                          <p className="text-white/85 text-sm font-medium">{formatCurrency(milestone.cost)}</p>
                         </div>
                         <div className="text-right">
                           <p className="text-3xl font-bold">{milestone.yearsToReach}</p>
-                          <p className="text-[var(--emerald-100)] text-xs font-bold uppercase">Years</p>
+                          <p className="text-white/85 text-xs font-bold uppercase">Years</p>
                         </div>
                       </div>
                     ))}
@@ -518,7 +518,7 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
                 </div>
               </div>
             </div>
-            <div className="bg-[var(--obsidian-800)] text-white rounded-2xl p-6">
+            <div data-theme="dark" className="bg-[var(--obsidian-800)] text-white rounded-2xl p-6">
               <p className="text-xs font-bold text-[var(--mist-200)] mb-2">THE TRANSFORMATION</p>
               <p className="text-sm font-medium text-[var(--mist-50)]">
                 Instead of giving money to sportsbooks, you could be receiving {formatCurrency(proAnalysis.monthlyIncome)}/month in passive income. That's what financial freedom looks like.

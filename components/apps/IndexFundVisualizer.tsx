@@ -274,7 +274,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
           <h4 className="text-2xl font-bold text-[var(--emerald-500)]">+{formatCurrency(totalGains)}</h4>
           <p className="text-xs text-[var(--text-muted)] mt-1">From {formatCurrency(finalStats.invested)} invested</p>
         </div>
-        <div className="bg-[var(--emerald-500)] p-6 rounded-3xl shadow-lg text-white">
+        <div className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] p-6 rounded-3xl shadow-lg text-white">
           <p className="text-[10px] font-bold text-[var(--mist-200)] uppercase tracking-widest mb-1">Simulated Outcome</p>
           <h4 className={`text-2xl font-bold ${finalStats.simulated > finalStats.steady ? 'text-[var(--emerald-400)]' : 'text-[var(--color-warning)]'}`}>
             {formatCurrency(finalStats.simulated)}
@@ -405,7 +405,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
             </div>
           </div>
 
-          <div className="bg-[var(--obsidian-800)] text-white p-8 rounded-[2.5rem] shadow-xl">
+          <div data-theme="dark" className="bg-[var(--obsidian-800)] text-white p-8 rounded-[2.5rem] shadow-xl">
             <h4 className="font-bold text-sm uppercase tracking-widest mb-4 flex items-center gap-2">
               <Info size={16} className="text-[var(--emerald-400)]" /> Key Insight
             </h4>
@@ -496,7 +496,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
           </div>
 
           {/* Insights Panel */}
-          <div className="bg-[var(--obsidian-800)] text-white p-8 rounded-[2.5rem] shadow-lg">
+          <div data-theme="dark" className="bg-[var(--obsidian-800)] text-white p-8 rounded-[2.5rem] shadow-lg">
             <div className="flex items-center gap-2 mb-6">
               <Info className="w-5 h-5 text-[var(--emerald-400)]" />
               <h3 className="font-bold text-lg">Investor Insights</h3>
@@ -534,7 +534,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
 
       {/* PRO FEATURES SECTION - Locked */}
       {!isPro && (
-        <div className="bg-gradient-to-br from-[var(--color-warning)] to-[var(--color-warning)] rounded-[3rem] p-12 text-white relative overflow-hidden shadow-2xl">
+        <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] rounded-[3rem] p-12 text-white relative overflow-hidden shadow-2xl">
           <div className="absolute top-0 right-0 p-12 opacity-10 rotate-12">
             <Zap size={200} fill="currentColor" />
           </div>
@@ -543,29 +543,29 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
               <Lock size={24} />
               <h3 className="text-3xl font-bold">Advanced Fund Analysis</h3>
             </div>
-            <p className="text-[var(--color-warning-soft)] text-lg font-medium mb-8 max-w-3xl leading-relaxed">
+            <p className="text-white/85 text-lg font-medium mb-8 max-w-3xl leading-relaxed">
               Unlock professional-grade insights: side-by-side fund comparison, risk-adjusted returns, Monte Carlo projections, and portfolio optimization recommendations.
             </p>
             <div className="grid md:grid-cols-3 gap-6 mb-8">
               <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                 <Target size={24} className="mb-3" />
                 <h4 className="font-bold text-sm mb-2">Fund Comparison</h4>
-                <p className="text-[var(--color-warning-soft)] text-xs font-medium">Compare all major index funds head-to-head with your exact parameters</p>
+                <p className="text-white/85 text-xs font-medium">Compare all major index funds head-to-head with your exact parameters</p>
               </div>
               <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                 <AlertTriangle size={24} className="mb-3" />
                 <h4 className="font-bold text-sm mb-2">Risk Analysis</h4>
-                <p className="text-[var(--color-warning-soft)] text-xs font-medium">Sharpe ratios, max drawdown estimates, and volatility-adjusted returns</p>
+                <p className="text-white/85 text-xs font-medium">Sharpe ratios, max drawdown estimates, and volatility-adjusted returns</p>
               </div>
               <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                 <Sparkles size={24} className="mb-3" />
                 <h4 className="font-bold text-sm mb-2">Monte Carlo Projections</h4>
-                <p className="text-[var(--color-warning-soft)] text-xs font-medium">See best-case, worst-case, and median outcomes across thousands of simulations</p>
+                <p className="text-white/85 text-xs font-medium">See best-case, worst-case, and median outcomes across thousands of simulations</p>
               </div>
             </div>
             <button
               onClick={onUpgrade}
-              className="bg-[var(--bg-card)] text-[var(--color-warning)] px-8 py-4 rounded-2xl font-bold hover:bg-[var(--color-warning-soft)] transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
+              className="bg-white text-[var(--emerald-700)] px-8 py-4 rounded-2xl font-bold hover:bg-[var(--emerald-50)] transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
             >
               <Zap size={20} fill="currentColor" />
               Upgrade to Pro - $9/month
@@ -579,7 +579,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
         <ProGatedPreview isLocked={!isPro} toolId="index-fund-visualizer">
         <div className="space-y-8">
           <div className="flex items-center gap-3 mb-6">
-            <div className="bg-[var(--color-warning)] text-white p-3 rounded-2xl">
+            <div className="bg-[var(--emerald-500)] text-white p-3 rounded-2xl">
               <Zap size={24} />
             </div>
             <div>
@@ -605,7 +605,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
                       key={fund.key}
                       className={`flex items-center gap-4 p-4 rounded-2xl border ${fund.key === selectedFund ? 'border-[var(--emerald-border)] bg-[var(--emerald-50)]' : 'border-[var(--border-default)] bg-[var(--bg-section)]'}`}
                     >
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${index === 0 ? 'bg-[var(--color-warning)] text-[var(--color-warning)]' : 'bg-[var(--bg-glass-strong)] text-[var(--text-secondary)]'}`}>
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${index === 0 ? 'bg-[var(--emerald-500)] text-white' : 'bg-[var(--bg-glass-strong)] text-[var(--text-secondary)]'}`}>
                         {index + 1}
                       </div>
                       <div className="flex-1">
@@ -625,7 +625,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
 
           {/* Risk Analysis */}
           {riskAnalysis && (
-            <div className="bg-gradient-to-br from-[var(--emerald-500)] to-[var(--emerald-600)] rounded-[3rem] p-10 text-white shadow-xl">
+            <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] rounded-[3rem] p-10 text-white shadow-xl">
               <div className="flex items-start gap-4 mb-6">
                 <div className="bg-[var(--bg-card)]/20 p-3 rounded-2xl backdrop-blur-sm">
                   <AlertTriangle size={32} />

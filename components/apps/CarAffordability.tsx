@@ -233,7 +233,7 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
         {/* RIGHT COLUMN - RESULTS */}
         <div className="space-y-6">
           {/* Main Result - Affordable Car Price */}
-          <div className="bg-gradient-to-br from-[var(--emerald-500)] to-[var(--emerald-600)] rounded-[3rem] p-10 text-white shadow-2xl border-2 border-[var(--emerald-border)]">
+          <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] rounded-[3rem] p-10 text-white shadow-2xl border-2 border-[var(--emerald-border)]">
             <div className="flex items-center gap-3 mb-4">
               <Car className="text-[var(--mist-200)]" size={32} />
               <h3 className="text-xl font-bold tracking-tight">Maximum Car Price</h3>

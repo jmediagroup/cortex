@@ -639,7 +639,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
           </div>
 
           {/* Educational Snippet */}
-          <div className="bg-[var(--obsidian-800)] text-white p-8 rounded-[2.5rem] shadow-xl">
+          <div data-theme="dark" className="bg-[var(--obsidian-800)] text-white p-8 rounded-[2.5rem] shadow-xl">
             <h4 className="font-bold text-sm uppercase tracking-widest mb-4 flex items-center gap-2">
               <Info size={16} className="text-[var(--emerald-400)]" /> What is Coast FIRE?
             </h4>
@@ -762,7 +762,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
 
       {/* PRO FEATURES SECTION - Locked State */}
       {!isPro && (
-        <div className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] rounded-[3rem] p-12 text-white relative overflow-hidden shadow-2xl">
+        <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] rounded-[3rem] p-12 text-white relative overflow-hidden shadow-2xl">
           <div className="absolute top-0 right-0 p-12 opacity-10 rotate-12">
             <Zap size={200} fill="currentColor" />
           </div>
@@ -930,7 +930,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
           </div>
 
           {/* Barista FIRE Analysis */}
-          <div className="bg-gradient-to-br from-[var(--obsidian-900)] to-[var(--emerald-700)] rounded-[3rem] p-10 text-white shadow-xl">
+          <div data-theme="dark" className="bg-gradient-to-br from-[var(--obsidian-900)] to-[var(--emerald-700)] rounded-[3rem] p-10 text-white shadow-xl">
             <div className="flex items-start gap-4 mb-8">
               <div className="bg-white/10 p-3 rounded-2xl backdrop-blur-sm">
                 <Coffee size={32} />
@@ -1116,7 +1116,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
           </div>
 
           {/* Social Security Integration */}
-          <div className="bg-gradient-to-br from-[var(--obsidian-900)] to-[var(--emerald-700)] rounded-[3rem] p-10 text-white shadow-xl">
+          <div data-theme="dark" className="bg-gradient-to-br from-[var(--obsidian-900)] to-[var(--emerald-700)] rounded-[3rem] p-10 text-white shadow-xl">
             <div className="flex items-start gap-4 mb-8">
               <div className="bg-white/10 p-3 rounded-2xl backdrop-blur-sm">
                 <ShieldCheck size={32} />

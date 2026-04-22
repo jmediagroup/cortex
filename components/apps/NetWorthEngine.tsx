@@ -1007,7 +1007,7 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
 
       {/* PRO FEATURES SECTION */}
       {!isPro && (
-        <div className="bg-gradient-to-br from-[var(--emerald-500)] via-[var(--emerald-500)] to-[var(--color-info)] rounded-3xl p-8 shadow-2xl shadow-[0_0_32px_var(--cta-glow-ring)] text-white relative overflow-hidden">
+        <div className="bg-gradient-to-br from-[var(--obsidian-900)] via-[var(--emerald-700)] to-[var(--color-info)] rounded-3xl p-8 shadow-2xl shadow-[0_0_32px_var(--cta-glow-ring)] text-white relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--bg-card)]/10 rounded-full -mr-32 -mt-32 blur-3xl"></div>
           <div className="relative">
             <div className="flex items-start justify-between gap-6">
@@ -1120,7 +1120,7 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
                   <Zap size={18} className="flex-shrink-0 mt-0.5" />
                   <div>
                     <p className="font-bold text-xs uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
-                    <p className="text-[var(--emerald-100)] text-sm font-medium leading-relaxed">
+                    <p className="text-white/85 text-sm font-medium leading-relaxed">
                       Over 10 years, this acceleration compounds to approximately ${Math.round(momentumIntelligence.accelerationGain * 12.5).toLocaleString()} in extra wealth.
                     </p>
                   </div>
@@ -1151,7 +1151,7 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
                   <Zap size={18} className="flex-shrink-0 mt-0.5" />
                   <div>
                     <p className="font-bold text-xs uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
-                    <p className="text-[var(--crimson-100)] text-sm font-medium leading-relaxed">
+                    <p className="text-white/85 text-sm font-medium leading-relaxed">
                       {momentumIntelligence.debtDragPercentage > 30
                         ? `Debt is creating significant drag (${momentumIntelligence.debtDragPercentage.toFixed(0)}%). Aggressive paydown could unlock substantial acceleration.`
                         : `Debt drag is manageable (${momentumIntelligence.debtDragPercentage.toFixed(0)}%). Focus on increasing income and savings rate.`}

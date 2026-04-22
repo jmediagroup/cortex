@@ -224,7 +224,7 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
         {/* Controls - Left Column */}
         <aside className="lg:col-span-4 space-y-6">
           {/* Optimization Engine */}
-          <div className="bg-[var(--obsidian-800)] text-white p-6 rounded-[2rem] shadow-xl relative overflow-hidden">
+          <div data-theme="dark" className="bg-[var(--obsidian-800)] text-white p-6 rounded-[2rem] shadow-xl relative overflow-hidden">
             <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12">
               <RefreshCw size={120} />
             </div>
