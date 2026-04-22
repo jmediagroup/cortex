@@ -245,7 +245,7 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
                     S&P 500 Avg. Return
                     <div className="group relative">
                       <Info className="w-3 h-3 text-slate-400 cursor-help" />
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-48 p-2 bg-slate-800 text-white text-[10px] rounded-lg shadow-lg z-10">
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-48 p-2 bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 text-[10px] rounded-lg shadow-lg z-10">
                         Historically, the S&P 500 returns ~10% annually before inflation.
                       </div>
                     </div>
@@ -307,7 +307,7 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
                     <stop offset="95%" stopColor="#e11d48" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
                 <XAxis
                   dataKey="year"
                   axisLine={false}
@@ -518,9 +518,9 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
                 </div>
               </div>
             </div>
-            <div className="bg-indigo-900 text-white rounded-2xl p-6">
-              <p className="text-xs font-black text-indigo-300 mb-2">THE TRANSFORMATION</p>
-              <p className="text-sm font-medium text-indigo-50">
+            <div className="bg-indigo-50 text-indigo-900 border border-indigo-200 dark:bg-indigo-900 dark:text-white dark:border-transparent rounded-2xl p-6">
+              <p className="text-xs font-black text-indigo-700 dark:text-indigo-300 mb-2">THE TRANSFORMATION</p>
+              <p className="text-sm font-medium text-indigo-900 dark:text-indigo-50">
                 Instead of giving money to sportsbooks, you could be receiving {formatCurrency(proAnalysis.monthlyIncome)}/month in passive income. That's what financial freedom looks like.
               </p>
             </div>

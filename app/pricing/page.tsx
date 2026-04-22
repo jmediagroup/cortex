@@ -161,21 +161,21 @@ export default function PricingPage() {
       <div className="max-w-7xl mx-auto px-6 py-16">
         {/* HEADER */}
         <div className="text-center mb-16">
-          <h1 className="text-5xl md:text-6xl font-black text-slate-900 mb-6 tracking-tight">
+          <h1 className="text-5xl md:text-6xl font-black text-slate-900 dark:text-slate-100 mb-6 tracking-tight">
             Simple, Honest Pricing
           </h1>
-          <p className="text-xl text-slate-600 font-medium max-w-2xl mx-auto mb-8">
+          <p className="text-xl text-slate-600 dark:text-slate-300 font-medium max-w-2xl mx-auto mb-8">
             Choose the plan that matches where you are today. Start free, upgrade to Pro when precision matters.
           </p>
 
           {/* BILLING TOGGLE */}
-          <div className="inline-flex items-center gap-4 bg-white rounded-full p-2 border border-slate-200">
+          <div className="inline-flex items-center gap-4 bg-white dark:bg-slate-900 rounded-full p-2 border border-slate-200 dark:border-slate-700">
             <button
               onClick={() => setBillingPeriod('monthly')}
               className={`px-6 py-2 rounded-full font-bold transition-all ${
                 billingPeriod === 'monthly'
                   ? 'bg-indigo-600 text-white'
-                  : 'text-slate-600 hover:text-indigo-600'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-indigo-600'
               }`}
             >
               Monthly
@@ -185,7 +185,7 @@ export default function PricingPage() {
               className={`px-6 py-2 rounded-full font-bold transition-all ${
                 billingPeriod === 'annual'
                   ? 'bg-indigo-600 text-white'
-                  : 'text-slate-600 hover:text-indigo-600'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-indigo-600'
               }`}
             >
               Annual
@@ -210,10 +210,10 @@ export default function PricingPage() {
             return (
               <div
                 key={plan.tier}
-                className={`relative bg-white rounded-3xl border-2 p-8 flex flex-col ${
+                className={`relative bg-white dark:bg-slate-900 rounded-3xl border-2 p-8 flex flex-col ${
                   plan.highlighted
                     ? 'border-indigo-300 shadow-xl shadow-indigo-100'
-                    : 'border-slate-200'
+                    : 'border-slate-200 dark:border-slate-700'
                 }`}
               >
                 {/* BADGE */}
@@ -225,13 +225,13 @@ export default function PricingPage() {
 
                 {/* HEADER */}
                 <div className="text-center mb-6">
-                  <h3 className="text-2xl font-black text-slate-900 mb-2">{plan.name}</h3>
-                  <p className="text-sm text-slate-500 font-medium mb-4">{plan.description}</p>
+                  <h3 className="text-2xl font-black text-slate-900 dark:text-slate-100 mb-2">{plan.name}</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 font-medium mb-4">{plan.description}</p>
 
                   <div className="mb-2">
-                    <span className="text-5xl font-black text-slate-900">{displayPrice}</span>
+                    <span className="text-5xl font-black text-slate-900 dark:text-slate-100">{displayPrice}</span>
                     {plan.period !== 'forever' && (
-                      <span className="text-slate-500 font-medium ml-2">
+                      <span className="text-slate-500 dark:text-slate-400 font-medium ml-2">
                         / {billingPeriod === 'annual' ? 'year' : 'month'}
                       </span>
                     )}
@@ -246,8 +246,8 @@ export default function PricingPage() {
                 <ul className="space-y-3 mb-8 flex-grow">
                   {plan.features.map((feature, idx) => (
                     <li key={idx} className="flex items-start gap-3">
-                      <Check className="text-indigo-600 flex-shrink-0 mt-0.5" size={20} />
-                      <span className="text-sm text-slate-700 font-medium">{feature}</span>
+                      <Check className="text-indigo-600 dark:text-indigo-300 flex-shrink-0 mt-0.5" size={20} />
+                      <span className="text-sm text-slate-700 dark:text-slate-200 font-medium">{feature}</span>
                     </li>
                   ))}
                 </ul>
@@ -258,10 +258,10 @@ export default function PricingPage() {
                   disabled={isCurrentPlan || loading === plan.tier}
                   className={`w-full py-4 rounded-xl font-black text-lg transition-all flex items-center justify-center gap-2 ${
                     isCurrentPlan
-                      ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                      ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed'
                       : plan.highlighted
                       ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg hover:shadow-xl'
-                      : 'bg-slate-900 text-white hover:bg-slate-800'
+                      : 'bg-slate-900 text-white hover:bg-slate-800 dark:bg-indigo-600 dark:hover:bg-indigo-500'
                   }`}
                 >
                   {loading === plan.tier ? (
@@ -304,7 +304,7 @@ export default function PricingPage() {
       </div>
 
       {/* FOOTER */}
-      <footer className="max-w-7xl mx-auto px-6 py-12 text-center text-slate-400 font-medium text-sm">
+      <footer className="max-w-7xl mx-auto px-6 py-12 text-center text-slate-400 dark:text-slate-500 font-medium text-sm">
         &copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.
       </footer>
     </DashboardShell>

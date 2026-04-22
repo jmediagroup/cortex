@@ -127,36 +127,36 @@ function SignupForm() {
   // Confirmation screen after successful signup
   if (signupComplete) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-900">
-        <div className="max-w-lg w-full bg-white rounded-[3rem] shadow-2xl border border-slate-200 overflow-hidden p-10 lg:p-12 text-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center p-4 font-sans text-slate-900 dark:text-slate-100">
+        <div className="max-w-lg w-full bg-white dark:bg-slate-900 rounded-[3rem] shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden p-10 lg:p-12 text-center">
           {/* Mail Icon */}
           <div className="mx-auto h-20 w-20 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-3xl flex items-center justify-center mb-8 shadow-xl shadow-indigo-200">
             <Mail size={40} className="text-white" />
           </div>
 
           {/* Heading */}
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-3">
+          <h1 className="text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight mb-3">
             Check Your Email
           </h1>
 
           {/* Email display */}
-          <p className="text-slate-500 font-medium mb-6">
+          <p className="text-slate-500 dark:text-slate-400 font-medium mb-6">
             We&apos;ve sent a verification link to
           </p>
-          <p className="text-indigo-600 font-black text-lg mb-8 bg-indigo-50 py-3 px-6 rounded-2xl inline-block">
+          <p className="text-indigo-600 dark:text-indigo-300 font-black text-lg mb-8 bg-indigo-50 dark:bg-indigo-900/40 py-3 px-6 rounded-2xl inline-block">
             {userEmail}
           </p>
 
           {/* Instructions */}
-          <p className="text-slate-600 font-medium mb-8 leading-relaxed">
+          <p className="text-slate-600 dark:text-slate-300 font-medium mb-8 leading-relaxed">
             Click the link in your email to verify your account.
             <br />
-            <span className="text-slate-400 text-sm">The link will expire in 24 hours.</span>
+            <span className="text-slate-400 dark:text-slate-500 text-sm">The link will expire in 24 hours.</span>
           </p>
 
           {/* Success message */}
           {resendSuccess && (
-            <div className="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-700 px-6 py-4 rounded-2xl flex items-center justify-center gap-3 animate-in fade-in slide-in-from-top-1">
+            <div className="mb-6 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 px-6 py-4 rounded-2xl flex items-center justify-center gap-3 animate-in fade-in slide-in-from-top-1">
               <Check size={20} />
               <span className="font-bold">Verification email sent!</span>
             </div>
@@ -171,13 +171,13 @@ function SignupForm() {
 
           {/* Resend button */}
           <div className="mb-6">
-            <p className="text-slate-400 text-sm font-medium mb-3">
+            <p className="text-slate-400 dark:text-slate-500 text-sm font-medium mb-3">
               Didn&apos;t receive the email?
             </p>
             <button
               onClick={handleResend}
               disabled={resendCooldown > 0 || resendLoading}
-              className="text-indigo-600 font-bold hover:text-indigo-500 disabled:text-slate-400 transition-colors inline-flex items-center gap-2"
+              className="text-indigo-600 dark:text-indigo-300 font-bold hover:text-indigo-500 disabled:text-slate-400 dark:disabled:text-slate-500 transition-colors inline-flex items-center gap-2"
             >
               {resendLoading ? (
                 <>
@@ -193,17 +193,17 @@ function SignupForm() {
           </div>
 
           {/* Start over link */}
-          <div className="pt-6 border-t border-slate-100">
+          <div className="pt-6 border-t border-slate-100 dark:border-slate-800">
             <button
               onClick={handleStartOver}
-              className="text-slate-500 font-medium hover:text-slate-700 transition-colors text-sm"
+              className="text-slate-500 dark:text-slate-400 font-medium hover:text-slate-700 dark:hover:text-slate-200 transition-colors text-sm"
             >
               Wrong email? Start over
             </button>
           </div>
 
           {/* Security badge */}
-          <div className="mt-8 flex items-center justify-center gap-2 text-slate-400">
+          <div className="mt-8 flex items-center justify-center gap-2 text-slate-400 dark:text-slate-500">
             <ShieldCheck size={14} />
             <span className="text-[10px] font-black uppercase tracking-widest">Bank-grade security</span>
           </div>
@@ -213,8 +213,8 @@ function SignupForm() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-900">
-      <div className="max-w-5xl w-full grid lg:grid-cols-2 gap-0 bg-white rounded-[3rem] shadow-2xl border border-slate-200 overflow-hidden">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center p-4 font-sans text-slate-900 dark:text-slate-100">
+      <div className="max-w-5xl w-full grid lg:grid-cols-2 gap-0 bg-white dark:bg-slate-900 rounded-[3rem] shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
 
         {/* Left Side - Benefits */}
         <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-10 lg:p-12 text-white flex flex-col justify-center">
@@ -272,10 +272,10 @@ function SignupForm() {
         {/* Right Side - Signup Form */}
         <div className="p-10 lg:p-12 flex flex-col justify-center">
           <div className="mb-8">
-            <h2 className="text-3xl font-black text-slate-900 tracking-tight mb-2">
+            <h2 className="text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight mb-2">
               Create Your Account
             </h2>
-            <p className="text-slate-500 font-medium text-sm">
+            <p className="text-slate-500 dark:text-slate-400 font-medium text-sm">
               Get instant access to all calculators
             </p>
           </div>
@@ -289,39 +289,39 @@ function SignupForm() {
             )}
 
             <div className="space-y-2">
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+              <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">
                 Email Address
               </label>
               <div className="relative group">
-                <Mail className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
+                <Mail className="absolute left-4 top-3.5 text-slate-400 dark:text-slate-500 group-focus-within:text-indigo-500 transition-colors" size={18} />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 placeholder:text-slate-300"
+                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 dark:text-slate-200 placeholder:text-slate-300 dark:placeholder:text-slate-600"
                   placeholder="name@example.com"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+              <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">
                 Password
               </label>
               <div className="relative group">
-                <Lock className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
+                <Lock className="absolute left-4 top-3.5 text-slate-400 dark:text-slate-500 group-focus-within:text-indigo-500 transition-colors" size={18} />
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 placeholder:text-slate-300"
+                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 dark:text-slate-200 placeholder:text-slate-300 dark:placeholder:text-slate-600"
                   placeholder="••••••••"
                   minLength={6}
                 />
               </div>
-              <p className="text-xs text-slate-400 ml-1 font-medium">Minimum 6 characters</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500 ml-1 font-medium">Minimum 6 characters</p>
             </div>
 
             <button
@@ -337,18 +337,18 @@ function SignupForm() {
               )}
             </button>
 
-            <p className="text-xs text-slate-400 text-center font-medium">
+            <p className="text-xs text-slate-400 dark:text-slate-500 text-center font-medium">
               By creating an account, you agree to our Terms of Service
             </p>
           </form>
 
           {/* Sign In Link */}
-          <div className="text-center mt-6 pt-6 border-t border-slate-100">
-            <p className="text-sm text-slate-600 font-medium">
+          <div className="text-center mt-6 pt-6 border-t border-slate-100 dark:border-slate-800">
+            <p className="text-sm text-slate-600 dark:text-slate-300 font-medium">
               Already have an account?{' '}
               <button
                 onClick={() => router.push('/login')}
-                className="text-indigo-600 font-bold hover:text-indigo-500 transition-colors"
+                className="text-indigo-600 dark:text-indigo-300 font-bold hover:text-indigo-500 transition-colors"
               >
                 Sign in
               </button>
@@ -356,7 +356,7 @@ function SignupForm() {
           </div>
 
           {/* Security Assurance */}
-          <div className="mt-6 flex items-center justify-center gap-2 text-slate-400">
+          <div className="mt-6 flex items-center justify-center gap-2 text-slate-400 dark:text-slate-500">
             <ShieldCheck size={14} />
             <span className="text-[10px] font-black uppercase tracking-widest">Bank-grade security</span>
           </div>
@@ -369,7 +369,7 @@ function SignupForm() {
 export default function SignupPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
       </div>
     }>

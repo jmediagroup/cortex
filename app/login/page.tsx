@@ -142,44 +142,44 @@ function AuthForm() {
   // Password reset email sent confirmation
   if (resetEmailSent) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-900">
-        <div className="max-w-md w-full bg-white p-10 rounded-[3rem] shadow-2xl border border-slate-200 text-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center p-4 font-sans text-slate-900 dark:text-slate-100">
+        <div className="max-w-md w-full bg-white dark:bg-slate-900 p-10 rounded-[3rem] shadow-2xl border border-slate-200 dark:border-slate-700 text-center">
           {/* Mail Icon */}
           <div className="mx-auto h-20 w-20 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-3xl flex items-center justify-center mb-8 shadow-xl shadow-indigo-200">
             <Mail size={40} className="text-white" />
           </div>
 
           {/* Heading */}
-          <h2 className="text-3xl font-black text-slate-900 tracking-tight mb-3">
+          <h2 className="text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight mb-3">
             Check Your Email
           </h2>
 
           {/* Email display */}
-          <p className="text-slate-500 font-medium mb-6">
+          <p className="text-slate-500 dark:text-slate-400 font-medium mb-6">
             We&apos;ve sent a password reset link to
           </p>
-          <p className="text-indigo-600 font-black text-lg mb-8 bg-indigo-50 py-3 px-6 rounded-2xl inline-block">
+          <p className="text-indigo-600 dark:text-indigo-300 font-black text-lg mb-8 bg-indigo-50 dark:bg-indigo-900/40 py-3 px-6 rounded-2xl inline-block">
             {email}
           </p>
 
           {/* Instructions */}
-          <p className="text-slate-600 font-medium mb-8 leading-relaxed">
+          <p className="text-slate-600 dark:text-slate-300 font-medium mb-8 leading-relaxed">
             Click the link in your email to reset your password.
             <br />
-            <span className="text-slate-400 text-sm">The link will expire in 24 hours.</span>
+            <span className="text-slate-400 dark:text-slate-500 text-sm">The link will expire in 24 hours.</span>
           </p>
 
           {/* Back to login */}
           <button
             onClick={handleBackToLogin}
-            className="text-indigo-600 font-bold hover:text-indigo-500 transition-colors inline-flex items-center gap-2"
+            className="text-indigo-600 dark:text-indigo-300 font-bold hover:text-indigo-500 transition-colors inline-flex items-center gap-2"
           >
             <ArrowLeft size={16} />
             Back to sign in
           </button>
 
           {/* Security badge */}
-          <div className="mt-8 pt-8 border-t border-slate-100 flex items-center justify-center gap-2 text-slate-400">
+          <div className="mt-8 pt-8 border-t border-slate-100 dark:border-slate-800 flex items-center justify-center gap-2 text-slate-400 dark:text-slate-500">
             <ShieldCheck size={14} />
             <span className="text-[10px] font-black uppercase tracking-widest">Bank-grade security</span>
           </div>
@@ -191,17 +191,17 @@ function AuthForm() {
   // Forgot password form
   if (isForgotPassword) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-900">
-        <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-[3rem] shadow-2xl border border-slate-200">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center p-4 font-sans text-slate-900 dark:text-slate-100">
+        <div className="max-w-md w-full space-y-8 bg-white dark:bg-slate-900 p-10 rounded-[3rem] shadow-2xl border border-slate-200 dark:border-slate-700">
           {/* Header */}
           <div className="text-center">
             <div className="mx-auto h-14 w-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg shadow-indigo-200">
               <Lock size={28} />
             </div>
-            <h2 className="text-3xl font-black text-slate-900 tracking-tight leading-tight">
+            <h2 className="text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight leading-tight">
               Reset Password
             </h2>
-            <p className="text-slate-500 mt-2 font-medium text-sm">
+            <p className="text-slate-500 dark:text-slate-400 mt-2 font-medium text-sm">
               Enter your email and we&apos;ll send you a reset link
             </p>
           </div>
@@ -215,17 +215,17 @@ function AuthForm() {
             )}
 
             <div className="space-y-2">
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+              <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">
                 Email Address
               </label>
               <div className="relative group">
-                <Mail className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
+                <Mail className="absolute left-4 top-3.5 text-slate-400 dark:text-slate-500 group-focus-within:text-indigo-500 transition-colors" size={18} />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 placeholder:text-slate-300"
+                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 dark:text-slate-200 placeholder:text-slate-300 dark:placeholder:text-slate-600"
                   placeholder="name@example.com"
                 />
               </div>
@@ -249,7 +249,7 @@ function AuthForm() {
           <div className="text-center pt-2">
             <button
               onClick={handleBackToLogin}
-              className="text-xs font-bold text-indigo-600 hover:text-indigo-500 transition-colors px-6 py-3 rounded-2xl hover:bg-indigo-50 active:scale-95 inline-flex items-center gap-2"
+              className="text-xs font-bold text-indigo-600 dark:text-indigo-300 hover:text-indigo-500 transition-colors px-6 py-3 rounded-2xl hover:bg-indigo-50 dark:hover:bg-slate-800 active:scale-95 inline-flex items-center gap-2"
             >
               <ArrowLeft size={14} />
               Back to sign in
@@ -257,7 +257,7 @@ function AuthForm() {
           </div>
 
           {/* Security badge */}
-          <div className="pt-8 border-t border-slate-100 flex items-center justify-center gap-2 text-slate-400">
+          <div className="pt-8 border-t border-slate-100 dark:border-slate-800 flex items-center justify-center gap-2 text-slate-400 dark:text-slate-500">
             <ShieldCheck size={14} />
             <span className="text-[10px] font-black uppercase tracking-widest">Bank-grade security</span>
           </div>
@@ -267,18 +267,18 @@ function AuthForm() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-900">
-      <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-[3rem] shadow-2xl border border-slate-200">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center p-4 font-sans text-slate-900 dark:text-slate-100">
+      <div className="max-w-md w-full space-y-8 bg-white dark:bg-slate-900 p-10 rounded-[3rem] shadow-2xl border border-slate-200 dark:border-slate-700">
 
         {/* Branding Header */}
         <div className="text-center">
           <div className="mx-auto h-14 w-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg shadow-indigo-200 transition-transform hover:scale-105">
             <Zap fill="currentColor" size={28} />
           </div>
-          <h2 className="text-3xl font-black text-slate-900 tracking-tight leading-tight">
+          <h2 className="text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight leading-tight">
             {isLogin ? 'Welcome Back' : 'Get Started'}
           </h2>
-          <p className="text-slate-500 mt-2 font-medium text-sm">
+          <p className="text-slate-500 dark:text-slate-400 mt-2 font-medium text-sm">
             {isLogin
               ? 'Access your mathematical strategy engine'
               : 'Start optimizing your wealth with precision'}
@@ -295,34 +295,34 @@ function AuthForm() {
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+              <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">
                 Email Address
               </label>
               <div className="relative group">
-                <Mail className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
+                <Mail className="absolute left-4 top-3.5 text-slate-400 dark:text-slate-500 group-focus-within:text-indigo-500 transition-colors" size={18} />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 placeholder:text-slate-300"
+                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 dark:text-slate-200 placeholder:text-slate-300 dark:placeholder:text-slate-600"
                   placeholder="name@example.com"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+              <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">
                 Password
               </label>
               <div className="relative group">
-                <Lock className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
+                <Lock className="absolute left-4 top-3.5 text-slate-400 dark:text-slate-500 group-focus-within:text-indigo-500 transition-colors" size={18} />
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 placeholder:text-slate-300"
+                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 dark:text-slate-200 placeholder:text-slate-300 dark:placeholder:text-slate-600"
                   placeholder="••••••••"
                   minLength={6}
                 />
@@ -332,7 +332,7 @@ function AuthForm() {
                   <button
                     type="button"
                     onClick={() => setIsForgotPassword(true)}
-                    className="text-xs font-bold text-indigo-600 hover:text-indigo-500 transition-colors"
+                    className="text-xs font-bold text-indigo-600 dark:text-indigo-300 hover:text-indigo-500 transition-colors"
                   >
                     Forgot password?
                   </button>
@@ -359,14 +359,14 @@ function AuthForm() {
         <div className="text-center pt-2">
           <button
             onClick={() => setIsLogin(!isLogin)}
-            className="text-xs font-bold text-indigo-600 hover:text-indigo-500 transition-colors px-6 py-3 rounded-2xl hover:bg-indigo-50 active:scale-95"
+            className="text-xs font-bold text-indigo-600 dark:text-indigo-300 hover:text-indigo-500 transition-colors px-6 py-3 rounded-2xl hover:bg-indigo-50 dark:hover:bg-slate-800 active:scale-95"
           >
             {isLogin ? "New here? Create an account" : 'Already a member? Sign in'}
           </button>
         </div>
 
         {/* Security Assurance */}
-        <div className="pt-8 border-t border-slate-100 flex items-center justify-center gap-2 text-slate-400">
+        <div className="pt-8 border-t border-slate-100 dark:border-slate-800 flex items-center justify-center gap-2 text-slate-400 dark:text-slate-500">
           <ShieldCheck size={14} />
           <span className="text-[10px] font-black uppercase tracking-widest">Bank-grade security</span>
         </div>
@@ -378,7 +378,7 @@ function AuthForm() {
 export default function AuthPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
       </div>
     }>

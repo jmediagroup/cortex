@@ -234,9 +234,9 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
             </div>
           </div>
 
-          <div className="bg-indigo-900 text-white p-8 rounded-[2.5rem] shadow-xl">
+          <div className="bg-indigo-50 text-indigo-900 border border-indigo-200 dark:bg-indigo-900 dark:text-white dark:border-transparent p-8 rounded-[2.5rem] shadow-xl">
             <h4 className="font-black text-sm uppercase tracking-widest mb-4 flex items-center gap-2">
-              <Info size={16} className="text-indigo-400" /> The Rule of 72
+              <Info size={16} className="text-indigo-500 dark:text-indigo-400" /> The Rule of 72
             </h4>
             <p className="text-xs font-medium leading-relaxed opacity-80">
               At {inputs.annualReturn}% return, your initial principal of ${inputs.principal.toLocaleString()} will double approximately every {Math.round(72 / (inputs.annualReturn || 1))} years.
@@ -262,7 +262,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
           <div className="h-[400px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={simulationData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
                 <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 11, fontWeight: 'bold'}} />
                 <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 11, fontWeight: 'bold'}} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
                 <ChartTooltip
@@ -270,7 +270,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
                   formatter={(v) => `$${(v || 0).toLocaleString()}`}
                 />
                 <Area type="monotone" dataKey="balance" stroke="#4f46e5" strokeWidth={4} fill="#818cf8" fillOpacity={0.1} />
-                <Area type="monotone" dataKey="contributions" stroke="#cbd5e1" strokeWidth={2} fill="#f1f5f9" fillOpacity={0.2} />
+                <Area type="monotone" dataKey="contributions" stroke="var(--chart-axis)" strokeWidth={2} fill="#f1f5f9" fillOpacity={0.2} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -430,9 +430,9 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
                 </div>
               </div>
             </div>
-            <div className="bg-indigo-900 text-white rounded-2xl p-6">
-              <p className="text-xs font-black text-indigo-300 mb-2">THE 4% RULE</p>
-              <p className="text-sm font-medium text-indigo-50">
+            <div className="bg-indigo-50 text-indigo-900 border border-indigo-200 dark:bg-indigo-900 dark:text-white dark:border-transparent rounded-2xl p-6">
+              <p className="text-xs font-black text-indigo-700 dark:text-indigo-300 mb-2">THE 4% RULE</p>
+              <p className="text-sm font-medium text-indigo-900 dark:text-indigo-50">
                 Research shows withdrawing 4% annually from a balanced portfolio historically sustains wealth for 30+ years through market cycles. This is your "work optional" number.
               </p>
             </div>

@@ -112,9 +112,9 @@ function IndexFundVisualizerPageInner() {
           </div>
         )}
 
-        <div className="bg-gradient-to-br from-indigo-50 to-white border border-indigo-100/80 rounded-2xl p-8 mb-8 shadow-sm">
-          <h2 className="text-2xl font-black text-indigo-900 mb-3">Index Fund Growth Visualizer</h2>
-          <p className="text-indigo-700 font-medium">
+        <div className="bg-gradient-to-br from-indigo-50 to-white dark:from-indigo-900/40 dark:to-slate-900 border border-indigo-100/80 dark:border-indigo-800/80 rounded-2xl p-8 mb-8 shadow-sm">
+          <h2 className="text-2xl font-black text-indigo-900 dark:text-indigo-100 mb-3">Index Fund Growth Visualizer</h2>
+          <p className="text-indigo-700 dark:text-indigo-300 font-medium">
             Simulate historical returns and volatility for popular index ETFs like VOO, VTI, VT, and QQQM.
             Visualize how your investments could grow over time with steady contributions and see the impact
             of market volatility on your portfolio.
@@ -135,14 +135,14 @@ function IndexFundVisualizerPageInner() {
       </div>
 
       {/* FOOTER */}
-      <footer className="max-w-7xl mx-auto px-6 py-10 text-center border-t border-slate-100 mt-8">
-        <p className="text-xs text-slate-400 font-medium">&copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.</p>
+      <footer className="max-w-7xl mx-auto px-6 py-10 text-center border-t border-slate-100 dark:border-slate-800 mt-8">
+        <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">&copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.</p>
         <div className="flex items-center justify-center gap-3 mt-2">
-          <a href="/articles" className="text-slate-400 hover:text-slate-600 transition-colors text-xs">Articles</a>
-          <span className="text-slate-200">|</span>
-          <a href="/pricing" className="text-slate-400 hover:text-slate-600 transition-colors text-xs">Pricing</a>
-          <span className="text-slate-200">|</span>
-          <a href="/terms" className="text-slate-400 hover:text-slate-600 transition-colors text-xs">Terms & Privacy</a>
+          <a href="/articles" className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors text-xs">Articles</a>
+          <span className="text-slate-200 dark:text-slate-700">|</span>
+          <a href="/pricing" className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors text-xs">Pricing</a>
+          <span className="text-slate-200 dark:text-slate-700">|</span>
+          <a href="/terms" className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors text-xs">Terms & Privacy</a>
         </div>
       </footer>
     </>

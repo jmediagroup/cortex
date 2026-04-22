@@ -47,7 +47,7 @@ export default function AdminOverview() {
 
   if (error) {
     return (
-      <div className="rounded-[var(--radius-xl)] border border-red-200 bg-red-50 p-6 text-red-600 text-sm font-medium">
+      <div className="rounded-[var(--radius-xl)] border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/30 p-6 text-red-600 dark:text-red-400 text-sm font-medium">
         {error}
       </div>
     );

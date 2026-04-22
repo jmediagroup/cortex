@@ -67,7 +67,7 @@ function NetWorthPageInner() {
       <div className="flex items-center justify-center py-32">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-slate-600 font-medium">Loading Net Worth Engine...</p>
+          <p className="text-slate-600 dark:text-slate-300 font-medium">Loading Net Worth Engine...</p>
         </div>
       </div>
     );
@@ -78,24 +78,24 @@ function NetWorthPageInner() {
       {/* MAIN CONTENT */}
       <div className="max-w-7xl mx-auto px-6 py-12">
         <Breadcrumb toolName="Net Worth Engine" />
-        <div className="bg-gradient-to-br from-indigo-50 to-white border border-indigo-100/80 rounded-2xl p-8 mb-8 shadow-sm">
+        <div className="bg-gradient-to-br from-indigo-50 to-white dark:from-indigo-900/40 dark:to-slate-900 border border-indigo-100/80 dark:border-indigo-800/80 rounded-2xl p-8 mb-8 shadow-sm">
           <div className="flex items-center gap-3 mb-4">
             <Compass size={28} className="text-indigo-600 stroke-[2.5]" />
-            <h1 className="text-2xl font-black text-indigo-900">Cortex Net Worth Engine</h1>
+            <h1 className="text-2xl font-black text-indigo-900 dark:text-indigo-100">Cortex Net Worth Engine</h1>
           </div>
-          <p className="text-indigo-700 font-medium leading-relaxed">
+          <p className="text-indigo-700 dark:text-indigo-300 font-medium leading-relaxed">
             A decision-support tool optimized for system clarity and long-term agency. Track assets and liabilities,
             analyze liquidity, identify leverage points, and visualize your financial trajectory.
           </p>
-          <div className="mt-6 flex items-start gap-3 bg-white/50 rounded-2xl p-4 border border-indigo-100">
+          <div className="mt-6 flex items-start gap-3 bg-white/50 dark:bg-slate-900/50 rounded-2xl p-4 border border-indigo-100 dark:border-indigo-800/80">
             <div className="text-indigo-500 mt-0.5">
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
               </svg>
             </div>
             <div className="flex-1">
-              <p className="text-sm font-bold text-indigo-900 mb-1">Key Insight</p>
-              <p className="text-xs text-indigo-700 font-medium">
+              <p className="text-sm font-bold text-indigo-900 dark:text-indigo-100 mb-1">Key Insight</p>
+              <p className="text-xs text-indigo-700 dark:text-indigo-300 font-medium">
                 Understanding is the highest form of financial advantage. This tool prioritizes clarity over comparison,
                 helping you identify structural pivots unique to your financial system.
               </p>
@@ -116,20 +116,20 @@ function NetWorthPageInner() {
         <RelatedTools tools={getRelatedTools('net-worth')} />
       </div>
 
-      <footer className="max-w-7xl mx-auto px-6 py-10 text-center border-t border-slate-100 mt-8">
+      <footer className="max-w-7xl mx-auto px-6 py-10 text-center border-t border-slate-100 dark:border-slate-800 mt-8">
         <div className="max-w-2xl mx-auto">
-          <p className="text-sm text-slate-400 font-medium mb-3 italic">
+          <p className="text-sm text-slate-400 dark:text-slate-500 font-medium mb-3 italic">
             "Understanding is the highest form of financial advantage. We build systems that prioritize clarity over comparison."
           </p>
-          <p className="text-xs text-slate-400 font-medium">
+          <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">
             &copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.
           </p>
           <div className="flex items-center justify-center gap-3 mt-2">
-            <a href="/articles" className="text-slate-400 hover:text-slate-600 transition-colors text-xs">Articles</a>
-            <span className="text-slate-200">|</span>
-            <a href="/pricing" className="text-slate-400 hover:text-slate-600 transition-colors text-xs">Pricing</a>
-            <span className="text-slate-200">|</span>
-            <a href="/terms" className="text-slate-400 hover:text-slate-600 transition-colors text-xs">Terms & Privacy</a>
+            <a href="/articles" className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors text-xs">Articles</a>
+            <span className="text-slate-200 dark:text-slate-700">|</span>
+            <a href="/pricing" className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors text-xs">Pricing</a>
+            <span className="text-slate-200 dark:text-slate-700">|</span>
+            <a href="/terms" className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors text-xs">Terms & Privacy</a>
           </div>
         </div>
       </footer>

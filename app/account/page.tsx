@@ -215,7 +215,7 @@ export default function AccountPage() {
     return (
       <DashboardShell>
         <div className="flex items-center justify-center py-32">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 dark:border-indigo-400"></div>
         </div>
       </DashboardShell>
     );
@@ -235,44 +235,44 @@ export default function AccountPage() {
       <div className="max-w-4xl mx-auto px-6 py-12">
         {/* Success/Error Messages */}
         {successMessage && (
-          <div className="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-700 px-6 py-4 rounded-2xl flex items-center gap-3">
+          <div className="mb-6 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 px-6 py-4 rounded-2xl flex items-center gap-3">
             <CheckCircle size={20} />
             <span className="font-bold">{successMessage}</span>
           </div>
         )}
         {errorMessage && (
-          <div className="mb-6 bg-rose-50 border border-rose-200 text-rose-700 px-6 py-4 rounded-2xl flex items-center gap-3">
+          <div className="mb-6 bg-rose-50 dark:bg-rose-900/30 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 px-6 py-4 rounded-2xl flex items-center gap-3">
             <XCircle size={20} />
             <span className="font-bold">{errorMessage}</span>
           </div>
         )}
 
         {/* Profile Information Section */}
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-8 mb-8">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm p-8 mb-8">
           <div className="flex items-center gap-3 mb-6">
-            <div className="bg-indigo-100 p-3 rounded-2xl">
-              <User className="text-indigo-600" size={24} />
+            <div className="bg-indigo-100 dark:bg-indigo-900/60 p-3 rounded-2xl">
+              <User className="text-indigo-600 dark:text-indigo-300" size={24} />
             </div>
             <div>
-              <h2 className="text-2xl font-black text-slate-900">Profile Information</h2>
-              <p className="text-slate-500 font-medium">Update your personal details</p>
+              <h2 className="text-2xl font-black text-slate-900 dark:text-slate-100">Profile Information</h2>
+              <p className="text-slate-500 dark:text-slate-400 font-medium">Update your personal details</p>
             </div>
           </div>
 
           <div className="space-y-6">
             <div>
-              <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-wide">
+              <label className="block text-sm font-black text-slate-700 dark:text-slate-200 mb-2 uppercase tracking-wide">
                 Email Address
               </label>
-              <div className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-600 font-medium">
+              <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-slate-600 dark:text-slate-300 font-medium">
                 {user.email}
               </div>
-              <p className="text-xs text-slate-400 mt-2">Email address cannot be changed</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">Email address cannot be changed</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-wide">
+                <label className="block text-sm font-black text-slate-700 dark:text-slate-200 mb-2 uppercase tracking-wide">
                   First Name
                 </label>
                 <input
@@ -280,12 +280,12 @@ export default function AccountPage() {
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   placeholder="Enter first name"
-                  className="w-full border border-slate-200 rounded-xl px-4 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 rounded-xl px-4 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-wide">
+                <label className="block text-sm font-black text-slate-700 dark:text-slate-200 mb-2 uppercase tracking-wide">
                   Last Name
                 </label>
                 <input
@@ -293,37 +293,37 @@ export default function AccountPage() {
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   placeholder="Enter last name"
-                  className="w-full border border-slate-200 rounded-xl px-4 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 rounded-xl px-4 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-wide">
+                <label className="block text-sm font-black text-slate-700 dark:text-slate-200 mb-2 uppercase tracking-wide">
                   Birth Date
                 </label>
                 <input
                   type="date"
                   value={birthDate}
                   onChange={(e) => setBirthDate(e.target.value)}
-                  className="w-full border border-slate-200 rounded-xl px-4 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 rounded-xl px-4 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 />
                 {birthDate && calculateAge(birthDate) !== null && (
-                  <p className="text-xs text-slate-500 mt-2 font-medium">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 font-medium">
                     Age: {calculateAge(birthDate)} years
                   </p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-wide">
+                <label className="block text-sm font-black text-slate-700 dark:text-slate-200 mb-2 uppercase tracking-wide">
                   Gender
                 </label>
                 <select
                   value={gender}
                   onChange={(e) => setGender(e.target.value as 'male' | 'female' | 'prefer_not_to_say' | '')}
-                  className="w-full border border-slate-200 rounded-xl px-4 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white"
+                  className="w-full border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-slate-900 dark:text-slate-100"
                 >
                   <option value="">Select gender</option>
                   <option value="male">Male</option>
@@ -345,26 +345,26 @@ export default function AccountPage() {
         </div>
 
         {/* Subscription Management Section */}
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-8 mb-8">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm p-8 mb-8">
           <div className="flex items-center gap-3 mb-6">
-            <div className={`p-3 rounded-2xl ${userTier !== 'free' ? 'bg-indigo-100' : 'bg-slate-100'}`}>
+            <div className={`p-3 rounded-2xl ${userTier !== 'free' ? 'bg-indigo-100 dark:bg-indigo-900/60' : 'bg-slate-100 dark:bg-slate-800'}`}>
               {userTier !== 'free' ? (
-                <TrendingUp className="text-indigo-600" size={24} />
+                <TrendingUp className="text-indigo-600 dark:text-indigo-300" size={24} />
               ) : (
-                <TrendingDown className="text-slate-500" size={24} />
+                <TrendingDown className="text-slate-500 dark:text-slate-400" size={24} />
               )}
             </div>
             <div>
-              <h2 className="text-2xl font-black text-slate-900">Subscription</h2>
-              <p className="text-slate-500 font-medium">Manage your plan and billing</p>
+              <h2 className="text-2xl font-black text-slate-900 dark:text-slate-100">Subscription</h2>
+              <p className="text-slate-500 dark:text-slate-400 font-medium">Manage your plan and billing</p>
             </div>
           </div>
 
-          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 mb-6">
+          <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 mb-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-500 font-bold uppercase tracking-wide mb-1">Current Plan</p>
-                <p className="text-3xl font-black text-slate-900 uppercase">{getTierDisplayName(userTier)}</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wide mb-1">Current Plan</p>
+                <p className="text-3xl font-black text-slate-900 dark:text-slate-100 uppercase">{getTierDisplayName(userTier)}</p>
               </div>
               <div className={`px-4 py-2 rounded-xl font-black text-sm bg-${getTierColor(userTier)}-600 text-white`}>
                 {userTier === 'finance_pro' ? '$9/month' : '$0/month'}
@@ -384,7 +384,7 @@ export default function AccountPage() {
             <button
               onClick={handleDowngradeToFree}
               disabled={saving}
-              className="w-full flex items-center justify-center gap-2 bg-slate-200 text-slate-700 font-black px-6 py-4 rounded-xl hover:bg-slate-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-black px-6 py-4 rounded-xl hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <TrendingDown size={20} />
               {saving ? 'Processing...' : 'Cancel Subscription'}
@@ -393,14 +393,14 @@ export default function AccountPage() {
         </div>
 
         {/* Danger Zone - Delete Account */}
-        <div className="bg-white rounded-3xl border-2 border-rose-200 shadow-sm p-8">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border-2 border-rose-200 dark:border-rose-800 shadow-sm p-8">
           <div className="flex items-center gap-3 mb-6">
-            <div className="bg-rose-100 p-3 rounded-2xl">
-              <AlertTriangle className="text-rose-600" size={24} />
+            <div className="bg-rose-100 dark:bg-rose-900/40 p-3 rounded-2xl">
+              <AlertTriangle className="text-rose-600 dark:text-rose-400" size={24} />
             </div>
             <div>
-              <h2 className="text-2xl font-black text-rose-900">Danger Zone</h2>
-              <p className="text-rose-600 font-medium">Permanently delete your account</p>
+              <h2 className="text-2xl font-black text-rose-900 dark:text-rose-200">Danger Zone</h2>
+              <p className="text-rose-600 dark:text-rose-400 font-medium">Permanently delete your account</p>
             </div>
           </div>
 
@@ -414,11 +414,11 @@ export default function AccountPage() {
             </button>
           ) : (
             <div className="space-y-4">
-              <div className="bg-rose-50 border border-rose-200 rounded-2xl p-6">
-                <p className="font-bold text-rose-900 mb-3">
+              <div className="bg-rose-50 dark:bg-rose-900/30 border border-rose-200 dark:border-rose-800 rounded-2xl p-6">
+                <p className="font-bold text-rose-900 dark:text-rose-200 mb-3">
                   This action cannot be undone. This will permanently delete your account and remove all data.
                 </p>
-                <p className="text-sm text-rose-700 mb-4">
+                <p className="text-sm text-rose-700 dark:text-rose-300 mb-4">
                   Please type <span className="font-black">DELETE</span> to confirm.
                 </p>
                 <input
@@ -426,7 +426,7 @@ export default function AccountPage() {
                   value={deleteConfirmText}
                   onChange={(e) => setDeleteConfirmText(e.target.value)}
                   placeholder="Type DELETE"
-                  className="w-full border-2 border-rose-300 rounded-xl px-4 py-3 font-bold focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                  className="w-full border-2 border-rose-300 dark:border-rose-700 dark:bg-slate-900 dark:text-slate-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent"
                 />
               </div>
 
@@ -436,7 +436,7 @@ export default function AccountPage() {
                     setShowDeleteConfirm(false);
                     setDeleteConfirmText('');
                   }}
-                  className="flex-1 bg-slate-200 text-slate-700 font-black px-6 py-3 rounded-xl hover:bg-slate-300 transition-colors"
+                  className="flex-1 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-black px-6 py-3 rounded-xl hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
                 >
                   Cancel
                 </button>
@@ -455,14 +455,14 @@ export default function AccountPage() {
       </div>
 
       {/* FOOTER */}
-      <footer className="max-w-4xl mx-auto px-6 py-12 text-center text-slate-400 font-medium text-sm">
+      <footer className="max-w-4xl mx-auto px-6 py-12 text-center text-slate-400 dark:text-slate-500 font-medium text-sm">
         <p>&copy; {new Date().getFullYear()} Cortex Financial Technology. All rights reserved.</p>
         <div className="flex items-center justify-center gap-3 mt-2">
-          <a href="/articles" className="text-slate-500 hover:text-slate-700 transition-colors text-xs">
+          <a href="/articles" className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors text-xs">
             Articles
           </a>
-          <span className="text-slate-300">|</span>
-          <a href="/terms" className="text-slate-500 hover:text-slate-700 transition-colors text-xs">
+          <span className="text-slate-300 dark:text-slate-600">|</span>
+          <a href="/terms" className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors text-xs">
             Terms & Privacy
           </a>
         </div>

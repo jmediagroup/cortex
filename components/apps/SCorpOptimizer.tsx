@@ -131,7 +131,7 @@ export default function SCorpOptimizer({ isPro = false, onUpgrade, isLoggedIn = 
                 { name: 'Sole Prop', tax: stats.solePropTax, color: '#94a3b8' },
                 { name: 'S-Corp (Target)', tax: stats.sCorpTax, color: '#4f46e5' }
               ]}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12, fontWeight: 'bold'}} />
                 <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12, fontWeight: 'bold'}} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
                 <ChartTooltip cursor={{fill: '#f8fafc'}} formatter={(v) => `$${Math.round(Number(v) || 0).toLocaleString()}`} />

@@ -224,7 +224,7 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
         {/* Controls - Left Column */}
         <aside className="lg:col-span-4 space-y-6">
           {/* Optimization Engine */}
-          <div className="bg-indigo-900 text-white p-6 rounded-[2rem] shadow-xl relative overflow-hidden">
+          <div className="bg-indigo-50 text-indigo-900 border border-indigo-200 dark:bg-indigo-900 dark:text-white dark:border-transparent p-6 rounded-[2rem] shadow-xl relative overflow-hidden">
             <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12">
               <RefreshCw size={120} />
             </div>
@@ -234,19 +234,19 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
             </h3>
 
             <div className="space-y-6 relative z-10">
-              <div className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${!isPro ? 'bg-indigo-800/30 border-indigo-700 opacity-80' : 'bg-indigo-800/50 border-indigo-700'}`}>
+              <div className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${!isPro ? 'bg-indigo-100/70 border-indigo-200 dark:bg-indigo-800/30 dark:border-indigo-700 opacity-80' : 'bg-indigo-100/70 border-indigo-200 dark:bg-indigo-800/50 dark:border-indigo-700'}`}>
                 <div>
                   <p className="font-bold flex items-center gap-2">
                     Auto-Optimize Ladder
                     {!isPro && <Lock size={12} className="text-amber-400" />}
                   </p>
-                  <p className="text-[10px] text-indigo-300 uppercase font-black">Maximize tax brackets</p>
+                  <p className="text-[10px] text-indigo-700 dark:text-indigo-300 uppercase font-black">Maximize tax brackets</p>
                 </div>
                 <input
                   type="checkbox" name="isAutoOptimize"
                   checked={inputs.isAutoOptimize} onChange={handleInputChange}
                   disabled={!isPro}
-                  className="w-6 h-6 rounded-lg accent-indigo-400 disabled:cursor-not-allowed"
+                  className="w-6 h-6 rounded-lg accent-indigo-600 dark:accent-indigo-400 disabled:cursor-not-allowed"
                 />
               </div>
 
@@ -261,13 +261,13 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
 
               {(inputs.isAutoOptimize && isPro) ? (
                 <div className="space-y-3">
-                  <label className="text-xs font-bold text-indigo-200 uppercase tracking-widest">Target Bracket</label>
+                  <label className="text-xs font-bold text-indigo-700 dark:text-indigo-200 uppercase tracking-widest">Target Bracket</label>
                   <div className="grid grid-cols-3 gap-2">
                     {[0, 1, 2].map(idx => (
                       <button
                         key={idx}
                         onClick={() => setInputs(p => ({...p, targetBracketIndex: idx}))}
-                        className={`py-2 px-1 rounded-xl text-xs font-black transition-all ${inputs.targetBracketIndex === idx ? 'bg-white text-indigo-900 shadow-lg' : 'bg-indigo-800 text-indigo-300 hover:bg-indigo-700'}`}
+                        className={`py-2 px-1 rounded-xl text-xs font-black transition-all ${inputs.targetBracketIndex === idx ? 'bg-white text-indigo-900 dark:bg-indigo-600 dark:text-white shadow-lg' : 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200 dark:bg-indigo-800 dark:text-indigo-300 dark:hover:bg-indigo-700'}`}
                       >
                         {TAX_BRACKETS[idx].label}
                       </button>
@@ -276,10 +276,10 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
                 </div>
               ) : (
                 <div>
-                  <label className="text-xs font-bold text-indigo-200 uppercase mb-2 block">Manual Annual Conversion</label>
+                  <label className="text-xs font-bold text-indigo-700 dark:text-indigo-200 uppercase mb-2 block">Manual Annual Conversion</label>
                   <input
                     type="number" name="manualConvAmount" value={inputs.manualConvAmount} onChange={handleInputChange}
-                    className="w-full px-4 py-2.5 bg-indigo-800 border-none rounded-2xl text-white font-bold"
+                    className="w-full px-4 py-2.5 bg-indigo-100 border-none rounded-2xl text-indigo-900 dark:bg-indigo-800 dark:text-white font-bold"
                   />
                 </div>
               )}
@@ -365,13 +365,13 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
                   optimized: d.totalBalance,
                   baseline: baselineSim[i].totalBalance
                 }))}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
                   <XAxis dataKey="age" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 11, fontWeight: 'bold'}} />
                   <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 11, fontWeight: 'bold'}} tickFormatter={v => `$${(v/1000000).toFixed(1)}M`} />
                   <Tooltip contentStyle={{borderRadius: '24px', border: 'none', boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.25)'}} formatter={(v) => `$${Math.round(Number(v) || 0).toLocaleString()}`}/>
                   <Legend />
                   <Line type="monotone" dataKey="optimized" stroke="#4f46e5" strokeWidth={4} dot={false} name="Current Strategy" />
-                  {isPro && <Line type="monotone" dataKey="baseline" stroke="#94a3b8" strokeWidth={2} strokeDasharray="5 5" dot={false} name="Standard (No Ladder)" />}
+                  {isPro && <Line type="monotone" dataKey="baseline" stroke="var(--chart-axis)" strokeWidth={2} strokeDasharray="5 5" dot={false} name="Standard (No Ladder)" />}
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -396,43 +396,43 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
           </div>
 
           {/* Strategic Comparison Verdict */}
-          <div className="bg-indigo-900 p-10 rounded-[4rem] text-white shadow-2xl relative overflow-hidden">
+          <div className="bg-indigo-50 text-indigo-900 border border-indigo-200 dark:bg-indigo-900 dark:text-white dark:border-transparent p-10 rounded-[4rem] shadow-2xl relative overflow-hidden">
             <div className="absolute top-0 right-0 p-8 opacity-10">
               <ArrowLeftRight size={120} />
             </div>
             <h3 className="text-2xl font-black mb-8 relative z-10">Strategic Insights</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10">
               <div>
-                <p className="text-indigo-300 font-black text-xs uppercase tracking-widest mb-4">Standard Logic</p>
+                <p className="text-indigo-700 dark:text-indigo-300 font-black text-xs uppercase tracking-widest mb-4">Standard Logic</p>
                 <ul className="space-y-3">
                   <li className="flex gap-3 text-sm font-medium opacity-80">
-                    <div className="bg-indigo-800 p-1 rounded h-fit mt-1 text-rose-400"><TrendingUp size={12}/></div>
+                    <div className="bg-indigo-100 text-rose-600 dark:bg-indigo-800 dark:text-rose-400 p-1 rounded h-fit mt-1"><TrendingUp size={12}/></div>
                     RMDs are projected to force you into a {TAX_BRACKETS[2].label} or higher bracket later.
                   </li>
                 </ul>
               </div>
               <div>
-                <p className="text-emerald-400 font-black text-xs uppercase tracking-widest mb-4">Active Strategy</p>
+                <p className="text-emerald-600 dark:text-emerald-400 font-black text-xs uppercase tracking-widest mb-4">Active Strategy</p>
                 <ul className="space-y-3">
                   <li className="flex gap-3 text-sm font-medium">
-                    <div className="bg-emerald-800 p-1 rounded h-fit mt-1 text-emerald-400"><TrendingDown size={12}/></div>
+                    <div className="bg-emerald-100 text-emerald-600 dark:bg-emerald-800 dark:text-emerald-400 p-1 rounded h-fit mt-1"><TrendingDown size={12}/></div>
                     You are {inputs.manualConvAmount > 0 ? "partially" : "not"} currently optimizing for bracket efficiency.
                   </li>
                 </ul>
               </div>
             </div>
-            <div className="mt-12 pt-8 border-t border-indigo-800 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="mt-12 pt-8 border-t border-indigo-200 dark:border-indigo-800 flex flex-col md:flex-row justify-between items-center gap-4">
               <div className="text-center md:text-left">
-                <p className="text-indigo-400 font-black text-xs uppercase mb-1 tracking-widest">Net Result</p>
+                <p className="text-indigo-600 dark:text-indigo-400 font-black text-xs uppercase mb-1 tracking-widest">Net Result</p>
                 <p className="text-3xl font-black">
                   {isPro ? (
                     stats.legacyDelta > 0 ? (
-                      <><span className="text-emerald-400">+${Math.round(stats.legacyDelta/1000).toLocaleString()}k</span> Efficiency Gain</>
+                      <><span className="text-emerald-600 dark:text-emerald-400">+${Math.round(stats.legacyDelta/1000).toLocaleString()}k</span> Efficiency Gain</>
                     ) : (
-                      <><span className="text-rose-400">Neutral</span> Result</>
+                      <><span className="text-rose-600 dark:text-rose-400">Neutral</span> Result</>
                     )
                   ) : (
-                    <span className="text-indigo-300 opacity-50">Pro Logic Needed</span>
+                    <span className="text-indigo-700 dark:text-indigo-300 opacity-50">Pro Logic Needed</span>
                   )}
                 </p>
               </div>

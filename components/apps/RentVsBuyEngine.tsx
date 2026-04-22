@@ -339,31 +339,31 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
         <div className="lg:col-span-8 space-y-6">
 
           {/* Time Horizon Master Slider */}
-          <div className="bg-indigo-900 text-white p-8 rounded-2xl shadow-xl overflow-hidden relative">
+          <div className="bg-indigo-50 text-indigo-900 border border-indigo-200 dark:bg-indigo-900 dark:text-white dark:border-transparent p-8 rounded-2xl shadow-xl overflow-hidden relative">
             <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
               <TrendingUp size={120} />
             </div>
 
             <div className="relative z-10">
-              <h3 className="text-indigo-200 text-xs font-bold uppercase tracking-widest mb-4">Select Your Time Horizon</h3>
+              <h3 className="text-indigo-700 dark:text-indigo-200 text-xs font-bold uppercase tracking-widest mb-4">Select Your Time Horizon</h3>
               <input
                 type="range" min="1" max="30" step="1"
                 value={years} onChange={(e) => setYears(Number(e.target.value))}
-                className="w-full h-4 bg-indigo-800 rounded-xl appearance-none cursor-pointer accent-white mb-6"
+                className="w-full h-4 bg-indigo-100 dark:bg-indigo-800 rounded-xl appearance-none cursor-pointer accent-indigo-600 dark:accent-white mb-6"
               />
 
               <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
                 <div>
-                  <p className="text-indigo-300 text-xs font-semibold uppercase">Timeline</p>
+                  <p className="text-indigo-700 dark:text-indigo-300 text-xs font-semibold uppercase">Timeline</p>
                   <p className="text-3xl font-bold">{years} <span className="text-lg">Years</span></p>
                 </div>
                 <div className="col-span-1 md:col-span-2">
-                  <p className="text-indigo-300 text-xs font-semibold uppercase mb-1">The Verdict</p>
+                  <p className="text-indigo-700 dark:text-indigo-300 text-xs font-semibold uppercase mb-1">The Verdict</p>
                   <div className="flex items-center gap-3">
                     <div className={`px-4 py-1 rounded-full text-lg font-black uppercase tracking-tighter ${winner === 'Buy' ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'}`}>
                       {winner} Wins
                     </div>
-                    <p className="text-white text-sm">
+                    <p className="text-indigo-900 dark:text-white text-sm">
                       by <span className="font-bold font-mono">{formatCurrency(nwDiff)}</span> in net worth
                     </p>
                   </div>
@@ -394,7 +394,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                       <stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
                   <XAxis
                     dataKey="year"
                     axisLine={false}
@@ -414,7 +414,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                   />
                   <ReferenceLine x={years} stroke="#4f46e5" strokeDasharray="3 3" />
                   <Area type="monotone" dataKey="buyNetWorth" name="Buy Net Worth" stroke="#4f46e5" strokeWidth={3} fillOpacity={1} fill="url(#colorBuy)" />
-                  <Area type="monotone" dataKey="rentNetWorth" name="Rent Portfolio" stroke="#94a3b8" strokeWidth={2} fill="transparent" strokeDasharray="5 5" />
+                  <Area type="monotone" dataKey="rentNetWorth" name="Rent Portfolio" stroke="var(--chart-axis)" strokeWidth={2} fill="transparent" strokeDasharray="5 5" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>

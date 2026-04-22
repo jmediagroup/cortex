@@ -313,14 +313,15 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
         </div>
 
         {/* CTA SECTION */}
-        <div className="mt-16 bg-[var(--primary-900)] rounded-[var(--radius-2xl)] p-10 md:p-12 text-white text-center">
-          <h2 className="text-2xl md:text-3xl font-black mb-4">Put Knowledge Into Action</h2>
-          <p className="text-white/70 font-medium text-base md:text-lg mb-6 max-w-xl mx-auto">
+        <div className="mt-16 bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950 rounded-[var(--radius-2xl)] p-10 md:p-12 text-white text-center relative overflow-hidden">
+          <div className="absolute w-[600px] h-[300px] bg-indigo-500/10 blur-3xl -top-20 left-1/2 -translate-x-1/2 pointer-events-none" />
+          <h2 className="relative text-2xl md:text-3xl font-black mb-4">Put Knowledge Into Action</h2>
+          <p className="relative text-white/70 font-medium text-base md:text-lg mb-6 max-w-xl mx-auto">
             Use our free calculators to apply what you&apos;ve learned and make better financial decisions.
           </p>
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-2 bg-white text-[var(--primary-900)] font-black px-8 py-4 rounded-[var(--radius-lg)] hover:bg-white/90 transition-all shadow-xl"
+            className="relative inline-flex items-center gap-2 bg-white text-slate-900 font-black px-8 py-4 rounded-[var(--radius-lg)] hover:bg-white/90 transition-all shadow-xl"
           >
             Explore Calculators
             <ArrowRight size={20} />

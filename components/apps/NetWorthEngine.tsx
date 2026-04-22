@@ -748,38 +748,38 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
           </section>
 
           {/* Forces Selector */}
-          <section className="bg-slate-900 rounded-3xl p-8 text-slate-100 shadow-2xl shadow-indigo-900/20 overflow-hidden relative group">
+          <section className="bg-slate-50 rounded-3xl p-8 text-slate-900 border border-slate-200 shadow-2xl shadow-indigo-200/60 dark:bg-slate-900 dark:text-slate-100 dark:border-transparent dark:shadow-indigo-900/20 overflow-hidden relative group">
             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full -mr-16 -mt-16 blur-3xl transition-opacity opacity-0 group-hover:opacity-100"></div>
             <h3 className="font-bold mb-6 flex items-center gap-2 tracking-tight">
-              <Activity size={18} className="text-indigo-400" />
+              <Activity size={18} className="text-indigo-600 dark:text-indigo-400" />
               Dynamic Forces
               <Tooltip content="These inputs affect your momentum and trajectory calculations. Monthly Savings is how much you add to assets each month. Asset Growth Velocity is the expected annual growth rate of your investments (e.g., 7% for stock market average).">
-                <HelpCircle size={16} className="text-slate-400 hover:text-indigo-400 transition-colors" />
+                <HelpCircle size={16} className="text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 transition-colors" />
               </Tooltip>
             </h3>
             <div className="space-y-8">
               <div className="space-y-3">
-                <div className="flex justify-between text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
+                <div className="flex justify-between text-[10px] font-black uppercase tracking-[0.2em] text-slate-600 dark:text-slate-500">
                   <span>Monthly Savings</span>
-                  <span className="text-slate-100 text-xs font-mono tracking-tight">${monthlySavings.toLocaleString()}</span>
+                  <span className="text-slate-900 dark:text-slate-100 text-xs font-mono tracking-tight">${monthlySavings.toLocaleString()}</span>
                 </div>
                 <input
                   type="range" min="0" max="25000" step="100"
                   value={monthlySavings}
                   onChange={(e) => setMonthlySavings(Number(e.target.value))}
-                  className="w-full h-2 bg-slate-800 rounded-full appearance-none cursor-pointer accent-indigo-500"
+                  className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full appearance-none cursor-pointer accent-indigo-600 dark:accent-indigo-500"
                 />
               </div>
               <div className="space-y-3">
-                <div className="flex justify-between text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
+                <div className="flex justify-between text-[10px] font-black uppercase tracking-[0.2em] text-slate-600 dark:text-slate-500">
                   <span>Asset Growth Velocity</span>
-                  <span className="text-slate-100 text-xs font-mono tracking-tight">{growthRate}%</span>
+                  <span className="text-slate-900 dark:text-slate-100 text-xs font-mono tracking-tight">{growthRate}%</span>
                 </div>
                 <input
                   type="range" min="-10" max="25" step="0.5"
                   value={growthRate}
                   onChange={(e) => setGrowthRate(Number(e.target.value))}
-                  className="w-full h-2 bg-slate-800 rounded-full appearance-none cursor-pointer accent-indigo-500"
+                  className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full appearance-none cursor-pointer accent-indigo-600 dark:accent-indigo-500"
                 />
               </div>
             </div>
@@ -987,7 +987,7 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
                     <div key={i} className="group p-8 rounded-3xl border border-slate-200 bg-white hover:border-indigo-500 hover:shadow-2xl hover:-translate-y-2 transition-all cursor-pointer relative overflow-hidden">
                       <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-50/50 rounded-full -mr-12 -mt-12 transition-all group-hover:scale-150"></div>
                       <div className="flex justify-between items-start mb-6 relative">
-                        <div className="p-4 bg-slate-900 text-white rounded-2xl group-hover:bg-indigo-600 transition-all shadow-lg group-hover:shadow-indigo-200">
+                        <div className="p-4 bg-slate-100 text-slate-900 group-hover:bg-gradient-to-br group-hover:from-indigo-600 group-hover:to-purple-600 group-hover:text-white dark:bg-slate-900 dark:text-white rounded-2xl transition-all shadow-lg group-hover:shadow-indigo-200">
                           {strat.icon}
                         </div>
                         <span className="text-[9px] font-black text-indigo-500 uppercase tracking-widest bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">

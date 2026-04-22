@@ -1,10 +1,21 @@
 @import "tailwindcss";
 
+/* Enable class-based dark mode for Tailwind v4: `class="dark"` on <html> */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* -----------------------------------------------------------------------------
+   Theme tokens
+   -----------------------------------------------------------------------------
+   Token names are preserved (--surface-*, --text-*, --color-accent, --primary-*,
+   --chart-*) so existing components keep working. Light is the default root;
+   `.dark` on <html> flips values to the legacy dashboard/apps palette.
+   ---------------------------------------------------------------------------*/
+
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #0f172a;
 
-  /* Primary palette - Purple/Indigo (from design system) */
+  /* Primary palette — Purple/Indigo */
   --primary-50: #f0eeff;
   --primary-100: #e0ddff;
   --primary-200: #c4b8ff;
@@ -16,35 +27,42 @@
   --primary-800: #3a30a3;
   --primary-900: #2a2279;
 
-  /* Semantic colors */
+  /* Brand gradient (indigo-600 → purple-600). Use as a background on
+     decorative accents (icon chips, active pills, hover surfaces). */
+  --gradient-brand: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%);
+  --gradient-brand-soft: linear-gradient(135deg, #eef2ff 0%, #faf5ff 100%);
+
+  /* Semantic */
   --color-positive: #22c55e;
   --color-positive-light: #dcfce7;
   --color-negative: #ef4444;
   --color-negative-light: #fee2e2;
-  --color-accent: #6c63ff;
-  --color-accent-light: #f0eeff;
+  --color-accent: #4f46e5; /* indigo-600 — solid accent for functional bits */
+  --color-accent-hover: #4338ca;
+  --color-accent-light: #eef2ff;
   --color-warning: #f59e0b;
   --color-warning-light: #fef3c7;
   --color-info: #3b82f6;
   --color-info-light: #dbeafe;
 
-  /* Surface colors */
+  /* Surfaces */
   --surface-primary: #ffffff;
   --surface-secondary: #f8fafc;
   --surface-tertiary: #f1f5f9;
   --surface-elevated: #ffffff;
+  --surface-inverse: #0f172a;
 
-  /* Border colors */
+  /* Borders */
   --border-primary: #e2e8f0;
   --border-secondary: #f1f5f9;
 
-  /* Text colors */
+  /* Text */
   --text-primary: #0f172a;
   --text-secondary: #64748b;
   --text-tertiary: #94a3b8;
   --text-inverse: #ffffff;
 
-  /* Chart colors */
+  /* Chart colors (same palette both themes — tuned grid/axis per theme) */
   --chart-purple: #6c63ff;
   --chart-green: #22c55e;
   --chart-blue: #3b82f6;
@@ -53,6 +71,10 @@
   --chart-pink: #ec4899;
   --chart-purple-area: rgba(108, 99, 255, 0.15);
   --chart-green-area: rgba(34, 197, 94, 0.15);
+  --chart-grid: #e2e8f0;
+  --chart-axis: #94a3b8;
+  --chart-tooltip-bg: #ffffff;
+  --chart-tooltip-border: #e2e8f0;
 
   /* Shadows */
   --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
@@ -66,6 +88,72 @@
   --radius-xl: 1.25rem;
   --radius-2xl: 1.5rem;
   --radius-full: 9999px;
+}
+
+/* Dark theme — preserves the current shipped dashboard/apps palette.
+   Values mirror the values this file carried in the legacy
+   @media (prefers-color-scheme: dark) block, tuned where needed so dark
+   reads as a cohesive theme instead of light-with-dark-islands. */
+.dark {
+  --background: #0a0a0f;
+  --foreground: #f1f5f9;
+
+  --primary-50: #1a1740;
+  --primary-100: #231f5c;
+  --primary-200: #2d2878;
+  --primary-300: #3a349f;
+  --primary-400: #564dd6;
+  --primary-500: #6c63ff;
+  --primary-600: #8b6fff;
+  --primary-700: #a593ff;
+  --primary-800: #c4b8ff;
+  --primary-900: #e0ddff;
+
+  --gradient-brand: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  --gradient-brand-soft: linear-gradient(135deg, #1e1b4b 0%, #3b0764 100%);
+
+  --color-positive: #4ade80;
+  --color-positive-light: rgba(34, 197, 94, 0.15);
+  --color-negative: #f87171;
+  --color-negative-light: rgba(239, 68, 68, 0.15);
+  --color-accent: #818cf8; /* indigo-400 for dark-bg legibility */
+  --color-accent-hover: #a5b4fc;
+  --color-accent-light: rgba(99, 102, 241, 0.15);
+  --color-warning: #fbbf24;
+  --color-warning-light: rgba(245, 158, 11, 0.15);
+  --color-info: #60a5fa;
+  --color-info-light: rgba(59, 130, 246, 0.15);
+
+  --surface-primary: #1a1a2e;
+  --surface-secondary: #16162a;
+  --surface-tertiary: #1e1e3a;
+  --surface-elevated: #222244;
+  --surface-inverse: #f8fafc;
+
+  --border-primary: #2a2a4a;
+  --border-secondary: #1e1e3a;
+
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-tertiary: #64748b;
+  --text-inverse: #0f172a;
+
+  --chart-purple: #8b6fff;
+  --chart-green: #4ade80;
+  --chart-blue: #60a5fa;
+  --chart-orange: #fb923c;
+  --chart-teal: #2dd4bf;
+  --chart-pink: #f472b6;
+  --chart-purple-area: rgba(139, 111, 255, 0.2);
+  --chart-green-area: rgba(74, 222, 128, 0.2);
+  --chart-grid: #2a2a4a;
+  --chart-axis: #64748b;
+  --chart-tooltip-bg: #1a1a2e;
+  --chart-tooltip-border: #2a2a4a;
+
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 @theme inline {
@@ -108,73 +196,32 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-
-    --surface-primary: #1a1a2e;
-    --surface-secondary: #16162a;
-    --surface-tertiary: #1e1e3a;
-    --surface-elevated: #222244;
-
-    --border-primary: #2a2a4a;
-    --border-secondary: #1e1e3a;
-
-    --text-primary: #f1f5f9;
-    --text-secondary: #94a3b8;
-    --text-tertiary: #64748b;
-
-    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.3);
-    --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
-    --shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
 
 /* iOS-style bottom sheet animations */
 @keyframes slideUp {
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
-  }
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
 }
 
 @keyframes slideDown {
-  from {
-    transform: translateY(0);
-  }
-  to {
-    transform: translateY(100%);
-  }
+  from { transform: translateY(0); }
+  to { transform: translateY(100%); }
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes fadeOut {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 
-/* Bottom sheet with spring-like easing */
 .bottom-sheet-enter {
   animation: slideUp 0.4s cubic-bezier(0.32, 0.72, 0, 1);
 }
@@ -183,7 +230,6 @@ body {
   animation: slideDown 0.3s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-/* Hide scrollbar for filter pills and horizontal scrolling */
 .scrollbar-none {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -217,12 +263,8 @@ body {
 }
 
 @keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
 .animate-card-in {
@@ -235,7 +277,6 @@ body {
   will-change: opacity, stroke-dashoffset;
 }
 
-/* Staggered animation delays for grid children */
 .stagger-children > *:nth-child(1) { animation-delay: 0ms; }
 .stagger-children > *:nth-child(2) { animation-delay: 60ms; }
 .stagger-children > *:nth-child(3) { animation-delay: 120ms; }
@@ -243,7 +284,6 @@ body {
 .stagger-children > *:nth-child(5) { animation-delay: 240ms; }
 .stagger-children > *:nth-child(6) { animation-delay: 300ms; }
 
-/* Shimmer for skeleton loading */
 .animate-shimmer {
   will-change: background-position;
   background: linear-gradient(
@@ -256,7 +296,6 @@ body {
   animation: shimmer 1.5s ease-in-out infinite;
 }
 
-/* Haptic feedback simulation for touch */
 @media (hover: none) and (pointer: coarse) {
   .touch-feedback:active {
     transform: scale(0.97);
@@ -264,7 +303,6 @@ body {
   }
 }
 
-/* Smooth hover lift for cards */
 .hover-lift {
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
               box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -274,38 +312,52 @@ body {
   box-shadow: var(--shadow-card-hover);
 }
 
-/* Focus ring for accessibility */
 .focus-ring:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
   border-radius: var(--radius-md);
 }
 
-/* Landing page - hero gradient background */
+/* Landing page — hero gradient background */
 .hero-gradient {
   background:
     radial-gradient(ellipse 80% 50% at 50% -20%, rgba(108, 99, 255, 0.12), transparent),
     radial-gradient(ellipse 60% 40% at 80% 50%, rgba(139, 92, 246, 0.08), transparent),
     radial-gradient(ellipse 50% 40% at 20% 60%, rgba(99, 102, 241, 0.06), transparent);
 }
+.dark .hero-gradient {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(108, 99, 255, 0.25), transparent),
+    radial-gradient(ellipse 60% 40% at 80% 50%, rgba(139, 92, 246, 0.18), transparent),
+    radial-gradient(ellipse 50% 40% at 20% 60%, rgba(99, 102, 241, 0.15), transparent);
+}
 
-/* Landing page - gradient text */
 .gradient-text {
   background: linear-gradient(135deg, #0f172a 0%, #4f46e5 50%, #7c3aed 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+.dark .gradient-text {
+  background: linear-gradient(135deg, #f1f5f9 0%, #818cf8 50%, #c084fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 
-/* Landing page - subtle grid background */
 .grid-bg {
   background-image:
     linear-gradient(rgba(108, 99, 255, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(108, 99, 255, 0.03) 1px, transparent 1px);
   background-size: 64px 64px;
 }
+.dark .grid-bg {
+  background-image:
+    linear-gradient(rgba(108, 99, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(108, 99, 255, 0.08) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
 
-/* Landing page - glow effect for cards */
 .card-glow {
   position: relative;
 }
@@ -341,4 +393,12 @@ body {
   animation: float 6s ease-in-out infinite;
   will-change: transform;
   animation-delay: -3s;
+}
+
+/* Prevent theme flip flicker on route transitions */
+html {
+  color-scheme: light;
+}
+html.dark {
+  color-scheme: dark;
 }

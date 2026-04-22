@@ -5,6 +5,7 @@ import Link from 'next/link';
 import TopNav from './TopNav';
 import BottomTabBar from './BottomTabBar';
 import { type Tier } from '@/lib/access-control';
+import ThemeToggle from '@/components/theme/ThemeToggle';
 
 interface DashboardShellProps {
   children: ReactNode;
@@ -36,7 +37,7 @@ export default function DashboardShell({
       {/* Mobile header - hidden on desktop */}
       <header className="flex items-center justify-between border-b border-[var(--border-primary)] bg-[var(--surface-primary)] px-4 py-3 md:hidden">
         <div className="flex items-center gap-2">
-          <div className="bg-[var(--color-accent)] p-1.5 rounded-lg text-white">
+          <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-1.5 rounded-lg text-white">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 2a8 8 0 0 0-8 8v12h16V10a8 8 0 0 0-8-8Z" />
               <path d="M9.5 14.5 12 12l2.5 2.5" />
@@ -48,21 +49,24 @@ export default function DashboardShell({
           </span>
         </div>
 
-        {user ? (
-          <div className="relative">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--surface-tertiary)] text-xs font-bold text-[var(--text-secondary)]">
-              {displayName.charAt(0).toUpperCase()}
+        <div className="flex items-center gap-2">
+          <ThemeToggle size="sm" />
+          {user ? (
+            <div className="relative">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--surface-tertiary)] text-xs font-bold text-[var(--text-secondary)]">
+                {displayName.charAt(0).toUpperCase()}
+              </div>
+              <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--surface-primary)] bg-[var(--color-positive)]" />
             </div>
-            <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--surface-primary)] bg-[var(--color-positive)]" />
-          </div>
-        ) : (
-          <Link
-            href="/login"
-            className="rounded-full bg-[var(--color-accent)] px-3.5 py-1.5 text-xs font-bold text-white"
-          >
-            Sign In
-          </Link>
-        )}
+          ) : (
+            <Link
+              href="/login"
+              className="rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 px-3.5 py-1.5 text-xs font-bold text-white"
+            >
+              Sign In
+            </Link>
+          )}
+        </div>
       </header>
 
       {/* Main content area */}

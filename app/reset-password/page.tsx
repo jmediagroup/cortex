@@ -72,28 +72,28 @@ function ResetPasswordForm() {
   // Success state
   if (success) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-900">
-        <div className="max-w-md w-full bg-white p-10 rounded-[3rem] shadow-2xl border border-slate-200 text-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center p-4 font-sans text-slate-900 dark:text-slate-100">
+        <div className="max-w-md w-full bg-white dark:bg-slate-900 p-10 rounded-[3rem] shadow-2xl border border-slate-200 dark:border-slate-700 text-center">
           {/* Success Icon */}
           <div className="mx-auto h-20 w-20 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-3xl flex items-center justify-center mb-8 shadow-xl shadow-emerald-200">
             <Check size={40} className="text-white" />
           </div>
 
           {/* Heading */}
-          <h2 className="text-3xl font-black text-slate-900 tracking-tight mb-3">
+          <h2 className="text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight mb-3">
             Password Updated
           </h2>
 
           {/* Message */}
-          <p className="text-slate-500 font-medium mb-8">
+          <p className="text-slate-500 dark:text-slate-400 font-medium mb-8">
             Your password has been successfully reset. Redirecting you to your dashboard...
           </p>
 
           {/* Loading indicator */}
-          <Loader2 className="animate-spin mx-auto text-indigo-600" size={24} />
+          <Loader2 className="animate-spin mx-auto text-indigo-600 dark:text-indigo-300" size={24} />
 
           {/* Security badge */}
-          <div className="mt-8 pt-8 border-t border-slate-100 flex items-center justify-center gap-2 text-slate-400">
+          <div className="mt-8 pt-8 border-t border-slate-100 dark:border-slate-800 flex items-center justify-center gap-2 text-slate-400 dark:text-slate-500">
             <ShieldCheck size={14} />
             <span className="text-[10px] font-black uppercase tracking-widest">Bank-grade security</span>
           </div>
@@ -103,17 +103,17 @@ function ResetPasswordForm() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-900">
-      <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-[3rem] shadow-2xl border border-slate-200">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center p-4 font-sans text-slate-900 dark:text-slate-100">
+      <div className="max-w-md w-full space-y-8 bg-white dark:bg-slate-900 p-10 rounded-[3rem] shadow-2xl border border-slate-200 dark:border-slate-700">
         {/* Header */}
         <div className="text-center">
           <div className="mx-auto h-14 w-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg shadow-indigo-200">
             <Lock size={28} />
           </div>
-          <h2 className="text-3xl font-black text-slate-900 tracking-tight leading-tight">
+          <h2 className="text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight leading-tight">
             Set New Password
           </h2>
-          <p className="text-slate-500 mt-2 font-medium text-sm">
+          <p className="text-slate-500 dark:text-slate-400 mt-2 font-medium text-sm">
             Enter your new password below
           </p>
         </div>
@@ -128,36 +128,36 @@ function ResetPasswordForm() {
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+              <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">
                 New Password
               </label>
               <div className="relative group">
-                <Lock className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
+                <Lock className="absolute left-4 top-3.5 text-slate-400 dark:text-slate-500 group-focus-within:text-indigo-500 transition-colors" size={18} />
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 placeholder:text-slate-300"
+                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 dark:text-slate-200 placeholder:text-slate-300 dark:placeholder:text-slate-600"
                   placeholder="••••••••"
                   minLength={6}
                 />
               </div>
-              <p className="text-xs text-slate-400 ml-1 font-medium">Minimum 6 characters</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500 ml-1 font-medium">Minimum 6 characters</p>
             </div>
 
             <div className="space-y-2">
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+              <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">
                 Confirm New Password
               </label>
               <div className="relative group">
-                <Lock className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
+                <Lock className="absolute left-4 top-3.5 text-slate-400 dark:text-slate-500 group-focus-within:text-indigo-500 transition-colors" size={18} />
                 <input
                   type="password"
                   required
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 placeholder:text-slate-300"
+                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 dark:text-slate-200 placeholder:text-slate-300 dark:placeholder:text-slate-600"
                   placeholder="••••••••"
                   minLength={6}
                 />
@@ -180,7 +180,7 @@ function ResetPasswordForm() {
         </form>
 
         {/* Security badge */}
-        <div className="pt-8 border-t border-slate-100 flex items-center justify-center gap-2 text-slate-400">
+        <div className="pt-8 border-t border-slate-100 dark:border-slate-800 flex items-center justify-center gap-2 text-slate-400 dark:text-slate-500">
           <ShieldCheck size={14} />
           <span className="text-[10px] font-black uppercase tracking-widest">Bank-grade security</span>
         </div>
@@ -192,7 +192,7 @@ function ResetPasswordForm() {
 export default function ResetPasswordPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
       </div>
     }>

@@ -64,7 +64,7 @@ function RetirementStrategyPageInner() {
       <div className="flex items-center justify-center py-32">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-slate-500 font-medium text-sm">Loading...</p>
+          <p className="text-slate-500 dark:text-slate-400 font-medium text-sm">Loading...</p>
         </div>
       </div>
     );
@@ -125,9 +125,9 @@ function RetirementStrategyPageInner() {
           </div>
         )}
 
-        <div className="bg-gradient-to-br from-purple-50 to-white border border-purple-100/80 rounded-2xl p-8 mb-8 shadow-sm">
-          <h2 className="text-2xl font-black text-purple-900 mb-3">Retirement Drawdown Strategy</h2>
-          <p className="text-purple-700 font-medium">
+        <div className="bg-gradient-to-br from-purple-50 to-white dark:from-purple-900/30 dark:to-slate-900 border border-purple-100/80 dark:border-purple-800/80 rounded-2xl p-8 mb-8 shadow-sm">
+          <h2 className="text-2xl font-black text-purple-900 dark:text-purple-100 mb-3">Retirement Drawdown Strategy</h2>
+          <p className="text-purple-700 dark:text-purple-300 font-medium">
             Comprehensive simulation of retirement portfolio withdrawals with RMD calculations, Roth conversion ladder optimization, and Social Security integration. Model multiple withdrawal strategies and stress-test against market volatility.
           </p>
         </div>
@@ -151,14 +151,14 @@ function RetirementStrategyPageInner() {
       </div>
 
       {/* FOOTER */}
-      <footer className="max-w-7xl mx-auto px-6 py-10 text-center border-t border-slate-100 mt-8">
-        <p className="text-xs text-slate-400 font-medium">&copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.</p>
+      <footer className="max-w-7xl mx-auto px-6 py-10 text-center border-t border-slate-100 dark:border-slate-800 mt-8">
+        <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">&copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.</p>
         <div className="flex items-center justify-center gap-3 mt-2">
-          <a href="/articles" className="text-slate-400 hover:text-slate-600 transition-colors text-xs">Articles</a>
-          <span className="text-slate-200">|</span>
-          <a href="/pricing" className="text-slate-400 hover:text-slate-600 transition-colors text-xs">Pricing</a>
-          <span className="text-slate-200">|</span>
-          <a href="/terms" className="text-slate-400 hover:text-slate-600 transition-colors text-xs">Terms & Privacy</a>
+          <a href="/articles" className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors text-xs">Articles</a>
+          <span className="text-slate-200 dark:text-slate-700">|</span>
+          <a href="/pricing" className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors text-xs">Pricing</a>
+          <span className="text-slate-200 dark:text-slate-700">|</span>
+          <a href="/terms" className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors text-xs">Terms & Privacy</a>
         </div>
       </footer>
     </>

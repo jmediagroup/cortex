@@ -113,7 +113,7 @@ export default function AdminUsers() {
   const tierBadge = (tier: string) => {
     const colors: Record<string, string> = {
       free: 'bg-[var(--surface-tertiary)] text-[var(--text-secondary)]',
-      finance_pro: 'bg-indigo-100 text-indigo-700',
+      finance_pro: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/60 dark:text-indigo-300',
     };
     return (
       <span className={`rounded-md px-2 py-0.5 text-[10px] font-black uppercase ${colors[tier] || colors.free}`}>
@@ -233,7 +233,7 @@ export default function AdminUsers() {
                         <button
                           onClick={() => handleDeleteUser(user.id)}
                           disabled={actionLoading === user.id}
-                          className="p-1.5 rounded-md text-[var(--text-tertiary)] hover:bg-red-50 hover:text-[var(--color-negative)] transition-colors"
+                          className="p-1.5 rounded-md text-[var(--text-tertiary)] hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-[var(--color-negative)] transition-colors"
                           title="Delete user"
                         >
                           {actionLoading === user.id ? <Loader2 className="animate-spin" size={14} /> : <Trash2 size={14} />}

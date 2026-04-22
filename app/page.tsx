@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import LatestArticles from '@/components/home/LatestArticles';
 import MobileNav from '@/components/navigation/MobileNav';
+import ThemeToggle from '@/components/theme/ThemeToggle';
 
 /**
  * LANDING PAGE (Root Route: /)
@@ -148,6 +149,7 @@ export default function LandingPage() {
             <a href="/login" className="text-sm font-semibold text-slate-500 hover:text-slate-900 px-4 py-2 rounded-full hover:bg-slate-50 transition-all">
               Sign In
             </a>
+            <ThemeToggle className="ml-1" />
             <a
               href="/login"
               className="bg-slate-900 text-white px-5 py-2.5 rounded-full font-bold text-sm hover:bg-slate-800 transition-all shadow-sm ml-1"
