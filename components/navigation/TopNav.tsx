@@ -16,6 +16,7 @@ import {
 import { useState, useRef, useEffect } from 'react';
 import { type Tier, getTierDisplayName } from '@/lib/access-control';
 import { isAdmin } from '@/lib/admin';
+import ThemeToggle from '@/components/theme/ThemeToggle';
 
 interface NavItem {
   label: string;
@@ -76,7 +77,7 @@ export default function TopNav({
 
   const tierBadgeColor =
     userTier === 'finance_pro'
-      ? 'bg-[var(--color-accent)] text-white'
+      ? 'bg-gradient-to-br from-indigo-600 to-purple-600 text-white'
       : 'bg-[var(--surface-tertiary)] text-[var(--text-secondary)]';
 
   return (
@@ -84,7 +85,7 @@ export default function TopNav({
       {/* Left: Logo + Nav */}
       <div className="flex items-center gap-8">
         <Link href="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
-          <div className="bg-[var(--color-accent)] p-1.5 rounded-lg text-white">
+          <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-1.5 rounded-lg text-white">
             <Brain size={20} />
           </div>
           <span className="font-black text-lg tracking-tight text-[var(--text-primary)]">
@@ -101,7 +102,7 @@ export default function TopNav({
                 href={item.href}
                 className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200 ${
                   active
-                    ? 'bg-[var(--color-accent)] text-white shadow-sm'
+                    ? 'bg-gradient-to-br from-indigo-600 to-purple-600 text-white shadow-sm'
                     : 'text-[var(--text-secondary)] hover:bg-[var(--surface-tertiary)] hover:text-[var(--text-primary)]'
                 }`}
               >
@@ -117,6 +118,7 @@ export default function TopNav({
       <div className="flex items-center gap-3">
         {user ? (
           <>
+            <ThemeToggle />
             <button
               onClick={onSettingsClick}
               className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-tertiary)] transition-colors hover:bg-[var(--surface-tertiary)] hover:text-[var(--text-primary)]"
@@ -132,7 +134,7 @@ export default function TopNav({
                 className="flex items-center gap-2.5 rounded-full border border-[var(--border-primary)] bg-[var(--surface-secondary)] px-3 py-1.5 transition-colors hover:bg-[var(--surface-tertiary)]"
               >
                 <div className="relative">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--color-accent)] text-xs font-bold text-white">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 text-xs font-bold text-white">
                     {(user.name || user.email).charAt(0).toUpperCase()}
                   </div>
                   <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--surface-secondary)] bg-[var(--color-positive)]" />
@@ -157,7 +159,7 @@ export default function TopNav({
                 >
                   <div className="border-b border-[var(--border-secondary)] bg-[var(--surface-secondary)] p-4">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--color-accent)] text-sm font-bold text-white">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 text-sm font-bold text-white">
                         {(user.name || user.email).charAt(0).toUpperCase()}
                       </div>
                       <div className="min-w-0 flex-1">
@@ -206,6 +208,8 @@ export default function TopNav({
                       </Link>
                     )}
                     <div className="my-1 border-t border-[var(--border-secondary)]" />
+                    <ThemeToggle withLabel />
+                    <div className="my-1 border-t border-[var(--border-secondary)]" />
                     <button
                       onClick={() => {
                         setDropdownOpen(false);
@@ -223,6 +227,7 @@ export default function TopNav({
           </>
         ) : (
           <>
+            <ThemeToggle />
             <Link
               href="/login"
               className="text-sm font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
@@ -231,7 +236,7 @@ export default function TopNav({
             </Link>
             <Link
               href="/login"
-              className="rounded-full bg-[var(--color-accent)] px-4 py-2 text-sm font-bold text-white transition-all hover:opacity-90"
+              className="rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 px-4 py-2 text-sm font-bold text-white transition-all hover:opacity-90 shadow-sm shadow-indigo-200/50 dark:shadow-none"
             >
               Get Started
             </Link>

@@ -85,50 +85,50 @@ export default function EnterprisePage() {
   // Success screen
   if (submitted) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-900">
-        <div className="max-w-lg w-full bg-white rounded-[3rem] shadow-2xl border border-slate-200 overflow-hidden p-10 lg:p-12 text-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center p-4 font-sans text-slate-900 dark:text-slate-100">
+        <div className="max-w-lg w-full bg-white dark:bg-slate-900 rounded-[3rem] shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden p-10 lg:p-12 text-center">
           {/* Success Icon */}
           <div className="mx-auto h-20 w-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-3xl flex items-center justify-center mb-8 shadow-xl shadow-emerald-200">
             <Check size={40} className="text-white" strokeWidth={3} />
           </div>
 
           {/* Heading */}
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-3">
+          <h1 className="text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight mb-3">
             Thank You!
           </h1>
 
           {/* Message */}
-          <p className="text-slate-600 font-medium mb-8 leading-relaxed">
+          <p className="text-slate-600 dark:text-slate-300 font-medium mb-8 leading-relaxed">
             We&apos;ve received your request and a member of our team will be in touch within 1-2 business days to discuss your enterprise needs.
           </p>
 
           {/* What to expect */}
-          <div className="bg-slate-50 rounded-2xl p-6 text-left mb-8">
-            <p className="text-sm font-black text-slate-400 uppercase tracking-widest mb-4">
+          <div className="bg-slate-50 dark:bg-slate-900 rounded-2xl p-6 text-left mb-8">
+            <p className="text-sm font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4">
               What happens next
             </p>
             <ul className="space-y-3">
               <li className="flex items-start gap-3">
-                <div className="bg-indigo-100 rounded-lg p-1 mt-0.5">
-                  <Check size={14} className="text-indigo-600" strokeWidth={3} />
+                <div className="bg-indigo-100 dark:bg-indigo-900/60 rounded-lg p-1 mt-0.5">
+                  <Check size={14} className="text-indigo-600 dark:text-indigo-300" strokeWidth={3} />
                 </div>
-                <span className="text-sm text-slate-700 font-medium">
+                <span className="text-sm text-slate-700 dark:text-slate-200 font-medium">
                   Our team will review your requirements
                 </span>
               </li>
               <li className="flex items-start gap-3">
-                <div className="bg-indigo-100 rounded-lg p-1 mt-0.5">
-                  <Check size={14} className="text-indigo-600" strokeWidth={3} />
+                <div className="bg-indigo-100 dark:bg-indigo-900/60 rounded-lg p-1 mt-0.5">
+                  <Check size={14} className="text-indigo-600 dark:text-indigo-300" strokeWidth={3} />
                 </div>
-                <span className="text-sm text-slate-700 font-medium">
+                <span className="text-sm text-slate-700 dark:text-slate-200 font-medium">
                   We&apos;ll reach out to schedule a discovery call
                 </span>
               </li>
               <li className="flex items-start gap-3">
-                <div className="bg-indigo-100 rounded-lg p-1 mt-0.5">
-                  <Check size={14} className="text-indigo-600" strokeWidth={3} />
+                <div className="bg-indigo-100 dark:bg-indigo-900/60 rounded-lg p-1 mt-0.5">
+                  <Check size={14} className="text-indigo-600 dark:text-indigo-300" strokeWidth={3} />
                 </div>
-                <span className="text-sm text-slate-700 font-medium">
+                <span className="text-sm text-slate-700 dark:text-slate-200 font-medium">
                   You&apos;ll receive a custom proposal tailored to your needs
                 </span>
               </li>
@@ -138,14 +138,14 @@ export default function EnterprisePage() {
           {/* Back to home */}
           <button
             onClick={() => router.push('/')}
-            className="text-indigo-600 font-bold hover:text-indigo-500 transition-colors inline-flex items-center gap-2"
+            className="text-indigo-600 dark:text-indigo-300 font-bold hover:text-indigo-500 transition-colors inline-flex items-center gap-2"
           >
             Back to Home
             <ArrowRight size={16} />
           </button>
 
           {/* Security badge */}
-          <div className="mt-8 flex items-center justify-center gap-2 text-slate-400">
+          <div className="mt-8 flex items-center justify-center gap-2 text-slate-400 dark:text-slate-500">
             <ShieldCheck size={14} />
             <span className="text-[10px] font-black uppercase tracking-widest">Your data is secure</span>
           </div>
@@ -155,8 +155,8 @@ export default function EnterprisePage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-900">
-      <div className="max-w-5xl w-full grid lg:grid-cols-2 gap-0 bg-white rounded-[3rem] shadow-2xl border border-slate-200 overflow-hidden">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center p-4 font-sans text-slate-900 dark:text-slate-100">
+      <div className="max-w-5xl w-full grid lg:grid-cols-2 gap-0 bg-white dark:bg-slate-900 rounded-[3rem] shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
 
         {/* Left Side - Value Proposition */}
         <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-10 lg:p-12 text-white flex flex-col justify-center">
@@ -223,10 +223,10 @@ export default function EnterprisePage() {
         {/* Right Side - Lead Capture Form */}
         <div className="p-10 lg:p-12 flex flex-col justify-center">
           <div className="mb-8">
-            <h2 className="text-3xl font-black text-slate-900 tracking-tight mb-2">
+            <h2 className="text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight mb-2">
               Let&apos;s Talk
             </h2>
-            <p className="text-slate-500 font-medium text-sm">
+            <p className="text-slate-500 dark:text-slate-400 font-medium text-sm">
               Tell us about your needs and we&apos;ll create a custom solution
             </p>
           </div>
@@ -242,34 +242,34 @@ export default function EnterprisePage() {
             {/* Name Row */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">
                   First Name
                 </label>
                 <div className="relative group">
-                  <User className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
+                  <User className="absolute left-4 top-3.5 text-slate-400 dark:text-slate-500 group-focus-within:text-indigo-500 transition-colors" size={18} />
                   <input
                     type="text"
                     required
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 placeholder:text-slate-300"
+                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 dark:text-slate-200 placeholder:text-slate-300 dark:placeholder:text-slate-600"
                     placeholder="John"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">
                   Last Name
                 </label>
                 <div className="relative group">
-                  <User className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
+                  <User className="absolute left-4 top-3.5 text-slate-400 dark:text-slate-500 group-focus-within:text-indigo-500 transition-colors" size={18} />
                   <input
                     type="text"
                     required
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 placeholder:text-slate-300"
+                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 dark:text-slate-200 placeholder:text-slate-300 dark:placeholder:text-slate-600"
                     placeholder="Smith"
                   />
                 </div>
@@ -278,17 +278,17 @@ export default function EnterprisePage() {
 
             {/* Email */}
             <div className="space-y-2">
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+              <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">
                 Work Email
               </label>
               <div className="relative group">
-                <Mail className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
+                <Mail className="absolute left-4 top-3.5 text-slate-400 dark:text-slate-500 group-focus-within:text-indigo-500 transition-colors" size={18} />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 placeholder:text-slate-300"
+                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 dark:text-slate-200 placeholder:text-slate-300 dark:placeholder:text-slate-600"
                   placeholder="john@company.com"
                 />
               </div>
@@ -296,17 +296,17 @@ export default function EnterprisePage() {
 
             {/* Company Name */}
             <div className="space-y-2">
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+              <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">
                 Company Name
               </label>
               <div className="relative group">
-                <Building2 className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
+                <Building2 className="absolute left-4 top-3.5 text-slate-400 dark:text-slate-500 group-focus-within:text-indigo-500 transition-colors" size={18} />
                 <input
                   type="text"
                   required
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 placeholder:text-slate-300"
+                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 dark:text-slate-200 placeholder:text-slate-300 dark:placeholder:text-slate-600"
                   placeholder="Acme Inc."
                 />
               </div>
@@ -315,16 +315,16 @@ export default function EnterprisePage() {
             {/* Company Size & Phone Row */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">
                   Company Size
                 </label>
                 <div className="relative group">
-                  <Users className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-indigo-500 transition-colors pointer-events-none" size={18} />
+                  <Users className="absolute left-4 top-3.5 text-slate-400 dark:text-slate-500 group-focus-within:text-indigo-500 transition-colors pointer-events-none" size={18} />
                   <select
                     required
                     value={companySize}
                     onChange={(e) => setCompanySize(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 appearance-none cursor-pointer"
+                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 dark:text-slate-200 appearance-none cursor-pointer"
                   >
                     <option value="" disabled>Select size</option>
                     {COMPANY_SIZES.map((size) => (
@@ -337,16 +337,16 @@ export default function EnterprisePage() {
               </div>
 
               <div className="space-y-2">
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                  Phone <span className="text-slate-300">(Optional)</span>
+                <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">
+                  Phone <span className="text-slate-300 dark:text-slate-600">(Optional)</span>
                 </label>
                 <div className="relative group">
-                  <Phone className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
+                  <Phone className="absolute left-4 top-3.5 text-slate-400 dark:text-slate-500 group-focus-within:text-indigo-500 transition-colors" size={18} />
                   <input
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 placeholder:text-slate-300"
+                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 dark:text-slate-200 placeholder:text-slate-300 dark:placeholder:text-slate-600"
                     placeholder="+1 (555) 000-0000"
                   />
                 </div>
@@ -355,17 +355,17 @@ export default function EnterprisePage() {
 
             {/* Message */}
             <div className="space-y-2">
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+              <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">
                 How can we help?
               </label>
               <div className="relative group">
-                <MessageSquare className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
+                <MessageSquare className="absolute left-4 top-3.5 text-slate-400 dark:text-slate-500 group-focus-within:text-indigo-500 transition-colors" size={18} />
                 <textarea
                   required
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   rows={4}
-                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 placeholder:text-slate-300 resize-none"
+                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none font-bold transition-all text-slate-700 dark:text-slate-200 placeholder:text-slate-300 dark:placeholder:text-slate-600 resize-none"
                   placeholder="Tell us about your use case, number of users, timeline, etc."
                 />
               </div>
@@ -384,18 +384,18 @@ export default function EnterprisePage() {
               )}
             </button>
 
-            <p className="text-xs text-slate-400 text-center font-medium">
+            <p className="text-xs text-slate-400 dark:text-slate-500 text-center font-medium">
               We&apos;ll respond within 1-2 business days
             </p>
           </form>
 
           {/* Back Link */}
-          <div className="text-center mt-6 pt-6 border-t border-slate-100">
-            <p className="text-sm text-slate-600 font-medium">
+          <div className="text-center mt-6 pt-6 border-t border-slate-100 dark:border-slate-800">
+            <p className="text-sm text-slate-600 dark:text-slate-300 font-medium">
               Not ready for enterprise?{' '}
               <button
                 onClick={() => router.push('/pricing')}
-                className="text-indigo-600 font-bold hover:text-indigo-500 transition-colors"
+                className="text-indigo-600 dark:text-indigo-300 font-bold hover:text-indigo-500 transition-colors"
               >
                 View our plans
               </button>
@@ -403,7 +403,7 @@ export default function EnterprisePage() {
           </div>
 
           {/* Security Assurance */}
-          <div className="mt-6 flex items-center justify-center gap-2 text-slate-400">
+          <div className="mt-6 flex items-center justify-center gap-2 text-slate-400 dark:text-slate-500">
             <ShieldCheck size={14} />
             <span className="text-[10px] font-black uppercase tracking-widest">Your information is secure</span>
           </div>

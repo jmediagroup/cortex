@@ -684,10 +684,10 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                     <stop offset="95%" stopColor="#60a5fa" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
                 <XAxis
                   dataKey="age"
-                  stroke="#94a3b8"
+                  stroke="var(--chart-axis)"
                   fontSize={11}
                   fontWeight={600}
                   tickLine={false}
@@ -695,7 +695,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                   ticks={[inputs.currentAge, inputs.retirementAge, 85]}
                 />
                 <YAxis
-                  stroke="#94a3b8"
+                  stroke="var(--chart-axis)"
                   fontSize={11}
                   fontWeight={600}
                   tickLine={false}
@@ -708,13 +708,13 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                 />
                 <ReferenceLine
                   y={calculations.targetFIRENumber}
-                  stroke="#cbd5e1"
+                  stroke="var(--chart-axis)"
                   strokeDasharray="5 5"
                   label={{ position: 'right', value: 'FIRE Goal', fill: '#94a3b8', fontSize: 10, fontWeight: 700 }}
                 />
                 <ReferenceLine
                   x={inputs.retirementAge}
-                  stroke="#cbd5e1"
+                  stroke="var(--chart-axis)"
                   strokeDasharray="5 5"
                   label={{ position: 'top', value: 'Retire', fill: '#94a3b8', fontSize: 10, fontWeight: 700 }}
                 />
@@ -917,8 +917,8 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
               ))}
             </div>
 
-            <div className="mt-6 p-4 bg-indigo-900 text-white rounded-2xl">
-              <p className="text-xs font-black text-indigo-300 mb-1">CORTEX INSIGHT</p>
+            <div className="mt-6 p-4 bg-indigo-50 text-indigo-900 border border-indigo-200 dark:bg-indigo-900 dark:text-white dark:border-transparent rounded-2xl">
+              <p className="text-xs font-black text-indigo-700 dark:text-indigo-300 mb-1">CORTEX INSIGHT</p>
               <p className="text-sm font-medium">
                 {proAnalytics.flexibilityScore >= 75
                   ? "Your coast position is highly resilient. You're protected against most adverse scenarios."
@@ -1046,8 +1046,8 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
               </table>
             </div>
 
-            <div className="mt-6 p-4 bg-indigo-900 text-white rounded-2xl">
-              <p className="text-xs font-black text-indigo-300 mb-1">CORTEX INSIGHT</p>
+            <div className="mt-6 p-4 bg-indigo-50 text-indigo-900 border border-indigo-200 dark:bg-indigo-900 dark:text-white dark:border-transparent rounded-2xl">
+              <p className="text-xs font-black text-indigo-700 dark:text-indigo-300 mb-1">CORTEX INSIGHT</p>
               <p className="text-sm font-medium">
                 {calculations.hasReachedCoast
                   ? "You've already reached Coast FIRE! Every dollar you save now accelerates your timeline or increases your retirement income."
@@ -1184,17 +1184,17 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                       <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
                   <XAxis
                     dataKey="age"
-                    stroke="#94a3b8"
+                    stroke="var(--chart-axis)"
                     fontSize={11}
                     fontWeight={600}
                     tickLine={false}
                     axisLine={false}
                   />
                   <YAxis
-                    stroke="#94a3b8"
+                    stroke="var(--chart-axis)"
                     fontSize={11}
                     fontWeight={600}
                     tickLine={false}
@@ -1208,7 +1208,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                   <Line
                     type="stepAfter"
                     dataKey="coastTarget"
-                    stroke="#94a3b8"
+                    stroke="var(--chart-axis)"
                     strokeWidth={2}
                     strokeDasharray="5 5"
                     dot={false}

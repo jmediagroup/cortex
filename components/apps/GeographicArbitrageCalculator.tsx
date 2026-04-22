@@ -505,7 +505,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                       <stop offset="95%" stopColor="#4f46e5" stopOpacity={0.02}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#f1f5f9" />
+                  <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="var(--chart-grid)" />
                   <XAxis
                     dataKey="year"
                     axisLine={false}
@@ -536,7 +536,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                   <Area
                     type="monotone"
                     dataKey="current"
-                    stroke="#cbd5e1"
+                    stroke="var(--chart-axis)"
                     strokeWidth={2}
                     strokeDasharray="6 6"
                     fill="transparent"

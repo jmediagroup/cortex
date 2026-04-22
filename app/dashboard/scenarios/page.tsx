@@ -112,7 +112,7 @@ export default function ScenariosPage() {
       <div className="min-h-screen bg-[var(--surface-secondary)] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4" />
-          <p className="text-slate-600 font-medium">Loading scenarios...</p>
+          <p className="text-slate-600 dark:text-slate-300 font-medium">Loading scenarios...</p>
         </div>
       </div>
     );
@@ -140,18 +140,18 @@ export default function ScenariosPage() {
         <div className="mb-8">
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-indigo-600 transition-colors mb-4"
+            className="inline-flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors mb-4"
           >
             <ArrowLeft size={16} />
             Back to Apps
           </Link>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center">
               <Bookmark size={20} className="text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-black text-slate-900">My Scenarios</h1>
-              <p className="text-sm text-slate-500">
+              <h1 className="text-2xl font-black text-slate-900 dark:text-slate-100">My Scenarios</h1>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
                 {scenarios.length} saved scenario{scenarios.length !== 1 ? 's' : ''} across {Object.keys(grouped).length} tool{Object.keys(grouped).length !== 1 ? 's' : ''}
               </p>
             </div>
@@ -160,17 +160,17 @@ export default function ScenariosPage() {
 
         {/* Empty state */}
         {scenarios.length === 0 && (
-          <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center">
-            <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Bookmark size={28} className="text-slate-400" />
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-12 text-center">
+            <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <Bookmark size={28} className="text-slate-400 dark:text-slate-500" />
             </div>
-            <h3 className="text-lg font-bold text-slate-800 mb-2">No saved scenarios yet</h3>
-            <p className="text-sm text-slate-500 mb-6 max-w-md mx-auto">
+            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-2">No saved scenarios yet</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 max-w-md mx-auto">
               Use the &quot;Save Scenario&quot; button on any financial tool to save your current inputs and results for later.
             </p>
             <Link
               href="/dashboard"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-br from-indigo-600 to-purple-600 text-white rounded-xl text-sm font-bold hover:opacity-90 transition-opacity shadow-sm shadow-indigo-200/50 dark:shadow-none"
             >
               <Wrench size={16} />
               Browse Tools
@@ -181,7 +181,7 @@ export default function ScenariosPage() {
         {/* Scenarios by tool */}
         {Object.entries(grouped).map(([toolName, toolScenarios]) => (
           <div key={toolName} className="mb-8">
-            <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <h2 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
               <Wrench size={14} />
               {toolName}
             </h2>
@@ -189,14 +189,14 @@ export default function ScenariosPage() {
               {toolScenarios.map((scenario) => (
                 <div
                   key={scenario.id}
-                  className="bg-white rounded-2xl border border-slate-200 p-5 hover:border-indigo-200 transition-colors shadow-sm"
+                  className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 hover:border-indigo-200 dark:hover:border-indigo-700 transition-colors shadow-sm"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-slate-800 mb-1">
+                      <p className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-1">
                         {scenario.key_result || 'Saved scenario'}
                       </p>
-                      <div className="flex items-center gap-3 text-xs text-slate-400">
+                      <div className="flex items-center gap-3 text-xs text-slate-400 dark:text-slate-500">
                         <span className="flex items-center gap-1">
                           <Calendar size={12} />
                           {new Date(scenario.created_at).toLocaleDateString('en-US', {
@@ -212,7 +212,7 @@ export default function ScenariosPage() {
                     <div className="flex items-center gap-2 flex-shrink-0">
                       <button
                         onClick={() => handleLoad(scenario)}
-                        className="flex items-center gap-1.5 px-3.5 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold hover:bg-indigo-700 transition-colors"
+                        className="flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-br from-indigo-600 to-purple-600 text-white rounded-xl text-xs font-bold hover:opacity-90 transition-opacity"
                       >
                         <Play size={12} />
                         Load
@@ -220,7 +220,7 @@ export default function ScenariosPage() {
                       <button
                         onClick={() => handleDelete(scenario.id)}
                         disabled={deletingId === scenario.id}
-                        className="flex items-center gap-1.5 px-3 py-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl text-xs font-semibold transition-colors"
+                        className="flex items-center gap-1.5 px-3 py-2 text-slate-400 dark:text-slate-500 hover:text-red-500 hover:bg-red-50 dark:hover:text-red-400 dark:hover:bg-red-900/30 rounded-xl text-xs font-semibold transition-colors"
                       >
                         {deletingId === scenario.id ? (
                           <Loader2 size={14} className="animate-spin" />

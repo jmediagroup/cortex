@@ -65,7 +65,7 @@ function SCorpInvestmentPageInner() {
       <div className="flex items-center justify-center py-32">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
-          <p className="text-slate-500 font-medium text-sm">Loading...</p>
+          <p className="text-slate-500 dark:text-slate-400 font-medium text-sm">Loading...</p>
         </div>
       </div>
     );
@@ -76,9 +76,9 @@ function SCorpInvestmentPageInner() {
       {/* MAIN CONTENT */}
       <div className="max-w-7xl mx-auto px-6 py-12">
         <Breadcrumb toolName="S-Corp Investment Optimizer" />
-        <div className="bg-gradient-to-br from-emerald-50 to-white border border-emerald-100/80 rounded-2xl p-8 mb-8 shadow-sm">
-          <h2 className="text-2xl font-black text-emerald-900 mb-3">S-Corp Investment Strategy (2026 Limits)</h2>
-          <p className="text-emerald-700 font-medium">
+        <div className="bg-gradient-to-br from-emerald-50 to-white dark:from-emerald-900/30 dark:to-slate-900 border border-emerald-100/80 dark:border-emerald-800/80 rounded-2xl p-8 mb-8 shadow-sm">
+          <h2 className="text-2xl font-black text-emerald-900 dark:text-emerald-100 mb-3">S-Corp Investment Strategy (2026 Limits)</h2>
+          <p className="text-emerald-700 dark:text-emerald-300 font-medium">
             As an S-Corp owner, maximize your retirement savings through strategic allocation across employee deferrals,
             company matching, IRA contributions, and HSA. This optimizer uses 2026 IRS limits to calculate your optimal
             investment strategy and 30-year wealth projection with tax savings.
@@ -104,14 +104,14 @@ function SCorpInvestmentPageInner() {
       </div>
 
       {/* FOOTER */}
-      <footer className="max-w-7xl mx-auto px-6 py-10 text-center border-t border-slate-100 mt-8">
-        <p className="text-xs text-slate-400 font-medium">&copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.</p>
+      <footer className="max-w-7xl mx-auto px-6 py-10 text-center border-t border-slate-100 dark:border-slate-800 mt-8">
+        <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">&copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.</p>
         <div className="flex items-center justify-center gap-3 mt-2">
-          <a href="/articles" className="text-slate-400 hover:text-slate-600 transition-colors text-xs">Articles</a>
-          <span className="text-slate-200">|</span>
-          <a href="/pricing" className="text-slate-400 hover:text-slate-600 transition-colors text-xs">Pricing</a>
-          <span className="text-slate-200">|</span>
-          <a href="/terms" className="text-slate-400 hover:text-slate-600 transition-colors text-xs">Terms & Privacy</a>
+          <a href="/articles" className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors text-xs">Articles</a>
+          <span className="text-slate-200 dark:text-slate-700">|</span>
+          <a href="/pricing" className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors text-xs">Pricing</a>
+          <span className="text-slate-200 dark:text-slate-700">|</span>
+          <a href="/terms" className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors text-xs">Terms & Privacy</a>
         </div>
       </footer>
     </>

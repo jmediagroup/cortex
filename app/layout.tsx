@@ -4,6 +4,18 @@ import Script from "next/script";
 import "./globals.css";
 import WebVitals from "@/components/WebVitals";
 import Analytics from "@/components/Analytics";
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
+
+// Runs before React hydrates so the correct theme is painted on first frame.
+// Defaults to light for new visitors; reads localStorage('cortex-theme') otherwise.
+const themeInitScript = `(() => {
+  try {
+    var stored = localStorage.getItem('cortex-theme');
+    if (stored === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+  } catch (e) {}
+})();`;
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -135,8 +147,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-0PQ1RZVNTS"
           strategy="afterInteractive"
@@ -157,9 +170,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <WebVitals />
-        <Analytics />
-        {children}
+        <ThemeProvider>
+          <WebVitals />
+          <Analytics />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

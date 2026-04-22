@@ -619,7 +619,7 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
             <div className="h-[400px]">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={simulationResults}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
                   <XAxis dataKey="age" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 11}} dy={10} />
                   <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 11}} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
                   <Tooltip
@@ -666,8 +666,8 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
                       </ResponsiveContainer>
                   </div>
               </div>
-              <div className="bg-indigo-900 p-6 rounded-3xl text-white">
-                  <h4 className="text-sm font-bold text-indigo-300 uppercase mb-4">Roth Conversion Flow</h4>
+              <div className="bg-indigo-50 text-indigo-900 border border-indigo-200 dark:bg-indigo-900 dark:text-white dark:border-transparent p-6 rounded-3xl">
+                  <h4 className="text-sm font-bold text-indigo-700 dark:text-indigo-300 uppercase mb-4">Roth Conversion Flow</h4>
                   <div className="h-[200px]">
                       <ResponsiveContainer width="100%" height="100%">
                           <AreaChart data={simulationResults}>

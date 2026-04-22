@@ -60,15 +60,15 @@ export default function AdminSubscriptions() {
 
   const statusBadge = (status: string | null) => {
     const colors: Record<string, string> = {
-      active: 'bg-green-100 text-green-700',
-      trialing: 'bg-blue-100 text-blue-700',
-      past_due: 'bg-yellow-100 text-yellow-700',
-      canceled: 'bg-red-100 text-red-700',
-      incomplete: 'bg-gray-100 text-gray-700',
+      active: 'bg-green-100 text-green-700 dark:bg-emerald-900/30 dark:text-emerald-400',
+      trialing: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+      past_due: 'bg-yellow-100 text-yellow-700 dark:bg-amber-900/30 dark:text-amber-400',
+      canceled: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+      incomplete: 'bg-gray-100 text-gray-700 dark:bg-slate-800 dark:text-slate-300',
     };
     const s = status || 'unknown';
     return (
-      <span className={`rounded-md px-2 py-0.5 text-[10px] font-black uppercase ${colors[s] || 'bg-gray-100 text-gray-600'}`}>
+      <span className={`rounded-md px-2 py-0.5 text-[10px] font-black uppercase ${colors[s] || 'bg-gray-100 text-gray-600 dark:bg-slate-800 dark:text-slate-400'}`}>
         {s}
       </span>
     );
@@ -97,7 +97,7 @@ export default function AdminSubscriptions() {
         style={{ boxShadow: 'var(--shadow-card)' }}
       >
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-md)] bg-green-100 text-green-600">
+          <div className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-md)] bg-green-100 text-green-600 dark:bg-emerald-900/30 dark:text-emerald-400">
             <DollarSign size={20} />
           </div>
           <div>

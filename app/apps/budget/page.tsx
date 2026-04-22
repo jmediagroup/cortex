@@ -69,7 +69,7 @@ const CategoryGroup = ({
   handleAllocationBlur: (id: string, isAnnualMode: boolean) => void;
 }) => (
   <div className="mb-8">
-    <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4 flex items-center gap-2">
+    <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4 flex items-center gap-2">
       {type === 'fixed' && <Lock size={14} />}
       {type === 'flexible' && <RefreshCcw size={14} />}
       {type === 'future' && <TrendingUp size={14} />}
@@ -93,13 +93,13 @@ const CategoryGroup = ({
         return (
           <div key={cat.id} className="group">
             <div className="flex justify-between items-center">
-              <label className="text-sm font-medium text-slate-700">{cat.label}</label>
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-200">{cat.label}</label>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-slate-400">
+                <span className="text-xs text-slate-400 dark:text-slate-500">
                   {viewMode === 'annual' ? '/yr' : '/mo'}
                 </span>
                 <div className="relative">
-                  <span className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-xs">$</span>
+                  <span className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-xs">$</span>
                   <input
                     type="text"
                     inputMode="decimal"
@@ -110,7 +110,7 @@ const CategoryGroup = ({
                       handleAllocationChange(cat.id, inputValue);
                     }}
                     onBlur={() => handleAllocationBlur(cat.id, isAnnual)}
-                    className="w-28 pl-5 pr-2 py-1.5 text-right bg-slate-50 border border-slate-200 rounded-lg text-sm font-mono focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="w-28 pl-5 pr-2 py-1.5 text-right bg-slate-50 dark:bg-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-mono focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                 </div>
               </div>
@@ -213,9 +213,9 @@ const App = () => {
   }, [fixedTotal, takeHomePay, remaining]);
 
   const getTensionLabel = (score: number) => {
-    if (score < 30) return { label: 'Low Tension', color: 'text-emerald-500', bg: 'bg-emerald-50' };
-    if (score < 70) return { label: 'Moderate', color: 'text-amber-500', bg: 'bg-amber-50' };
-    return { label: 'High Fragility', color: 'text-slate-600', bg: 'bg-slate-100' };
+    if (score < 30) return { label: 'Low Tension', color: 'text-emerald-500 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-900/30' };
+    if (score < 70) return { label: 'Moderate', color: 'text-amber-500 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-900/30' };
+    return { label: 'High Fragility', color: 'text-slate-600 dark:text-slate-300', bg: 'bg-slate-100 dark:bg-slate-800' };
   };
 
   // --- Handlers ---
@@ -339,8 +339,8 @@ const App = () => {
     return (
       <div className="flex items-center justify-center py-32">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-slate-600 font-medium">Loading Budget System...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 dark:border-indigo-400 mx-auto mb-4"></div>
+          <p className="text-slate-600 dark:text-slate-300 font-medium">Loading Budget System...</p>
         </div>
       </div>
     );
@@ -427,19 +427,19 @@ const App = () => {
               <div className="w-8 h-8 bg-indigo-600 rounded flex items-center justify-center">
                 <BrainCircuit className="text-white" size={20} />
               </div>
-              <h1 className="text-xl font-bold tracking-tight text-slate-800 uppercase">Cortex</h1>
+              <h1 className="text-xl font-bold tracking-tight text-slate-800 dark:text-slate-200 uppercase">Cortex</h1>
             </div>
-            <p className="text-sm text-slate-500 italic">Resource allocation under constraints.</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400 italic">Resource allocation under constraints.</p>
           </header>
 
           {/* Income Section */}
-          <section className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4">Income Entry</h2>
+          <section className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-4">Income Entry</h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-xs text-slate-500 mb-1">Gross Monthly Income</label>
+                <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1">Gross Monthly Income</label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">$</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500">$</span>
                   <input
                     type="text"
                     inputMode="decimal"
@@ -454,20 +454,20 @@ const App = () => {
                         : Math.max(0, grossIncome);
                       setGrossIncome(numValue);
                     }}
-                    className="w-full pl-7 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="w-full pl-7 pr-4 py-2 bg-slate-50 dark:bg-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs text-slate-500 mb-1">Tax Reality Layer</label>
-                <div className="grid grid-cols-3 gap-1 bg-slate-50 p-1 rounded-lg">
+                <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1">Tax Reality Layer</label>
+                <div className="grid grid-cols-3 gap-1 bg-slate-50 dark:bg-slate-900 p-1 rounded-lg">
                   {Object.entries(TAX_MODES).map(([key, mode]) => (
                     <button
                       key={key}
                       onClick={() => setTaxMode(key)}
                       className={`text-[10px] py-1.5 rounded transition-all ${
-                        taxMode === key ? 'bg-white shadow-sm font-bold text-indigo-600' : 'text-slate-400 hover:text-slate-600'
+                        taxMode === key ? 'bg-white dark:bg-slate-800 shadow-sm font-bold text-indigo-600 dark:text-indigo-300' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
                       }`}
                     >
                       {mode.label}
@@ -476,10 +476,10 @@ const App = () => {
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-slate-50">
+              <div className="pt-4 border-t border-slate-50 dark:border-slate-800">
                 <div className="flex justify-between items-end">
-                  <span className="text-xs text-slate-500">Take-Home (Monthly)</span>
-                  <span className="text-2xl font-mono font-bold text-slate-800">
+                  <span className="text-xs text-slate-500 dark:text-slate-400">Take-Home (Monthly)</span>
+                  <span className="text-2xl font-mono font-bold text-slate-800 dark:text-slate-200">
                     ${Math.round(takeHomePay).toLocaleString()}
                   </span>
                 </div>
@@ -488,21 +488,21 @@ const App = () => {
           </section>
 
           {/* System Health */}
-          <section className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4">System Analysis</h2>
+          <section className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-4">System Analysis</h2>
             <div className="space-y-6">
 
               {/* Tension Meter */}
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-xs font-medium text-slate-600 flex items-center gap-1">
-                    Budget Tension <Info size={12} className="text-slate-300" />
+                  <span className="text-xs font-medium text-slate-600 dark:text-slate-300 flex items-center gap-1">
+                    Budget Tension <Info size={12} className="text-slate-300 dark:text-slate-600" />
                   </span>
                   <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${getTensionLabel(tensionScore).bg} ${getTensionLabel(tensionScore).color}`}>
                     {getTensionLabel(tensionScore).label}
                   </span>
                 </div>
-                <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                   <div
                     className={`h-full transition-all duration-700 ${tensionScore > 70 ? 'bg-slate-500' : 'bg-indigo-500'}`}
                     style={{ width: `${tensionScore}%` }}
@@ -513,10 +513,10 @@ const App = () => {
               {/* Flexibility Index */}
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-xs font-medium text-slate-600">Flexibility Index</span>
-                  <span className="text-xs font-mono font-bold">{Math.round(flexibilityIndex)}%</span>
+                  <span className="text-xs font-medium text-slate-600 dark:text-slate-300">Flexibility Index</span>
+                  <span className="text-xs font-mono font-bold dark:text-slate-200">{Math.round(flexibilityIndex)}%</span>
                 </div>
-                <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-emerald-500 transition-all duration-700"
                     style={{ width: `${flexibilityIndex}%` }}
@@ -525,23 +525,23 @@ const App = () => {
               </div>
 
               {/* Tradeoff Lens */}
-              <div className={`p-4 rounded-xl border ${remaining < 0 ? 'bg-amber-50 border-amber-100' : 'bg-slate-50 border-slate-100'}`}>
+              <div className={`p-4 rounded-xl border ${remaining < 0 ? 'bg-amber-50 dark:bg-amber-900/30 border-amber-100 dark:border-amber-800' : 'bg-slate-50 dark:bg-slate-900 border-slate-100 dark:border-slate-800'}`}>
                 <div className="flex items-start gap-3">
-                  <ArrowRightLeft size={16} className={remaining < 0 ? 'text-amber-500' : 'text-slate-400'} />
+                  <ArrowRightLeft size={16} className={remaining < 0 ? 'text-amber-500 dark:text-amber-400' : 'text-slate-400 dark:text-slate-500'} />
                   <div>
-                    <h4 className="text-xs font-bold text-slate-700 mb-1">Tradeoff Lens</h4>
+                    <h4 className="text-xs font-bold text-slate-700 dark:text-slate-200 mb-1">Tradeoff Lens</h4>
                     {remaining < 0 ? (
-                      <p className="text-[11px] text-amber-700 leading-relaxed">
+                      <p className="text-[11px] text-amber-700 dark:text-amber-300 leading-relaxed">
                         System is over-constrained by <span className="font-bold">${Math.abs(remaining)}</span>.
                         Decrease flexible spending or sinking funds to restore slack.
                       </p>
                     ) : remaining > 0 ? (
-                      <p className="text-[11px] text-slate-500 leading-relaxed">
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
                         You have <span className="font-bold">${Math.round(remaining)}</span> of unassigned slack.
                         Assign this to &quot;Future You&quot; to decrease long-term fragility.
                       </p>
                     ) : (
-                      <p className="text-[11px] text-slate-500 leading-relaxed">
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
                         Balanced. Every dollar has a job.
                       </p>
                     )}
@@ -552,32 +552,32 @@ const App = () => {
           </section>
 
           {/* Pro Feature: Auto-Optimize */}
-          <div className={`relative overflow-hidden p-6 rounded-2xl shadow-xl ${hasProFeatures ? 'bg-indigo-900 shadow-indigo-100' : 'bg-slate-200'} text-white`}>
+          <div className={`relative overflow-hidden p-6 rounded-2xl shadow-xl ${hasProFeatures ? 'bg-indigo-50 text-indigo-900 border border-indigo-200 shadow-indigo-100 dark:bg-indigo-900 dark:text-white dark:border-transparent dark:shadow-xl' : 'bg-slate-100 text-slate-900 border border-slate-200 dark:bg-slate-200 dark:text-white dark:border-transparent'}`}>
             <div className="relative z-10">
               <div className="flex items-center gap-2 mb-2">
                 {hasProFeatures ? (
                   <>
-                    <Zap size={16} className="text-indigo-300" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-300">Financial Pro</span>
+                    <Zap size={16} className="text-indigo-600 dark:text-indigo-300" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-300">Financial Pro</span>
                   </>
                 ) : (
                   <>
-                    <Lock size={16} className="text-slate-500" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Pro Feature</span>
+                    <Lock size={16} className="text-slate-500 dark:text-slate-500" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-500">Pro Feature</span>
                   </>
                 )}
               </div>
-              <h3 className={`text-lg font-bold mb-2 ${hasProFeatures ? 'text-white' : 'text-slate-700'}`}>
+              <h3 className={`text-lg font-bold mb-2 ${hasProFeatures ? 'text-indigo-900 dark:text-white' : 'text-slate-700 dark:text-slate-700'}`}>
                 Auto-Optimize (Cortex Mode)
               </h3>
-              <p className={`text-xs mb-4 leading-relaxed ${hasProFeatures ? 'text-indigo-100 opacity-80' : 'text-slate-600'}`}>
+              <p className={`text-xs mb-4 leading-relaxed ${hasProFeatures ? 'text-indigo-800 dark:text-indigo-100 dark:opacity-80' : 'text-slate-600 dark:text-slate-600'}`}>
                 A constraint-aware engine that rebalances your system based on human priorities.
               </p>
               <button
                 onClick={() => hasProFeatures ? setShowOptimizer(true) : setShowUpgradeModal(true)}
                 className={`w-full py-2 transition-colors rounded-lg text-sm font-bold flex items-center justify-center gap-2 ${
                   hasProFeatures
-                    ? 'bg-indigo-500 hover:bg-indigo-400'
+                    ? 'bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-indigo-500 dark:hover:bg-indigo-400'
                     : 'bg-amber-500 hover:bg-amber-400 text-white'
                 }`}
               >
@@ -591,18 +591,18 @@ const App = () => {
                 )}
               </button>
             </div>
-            <Zap className={`absolute -right-4 -bottom-4 opacity-20 ${hasProFeatures ? 'text-indigo-800' : 'text-slate-400'}`} size={120} />
+            <Zap className={`absolute -right-4 -bottom-4 opacity-20 ${hasProFeatures ? 'text-indigo-300 dark:text-indigo-800' : 'text-slate-400 dark:text-slate-400'}`} size={120} />
           </div>
 
           {optimizationLog && (
-            <div className="p-4 bg-white rounded-xl border border-indigo-100 shadow-sm">
-              <h4 className="text-xs font-bold text-indigo-600 mb-2 flex items-center gap-1">
+            <div className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-indigo-100 dark:border-indigo-800 shadow-sm">
+              <h4 className="text-xs font-bold text-indigo-600 dark:text-indigo-300 mb-2 flex items-center gap-1">
                 <BrainCircuit size={12} /> Optimization Applied
               </h4>
-              <p className="text-[11px] text-slate-600 leading-relaxed italic">&quot;{optimizationLog}&quot;</p>
+              <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed italic">&quot;{optimizationLog}&quot;</p>
               <button
                 onClick={() => setOptimizationLog(null)}
-                className="mt-2 text-[10px] text-slate-400 hover:text-indigo-600 transition-colors"
+                className="mt-2 text-[10px] text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors"
               >
                 Dismiss
               </button>
@@ -612,22 +612,22 @@ const App = () => {
 
         {/* Main Canvas */}
         <div className="lg:col-span-8 space-y-8">
-          <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-8">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 p-8">
             <div className="flex justify-between items-center mb-10">
               <div>
-                <h2 className="text-2xl font-bold text-slate-800">Budget Architecture</h2>
-                <p className="text-sm text-slate-400">Define the jobs for each dollar.</p>
+                <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">Budget Architecture</h2>
+                <p className="text-sm text-slate-400 dark:text-slate-500">Define the jobs for each dollar.</p>
               </div>
-              <div className="flex bg-slate-50 p-1 rounded-xl">
+              <div className="flex bg-slate-50 dark:bg-slate-900 p-1 rounded-xl">
                 <button
                   onClick={() => setViewMode('monthly')}
-                  className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${viewMode === 'monthly' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-400 hover:text-slate-600'}`}
+                  className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${viewMode === 'monthly' ? 'bg-white dark:bg-slate-800 shadow-sm text-indigo-600 dark:text-indigo-300' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}`}
                 >
                   Monthly
                 </button>
                 <button
                   onClick={() => setViewMode('annual')}
-                  className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${viewMode === 'annual' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-400 hover:text-slate-600'}`}
+                  className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${viewMode === 'annual' ? 'bg-white dark:bg-slate-800 shadow-sm text-indigo-600 dark:text-indigo-300' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}`}
                 >
                   Annualized
                 </button>
@@ -667,20 +667,20 @@ const App = () => {
                 />
 
                 {/* Summary View */}
-                <div className="mt-12 p-6 bg-slate-50 rounded-2xl border border-slate-100 space-y-4">
-                  <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400">Balance Breakdown</h3>
+                <div className="mt-12 p-6 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 space-y-4">
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">Balance Breakdown</h3>
                   <div className="space-y-3">
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-slate-500">Decision Budget</span>
-                      <span className="font-mono font-medium">${Math.round(takeHomePay * multiplier).toLocaleString()}</span>
+                      <span className="text-slate-500 dark:text-slate-400">Decision Budget</span>
+                      <span className="font-mono font-medium dark:text-slate-200">${Math.round(takeHomePay * multiplier).toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-slate-500">Allocated</span>
-                      <span className="font-mono font-medium text-slate-800">${Math.round(totalAllocated * multiplier).toLocaleString()}</span>
+                      <span className="text-slate-500 dark:text-slate-400">Allocated</span>
+                      <span className="font-mono font-medium text-slate-800 dark:text-slate-200">${Math.round(totalAllocated * multiplier).toLocaleString()}</span>
                     </div>
-                    <div className="pt-2 border-t border-slate-200 flex justify-between items-center">
-                      <span className="text-xs font-bold uppercase text-slate-600">Unallocated Slack</span>
-                      <span className={`font-mono font-bold text-lg ${remaining < 0 ? 'text-slate-400' : 'text-emerald-600'}`}>
+                    <div className="pt-2 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center">
+                      <span className="text-xs font-bold uppercase text-slate-600 dark:text-slate-300">Unallocated Slack</span>
+                      <span className={`font-mono font-bold text-lg ${remaining < 0 ? 'text-slate-400 dark:text-slate-500' : 'text-emerald-600 dark:text-emerald-400'}`}>
                         ${Math.round(remaining * multiplier).toLocaleString()}
                       </span>
                     </div>
@@ -695,14 +695,14 @@ const App = () => {
 
       {/* Optimization Modal */}
       {showOptimizer && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl">
+        <div className="fixed inset-0 bg-slate-900/40 dark:bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 dark:border dark:border-slate-800 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl">
             <div className="p-8">
-              <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mb-6">
+              <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/60 text-indigo-600 dark:text-indigo-300 rounded-2xl flex items-center justify-center mb-6">
                 <BrainCircuit size={28} />
               </div>
-              <h2 className="text-xl font-bold text-slate-800 mb-2">Configure Cortex Mode</h2>
-              <p className="text-sm text-slate-500 mb-8">Select a priority goal. The engine will respect your fixed costs and suggest the most stable system.</p>
+              <h2 className="text-xl font-bold text-slate-800 dark:text-slate-200 mb-2">Configure Cortex Mode</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mb-8">Select a priority goal. The engine will respect your fixed costs and suggest the most stable system.</p>
 
               <div className="space-y-3">
                 {[
@@ -714,33 +714,33 @@ const App = () => {
                     key={goal.id}
                     onClick={() => autoOptimize(goal.label)}
                     disabled={isOptimizing}
-                    className="w-full p-4 rounded-2xl border border-slate-100 hover:border-indigo-300 hover:bg-indigo-50/50 text-left transition-all group disabled:opacity-50"
+                    className="w-full p-4 rounded-2xl border border-slate-100 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/30 text-left transition-all group disabled:opacity-50"
                   >
                     <div className="flex justify-between items-center mb-1">
-                      <span className="font-bold text-slate-700 group-hover:text-indigo-600">{goal.label}</span>
-                      <ArrowRightLeft size={14} className="text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <span className="font-bold text-slate-700 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-300">{goal.label}</span>
+                      <ArrowRightLeft size={14} className="text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
-                    <p className="text-xs text-slate-500">{goal.desc}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">{goal.desc}</p>
                   </button>
                 ))}
               </div>
 
               <button
                 onClick={() => setShowOptimizer(false)}
-                className="mt-8 w-full py-3 text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors"
+                className="mt-8 w-full py-3 text-sm font-bold text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
               >
                 Cancel
               </button>
             </div>
 
             {isOptimizing && (
-              <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center">
+              <div className="absolute inset-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm flex flex-col items-center justify-center">
                 <div className="relative">
-                  <RefreshCcw className="text-indigo-600 animate-spin" size={40} />
-                  <Zap className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-indigo-400" size={16} />
+                  <RefreshCcw className="text-indigo-600 dark:text-indigo-300 animate-spin" size={40} />
+                  <Zap className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-indigo-400 dark:text-indigo-300" size={16} />
                 </div>
-                <p className="mt-4 text-sm font-bold text-slate-700">Rebalancing System...</p>
-                <p className="text-[10px] text-slate-400 uppercase tracking-widest mt-1">Cortex Engine v2.5</p>
+                <p className="mt-4 text-sm font-bold text-slate-700 dark:text-slate-200">Rebalancing System...</p>
+                <p className="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1">Cortex Engine v2.5</p>
               </div>
             )}
           </div>
@@ -749,8 +749,8 @@ const App = () => {
 
       {/* Upgrade Modal */}
       {showUpgradeModal && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl">
+        <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 dark:border dark:border-slate-800 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl">
             <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-8 text-white">
               <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-4">
                 <Crown size={32} />
@@ -762,38 +762,38 @@ const App = () => {
             </div>
 
             <div className="p-8">
-              <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-6 mb-6">
-                <h3 className="text-sm font-bold text-indigo-900 mb-3 flex items-center gap-2">
+              <div className="bg-indigo-50 dark:bg-indigo-900/40 border border-indigo-100 dark:border-indigo-800 rounded-2xl p-6 mb-6">
+                <h3 className="text-sm font-bold text-indigo-900 dark:text-indigo-200 mb-3 flex items-center gap-2">
                   <Zap size={16} />
                   What You Get with Pro:
                 </h3>
-                <ul className="space-y-2 text-sm text-indigo-800">
+                <ul className="space-y-2 text-sm text-indigo-800 dark:text-indigo-200">
                   <li className="flex items-start gap-2">
-                    <span className="text-indigo-500 mt-0.5">•</span>
+                    <span className="text-indigo-500 dark:text-indigo-300 mt-0.5">•</span>
                     <span><strong>Smart Optimization:</strong> 3 constraint-aware strategies that respect your fixed costs</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-indigo-500 mt-0.5">•</span>
+                    <span className="text-indigo-500 dark:text-indigo-300 mt-0.5">•</span>
                     <span><strong>Instant Rebalancing:</strong> Maximize slack, future savings, or minimize fragility</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-indigo-500 mt-0.5">•</span>
+                    <span className="text-indigo-500 dark:text-indigo-300 mt-0.5">•</span>
                     <span><strong>Explainable Logic:</strong> Clear reasoning for every recommendation</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-indigo-500 mt-0.5">•</span>
+                    <span className="text-indigo-500 dark:text-indigo-300 mt-0.5">•</span>
                     <span><strong>All Pro Finance Tools:</strong> Access advanced features across all finance apps</span>
                   </li>
                 </ul>
               </div>
 
               <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="border-2 border-indigo-200 rounded-2xl p-4 text-center">
-                  <p className="text-xs text-slate-500 mb-1">Finance Pro</p>
-                  <p className="text-3xl font-black text-indigo-600">$9</p>
-                  <p className="text-xs text-slate-500">/month</p>
+                <div className="border-2 border-indigo-200 dark:border-indigo-800 rounded-2xl p-4 text-center">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Finance Pro</p>
+                  <p className="text-3xl font-black text-indigo-600 dark:text-indigo-300">$9</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">/month</p>
                 </div>
-                <div className="border-2 border-purple-200 rounded-2xl p-4 text-center bg-gradient-to-br from-purple-50 to-indigo-50">
+                <div className="border-2 border-purple-200 dark:border-purple-800 rounded-2xl p-4 text-center bg-gradient-to-br from-purple-50 to-indigo-50">
                   <p className="text-xs text-purple-600 font-bold mb-1">Elite (Best Value)</p>
                   <p className="text-3xl font-black text-purple-600">$29</p>
                   <p className="text-xs text-slate-500">/month</p>
@@ -803,7 +803,7 @@ const App = () => {
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowUpgradeModal(false)}
-                  className="flex-1 py-3 px-4 rounded-xl border-2 border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition-colors"
+                  className="flex-1 py-3 px-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                 >
                   Maybe Later
                 </button>
@@ -827,14 +827,14 @@ const App = () => {
         <RelatedTools tools={getRelatedTools('budget')} />
       </div>
 
-      <footer className="max-w-7xl mx-auto px-6 py-10 text-center border-t border-slate-100 mt-8">
-        <p className="text-xs text-slate-400 font-medium">&copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.</p>
+      <footer className="max-w-7xl mx-auto px-6 py-10 text-center border-t border-slate-100 dark:border-slate-800 mt-8">
+        <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">&copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.</p>
         <div className="flex items-center justify-center gap-3 mt-2">
-          <a href="/articles" className="text-slate-400 hover:text-slate-600 transition-colors text-xs">Articles</a>
-          <span className="text-slate-200">|</span>
-          <a href="/pricing" className="text-slate-400 hover:text-slate-600 transition-colors text-xs">Pricing</a>
-          <span className="text-slate-200">|</span>
-          <a href="/terms" className="text-slate-400 hover:text-slate-600 transition-colors text-xs">Terms & Privacy</a>
+          <a href="/articles" className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors text-xs">Articles</a>
+          <span className="text-slate-200 dark:text-slate-700">|</span>
+          <a href="/pricing" className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors text-xs">Pricing</a>
+          <span className="text-slate-200 dark:text-slate-700">|</span>
+          <a href="/terms" className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors text-xs">Terms & Privacy</a>
         </div>
       </footer>
     </>

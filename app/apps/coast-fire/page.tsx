@@ -112,9 +112,9 @@ function CoastFIREPageInner() {
           </div>
         )}
 
-        <div className="bg-gradient-to-br from-emerald-50 to-white border border-emerald-100/80 rounded-2xl p-8 mb-8 shadow-sm">
-          <h2 className="text-2xl font-black text-emerald-900 mb-3">Coast FIRE Calculator</h2>
-          <p className="text-emerald-700 font-medium">
+        <div className="bg-gradient-to-br from-emerald-50 to-white dark:from-emerald-900/30 dark:to-slate-900 border border-emerald-100/80 dark:border-emerald-800/80 rounded-2xl p-8 mb-8 shadow-sm">
+          <h2 className="text-2xl font-black text-emerald-900 dark:text-emerald-100 mb-3">Coast FIRE Calculator</h2>
+          <p className="text-emerald-700 dark:text-emerald-300 font-medium">
             Calculate if you have enough invested to "coast" to retirement without further contributions.
             Coast FIRE is the point where your current investments will grow to your target retirement number
             through compound growth alone, even if you never save another dollar.
@@ -135,14 +135,14 @@ function CoastFIREPageInner() {
       </div>
 
       {/* FOOTER */}
-      <footer className="max-w-7xl mx-auto px-6 py-10 text-center border-t border-slate-100 mt-8">
-        <p className="text-xs text-slate-400 font-medium">&copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.</p>
+      <footer className="max-w-7xl mx-auto px-6 py-10 text-center border-t border-slate-100 dark:border-slate-800 mt-8">
+        <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">&copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.</p>
         <div className="flex items-center justify-center gap-3 mt-2">
-          <a href="/articles" className="text-slate-400 hover:text-slate-600 transition-colors text-xs">Articles</a>
-          <span className="text-slate-200">|</span>
-          <a href="/pricing" className="text-slate-400 hover:text-slate-600 transition-colors text-xs">Pricing</a>
-          <span className="text-slate-200">|</span>
-          <a href="/terms" className="text-slate-400 hover:text-slate-600 transition-colors text-xs">Terms & Privacy</a>
+          <a href="/articles" className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors text-xs">Articles</a>
+          <span className="text-slate-200 dark:text-slate-700">|</span>
+          <a href="/pricing" className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors text-xs">Pricing</a>
+          <span className="text-slate-200 dark:text-slate-700">|</span>
+          <a href="/terms" className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors text-xs">Terms & Privacy</a>
         </div>
       </footer>
     </>

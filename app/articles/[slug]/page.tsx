@@ -98,7 +98,7 @@ export default async function ArticlePage({ params }: PageProps) {
       <article className="relative">
         {/* Hero Section with Featured Image */}
         {article.featuredImage && (
-          <div className="relative w-full h-[40vh] md:h-[50vh] max-h-[500px] bg-slate-100">
+          <div className="relative w-full h-[40vh] md:h-[50vh] max-h-[500px] bg-slate-100 dark:bg-slate-800">
             <Image
               src={article.featuredImage.url}
               alt={article.featuredImage.alt}
@@ -114,12 +114,12 @@ export default async function ArticlePage({ params }: PageProps) {
         <header className={`relative ${article.featuredImage ? '-mt-24 md:-mt-32' : 'pt-8 md:pt-12'}`}>
           <div className="max-w-3xl mx-auto px-6">
             {/* Card container for header when there's a featured image */}
-            <div className={article.featuredImage ? 'bg-white rounded-t-2xl pt-8 md:pt-10 px-2' : ''}>
+            <div className={article.featuredImage ? 'bg-white dark:bg-slate-900 rounded-t-2xl pt-8 md:pt-10 px-2' : ''}>
               {/* Breadcrumb */}
               <nav className="mb-6">
                 <Link
                   href="/articles"
-                  className="inline-flex items-center gap-2 text-slate-500 hover:text-indigo-600 text-sm font-medium transition-colors"
+                  className="inline-flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-300 text-sm font-medium transition-colors"
                 >
                   <ArrowLeft size={14} />
                   Back to Articles
@@ -133,7 +133,7 @@ export default async function ArticlePage({ params }: PageProps) {
                     <Link
                       key={category.slug}
                       href={`/articles?category=${category.slug}`}
-                      className="text-xs font-semibold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full hover:bg-indigo-100 transition-colors"
+                      className="text-xs font-semibold text-indigo-600 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-900/40 px-3 py-1 rounded-full hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition-colors"
                     >
                       {category.name}
                     </Link>
@@ -142,21 +142,21 @@ export default async function ArticlePage({ params }: PageProps) {
               )}
 
               {/* Title */}
-              <h1 className="text-[2rem] md:text-[2.5rem] lg:text-[2.75rem] font-black text-slate-900 leading-[1.15] tracking-tight mb-6">
+              <h1 className="text-[2rem] md:text-[2.5rem] lg:text-[2.75rem] font-black text-slate-900 dark:text-slate-100 leading-[1.15] tracking-tight mb-6">
                 {article.title}
               </h1>
 
               {/* Meta - Date and Reading Time */}
-              <div className="flex flex-wrap items-center gap-4 text-slate-500 text-sm pb-6 border-b border-slate-100">
+              <div className="flex flex-wrap items-center gap-4 text-slate-500 dark:text-slate-400 text-sm pb-6 border-b border-slate-100 dark:border-slate-800">
                 <div className="flex items-center gap-1.5">
-                  <Calendar size={14} className="text-slate-400" />
+                  <Calendar size={14} className="text-slate-400 dark:text-slate-500" />
                   <time dateTime={article.date} className="font-medium">
                     {formatArticleDate(article.date)}
                   </time>
                 </div>
-                <span className="text-slate-300">•</span>
+                <span className="text-slate-300 dark:text-slate-600">•</span>
                 <div className="flex items-center gap-1.5">
-                  <Clock size={14} className="text-slate-400" />
+                  <Clock size={14} className="text-slate-400 dark:text-slate-500" />
                   <span className="font-medium">{article.readingTime} min read</span>
                 </div>
               </div>
@@ -177,25 +177,25 @@ export default async function ArticlePage({ params }: PageProps) {
 
           {/* FAQ Section */}
           {article.faq.length > 0 && (
-            <section className="py-10 border-t border-slate-100">
-              <h2 className="text-2xl font-black text-slate-900 mb-6">
+            <section className="py-10 border-t border-slate-100 dark:border-slate-800">
+              <h2 className="text-2xl font-black text-slate-900 dark:text-slate-100 mb-6">
                 Frequently Asked Questions
               </h2>
               <div className="space-y-4">
                 {article.faq.map((item, index) => (
                   <details
                     key={index}
-                    className="group bg-slate-50 rounded-xl border border-slate-100 overflow-hidden"
+                    className="group bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 overflow-hidden"
                   >
-                    <summary className="flex items-center justify-between p-5 cursor-pointer font-semibold text-slate-900 hover:bg-slate-100 transition-colors">
+                    <summary className="flex items-center justify-between p-5 cursor-pointer font-semibold text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                       {item.question}
-                      <span className="ml-4 text-slate-400 group-open:rotate-180 transition-transform">
+                      <span className="ml-4 text-slate-400 dark:text-slate-500 group-open:rotate-180 transition-transform">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <path d="m6 9 6 6 6-6" />
                         </svg>
                       </span>
                     </summary>
-                    <div className="px-5 pb-5 text-slate-600 leading-relaxed">
+                    <div className="px-5 pb-5 text-slate-600 dark:text-slate-300 leading-relaxed">
                       {item.answer}
                     </div>
                   </details>
@@ -206,7 +206,7 @@ export default async function ArticlePage({ params }: PageProps) {
 
           {/* Related Calculator CTA */}
           {article.relatedCalculator && (
-            <div className="my-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl p-8 text-white">
+            <div className="my-10 bg-gradient-to-br from-indigo-600 to-purple-600 dark:from-indigo-700 dark:to-purple-700 rounded-2xl p-8 text-white">
               <h3 className="text-xl font-black mb-2">Try It Yourself</h3>
               <p className="text-indigo-100 mb-6 text-sm leading-relaxed">
                 {article.cta?.text || 'Put what you learned into practice with our free calculator.'}
@@ -223,15 +223,15 @@ export default async function ArticlePage({ params }: PageProps) {
 
           {/* Tags */}
           {article.tags.length > 0 && (
-            <div className="py-8 border-t border-slate-100">
+            <div className="py-8 border-t border-slate-100 dark:border-slate-800">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide mr-2">
+                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mr-2">
                   Tags:
                 </span>
                 {article.tags.map((tag) => (
                   <span
                     key={tag.slug}
-                    className="text-sm font-medium text-slate-600 bg-slate-100 px-3 py-1 rounded-full"
+                    className="text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full"
                   >
                     {tag.name}
                   </span>
@@ -242,17 +242,17 @@ export default async function ArticlePage({ params }: PageProps) {
         </div>
 
         {/* More Articles CTA */}
-        <div className="bg-slate-50 py-16 mt-8">
+        <div className="bg-slate-50 dark:bg-slate-900 py-16 mt-8">
           <div className="max-w-3xl mx-auto px-6 text-center">
-            <h3 className="text-2xl font-black text-slate-900 mb-3">
+            <h3 className="text-2xl font-black text-slate-900 dark:text-slate-100 mb-3">
               Continue Learning
             </h3>
-            <p className="text-slate-600 mb-6">
+            <p className="text-slate-600 dark:text-slate-300 mb-6">
               Explore more articles to deepen your financial knowledge.
             </p>
             <Link
               href="/articles"
-              className="inline-flex items-center gap-2 bg-slate-900 text-white font-bold px-6 py-3 rounded-xl hover:bg-slate-800 transition-colors"
+              className="inline-flex items-center gap-2 bg-slate-900 dark:bg-indigo-600 text-white font-bold px-6 py-3 rounded-xl hover:bg-slate-800 dark:hover:bg-indigo-500 transition-colors"
             >
               View All Articles
               <ArrowRight size={18} />
@@ -262,7 +262,7 @@ export default async function ArticlePage({ params }: PageProps) {
       </article>
 
       {/* FOOTER */}
-      <footer className="py-10 text-center text-slate-400 font-medium text-sm border-t border-slate-100">
+      <footer className="py-10 text-center text-slate-400 dark:text-slate-500 font-medium text-sm border-t border-slate-100 dark:border-slate-800">
         &copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.
       </footer>
     </>

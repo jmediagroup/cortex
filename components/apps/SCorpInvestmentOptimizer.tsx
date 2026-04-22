@@ -448,15 +448,15 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
               <h3 className="text-sm font-black text-slate-500 uppercase tracking-widest mb-4">30-Year Growth</h3>
               <ResponsiveContainer width="100%" height={250}>
                 <LineChart data={calculations.projectionData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
                   <XAxis
                     dataKey="year"
-                    stroke="#94a3b8"
+                    stroke="var(--chart-axis)"
                     tick={{ fontSize: 11 }}
                     label={{ value: 'Years', position: 'insideBottom', offset: -5, fontSize: 11 }}
                   />
                   <YAxis
-                    stroke="#94a3b8"
+                    stroke="var(--chart-axis)"
                     tick={{ fontSize: 11 }}
                     tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
                   />

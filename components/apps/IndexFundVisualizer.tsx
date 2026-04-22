@@ -405,9 +405,9 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
             </div>
           </div>
 
-          <div className="bg-indigo-900 text-white p-8 rounded-[2.5rem] shadow-xl">
+          <div className="bg-indigo-50 text-indigo-900 border border-indigo-200 dark:bg-indigo-900 dark:text-white dark:border-transparent p-8 rounded-[2.5rem] shadow-xl">
             <h4 className="font-black text-sm uppercase tracking-widest mb-4 flex items-center gap-2">
-              <Info size={16} className="text-indigo-400" /> Key Insight
+              <Info size={16} className="text-indigo-500 dark:text-indigo-400" /> Key Insight
             </h4>
             <p className="text-xs font-medium leading-relaxed opacity-80">
               With {FUND_METADATA[selectedFund].cagr}% average returns and {FUND_METADATA[selectedFund].volatility}% volatility,
@@ -444,7 +444,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
                       <stop offset="95%" stopColor="#94a3b8" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
                   <XAxis
                     dataKey="year"
                     axisLine={false}
@@ -485,7 +485,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
                   <Area
                     type="monotone"
                     dataKey="invested"
-                    stroke="#94a3b8"
+                    stroke="var(--chart-axis)"
                     strokeWidth={2}
                     fillOpacity={1}
                     fill="url(#colorInvested)"
@@ -496,34 +496,34 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
           </div>
 
           {/* Insights Panel */}
-          <div className="bg-slate-800 text-white p-8 rounded-[2.5rem] shadow-lg">
+          <div className="bg-slate-50 text-slate-900 border border-slate-200 dark:bg-slate-800 dark:text-white dark:border-transparent p-8 rounded-[2.5rem] shadow-lg">
             <div className="flex items-center gap-2 mb-6">
-              <Info className="w-5 h-5 text-indigo-400" />
+              <Info className="w-5 h-5 text-indigo-500 dark:text-indigo-400" />
               <h3 className="font-black text-lg">Investor Insights</h3>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-slate-300">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-slate-600 dark:text-slate-300">
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">1</div>
-                  <p>Total contributions: <span className="text-white font-bold">{formatCurrency(finalStats.invested)}</span>.</p>
+                  <div className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">1</div>
+                  <p>Total contributions: <span className="text-slate-900 dark:text-white font-bold">{formatCurrency(finalStats.invested)}</span>.</p>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">2</div>
-                  <p>Compounding: <span className="text-emerald-400 font-bold">{Math.round((totalGains/finalStats.steady)*100)}%</span> of final wealth.</p>
+                  <div className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">2</div>
+                  <p>Compounding: <span className="text-emerald-600 dark:text-emerald-400 font-bold">{Math.round((totalGains/finalStats.steady)*100)}%</span> of final wealth.</p>
                 </div>
               </div>
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">3</div>
-                  <p><span className="text-white font-bold">Growth Funds</span> show higher potential but significant risk of years-long drawdown periods.</p>
+                  <div className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">3</div>
+                  <p><span className="text-slate-900 dark:text-white font-bold">Growth Funds</span> show higher potential but significant risk of years-long drawdown periods.</p>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">4</div>
-                  <p><span className="text-white font-bold">VT (World)</span> provides smoother ride through global diversification but historically lower U.S.-style returns.</p>
+                  <div className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">4</div>
+                  <p><span className="text-slate-900 dark:text-white font-bold">VT (World)</span> provides smoother ride through global diversification but historically lower U.S.-style returns.</p>
                 </div>
               </div>
             </div>
-            <div className="mt-6 pt-6 border-t border-slate-700">
+            <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
               <div className="text-[10px] text-slate-500 italic">
                 *Historical averages are not indicative of future performance. This tool is for educational purposes only.
               </div>
@@ -674,12 +674,12 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
           )}
 
           {/* CORTEX Recommendation */}
-          <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white">
+          <div className="bg-slate-50 text-slate-900 border border-slate-200 dark:bg-slate-900 dark:text-white dark:border-transparent rounded-[2.5rem] p-8">
             <div className="flex items-center gap-2 mb-4">
-              <Sparkles className="w-5 h-5 text-amber-400" />
+              <Sparkles className="w-5 h-5 text-amber-500 dark:text-amber-400" />
               <h4 className="font-black text-lg">CORTEX Recommendation</h4>
             </div>
-            <p className="text-slate-300 font-medium leading-relaxed">
+            <p className="text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
               Based on your {duration}-year time horizon and {formatCurrency(contribution)}/{frequency === 'monthly' ? 'month' : 'year'} contribution capacity,
               {selectedFund === 'QQQM_VUG' ? (
                 <span> consider the higher volatility of growth funds. While they offer greater upside, a 30%+ drawdown can test your resolve. Ensure you can stay invested during downturns.</span>

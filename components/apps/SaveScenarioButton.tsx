@@ -243,8 +243,8 @@ export default function SaveScenarioButton({
 
       {/* Free tier upsell modal */}
       {showUpsell && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl">
+        <div className="fixed inset-0 bg-slate-900/50 dark:bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 dark:border dark:border-slate-800 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl">
             <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-6 text-white">
               <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-3">
                 <Crown size={24} />
@@ -255,8 +255,8 @@ export default function SaveScenarioButton({
               </p>
             </div>
             <div className="p-6">
-              <div className="bg-indigo-50 rounded-xl p-4 mb-5">
-                <ul className="space-y-2 text-sm text-indigo-800">
+              <div className="bg-indigo-50 dark:bg-indigo-900/40 rounded-xl p-4 mb-5">
+                <ul className="space-y-2 text-sm text-indigo-800 dark:text-indigo-200">
                   <li className="flex items-center gap-2">
                     <Check size={14} className="text-indigo-500 flex-shrink-0" />
                     <span>Unlimited scenario saves</span>
@@ -274,7 +274,7 @@ export default function SaveScenarioButton({
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowUpsell(false)}
-                  className="flex-1 py-2.5 rounded-xl border-2 border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors"
+                  className="flex-1 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                 >
                   Maybe Later
                 </button>

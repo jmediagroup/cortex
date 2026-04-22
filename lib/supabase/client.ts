@@ -26,6 +26,7 @@ export type Database = {
           subscription_status: string | null;
           has_completed_onboarding: boolean;
           onboarding_answers: OnboardingAnswers | null;
+          theme: 'light' | 'dark' | null;
           created_at: string;
           updated_at: string;
         };
@@ -42,6 +43,7 @@ export type Database = {
           subscription_status?: string | null;
           has_completed_onboarding?: boolean;
           onboarding_answers?: OnboardingAnswers | null;
+          theme?: 'light' | 'dark' | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -58,6 +60,7 @@ export type Database = {
           subscription_status?: string | null;
           has_completed_onboarding?: boolean;
           onboarding_answers?: OnboardingAnswers | null;
+          theme?: 'light' | 'dark' | null;
           updated_at?: string;
         };
       };
