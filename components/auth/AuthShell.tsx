@@ -10,13 +10,12 @@ type Props = {
 
 /**
  * Auth shell — aurora + grid background with a centered frosted-glass
- * card. Force-dark subtree so sign-in / sign-up / reset flows always
- * look like the product, regardless of the user's marketing theme.
+ * card. Inherits the user's chosen theme so sign-in / sign-up /
+ * reset flows honour the marketing toggle.
  */
 export function AuthShell({ children, footer }: Props) {
   return (
     <div
-      data-theme="dark"
       className="hero-gradient grid-bg"
       style={{
         minHeight: '100vh',

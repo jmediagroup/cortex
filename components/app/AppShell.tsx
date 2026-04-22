@@ -12,15 +12,13 @@ type Props = {
 };
 
 /**
- * Authenticated app shell — force-dark regardless of the global theme,
- * with a desktop side nav + top bar and a mobile bottom tab bar.
- * Every descendant reads the dark token values because `[data-theme="dark"]`
- * is declared alongside `:root` in tokens.css.
+ * Authenticated app shell — inherits the user's chosen theme
+ * (dark or light) so dashboard, apps, scenarios, and account
+ * surfaces honour the toggle set from marketing.
  */
 export function AppShell({ children, user, userTier = 'free', onSignOut }: Props) {
   return (
     <div
-      data-theme="dark"
       className="app-shell"
       style={{
         minHeight: '100vh',

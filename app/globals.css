@@ -149,6 +149,15 @@
      `font-sans` / `font-mono` utilities pick up the right stack. */
 }
 
+/* Legacy chart-purple / chart-pink are hardcoded above so they
+   don't react to `--color-*` overrides — re-declare for light
+   so legacy chart consumers see the paper-safe hues. */
+[data-theme="light"] {
+  --chart-purple:      #7C3AED;
+  --chart-pink:        #C2185B;
+  --chart-purple-area: rgba(124, 58, 237, 0.12);
+}
+
 /* ============================================================
    Keyframes + motion utilities (preserved across phases).
    ============================================================ */
