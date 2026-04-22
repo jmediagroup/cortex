@@ -113,10 +113,10 @@ export default function AdminUsers() {
   const tierBadge = (tier: string) => {
     const colors: Record<string, string> = {
       free: 'bg-[var(--surface-tertiary)] text-[var(--text-secondary)]',
-      finance_pro: 'bg-indigo-100 text-indigo-700',
+      finance_pro: 'bg-[var(--emerald-100)] text-[var(--emerald-500)]',
     };
     return (
-      <span className={`rounded-md px-2 py-0.5 text-[10px] font-black uppercase ${colors[tier] || colors.free}`}>
+      <span className={`rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase ${colors[tier] || colors.free}`}>
         {getTierDisplayName(tier as any)}
       </span>
     );
@@ -125,7 +125,7 @@ export default function AdminUsers() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-black tracking-tight text-[var(--text-primary)]">Users</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">Users</h1>
         <p className="text-sm text-[var(--text-tertiary)] font-medium mt-1">
           {data?.total || 0} total users
         </p>
@@ -172,12 +172,12 @@ export default function AdminUsers() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-[var(--border-secondary)] bg-[var(--surface-secondary)]">
-                  <th className="text-left px-4 py-3 text-[10px] font-black uppercase tracking-wider text-[var(--text-tertiary)]">Email</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-black uppercase tracking-wider text-[var(--text-tertiary)]">Name</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-black uppercase tracking-wider text-[var(--text-tertiary)]">Tier</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-black uppercase tracking-wider text-[var(--text-tertiary)]">Subscription</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-black uppercase tracking-wider text-[var(--text-tertiary)]">Joined</th>
-                  <th className="text-right px-4 py-3 text-[10px] font-black uppercase tracking-wider text-[var(--text-tertiary)]">Actions</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Email</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Name</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Tier</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Subscription</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Joined</th>
+                  <th className="text-right px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -233,7 +233,7 @@ export default function AdminUsers() {
                         <button
                           onClick={() => handleDeleteUser(user.id)}
                           disabled={actionLoading === user.id}
-                          className="p-1.5 rounded-md text-[var(--text-tertiary)] hover:bg-red-50 hover:text-[var(--color-negative)] transition-colors"
+                          className="p-1.5 rounded-md text-[var(--text-tertiary)] hover:bg-[var(--crimson-50)] hover:text-[var(--color-negative)] transition-colors"
                           title="Delete user"
                         >
                           {actionLoading === user.id ? <Loader2 className="animate-spin" size={14} /> : <Trash2 size={14} />}

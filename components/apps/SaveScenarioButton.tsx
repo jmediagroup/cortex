@@ -125,7 +125,7 @@ export default function SaveScenarioButton({
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-all disabled:opacity-60 shadow-sm"
+          className="flex items-center gap-2 px-4 py-2 bg-[var(--emerald-500)] text-white rounded-xl text-sm font-bold hover:bg-[var(--emerald-500)] transition-all disabled:opacity-60 shadow-sm"
         >
           {saving ? (
             <Loader2 size={16} className="animate-spin" />
@@ -142,7 +142,7 @@ export default function SaveScenarioButton({
           <button
             onClick={() => handleShare(latestScenario.id)}
             disabled={sharing}
-            className="flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-700 rounded-xl text-sm font-bold hover:bg-slate-200 transition-all disabled:opacity-60"
+            className="flex items-center gap-2 px-4 py-2 bg-[var(--bg-glass)] text-[var(--text-secondary)] rounded-xl text-sm font-bold hover:bg-[var(--bg-glass-strong)] transition-all disabled:opacity-60"
           >
             {sharing ? (
               <Loader2 size={16} className="animate-spin" />
@@ -156,7 +156,7 @@ export default function SaveScenarioButton({
         {toolScenarios.length > 0 && (
           <button
             onClick={() => setShowSaved(!showSaved)}
-            className="flex items-center gap-1.5 px-3 py-2 bg-slate-100 text-slate-600 rounded-xl text-sm font-semibold hover:bg-slate-200 transition-all"
+            className="flex items-center gap-1.5 px-3 py-2 bg-[var(--bg-glass)] text-[var(--text-secondary)] rounded-xl text-sm font-semibold hover:bg-[var(--bg-glass-strong)] transition-all"
           >
             <Bookmark size={14} />
             {toolScenarios.length} saved
@@ -166,18 +166,18 @@ export default function SaveScenarioButton({
 
       {/* Share URL display */}
       {shareUrl && (
-        <div className="mt-3 flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
-          <LinkIcon size={14} className="text-emerald-600 flex-shrink-0" />
+        <div className="mt-3 flex items-center gap-2 p-3 bg-[var(--emerald-50)] border border-[var(--emerald-border)] rounded-xl">
+          <LinkIcon size={14} className="text-[var(--emerald-500)] flex-shrink-0" />
           <input
             type="text"
             readOnly
             value={shareUrl}
-            className="flex-1 bg-transparent text-sm text-emerald-800 font-medium outline-none min-w-0"
+            className="flex-1 bg-transparent text-sm text-[var(--emerald-500)] font-medium outline-none min-w-0"
             onFocus={(e) => e.target.select()}
           />
           <button
             onClick={handleCopy}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition-colors flex-shrink-0"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--emerald-500)] text-white rounded-lg text-xs font-bold hover:bg-[var(--emerald-500)] transition-colors flex-shrink-0"
           >
             {copied ? (
               <>
@@ -196,23 +196,23 @@ export default function SaveScenarioButton({
 
       {/* Saved scenarios dropdown */}
       {showSaved && toolScenarios.length > 0 && (
-        <div className="absolute top-12 right-0 z-40 w-80 bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
-          <div className="p-3 border-b border-slate-100 bg-slate-50">
-            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Saved Scenarios</h4>
+        <div className="absolute top-12 right-0 z-40 w-80 bg-[var(--bg-card)] rounded-2xl shadow-xl border border-[var(--border-default)] overflow-hidden">
+          <div className="p-3 border-b border-[var(--border-subtle)] bg-[var(--bg-section)]">
+            <h4 className="text-xs font-bold text-[var(--text-tertiary)] uppercase tracking-wider">Saved Scenarios</h4>
           </div>
           <div className="max-h-64 overflow-y-auto">
             {toolScenarios.map((scenario) => (
-              <div key={scenario.id} className="flex items-center justify-between p-3 border-b border-slate-50 hover:bg-slate-50 transition-colors">
+              <div key={scenario.id} className="flex items-center justify-between p-3 border-b border-[var(--border-subtle)] hover:bg-[var(--bg-section)] transition-colors">
                 <div className="flex-1 min-w-0 mr-3">
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-[var(--text-muted)]">
                     {new Date(scenario.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </p>
-                  <p className="text-sm text-slate-700 font-medium truncate">{scenario.key_result || 'Saved scenario'}</p>
+                  <p className="text-sm text-[var(--text-secondary)] font-medium truncate">{scenario.key_result || 'Saved scenario'}</p>
                 </div>
                 <div className="flex items-center gap-1 flex-shrink-0">
                   <button
                     onClick={() => handleShare(scenario.id)}
-                    className="p-1.5 text-slate-300 hover:text-indigo-500 transition-colors"
+                    className="p-1.5 text-[var(--text-muted)] hover:text-[var(--emerald-400)] transition-colors"
                     title="Share scenario"
                   >
                     <Share2 size={14} />
@@ -220,7 +220,7 @@ export default function SaveScenarioButton({
                   <button
                     onClick={() => handleDelete(scenario.id)}
                     disabled={deletingId === scenario.id}
-                    className="p-1.5 text-slate-300 hover:text-red-500 transition-colors"
+                    className="p-1.5 text-[var(--text-muted)] hover:text-[var(--crimson-500)] transition-colors"
                   >
                     {deletingId === scenario.id ? (
                       <Loader2 size={14} className="animate-spin" />
@@ -234,7 +234,7 @@ export default function SaveScenarioButton({
           </div>
           <button
             onClick={() => setShowSaved(false)}
-            className="w-full p-2 text-xs text-slate-400 hover:text-slate-600 transition-colors border-t border-slate-100"
+            className="w-full p-2 text-xs text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors border-t border-[var(--border-subtle)]"
           >
             Close
           </button>
@@ -243,30 +243,30 @@ export default function SaveScenarioButton({
 
       {/* Free tier upsell modal */}
       {showUpsell && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl">
-            <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-6 text-white">
-              <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-3">
+        <div className="fixed inset-0 bg-[var(--obsidian-900)]/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[var(--bg-card)] rounded-3xl w-full max-w-md overflow-hidden shadow-2xl">
+            <div className="bg-gradient-to-br from-[var(--emerald-500)] to-[var(--emerald-500)] p-6 text-white">
+              <div className="w-12 h-12 bg-[var(--bg-card)]/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-3">
                 <Crown size={24} />
               </div>
-              <h3 className="text-xl font-black mb-1">Save More Scenarios</h3>
-              <p className="text-indigo-100 text-sm">
+              <h3 className="text-xl font-bold mb-1">Save More Scenarios</h3>
+              <p className="text-[var(--mist-100)] text-sm">
                 Free accounts can save 1 scenario per tool. Upgrade to Pro for unlimited saves across all tools.
               </p>
             </div>
             <div className="p-6">
-              <div className="bg-indigo-50 rounded-xl p-4 mb-5">
-                <ul className="space-y-2 text-sm text-indigo-800">
+              <div className="bg-[var(--emerald-50)] rounded-xl p-4 mb-5">
+                <ul className="space-y-2 text-sm text-[var(--text-primary)]">
                   <li className="flex items-center gap-2">
-                    <Check size={14} className="text-indigo-500 flex-shrink-0" />
+                    <Check size={14} className="text-[var(--emerald-400)] flex-shrink-0" />
                     <span>Unlimited scenario saves</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check size={14} className="text-indigo-500 flex-shrink-0" />
+                    <Check size={14} className="text-[var(--emerald-400)] flex-shrink-0" />
                     <span>Advanced pro features on all tools</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check size={14} className="text-indigo-500 flex-shrink-0" />
+                    <Check size={14} className="text-[var(--emerald-400)] flex-shrink-0" />
                     <span>Ad-free experience</span>
                   </li>
                 </ul>
@@ -274,13 +274,13 @@ export default function SaveScenarioButton({
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowUpsell(false)}
-                  className="flex-1 py-2.5 rounded-xl border-2 border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors"
+                  className="flex-1 py-2.5 rounded-xl border-2 border-[var(--border-default)] text-[var(--text-secondary)] font-bold text-sm hover:bg-[var(--bg-section)] transition-colors"
                 >
                   Maybe Later
                 </button>
                 <a
                   href="/pricing"
-                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-sm text-center hover:from-indigo-700 hover:to-purple-700 transition-all shadow-md flex items-center justify-center gap-2"
+                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-[var(--emerald-500)] to-[var(--emerald-500)] text-white font-bold text-sm text-center hover:from-[var(--emerald-600)] hover:to-[var(--emerald-600)] transition-all shadow-md flex items-center justify-center gap-2"
                 >
                   <Crown size={16} />
                   Upgrade

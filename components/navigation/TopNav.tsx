@@ -87,7 +87,7 @@ export default function TopNav({
           <div className="bg-[var(--color-accent)] p-1.5 rounded-lg text-white">
             <Brain size={20} />
           </div>
-          <span className="font-black text-lg tracking-tight text-[var(--text-primary)]">
+          <span className="font-bold text-lg tracking-tight text-[var(--text-primary)]">
             Cortex
           </span>
         </Link>
@@ -140,7 +140,7 @@ export default function TopNav({
                 <span className="max-w-[140px] truncate text-sm font-semibold text-[var(--text-primary)]">
                   {user.name || user.email}
                 </span>
-                <span className={`rounded-md px-1.5 py-0.5 text-[10px] font-black uppercase ${tierBadgeColor}`}>
+                <span className={`rounded-md px-1.5 py-0.5 text-[10px] font-semibold uppercase ${tierBadgeColor}`}>
                   {getTierDisplayName(userTier)}
                 </span>
                 <ChevronDown

@@ -99,7 +99,7 @@ const APPS: AppConfig[] = [
     name: 'Retirement Strategy Engine',
     description: 'Comprehensive simulation of retirement portfolio withdrawals with RMD calculations.',
     icon: TrendingUp,
-    iconColor: 'text-purple-500',
+    iconColor: 'text-[var(--emerald-400)]',
     tier: 'free',
     sector: 'finance',
     category: 'Retirement',
@@ -316,7 +316,7 @@ export default function AppLibrary({ userTier, appOrder }: AppLibraryProps) {
               <span
                 className={`absolute right-4 top-4 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
                   app.tier === 'pro'
-                    ? 'bg-purple-500/10 text-purple-500 ring-1 ring-purple-500/20'
+                    ? 'bg-[var(--emerald-500)]/10 text-[var(--emerald-400)] ring-1 ring-[var(--emerald-200)]'
                     : 'bg-[var(--surface-tertiary)] text-[var(--text-tertiary)]'
                 }`}
               >
@@ -367,7 +367,7 @@ export default function AppLibrary({ userTier, appOrder }: AppLibraryProps) {
             <Brain size={200} fill="currentColor" />
           </div>
           <div className="relative max-w-xl">
-            <span className="mb-4 inline-block rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest">
+            <span className="mb-4 inline-block rounded-full border border-white/20 bg-[var(--bg-card)]/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest">
               Premium Access
             </span>
             <h3 className="mb-4 text-2xl font-bold tracking-tight md:text-3xl">
@@ -382,7 +382,7 @@ export default function AppLibrary({ userTier, appOrder }: AppLibraryProps) {
             </p>
             <button
               onClick={() => router.push('/pricing')}
-              className="rounded-[var(--radius-lg)] bg-white px-6 py-3 text-sm font-bold text-[var(--primary-900)] transition-all hover:scale-105 hover:bg-white/90 active:scale-95"
+              className="rounded-[var(--radius-lg)] bg-[var(--bg-card)] px-6 py-3 text-sm font-bold text-[var(--primary-900)] transition-all hover:scale-105 hover:bg-[var(--bg-card)]/90 active:scale-95"
             >
               Explore Pro Plans
             </button>

@@ -1,25 +1,16 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import {
-  Bookmark,
-  ArrowLeft,
-  Trash2,
-  Play,
-  Loader2,
-  Calendar,
-  Wrench,
-} from 'lucide-react';
+import { Bookmark, ArrowLeft, Trash2, Play, Loader2, Calendar, Wrench } from 'lucide-react';
 import { createBrowserClient } from '@/lib/supabase/client';
-import { type Tier } from '@/lib/access-control';
-import { DashboardShell } from '@/components/navigation';
 import type { Scenario } from '@/lib/useScenarios';
 
-// Map tool_id to the URL path
+type SessionUser = { id: string; email: string | null };
+
 const TOOL_PATHS: Record<string, string> = {
-  'budget': '/apps/budget',
+  budget: '/apps/budget',
   'car-affordability': '/apps/car-affordability',
   'coast-fire': '/apps/coast-fire',
   'compound-interest': '/apps/compound-interest',
@@ -37,49 +28,37 @@ export default function ScenariosPage() {
   const router = useRouter();
   const supabase = createBrowserClient();
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
-  const [userTier, setUserTier] = useState<Tier>('free');
+  const [user, setUser] = useState<SessionUser | null>(null);
   const [scenarios, setScenarios] = useState<Scenario[]>([]);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
-    const init = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-
+    (async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) {
         router.push('/login');
         return;
       }
+      setUser({ id: session.user.id, email: session.user.email ?? null });
 
-      setUser(session.user);
-
-      const { data: userData } = await supabase
-        .from('users')
-        .select('tier')
-        .eq('id', session.user.id)
-        .single() as { data: { tier: Tier } | null };
-
-      if (userData?.tier) setUserTier(userData.tier);
-
-      // Fetch scenarios
       const res = await fetch('/api/scenarios', {
         headers: { Authorization: `Bearer ${session.access_token}` },
       });
-
       if (res.ok) {
         const data = await res.json();
         setScenarios(data.scenarios);
       }
-
       setLoading(false);
-    };
-
-    init();
+    })();
   }, [router, supabase]);
 
   const handleDelete = async (id: string) => {
     setDeletingId(id);
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     if (!session) return;
 
     const res = await fetch(`/api/scenarios?id=${id}`, {
@@ -87,159 +66,285 @@ export default function ScenariosPage() {
       headers: { Authorization: `Bearer ${session.access_token}` },
     });
 
-    if (res.ok) {
-      setScenarios(prev => prev.filter(s => s.id !== id));
-    }
+    if (res.ok) setScenarios((prev) => prev.filter((s) => s.id !== id));
     setDeletingId(null);
   };
 
   const handleLoad = (scenario: Scenario) => {
     const path = TOOL_PATHS[scenario.tool_id];
     if (!path) return;
-
-    // Store inputs in sessionStorage for the tool to pick up
     sessionStorage.setItem(`scenario_load_${scenario.tool_id}`, JSON.stringify(scenario.inputs));
     router.push(path);
   };
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.push('/');
-  };
-
-  if (loading) {
+  if (loading || !user) {
     return (
-      <div className="min-h-screen bg-[var(--surface-secondary)] flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4" />
-          <p className="text-slate-600 font-medium">Loading scenarios...</p>
-        </div>
+      <div
+        style={{
+          minHeight: 'calc(100vh - 120px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'var(--text-tertiary)',
+        }}
+      >
+        <Loader2 className="animate-spin" size={24} />
       </div>
     );
   }
 
-  if (!user) return null;
-
-  const userName = user.user_metadata?.first_name || user.email?.split('@')[0] || 'User';
-
-  // Group scenarios by tool
   const grouped = scenarios.reduce<Record<string, Scenario[]>>((acc, s) => {
-    if (!acc[s.tool_name]) acc[s.tool_name] = [];
-    acc[s.tool_name].push(s);
+    (acc[s.tool_name] ||= []).push(s);
     return acc;
   }, {});
 
   return (
-    <DashboardShell
-      user={{ email: user.email, name: userName }}
-      userTier={userTier}
-      onSignOut={handleSignOut}
-    >
-      <div className="mx-auto w-full max-w-5xl px-4 py-6 md:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-8">
+    <div style={{ maxWidth: 900, margin: '0 auto', padding: '32px 24px 96px' }}>
+      <Link
+        href="/dashboard"
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 6,
+          fontSize: 13,
+          fontWeight: 500,
+          color: 'var(--text-tertiary)',
+          textDecoration: 'none',
+          marginBottom: 20,
+        }}
+      >
+        <ArrowLeft size={14} /> Back to apps
+      </Link>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 32 }}>
+        <div
+          style={{
+            width: 44,
+            height: 44,
+            borderRadius: 12,
+            background: 'var(--emerald-tint)',
+            border: '1px solid var(--emerald-border)',
+            color: 'var(--emerald-500)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Bookmark size={20} />
+        </div>
+        <div>
+          <h1
+            style={{
+              fontSize: 24,
+              fontWeight: 700,
+              color: 'var(--text-primary)',
+              letterSpacing: '-0.02em',
+              margin: 0,
+            }}
+          >
+            My scenarios.
+          </h1>
+          <p
+            style={{
+              fontSize: 13,
+              color: 'var(--text-tertiary)',
+              margin: '4px 0 0',
+              fontFamily: 'var(--font-mono)',
+            }}
+          >
+            {scenarios.length} saved · {Object.keys(grouped).length} tool{Object.keys(grouped).length === 1 ? '' : 's'}
+          </p>
+        </div>
+      </div>
+
+      {scenarios.length === 0 ? (
+        <div
+          style={{
+            background: 'var(--bg-glass)',
+            backdropFilter: 'var(--glass-blur)',
+            WebkitBackdropFilter: 'var(--glass-blur)',
+            border: '1px solid var(--glass-border)',
+            borderRadius: 'var(--radius-xl)',
+            padding: '48px 32px',
+            textAlign: 'center',
+            boxShadow: 'var(--shadow-card), var(--shadow-inset-top)',
+          }}
+        >
+          <div
+            style={{
+              margin: '0 auto 16px',
+              width: 56,
+              height: 56,
+              borderRadius: 'var(--radius-md)',
+              background: 'var(--bg-glass-strong)',
+              border: '1px solid var(--glass-border)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--text-tertiary)',
+            }}
+          >
+            <Bookmark size={24} />
+          </div>
+          <h2
+            style={{
+              fontSize: 18,
+              fontWeight: 600,
+              color: 'var(--text-primary)',
+              margin: '0 0 8px',
+            }}
+          >
+            No saved scenarios yet.
+          </h2>
+          <p
+            style={{
+              fontSize: 14,
+              color: 'var(--text-tertiary)',
+              margin: '0 auto 24px',
+              maxWidth: 420,
+              lineHeight: 1.55,
+            }}
+          >
+            Use &ldquo;Save scenario&rdquo; on any tool to save your current inputs and results for later.
+          </p>
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-indigo-600 transition-colors mb-4"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              background: 'var(--emerald-500)',
+              color: 'var(--text-inverse)',
+              padding: '11px 20px',
+              borderRadius: 12,
+              fontWeight: 700,
+              fontSize: 13,
+              textDecoration: 'none',
+              boxShadow: '0 0 0 1px var(--cta-glow-ring), 0 0 24px var(--cta-glow-soft)',
+            }}
           >
-            <ArrowLeft size={16} />
-            Back to Apps
+            <Wrench size={14} /> Browse tools
           </Link>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center">
-              <Bookmark size={20} className="text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-black text-slate-900">My Scenarios</h1>
-              <p className="text-sm text-slate-500">
-                {scenarios.length} saved scenario{scenarios.length !== 1 ? 's' : ''} across {Object.keys(grouped).length} tool{Object.keys(grouped).length !== 1 ? 's' : ''}
-              </p>
-            </div>
-          </div>
         </div>
-
-        {/* Empty state */}
-        {scenarios.length === 0 && (
-          <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center">
-            <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Bookmark size={28} className="text-slate-400" />
-            </div>
-            <h3 className="text-lg font-bold text-slate-800 mb-2">No saved scenarios yet</h3>
-            <p className="text-sm text-slate-500 mb-6 max-w-md mx-auto">
-              Use the &quot;Save Scenario&quot; button on any financial tool to save your current inputs and results for later.
-            </p>
-            <Link
-              href="/dashboard"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-colors"
+      ) : (
+        Object.entries(grouped).map(([toolName, toolScenarios]) => (
+          <div key={toolName} style={{ marginBottom: 32 }}>
+            <div
+              className="eyebrow"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                marginBottom: 12,
+                color: 'var(--text-tertiary)',
+              }}
             >
-              <Wrench size={16} />
-              Browse Tools
-            </Link>
-          </div>
-        )}
-
-        {/* Scenarios by tool */}
-        {Object.entries(grouped).map(([toolName, toolScenarios]) => (
-          <div key={toolName} className="mb-8">
-            <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
-              <Wrench size={14} />
-              {toolName}
-            </h2>
-            <div className="space-y-3">
+              <Wrench size={12} /> {toolName.toUpperCase()}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {toolScenarios.map((scenario) => (
                 <div
                   key={scenario.id}
-                  className="bg-white rounded-2xl border border-slate-200 p-5 hover:border-indigo-200 transition-colors shadow-sm"
+                  style={{
+                    background: 'var(--bg-glass)',
+                    backdropFilter: 'var(--glass-blur)',
+                    WebkitBackdropFilter: 'var(--glass-blur)',
+                    border: '1px solid var(--glass-border)',
+                    borderRadius: 'var(--radius-md)',
+                    padding: '14px 18px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: 16,
+                    boxShadow: 'var(--shadow-card), var(--shadow-inset-top)',
+                  }}
                 >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-slate-800 mb-1">
-                        {scenario.key_result || 'Saved scenario'}
-                      </p>
-                      <div className="flex items-center gap-3 text-xs text-slate-400">
-                        <span className="flex items-center gap-1">
-                          <Calendar size={12} />
-                          {new Date(scenario.created_at).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric',
-                            hour: 'numeric',
-                            minute: '2-digit',
-                          })}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      <button
-                        onClick={() => handleLoad(scenario)}
-                        className="flex items-center gap-1.5 px-3.5 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold hover:bg-indigo-700 transition-colors"
-                      >
-                        <Play size={12} />
-                        Load
-                      </button>
-                      <button
-                        onClick={() => handleDelete(scenario.id)}
-                        disabled={deletingId === scenario.id}
-                        className="flex items-center gap-1.5 px-3 py-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl text-xs font-semibold transition-colors"
-                      >
-                        {deletingId === scenario.id ? (
-                          <Loader2 size={14} className="animate-spin" />
-                        ) : (
-                          <Trash2 size={14} />
-                        )}
-                      </button>
-                    </div>
+                  <div style={{ minWidth: 0 }}>
+                    <p
+                      style={{
+                        fontSize: 14,
+                        fontWeight: 600,
+                        color: 'var(--text-primary)',
+                        margin: 0,
+                      }}
+                    >
+                      {scenario.key_result || 'Saved scenario'}
+                    </p>
+                    <p
+                      style={{
+                        fontSize: 11,
+                        color: 'var(--text-tertiary)',
+                        margin: '4px 0 0',
+                        fontFamily: 'var(--font-mono)',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 6,
+                      }}
+                    >
+                      <Calendar size={11} />
+                      {new Date(scenario.created_at).toLocaleString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                        hour: 'numeric',
+                        minute: '2-digit',
+                      })}
+                    </p>
+                  </div>
+                  <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+                    <button
+                      type="button"
+                      onClick={() => handleLoad(scenario)}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        background: 'var(--emerald-500)',
+                        color: 'var(--text-inverse)',
+                        padding: '8px 14px',
+                        borderRadius: 10,
+                        border: 0,
+                        fontSize: 12,
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        fontFamily: 'inherit',
+                        boxShadow: '0 0 16px var(--cta-glow-soft)',
+                      }}
+                    >
+                      <Play size={12} /> Load
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(scenario.id)}
+                      disabled={deletingId === scenario.id}
+                      aria-label="Delete scenario"
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: 32,
+                        height: 32,
+                        background: 'transparent',
+                        color: 'var(--text-tertiary)',
+                        border: '1px solid var(--glass-border)',
+                        borderRadius: 10,
+                        cursor: deletingId === scenario.id ? 'not-allowed' : 'pointer',
+                        fontFamily: 'inherit',
+                      }}
+                    >
+                      {deletingId === scenario.id ? (
+                        <Loader2 size={14} className="animate-spin" />
+                      ) : (
+                        <Trash2 size={14} />
+                      )}
+                    </button>
                   </div>
                 </div>
               ))}
             </div>
           </div>
-        ))}
-      </div>
-
-      <footer className="mx-auto max-w-7xl border-t border-[var(--border-primary)] px-6 py-8 text-center text-xs text-[var(--text-tertiary)]">
-        &copy; {new Date().getFullYear()} Cortex Technologies. Built for smarter financial decisions.
-      </footer>
-    </DashboardShell>
+        ))
+      )}
+    </div>
   );
 }

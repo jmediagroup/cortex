@@ -107,31 +107,31 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
       </div>
 
       {/* RULE EXPLANATION BANNER */}
-      <div className="bg-blue-50 border-2 border-blue-200 rounded-[2.5rem] p-8">
+      <div className="bg-[var(--color-info-soft)] border-2 border-[var(--color-info-soft)] rounded-[2.5rem] p-8">
         <div className="flex items-start gap-4">
-          <div className="p-3 bg-blue-100 rounded-2xl">
-            <AlertCircle className="text-blue-600" size={28} />
+          <div className="p-3 bg-[var(--color-info-soft)] rounded-2xl">
+            <AlertCircle className="text-[var(--color-info)]" size={28} />
           </div>
           <div>
-            <h3 className="text-xl font-black text-blue-900 mb-2">The 20/3/8 Car-Buying Rule</h3>
+            <h3 className="text-xl font-bold text-[var(--color-info)] mb-2">The 20/3/8 Car-Buying Rule</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
               <div className="flex items-start gap-2">
-                <div className="font-black text-3xl text-blue-600">20%</div>
-                <div className="text-blue-700 font-medium mt-1">
+                <div className="font-bold text-3xl text-[var(--color-info)]">20%</div>
+                <div className="text-[var(--color-info)] font-medium mt-1">
                   <div className="font-bold">Down Payment</div>
                   Put at least 20% down to reduce loan amount
                 </div>
               </div>
               <div className="flex items-start gap-2">
-                <div className="font-black text-3xl text-blue-600">3</div>
-                <div className="text-blue-700 font-medium mt-1">
+                <div className="font-bold text-3xl text-[var(--color-info)]">3</div>
+                <div className="text-[var(--color-info)] font-medium mt-1">
                   <div className="font-bold">Years to Pay Off</div>
                   Finance for no more than 36 months
                 </div>
               </div>
               <div className="flex items-start gap-2">
-                <div className="font-black text-3xl text-blue-600">8%</div>
-                <div className="text-blue-700 font-medium mt-1">
+                <div className="font-bold text-3xl text-[var(--color-info)]">8%</div>
+                <div className="text-[var(--color-info)] font-medium mt-1">
                   <div className="font-bold">of Pre-Tax Income</div>
                   Monthly payment should not exceed 8% of gross income
                 </div>
@@ -144,32 +144,32 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* LEFT COLUMN - INPUTS */}
         <div className="space-y-6">
-          <div className="bg-white rounded-[2.5rem] p-8 border-2 border-slate-200 shadow-sm">
-            <h3 className="text-2xl font-black text-slate-800 mb-6 flex items-center gap-3">
-              <DollarSign className="text-indigo-600" size={28} />
+          <div className="bg-[var(--bg-card)] rounded-[2.5rem] p-8 border-2 border-[var(--border-default)] shadow-sm">
+            <h3 className="text-2xl font-bold text-[var(--text-primary)] mb-6 flex items-center gap-3">
+              <DollarSign className="text-[var(--emerald-500)]" size={28} />
               Your Financial Info
             </h3>
 
             <div className="space-y-6">
               {/* Annual Gross Income */}
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2">Annual Gross Income</label>
+                <label className="block text-sm font-bold text-[var(--text-secondary)] mb-2">Annual Gross Income</label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">$</span>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] font-bold">$</span>
                   <input
                     type="number"
                     name="annualIncome"
                     value={inputs.annualIncome}
                     onChange={handleInputChange}
-                    className="w-full pl-8 pr-4 py-3 border-2 border-slate-200 rounded-2xl font-bold text-slate-900 focus:border-indigo-500 focus:outline-none transition-colors"
+                    className="w-full pl-8 pr-4 py-3 border-2 border-[var(--border-default)] rounded-2xl font-bold text-[var(--text-primary)] focus:border-[var(--emerald-border)] focus:outline-none transition-colors"
                   />
                 </div>
-                <p className="text-xs text-slate-500 mt-1 font-medium">Your total annual income before taxes</p>
+                <p className="text-xs text-[var(--text-tertiary)] mt-1 font-medium">Your total annual income before taxes</p>
               </div>
 
               {/* Interest Rate */}
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2">Interest Rate</label>
+                <label className="block text-sm font-bold text-[var(--text-secondary)] mb-2">Interest Rate</label>
                 <div className="relative">
                   <input
                     type="number"
@@ -177,33 +177,33 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
                     value={inputs.interestRate}
                     onChange={handleInputChange}
                     step="0.1"
-                    className="w-full pr-8 pl-4 py-3 border-2 border-slate-200 rounded-2xl font-bold text-slate-900 focus:border-indigo-500 focus:outline-none transition-colors"
+                    className="w-full pr-8 pl-4 py-3 border-2 border-[var(--border-default)] rounded-2xl font-bold text-[var(--text-primary)] focus:border-[var(--emerald-border)] focus:outline-none transition-colors"
                   />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">%</span>
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] font-bold">%</span>
                 </div>
-                <p className="text-xs text-slate-500 mt-1 font-medium">Expected auto loan APR</p>
+                <p className="text-xs text-[var(--text-tertiary)] mt-1 font-medium">Expected auto loan APR</p>
               </div>
 
               {/* Current Monthly Car Payment */}
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2">Current Monthly Car Payments</label>
+                <label className="block text-sm font-bold text-[var(--text-secondary)] mb-2">Current Monthly Car Payments</label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">$</span>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] font-bold">$</span>
                   <input
                     type="number"
                     name="currentMonthlyPayment"
                     value={inputs.currentMonthlyPayment}
                     onChange={handleInputChange}
-                    className="w-full pl-8 pr-4 py-3 border-2 border-slate-200 rounded-2xl font-bold text-slate-900 focus:border-indigo-500 focus:outline-none transition-colors"
+                    className="w-full pl-8 pr-4 py-3 border-2 border-[var(--border-default)] rounded-2xl font-bold text-[var(--text-primary)] focus:border-[var(--emerald-border)] focus:outline-none transition-colors"
                   />
                 </div>
-                <p className="text-xs text-slate-500 mt-1 font-medium">Any existing car loan payments (optional)</p>
+                <p className="text-xs text-[var(--text-tertiary)] mt-1 font-medium">Any existing car loan payments (optional)</p>
               </div>
 
               {/* Down Payment Percentage Slider */}
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2">
-                  Down Payment: <span className="text-indigo-600">{inputs.downPaymentPercent}%</span>
+                <label className="block text-sm font-bold text-[var(--text-secondary)] mb-2">
+                  Down Payment: <span className="text-[var(--emerald-500)]">{inputs.downPaymentPercent}%</span>
                 </label>
                 <input
                   type="range"
@@ -213,14 +213,14 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
                   step="1"
                   value={inputs.downPaymentPercent}
                   onChange={handleInputChange}
-                  className="w-full h-3 bg-slate-200 rounded-full appearance-none cursor-pointer accent-indigo-600"
+                  className="w-full h-3 bg-[var(--bg-glass-strong)] rounded-full appearance-none cursor-pointer accent-indigo-600"
                   style={{
-                    background: `linear-gradient(to right, #4f46e5 0%, #4f46e5 ${inputs.downPaymentPercent}%, #e2e8f0 ${inputs.downPaymentPercent}%, #e2e8f0 100%)`
+                    background: `linear-gradient(to right, #00F0A0 0%, #00F0A0 ${inputs.downPaymentPercent}%, #48484A ${inputs.downPaymentPercent}%, #48484A 100%)`
                   }}
                 />
-                <div className="flex justify-between text-xs text-slate-500 mt-1 font-medium">
+                <div className="flex justify-between text-xs text-[var(--text-tertiary)] mt-1 font-medium">
                   <span>0%</span>
-                  <span className={inputs.downPaymentPercent >= 20 ? 'text-emerald-600 font-bold' : 'text-amber-600 font-bold'}>
+                  <span className={inputs.downPaymentPercent >= 20 ? 'text-[var(--emerald-500)] font-bold' : 'text-[var(--color-warning)] font-bold'}>
                     {inputs.downPaymentPercent >= 20 ? '✓ Meets 20% rule' : '⚠ Below 20% recommended'}
                   </span>
                   <span>100%</span>
@@ -233,85 +233,85 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
         {/* RIGHT COLUMN - RESULTS */}
         <div className="space-y-6">
           {/* Main Result - Affordable Car Price */}
-          <div className="bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-[3rem] p-10 text-white shadow-2xl border-2 border-indigo-500">
+          <div className="bg-gradient-to-br from-[var(--emerald-500)] to-[var(--emerald-600)] rounded-[3rem] p-10 text-white shadow-2xl border-2 border-[var(--emerald-border)]">
             <div className="flex items-center gap-3 mb-4">
-              <Car className="text-indigo-200" size={32} />
-              <h3 className="text-xl font-black tracking-tight">Maximum Car Price</h3>
+              <Car className="text-[var(--mist-200)]" size={32} />
+              <h3 className="text-xl font-bold tracking-tight">Maximum Car Price</h3>
             </div>
-            <div className="text-6xl font-black mb-2 tracking-tight">
+            <div className="text-6xl font-bold mb-2 tracking-tight">
               ${calculations.maxCarPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}
             </div>
-            <p className="text-indigo-100 font-medium text-sm">
+            <p className="text-[var(--mist-100)] font-medium text-sm">
               This is how much car you can afford without going broke!
             </p>
           </div>
 
           {/* Breakdown Cards */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white rounded-2xl p-6 border-2 border-slate-200">
-              <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Down Payment ({inputs.downPaymentPercent}%)</div>
-              <div className="text-2xl font-black text-slate-900">
+            <div className="bg-[var(--bg-card)] rounded-2xl p-6 border-2 border-[var(--border-default)]">
+              <div className="text-xs font-bold text-[var(--text-tertiary)] uppercase tracking-wider mb-1">Down Payment ({inputs.downPaymentPercent}%)</div>
+              <div className="text-2xl font-bold text-[var(--text-primary)]">
                 ${calculations.userDownPaymentAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl p-6 border-2 border-slate-200">
-              <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Loan Amount</div>
-              <div className="text-2xl font-black text-slate-900">
+            <div className="bg-[var(--bg-card)] rounded-2xl p-6 border-2 border-[var(--border-default)]">
+              <div className="text-xs font-bold text-[var(--text-tertiary)] uppercase tracking-wider mb-1">Loan Amount</div>
+              <div className="text-2xl font-bold text-[var(--text-primary)]">
                 ${calculations.userLoanAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl p-6 border-2 border-slate-200">
-              <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Monthly Payment</div>
-              <div className="text-2xl font-black text-slate-900">
+            <div className="bg-[var(--bg-card)] rounded-2xl p-6 border-2 border-[var(--border-default)]">
+              <div className="text-xs font-bold text-[var(--text-tertiary)] uppercase tracking-wider mb-1">Monthly Payment</div>
+              <div className="text-2xl font-bold text-[var(--text-primary)]">
                 ${calculations.userMonthlyPayment.toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </div>
-              <div className="text-xs text-slate-500 font-medium mt-1">
+              <div className="text-xs text-[var(--text-tertiary)] font-medium mt-1">
                 Max: ${calculations.maxMonthlyPayment.toLocaleString(undefined, { maximumFractionDigits: 0 })}/mo
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl p-6 border-2 border-slate-200">
-              <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Total Interest</div>
-              <div className="text-2xl font-black text-slate-900">
+            <div className="bg-[var(--bg-card)] rounded-2xl p-6 border-2 border-[var(--border-default)]">
+              <div className="text-xs font-bold text-[var(--text-tertiary)] uppercase tracking-wider mb-1">Total Interest</div>
+              <div className="text-2xl font-bold text-[var(--text-primary)]">
                 ${calculations.totalInterest.toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </div>
-              <div className="text-xs text-slate-500 font-medium mt-1">Over 3 years</div>
+              <div className="text-xs text-[var(--text-tertiary)] font-medium mt-1">Over 3 years</div>
             </div>
           </div>
 
           {/* Rule Compliance Status */}
           <div className={`rounded-2xl p-6 border-2 ${
             calculations.meetsAllRules
-              ? 'bg-emerald-50 border-emerald-200'
-              : 'bg-amber-50 border-amber-200'
+              ? 'bg-[var(--emerald-50)] border-[var(--emerald-border)]'
+              : 'bg-[var(--color-warning-soft)] border-[var(--glass-border-strong)]'
           }`}>
             <div className="flex items-start gap-3 mb-4">
               {calculations.meetsAllRules ? (
-                <CheckCircle className="text-emerald-600" size={24} />
+                <CheckCircle className="text-[var(--emerald-500)]" size={24} />
               ) : (
-                <AlertCircle className="text-amber-600" size={24} />
+                <AlertCircle className="text-[var(--color-warning)]" size={24} />
               )}
               <div>
-                <h4 className={`font-black text-lg mb-2 ${
-                  calculations.meetsAllRules ? 'text-emerald-900' : 'text-amber-900'
+                <h4 className={`font-bold text-lg mb-2 ${
+                  calculations.meetsAllRules ? 'text-[var(--emerald-500)]' : 'text-[var(--color-warning)]'
                 }`}>
                   {calculations.meetsAllRules ? '20/3/8 Rule Status: PASS' : '20/3/8 Rule Status: WARNING'}
                 </h4>
                 <div className="space-y-2 text-sm font-medium">
                   <div className={`flex items-center gap-2 ${
-                    calculations.meetsDownPaymentRule ? 'text-emerald-700' : 'text-amber-700'
+                    calculations.meetsDownPaymentRule ? 'text-[var(--emerald-500)]' : 'text-[var(--color-warning)]'
                   }`}>
                     <span>{calculations.meetsDownPaymentRule ? '✓' : '⚠'}</span>
                     <span>Down payment: {inputs.downPaymentPercent}% {calculations.meetsDownPaymentRule ? '(meets 20% minimum)' : '(below 20% recommended)'}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-emerald-700">
+                  <div className="flex items-center gap-2 text-[var(--emerald-500)]">
                     <span>✓</span>
                     <span>Loan term: 3 years (36 months)</span>
                   </div>
                   <div className={`flex items-center gap-2 ${
-                    calculations.meetsPaymentRule ? 'text-emerald-700' : 'text-amber-700'
+                    calculations.meetsPaymentRule ? 'text-[var(--emerald-500)]' : 'text-[var(--color-warning)]'
                   }`}>
                     <span>{calculations.meetsPaymentRule ? '✓' : '⚠'}</span>
                     <span>
@@ -327,33 +327,33 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
       </div>
 
       {/* Additional Details */}
-      <div className="bg-slate-50 rounded-[2.5rem] p-8 border-2 border-slate-200">
-        <h3 className="text-xl font-black text-slate-800 mb-4 flex items-center gap-3">
-          <Calendar className="text-slate-600" size={24} />
+      <div className="bg-[var(--bg-section)] rounded-[2.5rem] p-8 border-2 border-[var(--border-default)]">
+        <h3 className="text-xl font-bold text-[var(--text-primary)] mb-4 flex items-center gap-3">
+          <Calendar className="text-[var(--text-secondary)]" size={24} />
           Loan Summary (3-Year Term)
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-center">
           <div>
-            <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Total Paid</div>
-            <div className="text-2xl font-black text-slate-900">
+            <div className="text-xs font-bold text-[var(--text-tertiary)] uppercase tracking-wider mb-2">Total Paid</div>
+            <div className="text-2xl font-bold text-[var(--text-primary)]">
               ${calculations.totalPaid.toLocaleString(undefined, { maximumFractionDigits: 0 })}
             </div>
           </div>
           <div>
-            <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Principal</div>
-            <div className="text-2xl font-black text-slate-900">
+            <div className="text-xs font-bold text-[var(--text-tertiary)] uppercase tracking-wider mb-2">Principal</div>
+            <div className="text-2xl font-bold text-[var(--text-primary)]">
               ${calculations.userLoanAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })}
             </div>
           </div>
           <div>
-            <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Interest</div>
-            <div className="text-2xl font-black text-slate-900">
+            <div className="text-xs font-bold text-[var(--text-tertiary)] uppercase tracking-wider mb-2">Interest</div>
+            <div className="text-2xl font-bold text-[var(--text-primary)]">
               ${calculations.totalInterest.toLocaleString(undefined, { maximumFractionDigits: 0 })}
             </div>
           </div>
           <div>
-            <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">APR</div>
-            <div className="text-2xl font-black text-slate-900">{inputs.interestRate}%</div>
+            <div className="text-xs font-bold text-[var(--text-tertiary)] uppercase tracking-wider mb-2">APR</div>
+            <div className="text-2xl font-bold text-[var(--text-primary)]">{inputs.interestRate}%</div>
           </div>
         </div>
       </div>

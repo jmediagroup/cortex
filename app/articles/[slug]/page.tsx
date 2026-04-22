@@ -2,34 +2,25 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Clock, ArrowLeft, ArrowRight, Calendar } from 'lucide-react';
+import { Clock, ArrowLeft, Calendar } from 'lucide-react';
 import { getArticleBySlug, getAllArticleSlugs, formatArticleDate } from '@/lib/wordpress/client';
 import { Article } from '@/lib/wordpress/types';
 import { ShareButtons } from './ShareButtons';
+import { MarketingIcon } from '@/components/marketing/Icons';
 import './article-styles.css';
 
-interface PageProps {
-  params: Promise<{ slug: string }>;
-}
+type PageProps = { params: Promise<{ slug: string }> };
 
-// Generate static paths for all articles
 export async function generateStaticParams() {
   const slugs = await getAllArticleSlugs();
-  return slugs.map((item) => ({
-    slug: item.slug,
-  }));
+  return slugs.map((item) => ({ slug: item.slug }));
 }
 
-// Generate metadata for each article
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const article = await getArticleBySlug(slug);
 
-  if (!article) {
-    return {
-      title: 'Article Not Found',
-    };
-  }
+  if (!article) return { title: 'Article Not Found' };
 
   const seo = article.seo;
   const title = seo?.title || article.title;
@@ -55,9 +46,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description: seo?.ogDescription || description,
       images: [ogImage],
     },
-    alternates: {
-      canonical: seo?.canonical || `https://cortex.vip/articles/${slug}`,
-    },
+    alternates: { canonical: seo?.canonical || `https://cortex.vip/articles/${slug}` },
   };
 }
 
@@ -65,11 +54,8 @@ export default async function ArticlePage({ params }: PageProps) {
   const { slug } = await params;
   const article = await getArticleBySlug(slug);
 
-  if (!article) {
-    notFound();
-  }
+  if (!article) notFound();
 
-  // Generate Article JSON-LD schema
   const articleSchema = generateArticleSchema(article);
   const faqSchema = article.faq.length > 0 ? generateFAQSchema(article.faq) : null;
   const breadcrumbSchema = generateBreadcrumbSchema(article);
@@ -78,7 +64,6 @@ export default async function ArticlePage({ params }: PageProps) {
 
   return (
     <>
-      {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
@@ -94,108 +79,187 @@ export default async function ArticlePage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
 
-      {/* ARTICLE CONTAINER */}
-      <article className="relative">
-        {/* Hero Section with Featured Image */}
+      <article style={{ position: 'relative' }}>
         {article.featuredImage && (
-          <div className="relative w-full h-[40vh] md:h-[50vh] max-h-[500px] bg-slate-100">
+          <div
+            style={{
+              position: 'relative',
+              width: '100%',
+              height: 'clamp(260px, 45vh, 500px)',
+              background: 'var(--bg-section)',
+            }}
+          >
             <Image
               src={article.featuredImage.url}
               alt={article.featuredImage.alt}
               fill
-              className="object-cover"
+              style={{ objectFit: 'cover' }}
               priority
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+            <div
+              aria-hidden="true"
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background:
+                  'linear-gradient(to bottom, transparent 0%, var(--bg-canvas) 100%)',
+              }}
+            />
           </div>
         )}
 
-        {/* Article Header */}
-        <header className={`relative ${article.featuredImage ? '-mt-24 md:-mt-32' : 'pt-8 md:pt-12'}`}>
-          <div className="max-w-3xl mx-auto px-6">
-            {/* Card container for header when there's a featured image */}
-            <div className={article.featuredImage ? 'bg-white rounded-t-2xl pt-8 md:pt-10 px-2' : ''}>
-              {/* Breadcrumb */}
-              <nav className="mb-6">
-                <Link
-                  href="/articles"
-                  className="inline-flex items-center gap-2 text-slate-500 hover:text-indigo-600 text-sm font-medium transition-colors"
-                >
-                  <ArrowLeft size={14} />
-                  Back to Articles
-                </Link>
-              </nav>
+        <header
+          style={{
+            position: 'relative',
+            marginTop: article.featuredImage ? -96 : 48,
+            padding: '0 24px',
+          }}
+        >
+          <div
+            style={{
+              maxWidth: 760,
+              margin: '0 auto',
+              background: article.featuredImage ? 'var(--bg-canvas)' : 'transparent',
+              borderRadius: article.featuredImage ? 'var(--radius-xl) var(--radius-xl) 0 0' : 0,
+              padding: article.featuredImage ? '32px 0 0' : 0,
+            }}
+          >
+            <nav style={{ marginBottom: 20 }}>
+              <Link
+                href="/articles"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  color: 'var(--text-secondary)',
+                  fontSize: 13,
+                  fontWeight: 500,
+                  textDecoration: 'none',
+                }}
+              >
+                <ArrowLeft size={14} /> Back to articles
+              </Link>
+            </nav>
 
-              {/* Categories */}
-              {article.categories.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-5">
-                  {article.categories.map((category) => (
-                    <Link
-                      key={category.slug}
-                      href={`/articles?category=${category.slug}`}
-                      className="text-xs font-semibold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full hover:bg-indigo-100 transition-colors"
-                    >
-                      {category.name}
-                    </Link>
-                  ))}
-                </div>
-              )}
-
-              {/* Title */}
-              <h1 className="text-[2rem] md:text-[2.5rem] lg:text-[2.75rem] font-black text-slate-900 leading-[1.15] tracking-tight mb-6">
-                {article.title}
-              </h1>
-
-              {/* Meta - Date and Reading Time */}
-              <div className="flex flex-wrap items-center gap-4 text-slate-500 text-sm pb-6 border-b border-slate-100">
-                <div className="flex items-center gap-1.5">
-                  <Calendar size={14} className="text-slate-400" />
-                  <time dateTime={article.date} className="font-medium">
-                    {formatArticleDate(article.date)}
-                  </time>
-                </div>
-                <span className="text-slate-300">•</span>
-                <div className="flex items-center gap-1.5">
-                  <Clock size={14} className="text-slate-400" />
-                  <span className="font-medium">{article.readingTime} min read</span>
-                </div>
+            {article.categories.length > 0 && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 20 }}>
+                {article.categories.map((category) => (
+                  <Link
+                    key={category.slug}
+                    href={`/articles?category=${category.slug}`}
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 600,
+                      letterSpacing: '0.08em',
+                      textTransform: 'uppercase',
+                      color: 'var(--emerald-500)',
+                      background: 'var(--emerald-tint-soft)',
+                      border: '1px solid var(--emerald-border-soft)',
+                      padding: '5px 12px',
+                      borderRadius: 9999,
+                      textDecoration: 'none',
+                    }}
+                  >
+                    {category.name}
+                  </Link>
+                ))}
               </div>
+            )}
+
+            <h1
+              style={{
+                fontSize: 'clamp(32px, 5vw, 44px)',
+                fontWeight: 700,
+                color: 'var(--text-primary)',
+                letterSpacing: '-0.025em',
+                lineHeight: 1.15,
+                margin: '0 0 24px',
+              }}
+            >
+              {article.title}
+            </h1>
+
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                gap: 16,
+                color: 'var(--text-tertiary)',
+                fontSize: 13,
+                paddingBottom: 24,
+                borderBottom: '1px solid var(--border-subtle)',
+                fontFamily: 'var(--font-mono)',
+              }}
+            >
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <Calendar size={13} />
+                <time dateTime={article.date}>{formatArticleDate(article.date)}</time>
+              </span>
+              <span aria-hidden="true">·</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <Clock size={13} /> {article.readingTime} min read
+              </span>
             </div>
           </div>
         </header>
 
-        {/* Article Body */}
-        <div className="max-w-3xl mx-auto px-6 md:px-8">
-          {/* Main Content */}
+        <div style={{ maxWidth: 760, margin: '0 auto', padding: '0 24px' }}>
           <div
-            className="article-content py-10 md:py-12"
+            className="article-content"
+            style={{ padding: '40px 0' }}
             dangerouslySetInnerHTML={{ __html: article.content }}
           />
 
-          {/* Social Share Section */}
           <ShareButtons url={articleUrl} title={article.title} />
 
-          {/* FAQ Section */}
           {article.faq.length > 0 && (
-            <section className="py-10 border-t border-slate-100">
-              <h2 className="text-2xl font-black text-slate-900 mb-6">
-                Frequently Asked Questions
+            <section
+              style={{
+                padding: '40px 0',
+                borderTop: '1px solid var(--border-subtle)',
+              }}
+            >
+              <h2
+                style={{
+                  fontSize: 24,
+                  fontWeight: 700,
+                  color: 'var(--text-primary)',
+                  margin: '0 0 24px',
+                  letterSpacing: '-0.02em',
+                }}
+              >
+                Frequently asked questions.
               </h2>
-              <div className="space-y-4">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {article.faq.map((item, index) => (
                   <details
                     key={index}
-                    className="group bg-slate-50 rounded-xl border border-slate-100 overflow-hidden"
+                    style={{
+                      background: 'var(--bg-glass)',
+                      border: '1px solid var(--glass-border)',
+                      borderRadius: 'var(--radius-md)',
+                      overflow: 'hidden',
+                    }}
                   >
-                    <summary className="flex items-center justify-between p-5 cursor-pointer font-semibold text-slate-900 hover:bg-slate-100 transition-colors">
+                    <summary
+                      style={{
+                        padding: '16px 20px',
+                        cursor: 'pointer',
+                        fontWeight: 600,
+                        color: 'var(--text-primary)',
+                        listStyle: 'none',
+                      }}
+                    >
                       {item.question}
-                      <span className="ml-4 text-slate-400 group-open:rotate-180 transition-transform">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="m6 9 6 6 6-6" />
-                        </svg>
-                      </span>
                     </summary>
-                    <div className="px-5 pb-5 text-slate-600 leading-relaxed">
+                    <div
+                      style={{
+                        padding: '0 20px 20px',
+                        color: 'var(--text-secondary)',
+                        lineHeight: 1.65,
+                      }}
+                    >
                       {item.answer}
                     </div>
                   </details>
@@ -204,72 +268,161 @@ export default async function ArticlePage({ params }: PageProps) {
             </section>
           )}
 
-          {/* Related Calculator CTA */}
           {article.relatedCalculator && (
-            <div className="my-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl p-8 text-white">
-              <h3 className="text-xl font-black mb-2">Try It Yourself</h3>
-              <p className="text-indigo-100 mb-6 text-sm leading-relaxed">
-                {article.cta?.text || 'Put what you learned into practice with our free calculator.'}
-              </p>
-              <Link
-                href={article.cta?.link || `/apps/${article.relatedCalculator}`}
-                className="inline-flex items-center gap-2 bg-white text-indigo-600 font-bold px-5 py-2.5 rounded-lg hover:bg-indigo-50 transition-colors text-sm"
-              >
-                Open Calculator
-                <ArrowRight size={16} />
-              </Link>
+            <div
+              style={{
+                margin: '40px 0',
+                padding: 32,
+                background: 'linear-gradient(135deg, #121620 0%, #0A0E14 100%)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: 'var(--radius-xl)',
+                color: '#F5F5F7',
+                position: 'relative',
+                overflow: 'hidden',
+              }}
+            >
+              <div
+                aria-hidden="true"
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  background:
+                    'radial-gradient(ellipse at top right, rgba(0,240,160,0.18), transparent 60%)',
+                  pointerEvents: 'none',
+                }}
+              />
+              <div style={{ position: 'relative' }}>
+                <div className="eyebrow" style={{ color: '#00F0A0', marginBottom: 12 }}>
+                  TRY IT YOURSELF
+                </div>
+                <h3
+                  style={{
+                    fontSize: 22,
+                    fontWeight: 700,
+                    margin: '0 0 10px',
+                    letterSpacing: '-0.015em',
+                  }}
+                >
+                  Put what you learned into practice.
+                </h3>
+                <p style={{ color: '#AEAEB2', margin: '0 0 20px', lineHeight: 1.55 }}>
+                  {article.cta?.text || 'Run the scenario in our free calculator.'}
+                </p>
+                <Link
+                  href={article.cta?.link || `/apps/${article.relatedCalculator}`}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    background: '#00F0A0',
+                    color: '#0A0E14',
+                    padding: '12px 22px',
+                    borderRadius: 12,
+                    fontWeight: 700,
+                    fontSize: 14,
+                    textDecoration: 'none',
+                    boxShadow:
+                      '0 0 0 1px rgba(0,240,160,0.4), 0 0 32px rgba(0,240,160,0.35)',
+                  }}
+                >
+                  Open calculator <MarketingIcon name="arrowRight" size={14} />
+                </Link>
+              </div>
             </div>
           )}
 
-          {/* Tags */}
           {article.tags.length > 0 && (
-            <div className="py-8 border-t border-slate-100">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide mr-2">
-                  Tags:
+            <div
+              style={{
+                padding: '32px 0',
+                borderTop: '1px solid var(--border-subtle)',
+                display: 'flex',
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                gap: 8,
+              }}
+            >
+              <span
+                className="eyebrow"
+                style={{ marginRight: 8, color: 'var(--text-muted)' }}
+              >
+                TAGS
+              </span>
+              {article.tags.map((tag) => (
+                <span
+                  key={tag.slug}
+                  style={{
+                    fontSize: 12,
+                    fontWeight: 500,
+                    color: 'var(--text-secondary)',
+                    background: 'var(--bg-glass-strong)',
+                    border: '1px solid var(--glass-border)',
+                    padding: '4px 10px',
+                    borderRadius: 9999,
+                  }}
+                >
+                  {tag.name}
                 </span>
-                {article.tags.map((tag) => (
-                  <span
-                    key={tag.slug}
-                    className="text-sm font-medium text-slate-600 bg-slate-100 px-3 py-1 rounded-full"
-                  >
-                    {tag.name}
-                  </span>
-                ))}
-              </div>
+              ))}
             </div>
           )}
         </div>
 
-        {/* More Articles CTA */}
-        <div className="bg-slate-50 py-16 mt-8">
-          <div className="max-w-3xl mx-auto px-6 text-center">
-            <h3 className="text-2xl font-black text-slate-900 mb-3">
-              Continue Learning
+        <div
+          style={{
+            background: 'var(--bg-section)',
+            padding: '64px 24px',
+            marginTop: 32,
+            borderTop: '1px solid var(--border-subtle)',
+          }}
+        >
+          <div style={{ maxWidth: 760, margin: '0 auto', textAlign: 'center' }}>
+            <h3
+              style={{
+                fontSize: 24,
+                fontWeight: 700,
+                color: 'var(--text-primary)',
+                margin: '0 0 10px',
+                letterSpacing: '-0.02em',
+              }}
+            >
+              Continue learning.
             </h3>
-            <p className="text-slate-600 mb-6">
+            <p
+              style={{
+                color: 'var(--text-secondary)',
+                marginBottom: 24,
+                fontSize: 15,
+              }}
+            >
               Explore more articles to deepen your financial knowledge.
             </p>
             <Link
               href="/articles"
-              className="inline-flex items-center gap-2 bg-slate-900 text-white font-bold px-6 py-3 rounded-xl hover:bg-slate-800 transition-colors"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                background: 'var(--emerald-500)',
+                color: 'var(--text-inverse)',
+                padding: '13px 24px',
+                borderRadius: 12,
+                fontWeight: 700,
+                fontSize: 14,
+                textDecoration: 'none',
+                boxShadow:
+                  '0 0 0 1px var(--cta-glow-ring), 0 0 24px var(--cta-glow-soft)',
+              }}
             >
-              View All Articles
-              <ArrowRight size={18} />
+              View all articles <MarketingIcon name="arrowRight" size={14} />
             </Link>
           </div>
         </div>
       </article>
-
-      {/* FOOTER */}
-      <footer className="py-10 text-center text-slate-400 font-medium text-sm border-t border-slate-100">
-        &copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.
-      </footer>
     </>
   );
 }
 
-// Schema Generation Functions
 function generateArticleSchema(article: Article) {
   return {
     '@context': 'https://schema.org',
@@ -284,10 +437,7 @@ function generateArticleSchema(article: Article) {
       '@type': 'Organization',
       '@id': 'https://cortex.vip/#organization',
       name: 'Cortex Technologies',
-      logo: {
-        '@type': 'ImageObject',
-        url: 'https://cortex.vip/icon',
-      },
+      logo: { '@type': 'ImageObject', url: 'https://cortex.vip/icon' },
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
@@ -306,10 +456,7 @@ function generateFAQSchema(faq: Array<{ question: string; answer: string }>) {
     mainEntity: faq.map((item) => ({
       '@type': 'Question',
       name: item.question,
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: item.answer,
-      },
+      acceptedAnswer: { '@type': 'Answer', text: item.answer },
     })),
   };
 }
@@ -319,18 +466,8 @@ function generateBreadcrumbSchema(article: Article) {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: 'Home',
-        item: 'https://cortex.vip',
-      },
-      {
-        '@type': 'ListItem',
-        position: 2,
-        name: 'Articles',
-        item: 'https://cortex.vip/articles',
-      },
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cortex.vip' },
+      { '@type': 'ListItem', position: 2, name: 'Articles', item: 'https://cortex.vip/articles' },
       {
         '@type': 'ListItem',
         position: 3,

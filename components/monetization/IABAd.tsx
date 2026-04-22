@@ -97,7 +97,7 @@ export default function IABAd({
 
   // Helper to highlight numbers in green (for bonuses/cash back)
   const highlightNumbers = (text: string) => {
-    return text.replace(/(\$[\d,]+(?:\.\d{2})?|\d+(?:\.\d+)?%)/g, '<span class="text-green-600 font-semibold">$1</span>');
+    return text.replace(/(\$[\d,]+(?:\.\d{2})?|\d+(?:\.\d+)?%)/g, '<span class="text-[var(--emerald-500)] font-semibold">$1</span>');
   };
 
   // Medium Rectangle (300x250) - F-Pattern Layout
@@ -108,7 +108,7 @@ export default function IABAd({
         target="_blank"
         rel="noopener noreferrer sponsored"
         onClick={handleClick}
-        className={`block w-[300px] h-[250px] bg-white border border-[#E2E8F0] rounded-md overflow-hidden hover:shadow-lg transition-shadow group ${className}`}
+        className={`block w-[300px] h-[250px] bg-[var(--bg-card)] border border-[#E2E8F0] rounded-md overflow-hidden hover:shadow-lg transition-shadow group ${className}`}
         style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
       >
         <div className="h-full flex flex-col p-5">
@@ -160,7 +160,7 @@ export default function IABAd({
         target="_blank"
         rel="noopener noreferrer sponsored"
         onClick={handleClick}
-        className={`block w-full max-w-[728px] h-[90px] bg-white border border-[#E2E8F0] rounded-md overflow-hidden hover:shadow-lg transition-shadow group ${className}`}
+        className={`block w-full max-w-[728px] h-[90px] bg-[var(--bg-card)] border border-[#E2E8F0] rounded-md overflow-hidden hover:shadow-lg transition-shadow group ${className}`}
         style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
       >
         <div className="h-full flex items-center justify-between px-6 gap-6">
@@ -196,7 +196,7 @@ export default function IABAd({
         target="_blank"
         rel="noopener noreferrer sponsored"
         onClick={handleClick}
-        className={`block w-full max-w-[320px] h-[100px] bg-white border border-[#E2E8F0] rounded-md overflow-hidden hover:shadow-lg transition-shadow group mx-auto ${className}`}
+        className={`block w-full max-w-[320px] h-[100px] bg-[var(--bg-card)] border border-[#E2E8F0] rounded-md overflow-hidden hover:shadow-lg transition-shadow group mx-auto ${className}`}
         style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
       >
         <div className="h-full flex flex-col items-center justify-center p-4 text-center">
@@ -230,7 +230,7 @@ export default function IABAd({
         target="_blank"
         rel="noopener noreferrer sponsored"
         onClick={handleClick}
-        className={`block w-full max-w-[336px] h-[280px] bg-white border border-[#E2E8F0] rounded-md overflow-hidden hover:shadow-lg transition-shadow group ${className}`}
+        className={`block w-full max-w-[336px] h-[280px] bg-[var(--bg-card)] border border-[#E2E8F0] rounded-md overflow-hidden hover:shadow-lg transition-shadow group ${className}`}
         style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
       >
         <div className="h-full flex flex-col p-6">

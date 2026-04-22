@@ -40,7 +40,7 @@ export default function PromoBanners() {
           <p className="mb-4 text-sm font-medium leading-relaxed opacity-90">
             {promo.text}
           </p>
-          <button className="w-fit rounded-[var(--radius-md)] bg-white/20 px-4 py-2 text-xs font-bold uppercase tracking-wide backdrop-blur-sm transition-colors hover:bg-white/30">
+          <button className="w-fit rounded-[var(--radius-md)] bg-[var(--bg-card)]/20 px-4 py-2 text-xs font-bold uppercase tracking-wide backdrop-blur-sm transition-colors hover:bg-[var(--bg-card)]/30">
             {promo.cta}
           </button>
         </div>

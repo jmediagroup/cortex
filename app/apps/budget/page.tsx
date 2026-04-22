@@ -69,7 +69,7 @@ const CategoryGroup = ({
   handleAllocationBlur: (id: string, isAnnualMode: boolean) => void;
 }) => (
   <div className="mb-8">
-    <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4 flex items-center gap-2">
+    <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] mb-4 flex items-center gap-2">
       {type === 'fixed' && <Lock size={14} />}
       {type === 'flexible' && <RefreshCcw size={14} />}
       {type === 'future' && <TrendingUp size={14} />}
@@ -93,13 +93,13 @@ const CategoryGroup = ({
         return (
           <div key={cat.id} className="group">
             <div className="flex justify-between items-center">
-              <label className="text-sm font-medium text-slate-700">{cat.label}</label>
+              <label className="text-sm font-medium text-[var(--text-secondary)]">{cat.label}</label>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-slate-400">
+                <span className="text-xs text-[var(--text-muted)]">
                   {viewMode === 'annual' ? '/yr' : '/mo'}
                 </span>
                 <div className="relative">
-                  <span className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-xs">$</span>
+                  <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-xs">$</span>
                   <input
                     type="text"
                     inputMode="decimal"
@@ -110,7 +110,7 @@ const CategoryGroup = ({
                       handleAllocationChange(cat.id, inputValue);
                     }}
                     onBlur={() => handleAllocationBlur(cat.id, isAnnual)}
-                    className="w-28 pl-5 pr-2 py-1.5 text-right bg-slate-50 border border-slate-200 rounded-lg text-sm font-mono focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="w-28 pl-5 pr-2 py-1.5 text-right bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg text-sm font-mono focus:ring-2 focus:ring-[var(--emerald-200)] focus:border-[var(--emerald-border)] transition-all outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                 </div>
               </div>
@@ -213,9 +213,9 @@ const App = () => {
   }, [fixedTotal, takeHomePay, remaining]);
 
   const getTensionLabel = (score: number) => {
-    if (score < 30) return { label: 'Low Tension', color: 'text-emerald-500', bg: 'bg-emerald-50' };
-    if (score < 70) return { label: 'Moderate', color: 'text-amber-500', bg: 'bg-amber-50' };
-    return { label: 'High Fragility', color: 'text-slate-600', bg: 'bg-slate-100' };
+    if (score < 30) return { label: 'Low Tension', color: 'text-[var(--emerald-500)]', bg: 'bg-[var(--emerald-50)]' };
+    if (score < 70) return { label: 'Moderate', color: 'text-[var(--color-warning)]', bg: 'bg-[var(--color-warning-soft)]' };
+    return { label: 'High Fragility', color: 'text-[var(--text-secondary)]', bg: 'bg-[var(--bg-glass)]' };
   };
 
   // --- Handlers ---
@@ -339,8 +339,8 @@ const App = () => {
     return (
       <div className="flex items-center justify-center py-32">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-slate-600 font-medium">Loading Budget System...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--emerald-border)] mx-auto mb-4"></div>
+          <p className="text-[var(--text-secondary)] font-medium">Loading Budget System...</p>
         </div>
       </div>
     );
@@ -353,48 +353,48 @@ const App = () => {
       <div className="max-w-6xl mx-auto p-4 md:p-8">
         <Breadcrumb toolName="Budget Planner" />
         {!hasSession && (
-          <div className="bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-700 rounded-2xl p-8 mb-8 text-white shadow-xl relative overflow-hidden">
+          <div className="bg-gradient-to-br from-[var(--emerald-500)] via-[var(--emerald-600)] to-[var(--emerald-600)] rounded-2xl p-8 mb-8 text-white shadow-xl relative overflow-hidden">
             <div className="absolute inset-0 opacity-5 grid-bg pointer-events-none" />
             <div className="flex items-start justify-between gap-6">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-3">
                   <Sparkles size={24} />
-                  <h3 className="text-2xl font-black">Unlock 7 More Financial Calculators</h3>
+                  <h3 className="text-2xl font-bold">Unlock 7 More Financial Calculators</h3>
                 </div>
-                <p className="text-indigo-100 font-medium mb-4">
+                <p className="text-[var(--mist-100)] font-medium mb-4">
                   Create a free account to access our complete suite of financial tools: Net Worth Tracker, Debt Paydown Optimizer, S-Corp calculators, and more.
                 </p>
                 <div className="flex flex-wrap items-center gap-4">
                   <button
                     onClick={() => router.push('/signup')}
-                    className="bg-white text-indigo-600 px-6 py-3 rounded-xl font-bold hover:bg-indigo-50 transition-all shadow-md"
+                    className="bg-[var(--bg-card)] text-[var(--emerald-500)] px-6 py-3 rounded-xl font-bold hover:bg-[var(--emerald-50)] transition-all shadow-md"
                   >
                     Create Free Account
                   </button>
                   <button
                     onClick={() => router.push('/pricing')}
-                    className="text-white border-2 border-white px-6 py-3 rounded-xl font-bold hover:bg-white/10 transition-all"
+                    className="text-white border-2 border-white px-6 py-3 rounded-xl font-bold hover:bg-[var(--bg-card)]/10 transition-all"
                   >
                     View All Tools
                   </button>
                 </div>
               </div>
               <div className="hidden lg:block">
-                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                   <div className="space-y-3 text-sm">
                     <div className="flex items-center gap-2">
-                      <Lock size={14} className="text-indigo-200" />
-                      <span className="text-indigo-50 font-semibold">Net Worth Tracker</span>
+                      <Lock size={14} className="text-[var(--mist-200)]" />
+                      <span className="text-[var(--mist-50)] font-semibold">Net Worth Tracker</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Lock size={14} className="text-indigo-200" />
-                      <span className="text-indigo-50 font-semibold">Debt Paydown</span>
+                      <Lock size={14} className="text-[var(--mist-200)]" />
+                      <span className="text-[var(--mist-50)] font-semibold">Debt Paydown</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Lock size={14} className="text-indigo-200" />
-                      <span className="text-indigo-50 font-semibold">S-Corp Optimizer</span>
+                      <Lock size={14} className="text-[var(--mist-200)]" />
+                      <span className="text-[var(--mist-50)] font-semibold">S-Corp Optimizer</span>
                     </div>
-                    <div className="text-indigo-200 text-xs font-bold mt-3">+ 4 more tools</div>
+                    <div className="text-[var(--mist-200)] text-xs font-bold mt-3">+ 4 more tools</div>
                   </div>
                 </div>
               </div>
@@ -424,22 +424,22 @@ const App = () => {
         <aside className="lg:col-span-4 space-y-6">
           <header className="mb-8">
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 bg-indigo-600 rounded flex items-center justify-center">
+              <div className="w-8 h-8 bg-[var(--emerald-500)] rounded flex items-center justify-center">
                 <BrainCircuit className="text-white" size={20} />
               </div>
-              <h1 className="text-xl font-bold tracking-tight text-slate-800 uppercase">Cortex</h1>
+              <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)] uppercase">Cortex</h1>
             </div>
-            <p className="text-sm text-slate-500 italic">Resource allocation under constraints.</p>
+            <p className="text-sm text-[var(--text-tertiary)] italic">Resource allocation under constraints.</p>
           </header>
 
           {/* Income Section */}
-          <section className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4">Income Entry</h2>
+          <section className="bg-[var(--bg-card)] p-6 rounded-2xl shadow-sm border border-[var(--border-subtle)]">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--text-muted)] mb-4">Income Entry</h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-xs text-slate-500 mb-1">Gross Monthly Income</label>
+                <label className="block text-xs text-[var(--text-tertiary)] mb-1">Gross Monthly Income</label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">$</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]">$</span>
                   <input
                     type="text"
                     inputMode="decimal"
@@ -454,20 +454,20 @@ const App = () => {
                         : Math.max(0, grossIncome);
                       setGrossIncome(numValue);
                     }}
-                    className="w-full pl-7 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="w-full pl-7 pr-4 py-2 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--emerald-500)] outline-none font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs text-slate-500 mb-1">Tax Reality Layer</label>
-                <div className="grid grid-cols-3 gap-1 bg-slate-50 p-1 rounded-lg">
+                <label className="block text-xs text-[var(--text-tertiary)] mb-1">Tax Reality Layer</label>
+                <div className="grid grid-cols-3 gap-1 bg-[var(--bg-section)] p-1 rounded-lg">
                   {Object.entries(TAX_MODES).map(([key, mode]) => (
                     <button
                       key={key}
                       onClick={() => setTaxMode(key)}
                       className={`text-[10px] py-1.5 rounded transition-all ${
-                        taxMode === key ? 'bg-white shadow-sm font-bold text-indigo-600' : 'text-slate-400 hover:text-slate-600'
+                        taxMode === key ? 'bg-[var(--bg-card)] shadow-sm font-bold text-[var(--emerald-500)]' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
                       }`}
                     >
                       {mode.label}
@@ -476,10 +476,10 @@ const App = () => {
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-slate-50">
+              <div className="pt-4 border-t border-[var(--border-subtle)]">
                 <div className="flex justify-between items-end">
-                  <span className="text-xs text-slate-500">Take-Home (Monthly)</span>
-                  <span className="text-2xl font-mono font-bold text-slate-800">
+                  <span className="text-xs text-[var(--text-tertiary)]">Take-Home (Monthly)</span>
+                  <span className="text-2xl font-mono font-bold text-[var(--text-primary)]">
                     ${Math.round(takeHomePay).toLocaleString()}
                   </span>
                 </div>
@@ -488,23 +488,23 @@ const App = () => {
           </section>
 
           {/* System Health */}
-          <section className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4">System Analysis</h2>
+          <section className="bg-[var(--bg-card)] p-6 rounded-2xl shadow-sm border border-[var(--border-subtle)]">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--text-muted)] mb-4">System Analysis</h2>
             <div className="space-y-6">
 
               {/* Tension Meter */}
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-xs font-medium text-slate-600 flex items-center gap-1">
-                    Budget Tension <Info size={12} className="text-slate-300" />
+                  <span className="text-xs font-medium text-[var(--text-secondary)] flex items-center gap-1">
+                    Budget Tension <Info size={12} className="text-[var(--text-muted)]" />
                   </span>
                   <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${getTensionLabel(tensionScore).bg} ${getTensionLabel(tensionScore).color}`}>
                     {getTensionLabel(tensionScore).label}
                   </span>
                 </div>
-                <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                <div className="h-1.5 w-full bg-[var(--bg-glass)] rounded-full overflow-hidden">
                   <div
-                    className={`h-full transition-all duration-700 ${tensionScore > 70 ? 'bg-slate-500' : 'bg-indigo-500'}`}
+                    className={`h-full transition-all duration-700 ${tensionScore > 70 ? 'bg-[var(--text-tertiary)]' : 'bg-[var(--emerald-400)]'}`}
                     style={{ width: `${tensionScore}%` }}
                   />
                 </div>
@@ -513,35 +513,35 @@ const App = () => {
               {/* Flexibility Index */}
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-xs font-medium text-slate-600">Flexibility Index</span>
+                  <span className="text-xs font-medium text-[var(--text-secondary)]">Flexibility Index</span>
                   <span className="text-xs font-mono font-bold">{Math.round(flexibilityIndex)}%</span>
                 </div>
-                <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                <div className="h-1.5 w-full bg-[var(--bg-glass)] rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-emerald-500 transition-all duration-700"
+                    className="h-full bg-[var(--emerald-500)] transition-all duration-700"
                     style={{ width: `${flexibilityIndex}%` }}
                   />
                 </div>
               </div>
 
               {/* Tradeoff Lens */}
-              <div className={`p-4 rounded-xl border ${remaining < 0 ? 'bg-amber-50 border-amber-100' : 'bg-slate-50 border-slate-100'}`}>
+              <div className={`p-4 rounded-xl border ${remaining < 0 ? 'bg-[var(--color-warning-soft)] border-[var(--glass-border)]' : 'bg-[var(--bg-section)] border-[var(--border-subtle)]'}`}>
                 <div className="flex items-start gap-3">
-                  <ArrowRightLeft size={16} className={remaining < 0 ? 'text-amber-500' : 'text-slate-400'} />
+                  <ArrowRightLeft size={16} className={remaining < 0 ? 'text-[var(--color-warning)]' : 'text-[var(--text-muted)]'} />
                   <div>
-                    <h4 className="text-xs font-bold text-slate-700 mb-1">Tradeoff Lens</h4>
+                    <h4 className="text-xs font-bold text-[var(--text-secondary)] mb-1">Tradeoff Lens</h4>
                     {remaining < 0 ? (
-                      <p className="text-[11px] text-amber-700 leading-relaxed">
+                      <p className="text-[11px] text-[var(--color-warning)] leading-relaxed">
                         System is over-constrained by <span className="font-bold">${Math.abs(remaining)}</span>.
                         Decrease flexible spending or sinking funds to restore slack.
                       </p>
                     ) : remaining > 0 ? (
-                      <p className="text-[11px] text-slate-500 leading-relaxed">
+                      <p className="text-[11px] text-[var(--text-tertiary)] leading-relaxed">
                         You have <span className="font-bold">${Math.round(remaining)}</span> of unassigned slack.
                         Assign this to &quot;Future You&quot; to decrease long-term fragility.
                       </p>
                     ) : (
-                      <p className="text-[11px] text-slate-500 leading-relaxed">
+                      <p className="text-[11px] text-[var(--text-tertiary)] leading-relaxed">
                         Balanced. Every dollar has a job.
                       </p>
                     )}
@@ -552,33 +552,33 @@ const App = () => {
           </section>
 
           {/* Pro Feature: Auto-Optimize */}
-          <div className={`relative overflow-hidden p-6 rounded-2xl shadow-xl ${hasProFeatures ? 'bg-indigo-900 shadow-indigo-100' : 'bg-slate-200'} text-white`}>
+          <div className={`relative overflow-hidden p-6 rounded-2xl shadow-xl ${hasProFeatures ? 'bg-[var(--obsidian-800)] shadow-[0_0_16px_var(--cta-glow-soft)]' : 'bg-[var(--bg-glass-strong)]'} text-white`}>
             <div className="relative z-10">
               <div className="flex items-center gap-2 mb-2">
                 {hasProFeatures ? (
                   <>
-                    <Zap size={16} className="text-indigo-300" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-300">Financial Pro</span>
+                    <Zap size={16} className="text-[var(--mist-200)]" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--mist-200)]">Financial Pro</span>
                   </>
                 ) : (
                   <>
-                    <Lock size={16} className="text-slate-500" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Pro Feature</span>
+                    <Lock size={16} className="text-[var(--text-tertiary)]" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-tertiary)]">Pro Feature</span>
                   </>
                 )}
               </div>
-              <h3 className={`text-lg font-bold mb-2 ${hasProFeatures ? 'text-white' : 'text-slate-700'}`}>
+              <h3 className={`text-lg font-bold mb-2 ${hasProFeatures ? 'text-white' : 'text-[var(--text-secondary)]'}`}>
                 Auto-Optimize (Cortex Mode)
               </h3>
-              <p className={`text-xs mb-4 leading-relaxed ${hasProFeatures ? 'text-indigo-100 opacity-80' : 'text-slate-600'}`}>
+              <p className={`text-xs mb-4 leading-relaxed ${hasProFeatures ? 'text-[var(--mist-100)] opacity-80' : 'text-[var(--text-secondary)]'}`}>
                 A constraint-aware engine that rebalances your system based on human priorities.
               </p>
               <button
                 onClick={() => hasProFeatures ? setShowOptimizer(true) : setShowUpgradeModal(true)}
                 className={`w-full py-2 transition-colors rounded-lg text-sm font-bold flex items-center justify-center gap-2 ${
                   hasProFeatures
-                    ? 'bg-indigo-500 hover:bg-indigo-400'
-                    : 'bg-amber-500 hover:bg-amber-400 text-white'
+                    ? 'bg-[var(--emerald-400)] hover:bg-[var(--emerald-400)]'
+                    : 'bg-[var(--color-warning)] hover:bg-[var(--color-warning)] text-white'
                 }`}
               >
                 {hasProFeatures ? (
@@ -591,18 +591,18 @@ const App = () => {
                 )}
               </button>
             </div>
-            <Zap className={`absolute -right-4 -bottom-4 opacity-20 ${hasProFeatures ? 'text-indigo-800' : 'text-slate-400'}`} size={120} />
+            <Zap className={`absolute -right-4 -bottom-4 opacity-20 ${hasProFeatures ? 'text-[var(--text-primary)]' : 'text-[var(--text-muted)]'}`} size={120} />
           </div>
 
           {optimizationLog && (
-            <div className="p-4 bg-white rounded-xl border border-indigo-100 shadow-sm">
-              <h4 className="text-xs font-bold text-indigo-600 mb-2 flex items-center gap-1">
+            <div className="p-4 bg-[var(--bg-card)] rounded-xl border border-[var(--emerald-border-soft)] shadow-sm">
+              <h4 className="text-xs font-bold text-[var(--emerald-500)] mb-2 flex items-center gap-1">
                 <BrainCircuit size={12} /> Optimization Applied
               </h4>
-              <p className="text-[11px] text-slate-600 leading-relaxed italic">&quot;{optimizationLog}&quot;</p>
+              <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed italic">&quot;{optimizationLog}&quot;</p>
               <button
                 onClick={() => setOptimizationLog(null)}
-                className="mt-2 text-[10px] text-slate-400 hover:text-indigo-600 transition-colors"
+                className="mt-2 text-[10px] text-[var(--text-muted)] hover:text-[var(--emerald-500)] transition-colors"
               >
                 Dismiss
               </button>
@@ -612,22 +612,22 @@ const App = () => {
 
         {/* Main Canvas */}
         <div className="lg:col-span-8 space-y-8">
-          <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-8">
+          <div className="bg-[var(--bg-card)] rounded-3xl shadow-sm border border-[var(--border-subtle)] p-8">
             <div className="flex justify-between items-center mb-10">
               <div>
-                <h2 className="text-2xl font-bold text-slate-800">Budget Architecture</h2>
-                <p className="text-sm text-slate-400">Define the jobs for each dollar.</p>
+                <h2 className="text-2xl font-bold text-[var(--text-primary)]">Budget Architecture</h2>
+                <p className="text-sm text-[var(--text-muted)]">Define the jobs for each dollar.</p>
               </div>
-              <div className="flex bg-slate-50 p-1 rounded-xl">
+              <div className="flex bg-[var(--bg-section)] p-1 rounded-xl">
                 <button
                   onClick={() => setViewMode('monthly')}
-                  className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${viewMode === 'monthly' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-400 hover:text-slate-600'}`}
+                  className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${viewMode === 'monthly' ? 'bg-[var(--bg-card)] shadow-sm text-[var(--emerald-500)]' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'}`}
                 >
                   Monthly
                 </button>
                 <button
                   onClick={() => setViewMode('annual')}
-                  className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${viewMode === 'annual' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-400 hover:text-slate-600'}`}
+                  className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${viewMode === 'annual' ? 'bg-[var(--bg-card)] shadow-sm text-[var(--emerald-500)]' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'}`}
                 >
                   Annualized
                 </button>
@@ -667,20 +667,20 @@ const App = () => {
                 />
 
                 {/* Summary View */}
-                <div className="mt-12 p-6 bg-slate-50 rounded-2xl border border-slate-100 space-y-4">
-                  <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400">Balance Breakdown</h3>
+                <div className="mt-12 p-6 bg-[var(--bg-section)] rounded-2xl border border-[var(--border-subtle)] space-y-4">
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">Balance Breakdown</h3>
                   <div className="space-y-3">
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-slate-500">Decision Budget</span>
+                      <span className="text-[var(--text-tertiary)]">Decision Budget</span>
                       <span className="font-mono font-medium">${Math.round(takeHomePay * multiplier).toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-slate-500">Allocated</span>
-                      <span className="font-mono font-medium text-slate-800">${Math.round(totalAllocated * multiplier).toLocaleString()}</span>
+                      <span className="text-[var(--text-tertiary)]">Allocated</span>
+                      <span className="font-mono font-medium text-[var(--text-primary)]">${Math.round(totalAllocated * multiplier).toLocaleString()}</span>
                     </div>
-                    <div className="pt-2 border-t border-slate-200 flex justify-between items-center">
-                      <span className="text-xs font-bold uppercase text-slate-600">Unallocated Slack</span>
-                      <span className={`font-mono font-bold text-lg ${remaining < 0 ? 'text-slate-400' : 'text-emerald-600'}`}>
+                    <div className="pt-2 border-t border-[var(--border-default)] flex justify-between items-center">
+                      <span className="text-xs font-bold uppercase text-[var(--text-secondary)]">Unallocated Slack</span>
+                      <span className={`font-mono font-bold text-lg ${remaining < 0 ? 'text-[var(--text-muted)]' : 'text-[var(--emerald-500)]'}`}>
                         ${Math.round(remaining * multiplier).toLocaleString()}
                       </span>
                     </div>
@@ -695,14 +695,14 @@ const App = () => {
 
       {/* Optimization Modal */}
       {showOptimizer && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl">
+        <div className="fixed inset-0 bg-[var(--obsidian-900)]/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[var(--bg-card)] rounded-3xl w-full max-w-md overflow-hidden shadow-2xl">
             <div className="p-8">
-              <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mb-6">
+              <div className="w-12 h-12 bg-[var(--emerald-100)] text-[var(--emerald-500)] rounded-2xl flex items-center justify-center mb-6">
                 <BrainCircuit size={28} />
               </div>
-              <h2 className="text-xl font-bold text-slate-800 mb-2">Configure Cortex Mode</h2>
-              <p className="text-sm text-slate-500 mb-8">Select a priority goal. The engine will respect your fixed costs and suggest the most stable system.</p>
+              <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2">Configure Cortex Mode</h2>
+              <p className="text-sm text-[var(--text-tertiary)] mb-8">Select a priority goal. The engine will respect your fixed costs and suggest the most stable system.</p>
 
               <div className="space-y-3">
                 {[
@@ -714,33 +714,33 @@ const App = () => {
                     key={goal.id}
                     onClick={() => autoOptimize(goal.label)}
                     disabled={isOptimizing}
-                    className="w-full p-4 rounded-2xl border border-slate-100 hover:border-indigo-300 hover:bg-indigo-50/50 text-left transition-all group disabled:opacity-50"
+                    className="w-full p-4 rounded-2xl border border-[var(--border-subtle)] hover:border-[var(--emerald-border)] hover:bg-[var(--emerald-50)]/50 text-left transition-all group disabled:opacity-50"
                   >
                     <div className="flex justify-between items-center mb-1">
-                      <span className="font-bold text-slate-700 group-hover:text-indigo-600">{goal.label}</span>
-                      <ArrowRightLeft size={14} className="text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <span className="font-bold text-[var(--text-secondary)] group-hover:text-[var(--emerald-500)]">{goal.label}</span>
+                      <ArrowRightLeft size={14} className="text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
-                    <p className="text-xs text-slate-500">{goal.desc}</p>
+                    <p className="text-xs text-[var(--text-tertiary)]">{goal.desc}</p>
                   </button>
                 ))}
               </div>
 
               <button
                 onClick={() => setShowOptimizer(false)}
-                className="mt-8 w-full py-3 text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors"
+                className="mt-8 w-full py-3 text-sm font-bold text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors"
               >
                 Cancel
               </button>
             </div>
 
             {isOptimizing && (
-              <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center">
+              <div className="absolute inset-0 bg-[var(--bg-card)]/80 backdrop-blur-sm flex flex-col items-center justify-center">
                 <div className="relative">
-                  <RefreshCcw className="text-indigo-600 animate-spin" size={40} />
-                  <Zap className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-indigo-400" size={16} />
+                  <RefreshCcw className="text-[var(--emerald-500)] animate-spin" size={40} />
+                  <Zap className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[var(--emerald-400)]" size={16} />
                 </div>
-                <p className="mt-4 text-sm font-bold text-slate-700">Rebalancing System...</p>
-                <p className="text-[10px] text-slate-400 uppercase tracking-widest mt-1">Cortex Engine v2.5</p>
+                <p className="mt-4 text-sm font-bold text-[var(--text-secondary)]">Rebalancing System...</p>
+                <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-widest mt-1">Cortex Engine v2.5</p>
               </div>
             )}
           </div>
@@ -749,67 +749,67 @@ const App = () => {
 
       {/* Upgrade Modal */}
       {showUpgradeModal && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl">
-            <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-8 text-white">
-              <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-4">
+        <div className="fixed inset-0 bg-[var(--obsidian-900)]/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[var(--bg-card)] rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl">
+            <div className="bg-gradient-to-br from-[var(--emerald-500)] to-[var(--emerald-500)] p-8 text-white">
+              <div className="w-16 h-16 bg-[var(--bg-card)]/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-4">
                 <Crown size={32} />
               </div>
-              <h2 className="text-2xl font-black mb-2">Unlock Auto-Optimize</h2>
-              <p className="text-indigo-100 text-sm font-medium">
+              <h2 className="text-2xl font-bold mb-2">Unlock Auto-Optimize</h2>
+              <p className="text-[var(--mist-100)] text-sm font-medium">
                 Advanced budget optimization requires Finance Pro or Elite tier.
               </p>
             </div>
 
             <div className="p-8">
-              <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-6 mb-6">
-                <h3 className="text-sm font-bold text-indigo-900 mb-3 flex items-center gap-2">
+              <div className="bg-[var(--emerald-50)] border border-[var(--emerald-border-soft)] rounded-2xl p-6 mb-6">
+                <h3 className="text-sm font-bold text-[var(--text-primary)] mb-3 flex items-center gap-2">
                   <Zap size={16} />
                   What You Get with Pro:
                 </h3>
-                <ul className="space-y-2 text-sm text-indigo-800">
+                <ul className="space-y-2 text-sm text-[var(--text-primary)]">
                   <li className="flex items-start gap-2">
-                    <span className="text-indigo-500 mt-0.5">•</span>
+                    <span className="text-[var(--emerald-400)] mt-0.5">•</span>
                     <span><strong>Smart Optimization:</strong> 3 constraint-aware strategies that respect your fixed costs</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-indigo-500 mt-0.5">•</span>
+                    <span className="text-[var(--emerald-400)] mt-0.5">•</span>
                     <span><strong>Instant Rebalancing:</strong> Maximize slack, future savings, or minimize fragility</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-indigo-500 mt-0.5">•</span>
+                    <span className="text-[var(--emerald-400)] mt-0.5">•</span>
                     <span><strong>Explainable Logic:</strong> Clear reasoning for every recommendation</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-indigo-500 mt-0.5">•</span>
+                    <span className="text-[var(--emerald-400)] mt-0.5">•</span>
                     <span><strong>All Pro Finance Tools:</strong> Access advanced features across all finance apps</span>
                   </li>
                 </ul>
               </div>
 
               <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="border-2 border-indigo-200 rounded-2xl p-4 text-center">
-                  <p className="text-xs text-slate-500 mb-1">Finance Pro</p>
-                  <p className="text-3xl font-black text-indigo-600">$9</p>
-                  <p className="text-xs text-slate-500">/month</p>
+                <div className="border-2 border-[var(--emerald-border)] rounded-2xl p-4 text-center">
+                  <p className="text-xs text-[var(--text-tertiary)] mb-1">Finance Pro</p>
+                  <p className="text-3xl font-bold text-[var(--emerald-500)]">$9</p>
+                  <p className="text-xs text-[var(--text-tertiary)]">/month</p>
                 </div>
-                <div className="border-2 border-purple-200 rounded-2xl p-4 text-center bg-gradient-to-br from-purple-50 to-indigo-50">
-                  <p className="text-xs text-purple-600 font-bold mb-1">Elite (Best Value)</p>
-                  <p className="text-3xl font-black text-purple-600">$29</p>
-                  <p className="text-xs text-slate-500">/month</p>
+                <div className="border-2 border-[var(--emerald-border)] rounded-2xl p-4 text-center bg-gradient-to-br from-[var(--emerald-50)] to-[var(--emerald-50)]">
+                  <p className="text-xs text-[var(--emerald-500)] font-bold mb-1">Elite (Best Value)</p>
+                  <p className="text-3xl font-bold text-[var(--emerald-500)]">$29</p>
+                  <p className="text-xs text-[var(--text-tertiary)]">/month</p>
                 </div>
               </div>
 
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowUpgradeModal(false)}
-                  className="flex-1 py-3 px-4 rounded-xl border-2 border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition-colors"
+                  className="flex-1 py-3 px-4 rounded-xl border-2 border-[var(--border-default)] text-[var(--text-secondary)] font-bold hover:bg-[var(--bg-section)] transition-colors"
                 >
                   Maybe Later
                 </button>
                 <button
                   onClick={() => router.push('/pricing')}
-                  className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg flex items-center justify-center gap-2"
+                  className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-[var(--emerald-500)] to-[var(--emerald-500)] text-white font-bold hover:from-[var(--emerald-600)] hover:to-[var(--emerald-600)] transition-all shadow-lg flex items-center justify-center gap-2"
                 >
                   <Crown size={18} />
                   Upgrade Now
@@ -827,14 +827,14 @@ const App = () => {
         <RelatedTools tools={getRelatedTools('budget')} />
       </div>
 
-      <footer className="max-w-7xl mx-auto px-6 py-10 text-center border-t border-slate-100 mt-8">
-        <p className="text-xs text-slate-400 font-medium">&copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.</p>
+      <footer className="max-w-7xl mx-auto px-6 py-10 text-center border-t border-[var(--border-subtle)] mt-8">
+        <p className="text-xs text-[var(--text-muted)] font-medium">&copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.</p>
         <div className="flex items-center justify-center gap-3 mt-2">
-          <a href="/articles" className="text-slate-400 hover:text-slate-600 transition-colors text-xs">Articles</a>
-          <span className="text-slate-200">|</span>
-          <a href="/pricing" className="text-slate-400 hover:text-slate-600 transition-colors text-xs">Pricing</a>
-          <span className="text-slate-200">|</span>
-          <a href="/terms" className="text-slate-400 hover:text-slate-600 transition-colors text-xs">Terms & Privacy</a>
+          <a href="/articles" className="text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors text-xs">Articles</a>
+          <span className="text-[var(--text-muted)]">|</span>
+          <a href="/pricing" className="text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors text-xs">Pricing</a>
+          <span className="text-[var(--text-muted)]">|</span>
+          <a href="/terms" className="text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors text-xs">Terms & Privacy</a>
         </div>
       </footer>
     </>

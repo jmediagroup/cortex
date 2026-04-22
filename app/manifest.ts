@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: 'Tools for thinking clearly about life\'s biggest decisions. Financial calculators, budget planning, and more.',
     start_url: '/',
     display: 'standalone',
-    background_color: '#0f172a',
-    theme_color: '#4f46e5',
+    background_color: '#0A0E14',
+    theme_color: '#0A0E14',
     icons: [
       {
         src: '/icon',

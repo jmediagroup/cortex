@@ -1,20 +1,38 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { createBrowserClient } from '@/lib/supabase/client';
-import { Check, ArrowRight, Loader2, ShieldCheck, Sparkles } from 'lucide-react';
-import { DashboardShell } from '@/components/navigation';
+import { Loader2, ShieldCheck } from 'lucide-react';
 import { type Tier } from '@/lib/access-control';
 import { trackEvent } from '@/lib/analytics';
+import { MarketingShell } from '@/components/marketing/MarketingShell';
+import { MarketingIcon } from '@/components/marketing/Icons';
 
-const PRICING_PLANS = [
+type Plan = {
+  name: string;
+  price: string;
+  annualPrice: string | null;
+  period: string;
+  annualSavings?: string;
+  description: string;
+  features: string[];
+  cta: string;
+  tier: Tier;
+  priceId: string | null;
+  annualPriceId: string | null;
+  highlighted?: boolean;
+  badge?: string;
+};
+
+const PRICING_PLANS: Plan[] = [
   {
     name: 'Free',
     price: '$0',
     annualPrice: null,
     period: 'forever',
-    description: 'For exploration and curiosity',
+    description: 'For exploration and curiosity.',
     features: [
       'Access to core calculators',
       'Compound Interest Calculator',
@@ -23,19 +41,18 @@ const PRICING_PLANS = [
       'Ideal for learning',
       'Community support',
     ],
-    cta: 'Start Free',
-    tier: 'free' as const,
-    sector: null,
+    cta: 'Start free',
+    tier: 'free',
     priceId: null,
     annualPriceId: null,
   },
   {
-    name: 'Pro',
+    name: 'Finance Pro',
     price: '$9',
     annualPrice: '$90',
     period: 'per month',
     annualSavings: 'Save $18/year',
-    description: 'For people who want precision around money',
+    description: 'For people who want precision.',
     features: [
       'Full access to all Cortex Finance tools',
       'Advanced scenarios and comparisons',
@@ -45,19 +62,20 @@ const PRICING_PLANS = [
       'Priority support',
     ],
     cta: 'Get Pro',
-    tier: 'finance_pro' as const,
-    sector: 'finance' as const,
+    tier: 'finance_pro',
     priceId: process.env.NEXT_PUBLIC_STRIPE_FINANCE_PRO_MONTHLY_PRICE_ID || 'price_PLACEHOLDER',
     annualPriceId: process.env.NEXT_PUBLIC_STRIPE_FINANCE_PRO_ANNUAL_PRICE_ID || 'price_PLACEHOLDER',
     highlighted: true,
-    badge: 'Most Popular',
+    badge: 'Most popular',
   },
 ];
+
+type SessionUser = { id: string; email: string | null };
 
 export default function PricingPage() {
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<SessionUser | null>(null);
   const [userTier, setUserTier] = useState<Tier>('free');
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'annual'>('monthly');
   const supabase = createBrowserClient();
@@ -67,21 +85,17 @@ export default function PricingPage() {
       const { data: { session } } = await supabase.auth.getSession();
 
       if (session) {
-        setUser(session.user);
+        setUser({ id: session.user.id, email: session.user.email ?? null });
 
-        // Fetch user tier
-        const { data: userData } = await supabase
+        const { data: userData } = (await supabase
           .from('users')
           .select('tier')
           .eq('id', session.user.id)
-          .single() as { data: { tier: Tier } | null };
+          .single()) as { data: { tier: Tier } | null };
 
-        if (userData?.tier) {
-          setUserTier(userData.tier);
-        }
+        if (userData?.tier) setUserTier(userData.tier);
       }
 
-      // Track pricing page view
       trackEvent('pricing_page_view');
     };
 
@@ -90,194 +104,345 @@ export default function PricingPage() {
 
   const handleUpgrade = async (priceId: string | null, tier: string) => {
     if (!priceId) {
-      // Free tier - redirect to signup or dashboard
-      if (user) {
-        router.push('/dashboard');
-      } else {
-        router.push('/login');
-      }
+      router.push(user ? '/dashboard' : '/login');
       return;
     }
-
     if (!user) {
       router.push('/login?redirect=/pricing');
       return;
     }
 
     setLoading(tier);
-
     try {
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+          Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
         },
         body: JSON.stringify({ priceId }),
       });
 
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to create checkout session');
-      }
+      if (!response.ok) throw new Error(data.error || 'Failed to create checkout session');
 
       if (data.url) {
-        // Track checkout initiation
-        await trackEvent('subscription_upgrade', {
-          new_tier: tier,
-          billing_period: billingPeriod,
-        }, true);
-
+        await trackEvent(
+          'subscription_upgrade',
+          { new_tier: tier, billing_period: billingPeriod },
+          true,
+        );
         window.location.href = data.url;
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'An error occurred';
       console.error('Checkout error:', error);
-      alert(error.message || 'Failed to start checkout. Please try again.');
+      alert(message);
       setLoading(null);
-
-      // Track error
-      await trackEvent('error_occurred', {
-        error_message: error.message,
-        context: 'checkout',
-      }, true);
+      await trackEvent('error_occurred', { error_message: message, context: 'checkout' }, true);
     }
   };
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.push('/');
-  };
-
-  const userName = user?.user_metadata?.first_name || user?.email?.split('@')[0] || 'User';
-
   return (
-    <DashboardShell
-      user={user ? { email: user.email, name: userName } : undefined}
-      userTier={userTier}
-      onSignOut={handleSignOut}
-    >
-      {/* MAIN CONTENT */}
-      <div className="max-w-7xl mx-auto px-6 py-16">
-        {/* HEADER */}
-        <div className="text-center mb-16">
-          <h1 className="text-5xl md:text-6xl font-black text-slate-900 mb-6 tracking-tight">
-            Simple, Honest Pricing
+    <MarketingShell>
+      <section
+        style={{
+          position: 'relative',
+          overflow: 'hidden',
+          padding: '96px 24px 32px',
+          textAlign: 'center',
+        }}
+        className="hero-gradient"
+      >
+        <div style={{ maxWidth: 760, margin: '0 auto', position: 'relative' }}>
+          <div
+            className="eyebrow"
+            style={{ marginBottom: 16, color: 'var(--text-tertiary)' }}
+          >
+            PRICING
+          </div>
+          <h1
+            className="h-hero"
+            style={{ margin: '0 0 20px', fontSize: 'clamp(40px,6vw,64px)' }}
+          >
+            Simple, honest pricing.
           </h1>
-          <p className="text-xl text-slate-600 font-medium max-w-2xl mx-auto mb-8">
+          <p
+            style={{
+              fontSize: 18,
+              color: 'var(--text-secondary)',
+              lineHeight: 1.55,
+              margin: '0 0 32px',
+            }}
+          >
             Choose the plan that matches where you are today. Start free, upgrade to Pro when precision matters.
           </p>
 
-          {/* BILLING TOGGLE */}
-          <div className="inline-flex items-center gap-4 bg-white rounded-full p-2 border border-slate-200">
-            <button
-              onClick={() => setBillingPeriod('monthly')}
-              className={`px-6 py-2 rounded-full font-bold transition-all ${
-                billingPeriod === 'monthly'
-                  ? 'bg-indigo-600 text-white'
-                  : 'text-slate-600 hover:text-indigo-600'
-              }`}
-            >
-              Monthly
-            </button>
-            <button
-              onClick={() => setBillingPeriod('annual')}
-              className={`px-6 py-2 rounded-full font-bold transition-all ${
-                billingPeriod === 'annual'
-                  ? 'bg-indigo-600 text-white'
-                  : 'text-slate-600 hover:text-indigo-600'
-              }`}
-            >
-              Annual
-              <span className="ml-2 text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">
-                Save $18/year
-              </span>
-            </button>
+          <div
+            role="tablist"
+            aria-label="Billing period"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 4,
+              background: 'var(--bg-glass)',
+              backdropFilter: 'var(--glass-blur)',
+              WebkitBackdropFilter: 'var(--glass-blur)',
+              border: '1px solid var(--glass-border-strong)',
+              padding: 4,
+              borderRadius: 9999,
+            }}
+          >
+            {(['monthly', 'annual'] as const).map((period) => (
+              <button
+                key={period}
+                type="button"
+                role="tab"
+                aria-selected={billingPeriod === period}
+                onClick={() => setBillingPeriod(period)}
+                style={{
+                  padding: '8px 20px',
+                  borderRadius: 9999,
+                  fontWeight: 600,
+                  fontSize: 13,
+                  border: 0,
+                  cursor: 'pointer',
+                  background: billingPeriod === period ? 'var(--emerald-500)' : 'transparent',
+                  color:
+                    billingPeriod === period
+                      ? 'var(--text-inverse)'
+                      : 'var(--text-secondary)',
+                  transition: 'all 160ms var(--ease-out-expo)',
+                  boxShadow:
+                    billingPeriod === period ? '0 0 20px var(--cta-glow-soft)' : 'none',
+                }}
+              >
+                {period === 'monthly' ? 'Monthly' : 'Annual'}
+              </button>
+            ))}
           </div>
         </div>
+      </section>
 
-        {/* PRICING CARDS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+      <section style={{ padding: '32px 24px 96px' }}>
+        <div
+          style={{
+            maxWidth: 960,
+            margin: '0 auto',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+            gap: 20,
+          }}
+        >
           {PRICING_PLANS.map((plan) => {
-            const isCurrentPlan = user && plan.tier === userTier;
-            const selectedPriceId = billingPeriod === 'annual' && plan.annualPriceId
-              ? plan.annualPriceId
-              : plan.priceId;
-            const displayPrice = billingPeriod === 'annual' && plan.annualPrice
-              ? plan.annualPrice
-              : plan.price;
+            const isCurrent = Boolean(user && plan.tier === userTier);
+            const selectedPriceId =
+              billingPeriod === 'annual' && plan.annualPriceId
+                ? plan.annualPriceId
+                : plan.priceId;
+            const displayPrice =
+              billingPeriod === 'annual' && plan.annualPrice ? plan.annualPrice : plan.price;
+            const displayCadence =
+              plan.period === 'forever'
+                ? '/ forever'
+                : billingPeriod === 'annual'
+                  ? '/ year'
+                  : '/ month';
 
             return (
               <div
                 key={plan.tier}
-                className={`relative bg-white rounded-3xl border-2 p-8 flex flex-col ${
-                  plan.highlighted
-                    ? 'border-indigo-300 shadow-xl shadow-indigo-100'
-                    : 'border-slate-200'
-                }`}
+                style={{
+                  position: 'relative',
+                  background: plan.highlighted
+                    ? 'var(--bg-glass-strong)'
+                    : 'var(--bg-glass)',
+                  backdropFilter: 'var(--glass-blur)',
+                  WebkitBackdropFilter: 'var(--glass-blur)',
+                  border: `1px solid ${plan.highlighted ? 'var(--emerald-border)' : 'var(--glass-border)'}`,
+                  borderRadius: 'var(--radius-2xl)',
+                  padding: 32,
+                  boxShadow: plan.highlighted
+                    ? '0 0 0 1px var(--featured-halo), 0 20px 60px var(--featured-halo), var(--shadow-inset-top)'
+                    : 'var(--shadow-card), var(--shadow-inset-top)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
               >
-                {/* BADGE */}
                 {plan.badge && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 px-4 py-1 rounded-full text-xs font-black uppercase tracking-wide bg-indigo-600 text-white">
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: -12,
+                      left: 24,
+                      background: 'var(--emerald-500)',
+                      color: 'var(--text-inverse)',
+                      padding: '5px 12px',
+                      borderRadius: 9999,
+                      fontSize: 10,
+                      fontWeight: 700,
+                      letterSpacing: '0.1em',
+                      textTransform: 'uppercase',
+                      boxShadow: '0 0 20px var(--cta-glow-ring)',
+                    }}
+                  >
                     {plan.badge}
                   </div>
                 )}
 
-                {/* HEADER */}
-                <div className="text-center mb-6">
-                  <h3 className="text-2xl font-black text-slate-900 mb-2">{plan.name}</h3>
-                  <p className="text-sm text-slate-500 font-medium mb-4">{plan.description}</p>
+                <h2
+                  style={{
+                    fontSize: 20,
+                    fontWeight: 600,
+                    color: 'var(--text-primary)',
+                    margin: 0,
+                    letterSpacing: '-0.01em',
+                  }}
+                >
+                  {plan.name}
+                </h2>
+                <p
+                  style={{
+                    color: 'var(--text-tertiary)',
+                    fontSize: 13,
+                    margin: '6px 0 24px',
+                  }}
+                >
+                  {plan.description}
+                </p>
 
-                  <div className="mb-2">
-                    <span className="text-5xl font-black text-slate-900">{displayPrice}</span>
-                    {plan.period !== 'forever' && (
-                      <span className="text-slate-500 font-medium ml-2">
-                        / {billingPeriod === 'annual' ? 'year' : 'month'}
-                      </span>
-                    )}
-                  </div>
-
-                  {billingPeriod === 'annual' && plan.annualSavings && (
-                    <p className="text-sm text-emerald-600 font-bold">{plan.annualSavings}</p>
-                  )}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'baseline',
+                    gap: 6,
+                    marginBottom: 4,
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: 52,
+                      fontWeight: 700,
+                      color: 'var(--text-primary)',
+                      letterSpacing: '-0.035em',
+                    }}
+                  >
+                    {displayPrice}
+                  </span>
+                  <span
+                    style={{
+                      color: 'var(--text-tertiary)',
+                      fontSize: 14,
+                      fontFamily: 'var(--font-mono)',
+                    }}
+                  >
+                    {displayCadence}
+                  </span>
                 </div>
+                {billingPeriod === 'annual' && plan.annualSavings && (
+                  <p
+                    style={{
+                      fontSize: 12,
+                      color: 'var(--emerald-500)',
+                      fontWeight: 600,
+                      margin: '0 0 24px',
+                    }}
+                  >
+                    {plan.annualSavings}
+                  </p>
+                )}
 
-                {/* FEATURES */}
-                <ul className="space-y-3 mb-8 flex-grow">
-                  {plan.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-start gap-3">
-                      <Check className="text-indigo-600 flex-shrink-0 mt-0.5" size={20} />
-                      <span className="text-sm text-slate-700 font-medium">{feature}</span>
+                <ul
+                  style={{
+                    listStyle: 'none',
+                    padding: 0,
+                    margin: billingPeriod === 'annual' && plan.annualSavings ? '8px 0 32px' : '24px 0 32px',
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 12,
+                  }}
+                >
+                  {plan.features.map((feature) => (
+                    <li
+                      key={feature}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: 10,
+                        fontSize: 14,
+                        color: 'var(--text-secondary)',
+                      }}
+                    >
+                      <span
+                        aria-hidden="true"
+                        style={{
+                          flexShrink: 0,
+                          width: 18,
+                          height: 18,
+                          borderRadius: '50%',
+                          background: plan.highlighted
+                            ? 'var(--emerald-tint)'
+                            : 'var(--bg-glass-strong)',
+                          border: `1px solid ${plan.highlighted ? 'var(--emerald-border)' : 'var(--glass-border)'}`,
+                          color: plan.highlighted
+                            ? 'var(--emerald-500)'
+                            : 'var(--text-tertiary)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          marginTop: 1,
+                        }}
+                      >
+                        <MarketingIcon name="check" size={10} stroke={2.5} />
+                      </span>
+                      {feature}
                     </li>
                   ))}
                 </ul>
 
-                {/* CTA BUTTON */}
                 <button
+                  type="button"
                   onClick={() => handleUpgrade(selectedPriceId, plan.tier)}
-                  disabled={isCurrentPlan || loading === plan.tier}
-                  className={`w-full py-4 rounded-xl font-black text-lg transition-all flex items-center justify-center gap-2 ${
-                    isCurrentPlan
-                      ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                  disabled={isCurrent || loading === plan.tier}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 8,
+                    background: isCurrent
+                      ? 'var(--bg-glass-strong)'
                       : plan.highlighted
-                      ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg hover:shadow-xl'
-                      : 'bg-slate-900 text-white hover:bg-slate-800'
-                  }`}
+                        ? 'var(--emerald-500)'
+                        : 'var(--bg-glass-strong)',
+                    color: isCurrent
+                      ? 'var(--text-tertiary)'
+                      : plan.highlighted
+                        ? 'var(--text-inverse)'
+                        : 'var(--text-primary)',
+                    border: plan.highlighted ? 'none' : '1px solid var(--glass-border-strong)',
+                    padding: '14px 24px',
+                    borderRadius: 12,
+                    fontWeight: 600,
+                    fontSize: 14,
+                    cursor: isCurrent || loading === plan.tier ? 'not-allowed' : 'pointer',
+                    boxShadow: plan.highlighted && !isCurrent ? '0 0 24px var(--cta-glow-soft)' : 'none',
+                    transition: 'all 160ms',
+                    fontFamily: 'inherit',
+                  }}
                 >
                   {loading === plan.tier ? (
                     <>
-                      <Loader2 className="animate-spin" size={20} />
+                      <Loader2 size={16} className="animate-spin" />
                       Processing...
                     </>
-                  ) : isCurrentPlan ? (
+                  ) : isCurrent ? (
                     <>
-                      <ShieldCheck size={20} />
-                      Current Plan
+                      <ShieldCheck size={16} /> Current plan
                     </>
                   ) : (
                     <>
-                      {plan.cta}
-                      <ArrowRight size={20} />
+                      {plan.cta} <MarketingIcon name="arrowRight" size={14} />
                     </>
                   )}
                 </button>
@@ -286,27 +451,78 @@ export default function PricingPage() {
           })}
         </div>
 
-        {/* ENTERPRISE CTA */}
-        <div className="mt-16 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl p-12 text-white text-center">
-          <Sparkles className="mx-auto mb-4" size={48} />
-          <h3 className="text-3xl font-black mb-4">Need a Custom Solution?</h3>
-          <p className="text-indigo-100 font-medium text-lg mb-6">
-            Contact us for enterprise pricing, custom integrations, or white-label solutions.
-          </p>
-          <button
-            onClick={() => router.push('/enterprise')}
-            className="bg-white text-indigo-600 font-black px-8 py-4 rounded-xl hover:bg-indigo-50 transition-all shadow-xl"
+        <div style={{ maxWidth: 960, margin: '64px auto 0' }}>
+          <div
+            style={{
+              background:
+                'linear-gradient(135deg, #121620 0%, #0A0E14 100%)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              borderRadius: 'var(--radius-2xl)',
+              padding: '48px 32px',
+              color: '#F5F5F7',
+              textAlign: 'center',
+              position: 'relative',
+              overflow: 'hidden',
+            }}
           >
-            Contact Sales
-          </button>
+            <div
+              aria-hidden="true"
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background:
+                  'radial-gradient(ellipse at center top, rgba(0,240,160,0.18), transparent 60%)',
+                pointerEvents: 'none',
+              }}
+            />
+            <div style={{ position: 'relative' }}>
+              <div className="eyebrow" style={{ color: '#00F0A0', marginBottom: 16 }}>
+                ENTERPRISE
+              </div>
+              <h2
+                style={{
+                  fontSize: 28,
+                  fontWeight: 700,
+                  margin: '0 0 12px',
+                  letterSpacing: '-0.02em',
+                }}
+              >
+                Need a custom solution?
+              </h2>
+              <p
+                style={{
+                  fontSize: 16,
+                  color: '#AEAEB2',
+                  lineHeight: 1.55,
+                  margin: '0 auto 28px',
+                  maxWidth: 520,
+                }}
+              >
+                Contact us for team seats, custom integrations, or white-label deployments.
+              </p>
+              <Link
+                href="/enterprise"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  background: '#00F0A0',
+                  color: '#0A0E14',
+                  padding: '14px 24px',
+                  borderRadius: 12,
+                  fontWeight: 700,
+                  fontSize: 14,
+                  textDecoration: 'none',
+                  boxShadow:
+                    '0 0 0 1px rgba(0,240,160,0.4), 0 0 32px rgba(0,240,160,0.35)',
+                }}
+              >
+                Contact sales <MarketingIcon name="arrowRight" size={14} />
+              </Link>
+            </div>
+          </div>
         </div>
-
-      </div>
-
-      {/* FOOTER */}
-      <footer className="max-w-7xl mx-auto px-6 py-12 text-center text-slate-400 font-medium text-sm">
-        &copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.
-      </footer>
-    </DashboardShell>
+      </section>
+    </MarketingShell>
   );
 }

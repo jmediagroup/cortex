@@ -78,7 +78,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <div className="bg-[var(--color-accent)] p-1.5 rounded-lg text-white">
                 <Brain size={18} />
               </div>
-              <span className="font-black text-base tracking-tight text-[var(--text-primary)]">
+              <span className="font-bold text-base tracking-tight text-[var(--text-primary)]">
                 Admin
               </span>
             </div>

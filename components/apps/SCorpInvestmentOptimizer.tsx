@@ -84,31 +84,31 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
       {
         name: 'HSA',
         monthly: inputs.monthlyHsa,
-        color: '#06b6d4',
+        color: '#5AC8FA',
         isTaxDeductible: true
       },
       {
         name: `401(k) Employee (${inputs.taxStrategy === 'roth' ? 'Roth' : 'Traditional'})`,
         monthly: inputs.monthlyEmp401k,
-        color: inputs.taxStrategy === 'roth' ? '#a855f7' : '#10b981',
+        color: inputs.taxStrategy === 'roth' ? '#BF5AF2' : '#00F0A0',
         isTaxDeductible: inputs.taxStrategy === 'traditional'
       },
       {
         name: '401(k) Company Match',
         monthly: inputs.monthlyCo401k,
-        color: '#065f46',
+        color: '#006945',
         isTaxDeductible: true
       },
       {
         name: `IRA (${inputs.taxStrategy === 'roth' ? 'Roth' : 'Traditional'})`,
         monthly: inputs.monthlyIra,
-        color: inputs.taxStrategy === 'roth' ? '#6366f1' : '#047857',
+        color: inputs.taxStrategy === 'roth' ? '#00F0A0' : '#009466',
         isTaxDeductible: inputs.taxStrategy === 'traditional'
       },
       {
         name: 'Brokerage',
         monthly: inputs.monthlyBrokerage,
-        color: '#9ca3af',
+        color: '#8E8E93',
         isTaxDeductible: false
       }
     ];
@@ -172,15 +172,15 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
   if (!isPro) {
     return (
       <div className="flex items-center justify-center min-h-[600px]">
-        <div className="max-w-md text-center p-12 bg-amber-50 border-2 border-amber-200 rounded-[3rem]">
-          <Lock className="mx-auto text-amber-600 mb-4" size={48} />
-          <h3 className="text-2xl font-black text-amber-900 mb-3">Pro Feature</h3>
-          <p className="text-amber-700 font-medium mb-6">
+        <div className="max-w-md text-center p-12 bg-[var(--color-warning-soft)] border-2 border-[var(--glass-border-strong)] rounded-[3rem]">
+          <Lock className="mx-auto text-[var(--color-warning)] mb-4" size={48} />
+          <h3 className="text-2xl font-bold text-[var(--color-warning)] mb-3">Pro Feature</h3>
+          <p className="text-[var(--color-warning)] font-medium mb-6">
             The S-Corp Investment Optimizer is available exclusively to Pro subscribers. Upgrade to access advanced business tax optimization tools.
           </p>
           <button
             onClick={onUpgrade}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white font-black py-3 px-8 rounded-2xl transition-colors"
+            className="bg-[var(--emerald-500)] hover:bg-[var(--emerald-500)] text-white font-bold py-3 px-8 rounded-2xl transition-colors"
           >
             Upgrade to Pro
           </button>
@@ -204,14 +204,14 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
       </div>
 
       {/* EXPLANATION BANNER */}
-      <div className="bg-emerald-50 border-2 border-emerald-200 rounded-[2.5rem] p-8">
+      <div className="bg-[var(--emerald-50)] border-2 border-[var(--emerald-border)] rounded-[2.5rem] p-8">
         <div className="flex items-start gap-4">
-          <div className="p-3 bg-emerald-100 rounded-2xl">
-            <Shield className="text-emerald-600" size={28} />
+          <div className="p-3 bg-[var(--emerald-100)] rounded-2xl">
+            <Shield className="text-[var(--emerald-500)]" size={28} />
           </div>
           <div>
-            <h3 className="text-xl font-black text-emerald-900 mb-2">S-Corp Investment Strategy</h3>
-            <p className="text-emerald-700 font-medium text-sm leading-relaxed">
+            <h3 className="text-xl font-bold text-[var(--emerald-500)] mb-2">S-Corp Investment Strategy</h3>
+            <p className="text-[var(--emerald-500)] font-medium text-sm leading-relaxed">
               As an S-Corp owner, you can maximize retirement savings through strategic allocation across employee deferrals,
               company matching, IRA contributions, and HSA. This optimizer uses 2026 IRS limits and shows your 30-year wealth projection
               with tax savings factored in.
@@ -224,59 +224,59 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
         {/* LEFT COLUMN - INPUTS */}
         <div className="lg:col-span-4 space-y-6">
           {/* Business & Tax Profile */}
-          <div className="bg-white rounded-[2.5rem] p-8 border-2 border-slate-200 shadow-sm">
-            <h3 className="text-xl font-black text-slate-800 mb-6 flex items-center gap-3">
-              <DollarSign className="text-emerald-600" size={24} />
+          <div className="bg-[var(--bg-card)] rounded-[2.5rem] p-8 border-2 border-[var(--border-default)] shadow-sm">
+            <h3 className="text-xl font-bold text-[var(--text-primary)] mb-6 flex items-center gap-3">
+              <DollarSign className="text-[var(--emerald-500)]" size={24} />
               Business & Tax Profile
             </h3>
 
             <div className="space-y-5">
               <div>
-                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Annual W-2 Salary</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Annual W-2 Salary</label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">$</span>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] font-bold">$</span>
                   <input
                     type="number"
                     name="annualSalary"
                     value={inputs.annualSalary}
                     onChange={handleInputChange}
                     step="1000"
-                    className="w-full pl-8 pr-4 py-3 border-2 border-slate-200 rounded-2xl font-bold text-slate-900 focus:border-emerald-500 focus:outline-none transition-colors"
+                    className="w-full pl-8 pr-4 py-3 border-2 border-[var(--border-default)] rounded-2xl font-bold text-[var(--text-primary)] focus:border-[var(--emerald-border)] focus:outline-none transition-colors"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Your Age</label>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Your Age</label>
                   <input
                     type="number"
                     name="age"
                     value={inputs.age}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-2xl font-bold text-slate-900 focus:border-emerald-500 focus:outline-none transition-colors"
+                    className="w-full px-4 py-3 border-2 border-[var(--border-default)] rounded-2xl font-bold text-[var(--text-primary)] focus:border-[var(--emerald-border)] focus:outline-none transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Est. Tax Rate %</label>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Est. Tax Rate %</label>
                   <input
                     type="number"
                     name="estTaxRate"
                     value={inputs.estTaxRate}
                     onChange={handleInputChange}
                     step="1"
-                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-2xl font-bold text-slate-900 focus:border-emerald-500 focus:outline-none transition-colors"
+                    className="w-full px-4 py-3 border-2 border-[var(--border-default)] rounded-2xl font-bold text-[var(--text-primary)] focus:border-[var(--emerald-border)] focus:outline-none transition-colors"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">401(k) Mode</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">401(k) Mode</label>
                 <select
                   name="taxStrategy"
                   value={inputs.taxStrategy}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-2xl font-bold text-slate-900 focus:border-emerald-500 focus:outline-none transition-colors"
+                  className="w-full px-4 py-3 border-2 border-[var(--border-default)] rounded-2xl font-bold text-[var(--text-primary)] focus:border-[var(--emerald-border)] focus:outline-none transition-colors"
                 >
                   <option value="roth">Roth (Employee)</option>
                   <option value="traditional">Traditional (Pre-Tax)</option>
@@ -286,17 +286,17 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
           </div>
 
           {/* Monthly Contributions */}
-          <div className="bg-white rounded-[2.5rem] p-8 border-2 border-blue-200 border-t-4 shadow-sm">
-            <h3 className="text-xl font-black text-blue-800 mb-6 flex items-center gap-3">
-              <PiggyBank className="text-blue-600" size={24} />
+          <div className="bg-[var(--bg-card)] rounded-[2.5rem] p-8 border-2 border-[var(--color-info-soft)] border-t-4 shadow-sm">
+            <h3 className="text-xl font-bold text-[var(--color-info)] mb-6 flex items-center gap-3">
+              <PiggyBank className="text-[var(--color-info)]" size={24} />
               Monthly Contributions
             </h3>
 
             <div className="space-y-5">
               <div>
-                <label className="flex justify-between text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
+                <label className="flex justify-between text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">
                   <span>Employee 401(k)</span>
-                  <span className="text-[10px] text-blue-600">Max: ${Math.floor(LIMITS.emp401k.monthly).toLocaleString()}</span>
+                  <span className="text-[10px] text-[var(--color-info)]">Max: ${Math.floor(LIMITS.emp401k.monthly).toLocaleString()}</span>
                 </label>
                 <input
                   type="number"
@@ -304,16 +304,16 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
                   value={inputs.monthlyEmp401k}
                   onChange={handleInputChange}
                   step="50"
-                  className={`w-full px-4 py-3 border-2 rounded-2xl font-bold text-slate-900 focus:outline-none transition-colors ${
-                    inputs.monthlyEmp401k > LIMITS.emp401k.monthly ? 'border-red-400 bg-red-50' : 'border-slate-200 focus:border-blue-500'
+                  className={`w-full px-4 py-3 border-2 rounded-2xl font-bold text-[var(--text-primary)] focus:outline-none transition-colors ${
+                    inputs.monthlyEmp401k > LIMITS.emp401k.monthly ? 'border-[var(--crimson-border)] bg-[var(--crimson-50)]' : 'border-[var(--border-default)] focus:border-[var(--color-info)]'
                   }`}
                 />
               </div>
 
               <div>
-                <label className="flex justify-between text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
+                <label className="flex justify-between text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">
                   <span>Company 401(k) Match</span>
-                  <span className="text-[10px] text-blue-600">Max: ${Math.floor(LIMITS.co401k.monthly).toLocaleString()}</span>
+                  <span className="text-[10px] text-[var(--color-info)]">Max: ${Math.floor(LIMITS.co401k.monthly).toLocaleString()}</span>
                 </label>
                 <input
                   type="number"
@@ -321,16 +321,16 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
                   value={inputs.monthlyCo401k}
                   onChange={handleInputChange}
                   step="50"
-                  className={`w-full px-4 py-3 border-2 rounded-2xl font-bold text-slate-900 focus:outline-none transition-colors ${
-                    inputs.monthlyCo401k > LIMITS.co401k.monthly ? 'border-red-400 bg-red-50' : 'border-slate-200 focus:border-blue-500'
+                  className={`w-full px-4 py-3 border-2 rounded-2xl font-bold text-[var(--text-primary)] focus:outline-none transition-colors ${
+                    inputs.monthlyCo401k > LIMITS.co401k.monthly ? 'border-[var(--crimson-border)] bg-[var(--crimson-50)]' : 'border-[var(--border-default)] focus:border-[var(--color-info)]'
                   }`}
                 />
               </div>
 
               <div>
-                <label className="flex justify-between text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
+                <label className="flex justify-between text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">
                   <span>IRA Contribution</span>
-                  <span className="text-[10px] text-blue-600">Max: ${Math.floor(LIMITS.ira.monthly).toLocaleString()}</span>
+                  <span className="text-[10px] text-[var(--color-info)]">Max: ${Math.floor(LIMITS.ira.monthly).toLocaleString()}</span>
                 </label>
                 <input
                   type="number"
@@ -338,16 +338,16 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
                   value={inputs.monthlyIra}
                   onChange={handleInputChange}
                   step="50"
-                  className={`w-full px-4 py-3 border-2 rounded-2xl font-bold text-slate-900 focus:outline-none transition-colors ${
-                    inputs.monthlyIra > LIMITS.ira.monthly ? 'border-red-400 bg-red-50' : 'border-slate-200 focus:border-blue-500'
+                  className={`w-full px-4 py-3 border-2 rounded-2xl font-bold text-[var(--text-primary)] focus:outline-none transition-colors ${
+                    inputs.monthlyIra > LIMITS.ira.monthly ? 'border-[var(--crimson-border)] bg-[var(--crimson-50)]' : 'border-[var(--border-default)] focus:border-[var(--color-info)]'
                   }`}
                 />
               </div>
 
               <div>
-                <label className="flex justify-between text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
+                <label className="flex justify-between text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">
                   <span>HSA Contribution</span>
-                  <span className="text-[10px] text-blue-600">Max: ${Math.floor(LIMITS.hsa.monthly).toLocaleString()}</span>
+                  <span className="text-[10px] text-[var(--color-info)]">Max: ${Math.floor(LIMITS.hsa.monthly).toLocaleString()}</span>
                 </label>
                 <input
                   type="number"
@@ -355,51 +355,51 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
                   value={inputs.monthlyHsa}
                   onChange={handleInputChange}
                   step="10"
-                  className={`w-full px-4 py-3 border-2 rounded-2xl font-bold text-slate-900 focus:outline-none transition-colors ${
-                    inputs.monthlyHsa > LIMITS.hsa.monthly ? 'border-red-400 bg-red-50' : 'border-slate-200 focus:border-blue-500'
+                  className={`w-full px-4 py-3 border-2 rounded-2xl font-bold text-[var(--text-primary)] focus:outline-none transition-colors ${
+                    inputs.monthlyHsa > LIMITS.hsa.monthly ? 'border-[var(--crimson-border)] bg-[var(--crimson-50)]' : 'border-[var(--border-default)] focus:border-[var(--color-info)]'
                   }`}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Brokerage / Excess</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Brokerage / Excess</label>
                 <input
                   type="number"
                   name="monthlyBrokerage"
                   value={inputs.monthlyBrokerage}
                   onChange={handleInputChange}
                   step="100"
-                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-2xl font-bold text-slate-900 focus:border-blue-500 focus:outline-none transition-colors"
+                  className="w-full px-4 py-3 border-2 border-[var(--border-default)] rounded-2xl font-bold text-[var(--text-primary)] focus:border-[var(--color-info)] focus:outline-none transition-colors"
                 />
               </div>
             </div>
           </div>
 
           {/* Projection Parameters */}
-          <div className="bg-white rounded-[2.5rem] p-8 border-2 border-slate-200 shadow-sm">
-            <h3 className="text-sm font-black text-slate-500 uppercase tracking-widest mb-4">Projection Parameters</h3>
+          <div className="bg-[var(--bg-card)] rounded-[2.5rem] p-8 border-2 border-[var(--border-default)] shadow-sm">
+            <h3 className="text-sm font-bold text-[var(--text-tertiary)] uppercase tracking-widest mb-4">Projection Parameters</h3>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Return %</label>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Return %</label>
                   <input
                     type="number"
                     name="growthRate"
                     value={inputs.growthRate}
                     onChange={handleInputChange}
                     step="0.5"
-                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-2xl font-bold text-slate-900 focus:border-emerald-500 focus:outline-none transition-colors"
+                    className="w-full px-4 py-3 border-2 border-[var(--border-default)] rounded-2xl font-bold text-[var(--text-primary)] focus:border-[var(--emerald-border)] focus:outline-none transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Inflation %</label>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Inflation %</label>
                   <input
                     type="number"
                     name="inflationRate"
                     value={inputs.inflationRate}
                     onChange={handleInputChange}
                     step="0.1"
-                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-2xl font-bold text-slate-900 focus:border-emerald-500 focus:outline-none transition-colors"
+                    className="w-full px-4 py-3 border-2 border-[var(--border-default)] rounded-2xl font-bold text-[var(--text-primary)] focus:border-[var(--emerald-border)] focus:outline-none transition-colors"
                   />
                 </div>
               </div>
@@ -408,7 +408,7 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
                   name="adjustInflation"
                   value={inputs.adjustInflation ? 'true' : 'false'}
                   onChange={(e) => setInputs(prev => ({ ...prev, adjustInflation: e.target.value === 'true' }))}
-                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-2xl font-medium text-sm text-slate-900 focus:border-emerald-500 focus:outline-none transition-colors"
+                  className="w-full px-4 py-3 border-2 border-[var(--border-default)] rounded-2xl font-medium text-sm text-[var(--text-primary)] focus:border-[var(--emerald-border)] focus:outline-none transition-colors"
                 >
                   <option value="false">Show Future Nominal Dollars</option>
                   <option value="true">Show Adjusted "Today" Dollars</option>
@@ -422,56 +422,56 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
         <div className="lg:col-span-8 space-y-6">
           {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-[2.5rem] p-8 text-white shadow-xl">
-              <p className="text-xs font-bold uppercase text-emerald-100 mb-2">Total Monthly Outlay</p>
-              <div className="text-4xl font-black mb-1">${calculations.totalMonthly.toLocaleString()}</div>
-              <p className="text-xs text-emerald-100">Gross investment</p>
+            <div className="bg-gradient-to-br from-[var(--emerald-600)] to-[var(--emerald-700)] rounded-[2.5rem] p-8 text-white shadow-xl">
+              <p className="text-xs font-bold uppercase text-[var(--emerald-100)] mb-2">Total Monthly Outlay</p>
+              <div className="text-4xl font-bold mb-1">${calculations.totalMonthly.toLocaleString()}</div>
+              <p className="text-xs text-[var(--emerald-100)]">Gross investment</p>
             </div>
 
-            <div className="bg-white rounded-[2.5rem] p-8 border-2 border-emerald-200 shadow-md">
-              <p className="text-xs font-bold uppercase text-slate-500 mb-2">Monthly Tax Savings</p>
-              <div className="text-4xl font-black text-emerald-600 mb-1">${Math.round(calculations.monthlyTaxSavings).toLocaleString()}</div>
-              <p className="text-xs text-slate-500">Net cost: <span className="font-bold text-slate-700">${Math.round(calculations.netMonthlyCost).toLocaleString()}/mo</span></p>
+            <div className="bg-[var(--bg-card)] rounded-[2.5rem] p-8 border-2 border-[var(--emerald-border)] shadow-md">
+              <p className="text-xs font-bold uppercase text-[var(--text-tertiary)] mb-2">Monthly Tax Savings</p>
+              <div className="text-4xl font-bold text-[var(--emerald-500)] mb-1">${Math.round(calculations.monthlyTaxSavings).toLocaleString()}</div>
+              <p className="text-xs text-[var(--text-tertiary)]">Net cost: <span className="font-bold text-[var(--text-secondary)]">${Math.round(calculations.netMonthlyCost).toLocaleString()}/mo</span></p>
             </div>
 
-            <div className="bg-indigo-50 rounded-[2.5rem] p-8 border-2 border-indigo-200 shadow-md">
-              <p className="text-xs font-bold uppercase text-indigo-500 mb-2">30-Year Wealth</p>
-              <div className="text-4xl font-black text-indigo-700 mb-1">${Math.round(calculations.totalBalance).toLocaleString()}</div>
-              <p className="text-xs text-indigo-500">Estimated balance</p>
+            <div className="bg-[var(--emerald-50)] rounded-[2.5rem] p-8 border-2 border-[var(--emerald-border)] shadow-md">
+              <p className="text-xs font-bold uppercase text-[var(--emerald-400)] mb-2">30-Year Wealth</p>
+              <div className="text-4xl font-bold text-[var(--emerald-500)] mb-1">${Math.round(calculations.totalBalance).toLocaleString()}</div>
+              <p className="text-xs text-[var(--emerald-400)]">Estimated balance</p>
             </div>
           </div>
 
           {/* Charts */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Growth Chart */}
-            <div className="bg-white rounded-[2.5rem] p-8 border-2 border-slate-200 shadow-sm">
-              <h3 className="text-sm font-black text-slate-500 uppercase tracking-widest mb-4">30-Year Growth</h3>
+            <div className="bg-[var(--bg-card)] rounded-[2.5rem] p-8 border-2 border-[var(--border-default)] shadow-sm">
+              <h3 className="text-sm font-bold text-[var(--text-tertiary)] uppercase tracking-widest mb-4">30-Year Growth</h3>
               <ResponsiveContainer width="100%" height={250}>
                 <LineChart data={calculations.projectionData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#48484A" />
                   <XAxis
                     dataKey="year"
-                    stroke="#94a3b8"
+                    stroke="#8E8E93"
                     tick={{ fontSize: 11 }}
                     label={{ value: 'Years', position: 'insideBottom', offset: -5, fontSize: 11 }}
                   />
                   <YAxis
-                    stroke="#94a3b8"
+                    stroke="#8E8E93"
                     tick={{ fontSize: 11 }}
                     tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
                   />
                   <Tooltip
                     formatter={(v) => `$${Number(v).toLocaleString()}`}
-                    contentStyle={{ borderRadius: '12px', border: '2px solid #e2e8f0' }}
+                    contentStyle={{ borderRadius: '12px', border: '2px solid #48484A' }}
                   />
-                  <Line type="monotone" dataKey="balance" stroke="#10b981" strokeWidth={3} dot={false} />
+                  <Line type="monotone" dataKey="balance" stroke="#00F0A0" strokeWidth={3} dot={false} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
 
             {/* Tax Breakdown Pie */}
-            <div className="bg-white rounded-[2.5rem] p-8 border-2 border-slate-200 shadow-sm">
-              <h3 className="text-sm font-black text-slate-500 uppercase tracking-widest mb-4">Tax & Cost Breakdown</h3>
+            <div className="bg-[var(--bg-card)] rounded-[2.5rem] p-8 border-2 border-[var(--border-default)] shadow-sm">
+              <h3 className="text-sm font-bold text-[var(--text-tertiary)] uppercase tracking-widest mb-4">Tax & Cost Breakdown</h3>
               <ResponsiveContainer width="100%" height={250}>
                 <PieChart>
                   <Pie
@@ -486,8 +486,8 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
                     paddingAngle={2}
                     dataKey="value"
                   >
-                    <Cell fill="#3b82f6" />
-                    <Cell fill="#10b981" />
+                    <Cell fill="#5AC8FA" />
+                    <Cell fill="#00F0A0" />
                   </Pie>
                   <Tooltip formatter={(v) => `$${Number(v).toLocaleString()}`} />
                   <Legend
@@ -501,9 +501,9 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
           </div>
 
           {/* Annual Allocation Summary */}
-          <div className="bg-white rounded-[2.5rem] border-2 border-slate-200 shadow-sm overflow-hidden">
-            <div className="p-6 border-b-2 border-slate-100 bg-slate-50">
-              <h3 className="font-black text-slate-700">Annual Allocation Summary</h3>
+          <div className="bg-[var(--bg-card)] rounded-[2.5rem] border-2 border-[var(--border-default)] shadow-sm overflow-hidden">
+            <div className="p-6 border-b-2 border-[var(--border-subtle)] bg-[var(--bg-section)]">
+              <h3 className="font-bold text-[var(--text-secondary)]">Annual Allocation Summary</h3>
             </div>
             <div className="p-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -513,20 +513,20 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
                   const annualSavings = allocation.isTaxDeductible ? annualAmount * calculations.taxRate : 0;
 
                   return (
-                    <div key={idx} className="p-4 border-2 border-slate-100 rounded-2xl bg-white flex justify-between items-center hover:border-emerald-200 transition-colors">
+                    <div key={idx} className="p-4 border-2 border-[var(--border-subtle)] rounded-2xl bg-[var(--bg-card)] flex justify-between items-center hover:border-[var(--emerald-border)] transition-colors">
                       <div className="flex items-center gap-3">
                         <div className="w-2 h-12 rounded-full" style={{ backgroundColor: allocation.color }}></div>
                         <div>
-                          <h4 className="text-sm font-black text-slate-800">{allocation.name}</h4>
-                          <span className={`text-[10px] uppercase font-bold ${allocation.isTaxDeductible ? 'text-emerald-600' : 'text-slate-400'}`}>
+                          <h4 className="text-sm font-bold text-[var(--text-primary)]">{allocation.name}</h4>
+                          <span className={`text-[10px] uppercase font-bold ${allocation.isTaxDeductible ? 'text-[var(--emerald-500)]' : 'text-[var(--text-muted)]'}`}>
                             {allocation.isTaxDeductible ? '✓ Tax Deductible' : 'No Immediate Savings'}
                           </span>
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="font-black text-slate-900 text-lg">${annualAmount.toLocaleString()}</div>
+                        <div className="font-bold text-[var(--text-primary)] text-lg">${annualAmount.toLocaleString()}</div>
                         {annualSavings > 0 && (
-                          <div className="text-[10px] text-emerald-600 font-bold">
+                          <div className="text-[10px] text-[var(--emerald-500)] font-bold">
                             Est. ${Math.round(annualSavings).toLocaleString()} Savings
                           </div>
                         )}
@@ -541,10 +541,10 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
       </div>
 
       {/* Footer Note */}
-      <div className="bg-slate-50 rounded-2xl p-6 border-2 border-slate-200">
+      <div className="bg-[var(--bg-section)] rounded-2xl p-6 border-2 border-[var(--border-default)]">
         <div className="flex items-start gap-3">
-          <AlertCircle className="text-slate-400 mt-0.5" size={20} />
-          <p className="text-xs text-slate-600 font-medium">
+          <AlertCircle className="text-[var(--text-muted)] mt-0.5" size={20} />
+          <p className="text-xs text-[var(--text-secondary)] font-medium">
             Calculations use projected 2026 IRS limits. Total Solo 401(k) limit: $72,000 + catch-up contributions.
             Tax savings are estimates based on your provided tax rate. Consult a tax professional for personalized advice.
           </p>

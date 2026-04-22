@@ -46,7 +46,7 @@ const FUND_METADATA = {
     description: 'Top 500 U.S. companies. The gold standard for U.S. large-cap equity.',
     cagr: 10.5,
     volatility: 15.0,
-    color: '#4f46e5',
+    color: '#00F0A0',
     icon: ShieldCheck,
     expenseRatio: '0.03%'
   },
@@ -55,7 +55,7 @@ const FUND_METADATA = {
     description: 'Includes large, mid, and small-cap U.S. stocks for maximum domestic diversity.',
     cagr: 10.2,
     volatility: 16.0,
-    color: '#10b981',
+    color: '#00F0A0',
     icon: BarChart3,
     expenseRatio: '0.03%'
   },
@@ -64,7 +64,7 @@ const FUND_METADATA = {
     description: 'Invests in nearly every investable stock in the world across 40+ countries.',
     cagr: 8.5,
     volatility: 14.5,
-    color: '#8b5cf6',
+    color: '#00F0A0',
     icon: Globe,
     expenseRatio: '0.07%'
   },
@@ -73,7 +73,7 @@ const FUND_METADATA = {
     description: 'Focuses on high-growth companies, primarily in tech and consumer sectors.',
     cagr: 13.5,
     volatility: 22.0,
-    color: '#f59e0b',
+    color: '#FFB800',
     icon: Zap,
     expenseRatio: '0.15% / 0.04%'
   }
@@ -262,36 +262,36 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
 
       {/* Metrics Header */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Estimated Final Value</p>
-          <h4 className="text-2xl font-black text-slate-900">{formatCurrency(finalStats.steady)}</h4>
-          <p className="text-xs font-bold text-indigo-600 mt-1">
+        <div className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border-default)] shadow-sm">
+          <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1">Estimated Final Value</p>
+          <h4 className="text-2xl font-bold text-[var(--text-primary)]">{formatCurrency(finalStats.steady)}</h4>
+          <p className="text-xs font-bold text-[var(--emerald-500)] mt-1">
             {FUND_METADATA[selectedFund].cagr}% CAGR
           </p>
         </div>
-        <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Net Gains</p>
-          <h4 className="text-2xl font-black text-emerald-600">+{formatCurrency(totalGains)}</h4>
-          <p className="text-xs text-slate-400 mt-1">From {formatCurrency(finalStats.invested)} invested</p>
+        <div className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border-default)] shadow-sm">
+          <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1">Total Net Gains</p>
+          <h4 className="text-2xl font-bold text-[var(--emerald-500)]">+{formatCurrency(totalGains)}</h4>
+          <p className="text-xs text-[var(--text-muted)] mt-1">From {formatCurrency(finalStats.invested)} invested</p>
         </div>
-        <div className="bg-indigo-600 p-6 rounded-3xl shadow-lg text-white">
-          <p className="text-[10px] font-black text-indigo-200 uppercase tracking-widest mb-1">Simulated Outcome</p>
-          <h4 className={`text-2xl font-black ${finalStats.simulated > finalStats.steady ? 'text-emerald-300' : 'text-amber-300'}`}>
+        <div className="bg-[var(--emerald-500)] p-6 rounded-3xl shadow-lg text-white">
+          <p className="text-[10px] font-bold text-[var(--mist-200)] uppercase tracking-widest mb-1">Simulated Outcome</p>
+          <h4 className={`text-2xl font-bold ${finalStats.simulated > finalStats.steady ? 'text-[var(--emerald-400)]' : 'text-[var(--color-warning)]'}`}>
             {formatCurrency(finalStats.simulated)}
           </h4>
-          <p className="text-xs text-indigo-200 mt-1">Includes variance</p>
+          <p className="text-xs text-[var(--mist-200)] mt-1">Includes variance</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Controls Sidebar */}
         <aside className="lg:col-span-4 space-y-6">
-          <div className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm space-y-6">
+          <div className="bg-[var(--bg-card)] p-8 rounded-[2.5rem] border border-[var(--border-default)] shadow-sm space-y-6">
 
             {/* Fund Selector */}
             <div>
-              <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest mb-4 flex items-center gap-2">
-                <TrendingUp size={16} className="text-indigo-600" /> Choose Fund
+              <h3 className="text-sm font-bold text-[var(--text-primary)] uppercase tracking-widest mb-4 flex items-center gap-2">
+                <TrendingUp size={16} className="text-[var(--emerald-500)]" /> Choose Fund
               </h3>
               <div className="grid grid-cols-1 gap-2">
                 {(Object.entries(FUND_METADATA) as [FundKey, typeof FUND_METADATA[FundKey]][]).map(([key, fund]) => {
@@ -302,19 +302,19 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
                       onClick={() => setSelectedFund(key)}
                       className={`flex items-start gap-3 p-3 rounded-xl border text-left transition-all ${
                         selectedFund === key
-                        ? 'border-indigo-500 bg-indigo-50/50 ring-1 ring-indigo-500'
-                        : 'border-slate-200 hover:border-slate-300 bg-white'
+                        ? 'border-[var(--emerald-border)] bg-[var(--emerald-50)]/50 ring-1 ring-[var(--emerald-500)]'
+                        : 'border-[var(--border-default)] hover:border-[var(--border-strong)] bg-[var(--bg-card)]'
                       }`}
                     >
-                      <div className={`p-2 rounded-lg ${selectedFund === key ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                      <div className={`p-2 rounded-lg ${selectedFund === key ? 'bg-[var(--emerald-500)] text-white' : 'bg-[var(--bg-glass)] text-[var(--text-tertiary)]'}`}>
                         <IconComp className="w-5 h-5" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="font-bold text-sm text-slate-800">{fund.name}</div>
-                        <div className="text-xs text-slate-500 leading-tight mt-1 line-clamp-2">{fund.description}</div>
+                        <div className="font-bold text-sm text-[var(--text-primary)]">{fund.name}</div>
+                        <div className="text-xs text-[var(--text-tertiary)] leading-tight mt-1 line-clamp-2">{fund.description}</div>
                         <div className="flex gap-3 mt-2">
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Avg: {fund.cagr}%</span>
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Exp: {fund.expenseRatio}<Tooltip content="Annual fee charged by the fund, expressed as a percentage. Even small differences compound significantly over time." /></span>
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Avg: {fund.cagr}%</span>
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Exp: {fund.expenseRatio}<Tooltip content="Annual fee charged by the fund, expressed as a percentage. Even small differences compound significantly over time." /></span>
                         </div>
                       </div>
                     </button>
@@ -323,59 +323,59 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
               </div>
             </div>
 
-            <hr className="border-slate-100" />
+            <hr className="border-[var(--border-subtle)]" />
 
             {/* Inputs */}
             <div className="space-y-4">
               <div>
                 <div className="flex justify-between mb-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase flex items-center gap-1">
+                  <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase flex items-center gap-1">
                     <DollarSign className="w-3 h-3" /> Initial Principal
                   </label>
-                  <span className="text-sm font-mono font-bold text-indigo-600">{formatCurrency(principal)}</span>
+                  <span className="text-sm font-mono font-bold text-[var(--emerald-500)]">{formatCurrency(principal)}</span>
                 </div>
                 <input
                   type="range" min="0" max="100000" step="1000"
                   value={principal} onChange={(e) => setPrincipal(Number(e.target.value))}
-                  className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                  className="w-full h-2 bg-[var(--bg-glass-strong)] rounded-lg appearance-none cursor-pointer accent-indigo-600"
                 />
               </div>
 
               <div>
                 <div className="flex justify-between mb-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase flex items-center gap-1">
+                  <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase flex items-center gap-1">
                     <TrendingUp className="w-3 h-3" /> Regular Contribution
                   </label>
-                  <span className="text-sm font-mono font-bold text-indigo-600">{formatCurrency(contribution)}</span>
+                  <span className="text-sm font-mono font-bold text-[var(--emerald-500)]">{formatCurrency(contribution)}</span>
                 </div>
                 <div className="flex gap-2 mb-3">
                   <button
                     onClick={() => setFrequency('monthly')}
-                    className={`flex-1 py-1.5 text-xs rounded-lg font-bold border transition-colors ${frequency === 'monthly' ? 'bg-slate-800 text-white border-slate-800' : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300'}`}
+                    className={`flex-1 py-1.5 text-xs rounded-lg font-bold border transition-colors ${frequency === 'monthly' ? 'bg-[var(--obsidian-800)] text-white border-[var(--border-strong)]' : 'bg-[var(--bg-card)] text-[var(--text-tertiary)] border-[var(--border-default)] hover:border-[var(--border-strong)]'}`}
                   >Monthly</button>
                   <button
                     onClick={() => setFrequency('annual')}
-                    className={`flex-1 py-1.5 text-xs rounded-lg font-bold border transition-colors ${frequency === 'annual' ? 'bg-slate-800 text-white border-slate-800' : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300'}`}
+                    className={`flex-1 py-1.5 text-xs rounded-lg font-bold border transition-colors ${frequency === 'annual' ? 'bg-[var(--obsidian-800)] text-white border-[var(--border-strong)]' : 'bg-[var(--bg-card)] text-[var(--text-tertiary)] border-[var(--border-default)] hover:border-[var(--border-strong)]'}`}
                   >Annual</button>
                 </div>
                 <input
                   type="range" min="0" max="10000" step="100"
                   value={contribution} onChange={(e) => setContribution(Number(e.target.value))}
-                  className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                  className="w-full h-2 bg-[var(--bg-glass-strong)] rounded-lg appearance-none cursor-pointer accent-indigo-600"
                 />
               </div>
 
               <div>
                 <div className="flex justify-between mb-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase flex items-center gap-1">
+                  <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase flex items-center gap-1">
                     <Calendar className="w-3 h-3" /> Time Horizon
                   </label>
-                  <span className="text-sm font-mono font-bold text-indigo-600">{duration} Years</span>
+                  <span className="text-sm font-mono font-bold text-[var(--emerald-500)]">{duration} Years</span>
                 </div>
                 <input
                   type="range" min="1" max="50" step="1"
                   value={duration} onChange={(e) => setDuration(Number(e.target.value))}
-                  className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                  className="w-full h-2 bg-[var(--bg-glass-strong)] rounded-lg appearance-none cursor-pointer accent-indigo-600"
                 />
               </div>
             </div>
@@ -389,15 +389,15 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
                     checked={showSimulated}
                     onChange={() => setShowSimulated(!showSimulated)}
                   />
-                  <div className="w-10 h-5 bg-slate-200 rounded-full peer peer-checked:bg-indigo-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
+                  <div className="w-10 h-5 bg-[var(--bg-glass-strong)] rounded-full peer peer-checked:bg-[var(--emerald-500)] after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--bg-card)] after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
                 </div>
-                <span className="text-sm font-medium text-slate-600 group-hover:text-slate-800 transition-colors">Show Market Volatility</span>
+                <span className="text-sm font-medium text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] transition-colors">Show Market Volatility</span>
               </label>
 
               {showSimulated && (
                 <button
                   onClick={() => setSeed(s => s + 1)}
-                  className="w-full flex items-center justify-center gap-2 py-2 text-xs font-bold text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
+                  className="w-full flex items-center justify-center gap-2 py-2 text-xs font-bold text-[var(--text-secondary)] bg-[var(--bg-glass)] rounded-lg hover:bg-[var(--bg-glass-strong)] transition-colors"
                 >
                   <RefreshCw className="w-3 h-3" /> Re-simulate Market Path
                 </button>
@@ -405,9 +405,9 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
             </div>
           </div>
 
-          <div className="bg-indigo-900 text-white p-8 rounded-[2.5rem] shadow-xl">
-            <h4 className="font-black text-sm uppercase tracking-widest mb-4 flex items-center gap-2">
-              <Info size={16} className="text-indigo-400" /> Key Insight
+          <div className="bg-[var(--obsidian-800)] text-white p-8 rounded-[2.5rem] shadow-xl">
+            <h4 className="font-bold text-sm uppercase tracking-widest mb-4 flex items-center gap-2">
+              <Info size={16} className="text-[var(--emerald-400)]" /> Key Insight
             </h4>
             <p className="text-xs font-medium leading-relaxed opacity-80">
               With {FUND_METADATA[selectedFund].cagr}% average returns and {FUND_METADATA[selectedFund].volatility}% volatility,
@@ -419,15 +419,15 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
 
         {/* Chart View */}
         <main className="lg:col-span-8 space-y-6">
-          <div className="bg-white p-8 rounded-[3rem] border border-slate-200 shadow-sm overflow-hidden">
+          <div className="bg-[var(--bg-card)] p-8 rounded-[3rem] border border-[var(--border-default)] shadow-sm overflow-hidden">
             <div className="flex flex-wrap items-center justify-between mb-8 gap-4">
-              <h3 className="text-xl font-black text-slate-800 flex items-center gap-2">
-                <TrendingUp className="text-indigo-600" /> Growth Forecast
+              <h3 className="text-xl font-bold text-[var(--text-primary)] flex items-center gap-2">
+                <TrendingUp className="text-[var(--emerald-500)]" /> Growth Forecast
               </h3>
               <div className="flex gap-4 text-[10px] font-bold uppercase tracking-wider">
-                <div className="flex items-center gap-1.5 text-slate-500"><span className="w-3 h-3 rounded-full bg-indigo-500"></span> Steady</div>
-                {showSimulated && <div className="flex items-center gap-1.5 text-slate-500"><span className="w-3 h-3 border-2 border-amber-400 border-dashed rounded-full"></span> Volatile</div>}
-                <div className="flex items-center gap-1.5 text-slate-500"><span className="w-3 h-3 rounded-full bg-slate-300"></span> Invested</div>
+                <div className="flex items-center gap-1.5 text-[var(--text-tertiary)]"><span className="w-3 h-3 rounded-full bg-[var(--emerald-400)]"></span> Steady</div>
+                {showSimulated && <div className="flex items-center gap-1.5 text-[var(--text-tertiary)]"><span className="w-3 h-3 border-2 border-[var(--color-warning)] border-dashed rounded-full"></span> Volatile</div>}
+                <div className="flex items-center gap-1.5 text-[var(--text-tertiary)]"><span className="w-3 h-3 rounded-full bg-[var(--bg-glass-strong)]"></span> Invested</div>
               </div>
             </div>
 
@@ -436,27 +436,27 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
                 <ComposedChart data={results} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorSteady" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.1}/>
-                      <stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#00F0A0" stopOpacity={0.1}/>
+                      <stop offset="95%" stopColor="#00F0A0" stopOpacity={0}/>
                     </linearGradient>
                     <linearGradient id="colorInvested" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#94a3b8" stopOpacity={0.1}/>
-                      <stop offset="95%" stopColor="#94a3b8" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#8E8E93" stopOpacity={0.1}/>
+                      <stop offset="95%" stopColor="#8E8E93" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#2C2C2E" />
                   <XAxis
                     dataKey="year"
                     axisLine={false}
                     tickLine={false}
-                    tick={{fill: '#94a3b8', fontSize: 11, fontWeight: 'bold'}}
-                    label={{ value: 'Years', position: 'insideBottom', offset: -5, fontSize: 11, fill: '#94a3b8' }}
+                    tick={{fill: '#8E8E93', fontSize: 11, fontWeight: 'bold'}}
+                    label={{ value: 'Years', position: 'insideBottom', offset: -5, fontSize: 11, fill: '#8E8E93' }}
                   />
                   <YAxis
                     axisLine={false}
                     tickLine={false}
                     tickFormatter={(v) => formatCompact(v)}
-                    tick={{fill: '#94a3b8', fontSize: 11, fontWeight: 'bold'}}
+                    tick={{fill: '#8E8E93', fontSize: 11, fontWeight: 'bold'}}
                   />
                   <ChartTooltip
                     contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.1)' }}
@@ -466,7 +466,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
                   <Area
                     type="monotone"
                     dataKey="steady"
-                    stroke="#4f46e5"
+                    stroke="#00F0A0"
                     strokeWidth={3}
                     fillOpacity={1}
                     fill="url(#colorSteady)"
@@ -475,7 +475,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
                     <Line
                       type="monotone"
                       dataKey="simulated"
-                      stroke="#f59e0b"
+                      stroke="#FFB800"
                       strokeWidth={2}
                       dot={false}
                       strokeDasharray="5 5"
@@ -485,7 +485,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
                   <Area
                     type="monotone"
                     dataKey="invested"
-                    stroke="#94a3b8"
+                    stroke="#8E8E93"
                     strokeWidth={2}
                     fillOpacity={1}
                     fill="url(#colorInvested)"
@@ -496,35 +496,35 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
           </div>
 
           {/* Insights Panel */}
-          <div className="bg-slate-800 text-white p-8 rounded-[2.5rem] shadow-lg">
+          <div className="bg-[var(--obsidian-800)] text-white p-8 rounded-[2.5rem] shadow-lg">
             <div className="flex items-center gap-2 mb-6">
-              <Info className="w-5 h-5 text-indigo-400" />
-              <h3 className="font-black text-lg">Investor Insights</h3>
+              <Info className="w-5 h-5 text-[var(--emerald-400)]" />
+              <h3 className="font-bold text-lg">Investor Insights</h3>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-slate-300">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-[var(--text-muted)]">
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">1</div>
+                  <div className="w-6 h-6 rounded-full bg-[var(--emerald-400)]/20 text-[var(--emerald-400)] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">1</div>
                   <p>Total contributions: <span className="text-white font-bold">{formatCurrency(finalStats.invested)}</span>.</p>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">2</div>
-                  <p>Compounding: <span className="text-emerald-400 font-bold">{Math.round((totalGains/finalStats.steady)*100)}%</span> of final wealth.</p>
+                  <div className="w-6 h-6 rounded-full bg-[var(--emerald-400)]/20 text-[var(--emerald-400)] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">2</div>
+                  <p>Compounding: <span className="text-[var(--emerald-400)] font-bold">{Math.round((totalGains/finalStats.steady)*100)}%</span> of final wealth.</p>
                 </div>
               </div>
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">3</div>
+                  <div className="w-6 h-6 rounded-full bg-[var(--emerald-400)]/20 text-[var(--emerald-400)] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">3</div>
                   <p><span className="text-white font-bold">Growth Funds</span> show higher potential but significant risk of years-long drawdown periods.</p>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">4</div>
+                  <div className="w-6 h-6 rounded-full bg-[var(--emerald-400)]/20 text-[var(--emerald-400)] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">4</div>
                   <p><span className="text-white font-bold">VT (World)</span> provides smoother ride through global diversification but historically lower U.S.-style returns.</p>
                 </div>
               </div>
             </div>
-            <div className="mt-6 pt-6 border-t border-slate-700">
-              <div className="text-[10px] text-slate-500 italic">
+            <div className="mt-6 pt-6 border-t border-[var(--border-strong)]">
+              <div className="text-[10px] text-[var(--text-tertiary)] italic">
                 *Historical averages are not indicative of future performance. This tool is for educational purposes only.
               </div>
             </div>
@@ -534,38 +534,38 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
 
       {/* PRO FEATURES SECTION - Locked */}
       {!isPro && (
-        <div className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-[3rem] p-12 text-white relative overflow-hidden shadow-2xl">
+        <div className="bg-gradient-to-br from-[var(--color-warning)] to-[var(--color-warning)] rounded-[3rem] p-12 text-white relative overflow-hidden shadow-2xl">
           <div className="absolute top-0 right-0 p-12 opacity-10 rotate-12">
             <Zap size={200} fill="currentColor" />
           </div>
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-6">
               <Lock size={24} />
-              <h3 className="text-3xl font-black">Advanced Fund Analysis</h3>
+              <h3 className="text-3xl font-bold">Advanced Fund Analysis</h3>
             </div>
-            <p className="text-amber-50 text-lg font-medium mb-8 max-w-3xl leading-relaxed">
+            <p className="text-[var(--color-warning-soft)] text-lg font-medium mb-8 max-w-3xl leading-relaxed">
               Unlock professional-grade insights: side-by-side fund comparison, risk-adjusted returns, Monte Carlo projections, and portfolio optimization recommendations.
             </p>
             <div className="grid md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+              <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                 <Target size={24} className="mb-3" />
-                <h4 className="font-black text-sm mb-2">Fund Comparison</h4>
-                <p className="text-amber-100 text-xs font-medium">Compare all major index funds head-to-head with your exact parameters</p>
+                <h4 className="font-bold text-sm mb-2">Fund Comparison</h4>
+                <p className="text-[var(--color-warning-soft)] text-xs font-medium">Compare all major index funds head-to-head with your exact parameters</p>
               </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+              <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                 <AlertTriangle size={24} className="mb-3" />
-                <h4 className="font-black text-sm mb-2">Risk Analysis</h4>
-                <p className="text-amber-100 text-xs font-medium">Sharpe ratios, max drawdown estimates, and volatility-adjusted returns</p>
+                <h4 className="font-bold text-sm mb-2">Risk Analysis</h4>
+                <p className="text-[var(--color-warning-soft)] text-xs font-medium">Sharpe ratios, max drawdown estimates, and volatility-adjusted returns</p>
               </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+              <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                 <Sparkles size={24} className="mb-3" />
-                <h4 className="font-black text-sm mb-2">Monte Carlo Projections</h4>
-                <p className="text-amber-100 text-xs font-medium">See best-case, worst-case, and median outcomes across thousands of simulations</p>
+                <h4 className="font-bold text-sm mb-2">Monte Carlo Projections</h4>
+                <p className="text-[var(--color-warning-soft)] text-xs font-medium">See best-case, worst-case, and median outcomes across thousands of simulations</p>
               </div>
             </div>
             <button
               onClick={onUpgrade}
-              className="bg-white text-amber-600 px-8 py-4 rounded-2xl font-black hover:bg-amber-50 transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
+              className="bg-[var(--bg-card)] text-[var(--color-warning)] px-8 py-4 rounded-2xl font-bold hover:bg-[var(--color-warning-soft)] transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
             >
               <Zap size={20} fill="currentColor" />
               Upgrade to Pro - $9/month
@@ -579,42 +579,42 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
         <ProGatedPreview isLocked={!isPro} toolId="index-fund-visualizer">
         <div className="space-y-8">
           <div className="flex items-center gap-3 mb-6">
-            <div className="bg-amber-500 text-white p-3 rounded-2xl">
+            <div className="bg-[var(--color-warning)] text-white p-3 rounded-2xl">
               <Zap size={24} />
             </div>
             <div>
-              <h3 className="text-2xl font-black text-slate-900">Advanced Fund Analysis</h3>
-              <p className="text-slate-500 font-medium">Professional-grade comparison and risk metrics</p>
+              <h3 className="text-2xl font-bold text-[var(--text-primary)]">Advanced Fund Analysis</h3>
+              <p className="text-[var(--text-tertiary)] font-medium">Professional-grade comparison and risk metrics</p>
             </div>
           </div>
 
           {/* Fund Comparison Table */}
-          <div className="bg-white rounded-[3rem] p-10 border border-slate-200 shadow-sm">
+          <div className="bg-[var(--bg-card)] rounded-[3rem] p-10 border border-[var(--border-default)] shadow-sm">
             <div className="flex items-start gap-4 mb-6">
-              <div className="bg-indigo-100 text-indigo-600 p-3 rounded-2xl">
+              <div className="bg-[var(--emerald-100)] text-[var(--emerald-500)] p-3 rounded-2xl">
                 <Target size={32} />
               </div>
               <div className="flex-1">
-                <h4 className="text-2xl font-black text-slate-900 mb-3">Head-to-Head Comparison</h4>
-                <p className="text-slate-600 font-medium text-lg leading-relaxed mb-6">
+                <h4 className="text-2xl font-bold text-[var(--text-primary)] mb-3">Head-to-Head Comparison</h4>
+                <p className="text-[var(--text-secondary)] font-medium text-lg leading-relaxed mb-6">
                   With your settings ({formatCurrency(principal)} initial + {formatCurrency(contribution)}/{frequency === 'monthly' ? 'mo' : 'yr'} for {duration} years):
                 </p>
                 <div className="space-y-4">
                   {fundComparison.map((fund, index) => (
                     <div
                       key={fund.key}
-                      className={`flex items-center gap-4 p-4 rounded-2xl border ${fund.key === selectedFund ? 'border-indigo-500 bg-indigo-50' : 'border-slate-200 bg-slate-50'}`}
+                      className={`flex items-center gap-4 p-4 rounded-2xl border ${fund.key === selectedFund ? 'border-[var(--emerald-border)] bg-[var(--emerald-50)]' : 'border-[var(--border-default)] bg-[var(--bg-section)]'}`}
                     >
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center font-black text-sm ${index === 0 ? 'bg-amber-400 text-amber-900' : 'bg-slate-200 text-slate-600'}`}>
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${index === 0 ? 'bg-[var(--color-warning)] text-[var(--color-warning)]' : 'bg-[var(--bg-glass-strong)] text-[var(--text-secondary)]'}`}>
                         {index + 1}
                       </div>
                       <div className="flex-1">
-                        <div className="font-bold text-slate-800">{fund.name}</div>
-                        <div className="text-xs text-slate-500">CAGR: {fund.cagr}% | Volatility: {fund.volatility}%</div>
+                        <div className="font-bold text-[var(--text-primary)]">{fund.name}</div>
+                        <div className="text-xs text-[var(--text-tertiary)]">CAGR: {fund.cagr}% | Volatility: {fund.volatility}%</div>
                       </div>
                       <div className="text-right">
-                        <div className="text-xl font-black text-slate-900">{formatCurrency(fund.finalBalance)}</div>
-                        <div className="text-xs text-emerald-600 font-bold">+{formatCurrency(fund.gains)} gains</div>
+                        <div className="text-xl font-bold text-[var(--text-primary)]">{formatCurrency(fund.finalBalance)}</div>
+                        <div className="text-xs text-[var(--emerald-500)] font-bold">+{formatCurrency(fund.gains)} gains</div>
                       </div>
                     </div>
                   ))}
@@ -625,48 +625,48 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
 
           {/* Risk Analysis */}
           {riskAnalysis && (
-            <div className="bg-gradient-to-br from-purple-600 to-indigo-700 rounded-[3rem] p-10 text-white shadow-xl">
+            <div className="bg-gradient-to-br from-[var(--emerald-500)] to-[var(--emerald-600)] rounded-[3rem] p-10 text-white shadow-xl">
               <div className="flex items-start gap-4 mb-6">
-                <div className="bg-white/20 p-3 rounded-2xl backdrop-blur-sm">
+                <div className="bg-[var(--bg-card)]/20 p-3 rounded-2xl backdrop-blur-sm">
                   <AlertTriangle size={32} />
                 </div>
                 <div className="flex-1">
-                  <h4 className="text-2xl font-black mb-3">Risk-Adjusted Analysis</h4>
-                  <p className="text-purple-50 font-medium text-lg leading-relaxed mb-6">
+                  <h4 className="text-2xl font-bold mb-3">Risk-Adjusted Analysis</h4>
+                  <p className="text-[var(--mist-50)] font-medium text-lg leading-relaxed mb-6">
                     Understanding risk is just as important as understanding returns.
                   </p>
                   <div className="grid md:grid-cols-2 gap-6">
-                    <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-                      <p className="text-purple-100 text-sm font-bold mb-2">Sharpe Ratio</p>
-                      <p className="text-4xl font-black">{riskAnalysis.sharpeRatio}</p>
-                      <p className="text-purple-100 text-xs font-medium mt-2">
+                    <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                      <p className="text-[var(--mist-100)] text-sm font-bold mb-2">Sharpe Ratio</p>
+                      <p className="text-4xl font-bold">{riskAnalysis.sharpeRatio}</p>
+                      <p className="text-[var(--mist-100)] text-xs font-medium mt-2">
                         {parseFloat(riskAnalysis.sharpeRatio) > 0.5 ? 'Good risk-adjusted returns' : 'Moderate risk-adjusted returns'}
                       </p>
                     </div>
-                    <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-                      <p className="text-purple-100 text-sm font-bold mb-2">Est. Max Drawdown</p>
-                      <p className="text-4xl font-black">-{riskAnalysis.maxDrawdownEstimate}%</p>
-                      <p className="text-purple-100 text-xs font-medium mt-2">
+                    <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                      <p className="text-[var(--mist-100)] text-sm font-bold mb-2">Est. Max Drawdown</p>
+                      <p className="text-4xl font-bold">-{riskAnalysis.maxDrawdownEstimate}%</p>
+                      <p className="text-[var(--mist-100)] text-xs font-medium mt-2">
                         Potential peak-to-trough decline
                       </p>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-                <p className="text-sm font-black text-purple-100 mb-4">MONTE CARLO PROJECTION RANGE</p>
+              <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                <p className="text-sm font-bold text-[var(--mist-100)] mb-4">MONTE CARLO PROJECTION RANGE</p>
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
-                    <p className="text-xs text-purple-200 font-bold mb-1">Worst Case (5th %ile)</p>
-                    <p className="text-2xl font-black text-rose-300">{formatCurrency(riskAnalysis.worstCase)}</p>
+                    <p className="text-xs text-[var(--mist-200)] font-bold mb-1">Worst Case (5th %ile)</p>
+                    <p className="text-2xl font-bold text-[var(--crimson-400)]">{formatCurrency(riskAnalysis.worstCase)}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-purple-200 font-bold mb-1">Median (50th %ile)</p>
-                    <p className="text-2xl font-black text-white">{formatCurrency(riskAnalysis.median)}</p>
+                    <p className="text-xs text-[var(--mist-200)] font-bold mb-1">Median (50th %ile)</p>
+                    <p className="text-2xl font-bold text-white">{formatCurrency(riskAnalysis.median)}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-purple-200 font-bold mb-1">Best Case (95th %ile)</p>
-                    <p className="text-2xl font-black text-emerald-300">{formatCurrency(riskAnalysis.bestCase)}</p>
+                    <p className="text-xs text-[var(--mist-200)] font-bold mb-1">Best Case (95th %ile)</p>
+                    <p className="text-2xl font-bold text-[var(--emerald-400)]">{formatCurrency(riskAnalysis.bestCase)}</p>
                   </div>
                 </div>
               </div>
@@ -674,12 +674,12 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
           )}
 
           {/* CORTEX Recommendation */}
-          <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white">
+          <div className="bg-[var(--obsidian-900)] rounded-[2.5rem] p-8 text-white">
             <div className="flex items-center gap-2 mb-4">
-              <Sparkles className="w-5 h-5 text-amber-400" />
-              <h4 className="font-black text-lg">CORTEX Recommendation</h4>
+              <Sparkles className="w-5 h-5 text-[var(--color-warning)]" />
+              <h4 className="font-bold text-lg">CORTEX Recommendation</h4>
             </div>
-            <p className="text-slate-300 font-medium leading-relaxed">
+            <p className="text-[var(--text-muted)] font-medium leading-relaxed">
               Based on your {duration}-year time horizon and {formatCurrency(contribution)}/{frequency === 'monthly' ? 'month' : 'year'} contribution capacity,
               {selectedFund === 'QQQM_VUG' ? (
                 <span> consider the higher volatility of growth funds. While they offer greater upside, a 30%+ drawdown can test your resolve. Ensure you can stay invested during downturns.</span>

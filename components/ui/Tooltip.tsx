@@ -42,7 +42,7 @@ export default function Tooltip({ content }: TooltipProps) {
         onClick={() => setOpen(!open)}
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}
-        className="text-slate-400 hover:text-slate-600 transition-colors focus:outline-none"
+        className="text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors focus:outline-none"
         aria-label="More info"
       >
         <Info size={14} />
@@ -50,13 +50,13 @@ export default function Tooltip({ content }: TooltipProps) {
       {open && (
         <div
           ref={popoverRef}
-          className={`absolute z-50 left-1/2 -translate-x-1/2 w-56 bg-slate-800 text-white text-xs rounded-lg px-3 py-2 shadow-lg font-medium leading-relaxed pointer-events-none ${
+          className={`absolute z-50 left-1/2 -translate-x-1/2 w-56 bg-[var(--obsidian-800)] text-white text-xs rounded-lg px-3 py-2 shadow-lg font-medium leading-relaxed pointer-events-none ${
             above ? 'bottom-full mb-2' : 'top-full mt-2'
           }`}
         >
           {content}
           <div
-            className={`absolute left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-800 rotate-45 ${
+            className={`absolute left-1/2 -translate-x-1/2 w-2 h-2 bg-[var(--obsidian-800)] rotate-45 ${
               above ? 'top-full -mt-1' : 'bottom-full -mb-1'
             }`}
           />

@@ -20,37 +20,23 @@ export default async function Image() {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#0f172a',
-          backgroundImage: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
+          backgroundColor: '#05070A',
+          backgroundImage:
+            'radial-gradient(ellipse 900px 500px at 50% -10%, rgba(0,240,160,0.22), transparent 60%), radial-gradient(ellipse 600px 500px at 90% 90%, rgba(90,200,250,0.12), transparent 60%)',
         }}
       >
-        {/* Decorative circles */}
         <div
           style={{
             position: 'absolute',
-            top: '-100px',
-            right: '-100px',
-            width: '400px',
-            height: '400px',
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
-            opacity: 0.15,
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '-150px',
-            left: '-150px',
-            width: '500px',
-            height: '500px',
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
-            opacity: 0.1,
+            inset: 0,
+            backgroundImage:
+              'linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)',
+            backgroundSize: '56px 56px',
+            maskImage: 'radial-gradient(ellipse 70% 60% at 50% 40%, black 40%, transparent 100%)',
+            WebkitMaskImage: 'radial-gradient(ellipse 70% 60% at 50% 40%, black 40%, transparent 100%)',
           }}
         />
 
-        {/* Logo and brand */}
         <div
           style={{
             display: 'flex',
@@ -67,8 +53,10 @@ export default async function Image() {
               width: '80px',
               height: '80px',
               borderRadius: '20px',
-              backgroundColor: '#4f46e5',
+              backgroundColor: '#0A0E14',
+              border: '1px solid rgba(0,240,160,0.28)',
               marginRight: '24px',
+              boxShadow: '0 0 24px rgba(0,240,160,0.25)',
             }}
           >
             <svg
@@ -76,7 +64,7 @@ export default async function Image() {
               height="48"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="white"
+              stroke="#00F0A0"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -95,7 +83,7 @@ export default async function Image() {
             style={{
               fontSize: '64px',
               fontWeight: 900,
-              color: 'white',
+              color: '#F5F5F7',
               letterSpacing: '-2px',
             }}
           >
@@ -103,21 +91,19 @@ export default async function Image() {
           </span>
         </div>
 
-        {/* Tagline */}
         <div
           style={{
             fontSize: '36px',
             fontWeight: 600,
-            color: '#94a3b8',
+            color: '#AEAEB2',
             textAlign: 'center',
             maxWidth: '800px',
             lineHeight: 1.4,
           }}
         >
-          Tools for thinking clearly about life's biggest decisions.
+          Tools for thinking clearly about life&apos;s biggest decisions.
         </div>
 
-        {/* Feature pills */}
         <div
           style={{
             display: 'flex',
@@ -131,9 +117,9 @@ export default async function Image() {
               style={{
                 padding: '12px 24px',
                 borderRadius: '100px',
-                backgroundColor: 'rgba(79, 70, 229, 0.2)',
-                border: '1px solid rgba(79, 70, 229, 0.4)',
-                color: '#a5b4fc',
+                backgroundColor: 'rgba(0,240,160,0.10)',
+                border: '1px solid rgba(0,240,160,0.28)',
+                color: '#00F0A0',
                 fontSize: '18px',
                 fontWeight: 600,
               }}
@@ -143,14 +129,13 @@ export default async function Image() {
           ))}
         </div>
 
-        {/* URL */}
         <div
           style={{
             position: 'absolute',
             bottom: '40px',
             fontSize: '20px',
             fontWeight: 700,
-            color: '#64748b',
+            color: '#8E8E93',
             letterSpacing: '2px',
           }}
         >

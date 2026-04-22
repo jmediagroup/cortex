@@ -215,7 +215,7 @@ export default function AccountPage() {
     return (
       <DashboardShell>
         <div className="flex items-center justify-center py-32">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--emerald-border)]"></div>
         </div>
       </DashboardShell>
     );
@@ -235,44 +235,44 @@ export default function AccountPage() {
       <div className="max-w-4xl mx-auto px-6 py-12">
         {/* Success/Error Messages */}
         {successMessage && (
-          <div className="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-700 px-6 py-4 rounded-2xl flex items-center gap-3">
+          <div className="mb-6 bg-[var(--emerald-50)] border border-[var(--emerald-border)] text-[var(--emerald-500)] px-6 py-4 rounded-2xl flex items-center gap-3">
             <CheckCircle size={20} />
             <span className="font-bold">{successMessage}</span>
           </div>
         )}
         {errorMessage && (
-          <div className="mb-6 bg-rose-50 border border-rose-200 text-rose-700 px-6 py-4 rounded-2xl flex items-center gap-3">
+          <div className="mb-6 bg-[var(--crimson-50)] border border-[var(--crimson-border)] text-[var(--crimson-500)] px-6 py-4 rounded-2xl flex items-center gap-3">
             <XCircle size={20} />
             <span className="font-bold">{errorMessage}</span>
           </div>
         )}
 
         {/* Profile Information Section */}
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-8 mb-8">
+        <div className="bg-[var(--bg-card)] rounded-3xl border border-[var(--border-default)] shadow-sm p-8 mb-8">
           <div className="flex items-center gap-3 mb-6">
-            <div className="bg-indigo-100 p-3 rounded-2xl">
-              <User className="text-indigo-600" size={24} />
+            <div className="bg-[var(--emerald-100)] p-3 rounded-2xl">
+              <User className="text-[var(--emerald-500)]" size={24} />
             </div>
             <div>
-              <h2 className="text-2xl font-black text-slate-900">Profile Information</h2>
-              <p className="text-slate-500 font-medium">Update your personal details</p>
+              <h2 className="text-2xl font-bold text-[var(--text-primary)]">Profile Information</h2>
+              <p className="text-[var(--text-tertiary)] font-medium">Update your personal details</p>
             </div>
           </div>
 
           <div className="space-y-6">
             <div>
-              <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-wide">
+              <label className="block text-sm font-bold text-[var(--text-secondary)] mb-2 uppercase tracking-wide">
                 Email Address
               </label>
-              <div className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-600 font-medium">
+              <div className="bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl px-4 py-3 text-[var(--text-secondary)] font-medium">
                 {user.email}
               </div>
-              <p className="text-xs text-slate-400 mt-2">Email address cannot be changed</p>
+              <p className="text-xs text-[var(--text-muted)] mt-2">Email address cannot be changed</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-wide">
+                <label className="block text-sm font-bold text-[var(--text-secondary)] mb-2 uppercase tracking-wide">
                   First Name
                 </label>
                 <input
@@ -280,12 +280,12 @@ export default function AccountPage() {
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   placeholder="Enter first name"
-                  className="w-full border border-slate-200 rounded-xl px-4 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full border border-[var(--border-default)] rounded-xl px-4 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-[var(--emerald-500)] focus:border-transparent"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-wide">
+                <label className="block text-sm font-bold text-[var(--text-secondary)] mb-2 uppercase tracking-wide">
                   Last Name
                 </label>
                 <input
@@ -293,37 +293,37 @@ export default function AccountPage() {
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   placeholder="Enter last name"
-                  className="w-full border border-slate-200 rounded-xl px-4 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full border border-[var(--border-default)] rounded-xl px-4 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-[var(--emerald-500)] focus:border-transparent"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-wide">
+                <label className="block text-sm font-bold text-[var(--text-secondary)] mb-2 uppercase tracking-wide">
                   Birth Date
                 </label>
                 <input
                   type="date"
                   value={birthDate}
                   onChange={(e) => setBirthDate(e.target.value)}
-                  className="w-full border border-slate-200 rounded-xl px-4 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full border border-[var(--border-default)] rounded-xl px-4 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-[var(--emerald-500)] focus:border-transparent"
                 />
                 {birthDate && calculateAge(birthDate) !== null && (
-                  <p className="text-xs text-slate-500 mt-2 font-medium">
+                  <p className="text-xs text-[var(--text-tertiary)] mt-2 font-medium">
                     Age: {calculateAge(birthDate)} years
                   </p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-wide">
+                <label className="block text-sm font-bold text-[var(--text-secondary)] mb-2 uppercase tracking-wide">
                   Gender
                 </label>
                 <select
                   value={gender}
                   onChange={(e) => setGender(e.target.value as 'male' | 'female' | 'prefer_not_to_say' | '')}
-                  className="w-full border border-slate-200 rounded-xl px-4 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white"
+                  className="w-full border border-[var(--border-default)] rounded-xl px-4 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-[var(--emerald-500)] focus:border-transparent bg-[var(--bg-card)]"
                 >
                   <option value="">Select gender</option>
                   <option value="male">Male</option>
@@ -336,7 +336,7 @@ export default function AccountPage() {
             <button
               onClick={handleSaveProfile}
               disabled={saving}
-              className="flex items-center gap-2 bg-indigo-600 text-white font-black px-6 py-3 rounded-xl hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 bg-[var(--emerald-500)] text-white font-bold px-6 py-3 rounded-xl hover:bg-[var(--emerald-500)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Save size={18} />
               {saving ? 'Saving...' : 'Save Changes'}
@@ -345,28 +345,28 @@ export default function AccountPage() {
         </div>
 
         {/* Subscription Management Section */}
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-8 mb-8">
+        <div className="bg-[var(--bg-card)] rounded-3xl border border-[var(--border-default)] shadow-sm p-8 mb-8">
           <div className="flex items-center gap-3 mb-6">
-            <div className={`p-3 rounded-2xl ${userTier !== 'free' ? 'bg-indigo-100' : 'bg-slate-100'}`}>
+            <div className={`p-3 rounded-2xl ${userTier !== 'free' ? 'bg-[var(--emerald-100)]' : 'bg-[var(--bg-glass)]'}`}>
               {userTier !== 'free' ? (
-                <TrendingUp className="text-indigo-600" size={24} />
+                <TrendingUp className="text-[var(--emerald-500)]" size={24} />
               ) : (
-                <TrendingDown className="text-slate-500" size={24} />
+                <TrendingDown className="text-[var(--text-tertiary)]" size={24} />
               )}
             </div>
             <div>
-              <h2 className="text-2xl font-black text-slate-900">Subscription</h2>
-              <p className="text-slate-500 font-medium">Manage your plan and billing</p>
+              <h2 className="text-2xl font-bold text-[var(--text-primary)]">Subscription</h2>
+              <p className="text-[var(--text-tertiary)] font-medium">Manage your plan and billing</p>
             </div>
           </div>
 
-          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 mb-6">
+          <div className="bg-[var(--bg-section)] border border-[var(--border-default)] rounded-2xl p-6 mb-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-500 font-bold uppercase tracking-wide mb-1">Current Plan</p>
-                <p className="text-3xl font-black text-slate-900 uppercase">{getTierDisplayName(userTier)}</p>
+                <p className="text-sm text-[var(--text-tertiary)] font-bold uppercase tracking-wide mb-1">Current Plan</p>
+                <p className="text-3xl font-bold text-[var(--text-primary)] uppercase">{getTierDisplayName(userTier)}</p>
               </div>
-              <div className={`px-4 py-2 rounded-xl font-black text-sm bg-${getTierColor(userTier)}-600 text-white`}>
+              <div className={`px-4 py-2 rounded-xl font-bold text-sm bg-${getTierColor(userTier)}-600 text-white`}>
                 {userTier === 'finance_pro' ? '$9/month' : '$0/month'}
               </div>
             </div>
@@ -375,7 +375,7 @@ export default function AccountPage() {
           {userTier === 'free' ? (
             <button
               onClick={handleUpgradeToPro}
-              className="w-full flex items-center justify-center gap-2 bg-indigo-600 text-white font-black px-6 py-4 rounded-xl hover:bg-indigo-700 transition-colors"
+              className="w-full flex items-center justify-center gap-2 bg-[var(--emerald-500)] text-white font-bold px-6 py-4 rounded-xl hover:bg-[var(--emerald-500)] transition-colors"
             >
               <TrendingUp size={20} />
               View Plans
@@ -384,7 +384,7 @@ export default function AccountPage() {
             <button
               onClick={handleDowngradeToFree}
               disabled={saving}
-              className="w-full flex items-center justify-center gap-2 bg-slate-200 text-slate-700 font-black px-6 py-4 rounded-xl hover:bg-slate-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 bg-[var(--bg-glass-strong)] text-[var(--text-secondary)] font-bold px-6 py-4 rounded-xl hover:bg-[var(--bg-glass-strong)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <TrendingDown size={20} />
               {saving ? 'Processing...' : 'Cancel Subscription'}
@@ -393,40 +393,40 @@ export default function AccountPage() {
         </div>
 
         {/* Danger Zone - Delete Account */}
-        <div className="bg-white rounded-3xl border-2 border-rose-200 shadow-sm p-8">
+        <div className="bg-[var(--bg-card)] rounded-3xl border-2 border-[var(--crimson-border)] shadow-sm p-8">
           <div className="flex items-center gap-3 mb-6">
-            <div className="bg-rose-100 p-3 rounded-2xl">
-              <AlertTriangle className="text-rose-600" size={24} />
+            <div className="bg-[var(--crimson-100)] p-3 rounded-2xl">
+              <AlertTriangle className="text-[var(--crimson-500)]" size={24} />
             </div>
             <div>
-              <h2 className="text-2xl font-black text-rose-900">Danger Zone</h2>
-              <p className="text-rose-600 font-medium">Permanently delete your account</p>
+              <h2 className="text-2xl font-bold text-[var(--crimson-500)]">Danger Zone</h2>
+              <p className="text-[var(--crimson-500)] font-medium">Permanently delete your account</p>
             </div>
           </div>
 
           {!showDeleteConfirm ? (
             <button
               onClick={() => setShowDeleteConfirm(true)}
-              className="flex items-center gap-2 bg-rose-600 text-white font-black px-6 py-3 rounded-xl hover:bg-rose-700 transition-colors"
+              className="flex items-center gap-2 bg-[var(--crimson-500)] text-white font-bold px-6 py-3 rounded-xl hover:bg-[var(--crimson-500)] transition-colors"
             >
               <Trash2 size={18} />
               Delete Account
             </button>
           ) : (
             <div className="space-y-4">
-              <div className="bg-rose-50 border border-rose-200 rounded-2xl p-6">
-                <p className="font-bold text-rose-900 mb-3">
+              <div className="bg-[var(--crimson-50)] border border-[var(--crimson-border)] rounded-2xl p-6">
+                <p className="font-bold text-[var(--crimson-500)] mb-3">
                   This action cannot be undone. This will permanently delete your account and remove all data.
                 </p>
-                <p className="text-sm text-rose-700 mb-4">
-                  Please type <span className="font-black">DELETE</span> to confirm.
+                <p className="text-sm text-[var(--crimson-500)] mb-4">
+                  Please type <span className="font-bold">DELETE</span> to confirm.
                 </p>
                 <input
                   type="text"
                   value={deleteConfirmText}
                   onChange={(e) => setDeleteConfirmText(e.target.value)}
                   placeholder="Type DELETE"
-                  className="w-full border-2 border-rose-300 rounded-xl px-4 py-3 font-bold focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                  className="w-full border-2 border-[var(--crimson-border)] rounded-xl px-4 py-3 font-bold focus:outline-none focus:ring-2 focus:ring-[var(--crimson-500)] focus:border-transparent"
                 />
               </div>
 
@@ -436,14 +436,14 @@ export default function AccountPage() {
                     setShowDeleteConfirm(false);
                     setDeleteConfirmText('');
                   }}
-                  className="flex-1 bg-slate-200 text-slate-700 font-black px-6 py-3 rounded-xl hover:bg-slate-300 transition-colors"
+                  className="flex-1 bg-[var(--bg-glass-strong)] text-[var(--text-secondary)] font-bold px-6 py-3 rounded-xl hover:bg-[var(--bg-glass-strong)] transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleDeleteAccount}
                   disabled={saving || deleteConfirmText !== 'DELETE'}
-                  className="flex-1 flex items-center justify-center gap-2 bg-rose-600 text-white font-black px-6 py-3 rounded-xl hover:bg-rose-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 flex items-center justify-center gap-2 bg-[var(--crimson-500)] text-white font-bold px-6 py-3 rounded-xl hover:bg-[var(--crimson-500)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Trash2 size={18} />
                   {saving ? 'Deleting...' : 'Confirm Delete'}
@@ -455,14 +455,14 @@ export default function AccountPage() {
       </div>
 
       {/* FOOTER */}
-      <footer className="max-w-4xl mx-auto px-6 py-12 text-center text-slate-400 font-medium text-sm">
+      <footer className="max-w-4xl mx-auto px-6 py-12 text-center text-[var(--text-muted)] font-medium text-sm">
         <p>&copy; {new Date().getFullYear()} Cortex Financial Technology. All rights reserved.</p>
         <div className="flex items-center justify-center gap-3 mt-2">
-          <a href="/articles" className="text-slate-500 hover:text-slate-700 transition-colors text-xs">
+          <a href="/articles" className="text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors text-xs">
             Articles
           </a>
-          <span className="text-slate-300">|</span>
-          <a href="/terms" className="text-slate-500 hover:text-slate-700 transition-colors text-xs">
+          <span className="text-[var(--text-muted)]">|</span>
+          <a href="/terms" className="text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors text-xs">
             Terms & Privacy
           </a>
         </div>
