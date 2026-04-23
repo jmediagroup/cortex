@@ -748,38 +748,38 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
           </section>
 
           {/* Forces Selector */}
-          <section className="bg-[var(--obsidian-900)] rounded-3xl p-8 text-white shadow-2xl shadow-[0_0_24px_var(--cta-glow-soft)] overflow-hidden relative group">
+          <section data-theme="dark" className="bg-[var(--obsidian-900)] rounded-3xl p-8 text-white shadow-2xl shadow-[0_0_24px_var(--cta-glow-soft)] overflow-hidden relative group">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--emerald-400)]/10 rounded-full -mr-16 -mt-16 blur-3xl transition-opacity opacity-0 group-hover:opacity-100"></div>
-            <h3 className="font-bold mb-6 flex items-center gap-2 tracking-tight">
+            <h3 className="font-bold mb-6 flex items-center gap-2 tracking-tight text-white">
               <Activity size={18} className="text-[var(--emerald-400)]" />
               Dynamic Forces
               <Tooltip content="These inputs affect your momentum and trajectory calculations. Monthly Savings is how much you add to assets each month. Asset Growth Velocity is the expected annual growth rate of your investments (e.g., 7% for stock market average).">
-                <HelpCircle size={16} className="text-[var(--text-muted)] hover:text-[var(--emerald-400)] transition-colors" />
+                <HelpCircle size={16} className="text-white/60 hover:text-[var(--emerald-400)] transition-colors" />
               </Tooltip>
             </h3>
             <div className="space-y-8">
               <div className="space-y-3">
-                <div className="flex justify-between text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--text-tertiary)]">
+                <div className="flex justify-between text-[10px] font-semibold uppercase tracking-[0.2em] text-white/70">
                   <span>Monthly Savings</span>
-                  <span className="text-[var(--mist-100)] text-xs font-mono tracking-tight">${monthlySavings.toLocaleString()}</span>
+                  <span className="text-white text-xs font-mono tracking-tight">${monthlySavings.toLocaleString()}</span>
                 </div>
                 <input
                   type="range" min="0" max="25000" step="100"
                   value={monthlySavings}
                   onChange={(e) => setMonthlySavings(Number(e.target.value))}
-                  className="w-full h-2 bg-[var(--obsidian-800)] rounded-full appearance-none cursor-pointer accent-indigo-500"
+                  className="w-full h-2 bg-white/15 rounded-full appearance-none cursor-pointer accent-white"
                 />
               </div>
               <div className="space-y-3">
-                <div className="flex justify-between text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--text-tertiary)]">
+                <div className="flex justify-between text-[10px] font-semibold uppercase tracking-[0.2em] text-white/70">
                   <span>Asset Growth Velocity</span>
-                  <span className="text-[var(--mist-100)] text-xs font-mono tracking-tight">{growthRate}%</span>
+                  <span className="text-white text-xs font-mono tracking-tight">{growthRate}%</span>
                 </div>
                 <input
                   type="range" min="-10" max="25" step="0.5"
                   value={growthRate}
                   onChange={(e) => setGrowthRate(Number(e.target.value))}
-                  className="w-full h-2 bg-[var(--obsidian-800)] rounded-full appearance-none cursor-pointer accent-indigo-500"
+                  className="w-full h-2 bg-white/15 rounded-full appearance-none cursor-pointer accent-white"
                 />
               </div>
             </div>
