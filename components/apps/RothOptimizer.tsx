@@ -224,7 +224,7 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
         {/* Controls - Left Column */}
         <aside className="lg:col-span-4 space-y-6">
           {/* Optimization Engine */}
-          <div className="bg-[var(--obsidian-800)] text-white p-6 rounded-[2rem] shadow-xl relative overflow-hidden">
+          <div data-theme="dark" className="bg-[var(--obsidian-800)] text-white p-6 rounded-[2rem] shadow-xl relative overflow-hidden">
             <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12">
               <RefreshCw size={120} />
             </div>
@@ -267,7 +267,7 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
                       <button
                         key={idx}
                         onClick={() => setInputs(p => ({...p, targetBracketIndex: idx}))}
-                        className={`py-2 px-1 rounded-xl text-xs font-bold transition-all ${inputs.targetBracketIndex === idx ? 'bg-[var(--bg-card)] text-[var(--text-primary)] shadow-lg' : 'bg-[var(--emerald-600)] text-[var(--mist-200)] hover:bg-[var(--emerald-500)]'}`}
+                        className={`py-2 px-1 rounded-xl text-xs font-bold transition-all ${inputs.targetBracketIndex === idx ? 'bg-[var(--bg-card)] text-[var(--text-primary)] shadow-lg' : 'bg-[var(--emerald-600)] text-white hover:bg-[var(--emerald-500)]'}`}
                       >
                         {TAX_BRACKETS[idx].label}
                       </button>

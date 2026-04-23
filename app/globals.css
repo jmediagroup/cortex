@@ -149,6 +149,38 @@
      `font-sans` / `font-mono` utilities pick up the right stack. */
 }
 
+/* Legacy chart-purple / chart-pink are hardcoded above so they
+   don't react to `--color-*` overrides — re-declare for light
+   so legacy chart consumers see the paper-safe hues. */
+[data-theme="light"] {
+  --chart-purple:      #7C3AED;
+  --chart-pink:        #C2185B;
+  --chart-purple-area: rgba(124, 58, 237, 0.12);
+}
+
+/* ============================================================
+   Solid-surface text contract.
+   Rule: solid brand surfaces (green, black, red) always show white
+   text. tokens.css globally sets `h1,h2,h3 { color: var(--text-primary) }`
+   and `p { color: var(--text-secondary) }`, which in light mode resolve
+   to near-black ink. Without this rule those element selectors leak
+   dark ink onto dark/solid surfaces — e.g. a bare <h3> inside a green
+   hero goes black-on-green.
+
+   When a wrapper marks itself as `.text-white` (or carries
+   data-theme="dark"), nested bare headings/paragraphs inherit white
+   from the wrapper rather than resolving to the global element color.
+
+   Specificity is tuned to (0,0,1) — same as the bare element selectors
+   it overrides (so source order wins), but lower than any explicit
+   class selector like `.text-emerald-400` on the child (0,1,0). Authored
+   intent on a child always wins; only bare tags inherit.
+   ============================================================ */
+body :where(.text-white, [data-theme="dark"])
+  :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, th, td, figcaption, blockquote) {
+  color: inherit;
+}
+
 /* ============================================================
    Keyframes + motion utilities (preserved across phases).
    ============================================================ */

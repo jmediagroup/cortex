@@ -423,9 +423,9 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
           {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-gradient-to-br from-[var(--emerald-600)] to-[var(--emerald-700)] rounded-[2.5rem] p-8 text-white shadow-xl">
-              <p className="text-xs font-bold uppercase text-[var(--emerald-100)] mb-2">Total Monthly Outlay</p>
+              <p className="text-xs font-bold uppercase text-white/85 mb-2">Total Monthly Outlay</p>
               <div className="text-4xl font-bold mb-1">${calculations.totalMonthly.toLocaleString()}</div>
-              <p className="text-xs text-[var(--emerald-100)]">Gross investment</p>
+              <p className="text-xs text-white/85">Gross investment</p>
             </div>
 
             <div className="bg-[var(--bg-card)] rounded-[2.5rem] p-8 border-2 border-[var(--emerald-border)] shadow-md">

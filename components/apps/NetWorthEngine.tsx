@@ -160,7 +160,7 @@ const InputField = ({ label, value, onChange, type = "text", prefix = "", disabl
         value={String(value)}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
-        className={`w-full ${prefix ? 'pl-7' : 'px-3'} pr-3 py-1.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg text-sm focus:ring-2 focus:ring-[var(--emerald-200)] focus:border-[var(--emerald-border)] transition-all outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none disabled:opacity-50 disabled:cursor-not-allowed`}
+        className={`w-full ${prefix ? 'pl-7' : 'px-3'} pr-3 py-1.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg text-sm focus:ring-2 focus:ring-[var(--emerald-500)] focus:border-[var(--emerald-border)] transition-all outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none disabled:opacity-50 disabled:cursor-not-allowed`}
       />
     </div>
   </div>
@@ -629,7 +629,7 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
                           <select
                             value={asset.liquid ? "liquid" : "illiquid"}
                             onChange={(e) => updateNode('asset', asset.id, 'liquid', e.target.value === "liquid")}
-                            className="w-full px-2 py-1.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg text-xs font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-200)] focus:border-[var(--emerald-border)]"
+                            className="w-full px-2 py-1.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg text-xs font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)] focus:border-[var(--emerald-border)]"
                             disabled={asset.submitted}
                           >
                             <option value="liquid">Liquid</option>
@@ -748,38 +748,38 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
           </section>
 
           {/* Forces Selector */}
-          <section className="bg-[var(--obsidian-900)] rounded-3xl p-8 text-[var(--mist-100)] shadow-2xl shadow-[0_0_24px_var(--cta-glow-soft)] overflow-hidden relative group">
+          <section data-theme="dark" className="bg-[var(--obsidian-900)] rounded-3xl p-8 text-white shadow-2xl shadow-[0_0_24px_var(--cta-glow-soft)] overflow-hidden relative group">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--emerald-400)]/10 rounded-full -mr-16 -mt-16 blur-3xl transition-opacity opacity-0 group-hover:opacity-100"></div>
-            <h3 className="font-bold mb-6 flex items-center gap-2 tracking-tight">
+            <h3 className="font-bold mb-6 flex items-center gap-2 tracking-tight text-white">
               <Activity size={18} className="text-[var(--emerald-400)]" />
               Dynamic Forces
               <Tooltip content="These inputs affect your momentum and trajectory calculations. Monthly Savings is how much you add to assets each month. Asset Growth Velocity is the expected annual growth rate of your investments (e.g., 7% for stock market average).">
-                <HelpCircle size={16} className="text-[var(--text-muted)] hover:text-[var(--emerald-400)] transition-colors" />
+                <HelpCircle size={16} className="text-white/60 hover:text-[var(--emerald-400)] transition-colors" />
               </Tooltip>
             </h3>
             <div className="space-y-8">
               <div className="space-y-3">
-                <div className="flex justify-between text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--text-tertiary)]">
+                <div className="flex justify-between text-[10px] font-semibold uppercase tracking-[0.2em] text-white/70">
                   <span>Monthly Savings</span>
-                  <span className="text-[var(--mist-100)] text-xs font-mono tracking-tight">${monthlySavings.toLocaleString()}</span>
+                  <span className="text-white text-xs font-mono tracking-tight">${monthlySavings.toLocaleString()}</span>
                 </div>
                 <input
                   type="range" min="0" max="25000" step="100"
                   value={monthlySavings}
                   onChange={(e) => setMonthlySavings(Number(e.target.value))}
-                  className="w-full h-2 bg-[var(--obsidian-800)] rounded-full appearance-none cursor-pointer accent-indigo-500"
+                  className="w-full h-2 bg-white/15 rounded-full appearance-none cursor-pointer accent-white"
                 />
               </div>
               <div className="space-y-3">
-                <div className="flex justify-between text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--text-tertiary)]">
+                <div className="flex justify-between text-[10px] font-semibold uppercase tracking-[0.2em] text-white/70">
                   <span>Asset Growth Velocity</span>
-                  <span className="text-[var(--mist-100)] text-xs font-mono tracking-tight">{growthRate}%</span>
+                  <span className="text-white text-xs font-mono tracking-tight">{growthRate}%</span>
                 </div>
                 <input
                   type="range" min="-10" max="25" step="0.5"
                   value={growthRate}
                   onChange={(e) => setGrowthRate(Number(e.target.value))}
-                  className="w-full h-2 bg-[var(--obsidian-800)] rounded-full appearance-none cursor-pointer accent-indigo-500"
+                  className="w-full h-2 bg-white/15 rounded-full appearance-none cursor-pointer accent-white"
                 />
               </div>
             </div>
@@ -1007,7 +1007,7 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
 
       {/* PRO FEATURES SECTION */}
       {!isPro && (
-        <div className="bg-gradient-to-br from-[var(--emerald-500)] via-[var(--emerald-500)] to-[var(--color-info)] rounded-3xl p-8 shadow-2xl shadow-[0_0_32px_var(--cta-glow-ring)] text-white relative overflow-hidden">
+        <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] rounded-3xl p-8 shadow-2xl shadow-[0_0_32px_var(--cta-glow-ring)] text-white relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--bg-card)]/10 rounded-full -mr-32 -mt-32 blur-3xl"></div>
           <div className="relative">
             <div className="flex items-start justify-between gap-6">
@@ -1035,7 +1035,7 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
                 </div>
                 <button
                   onClick={onUpgrade}
-                  className="bg-[var(--bg-card)] text-[var(--emerald-500)] px-8 py-4 rounded-2xl font-bold text-lg hover:bg-[var(--emerald-50)] transition-all shadow-xl hover:shadow-2xl hover:scale-105 active:scale-100"
+                  className="bg-white text-[var(--emerald-700)] px-8 py-4 rounded-2xl font-bold hover:bg-[var(--emerald-50)] transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
                 >
                   Upgrade to Pro
                 </button>
@@ -1085,7 +1085,7 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
               <div className="flex items-start gap-3">
                 <Zap size={18} className="flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-bold text-xs uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
+                  <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
                   <p className="text-[var(--mist-100)] text-sm font-medium leading-relaxed">
                     {momentumIntelligence.growthPercentage > 50
                       ? `You've entered the compound phase: ${momentumIntelligence.growthPercentage.toFixed(0)}% of momentum comes from asset growth. Your money works harder than you do.`
@@ -1119,8 +1119,8 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
                 <div className="flex items-start gap-3">
                   <Zap size={18} className="flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-bold text-xs uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
-                    <p className="text-[var(--emerald-100)] text-sm font-medium leading-relaxed">
+                    <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
+                    <p className="text-white/85 text-sm font-medium leading-relaxed">
                       Over 10 years, this acceleration compounds to approximately ${Math.round(momentumIntelligence.accelerationGain * 12.5).toLocaleString()} in extra wealth.
                     </p>
                   </div>
@@ -1150,8 +1150,8 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
                 <div className="flex items-start gap-3">
                   <Zap size={18} className="flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-bold text-xs uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
-                    <p className="text-[var(--crimson-100)] text-sm font-medium leading-relaxed">
+                    <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
+                    <p className="text-white/85 text-sm font-medium leading-relaxed">
                       {momentumIntelligence.debtDragPercentage > 30
                         ? `Debt is creating significant drag (${momentumIntelligence.debtDragPercentage.toFixed(0)}%). Aggressive paydown could unlock substantial acceleration.`
                         : `Debt drag is manageable (${momentumIntelligence.debtDragPercentage.toFixed(0)}%). Focus on increasing income and savings rate.`}
@@ -1197,7 +1197,7 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
               <div className="flex items-start gap-3">
                 <Zap size={18} className="flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-bold text-xs uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
+                  <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
                   <p className="text-[var(--mist-100)] text-sm font-medium leading-relaxed">
                     {metrics.totalAssets >= momentumIntelligence.tippingPointNetWorth
                       ? `Congratulations: You've crossed the tipping point. Asset growth now exceeds your annual savings. Your wealth compounds faster than you can manually add to it.`

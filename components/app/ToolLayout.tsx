@@ -168,6 +168,7 @@ export function ToolUpsellCta({
 }: CtaProps) {
   return (
     <div
+      data-theme="dark"
       style={{
         position: 'relative',
         overflow: 'hidden',

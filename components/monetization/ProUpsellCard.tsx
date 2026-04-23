@@ -29,32 +29,35 @@ export default function ProUpsellCard({ toolId, isLoggedIn }: ProUpsellCardProps
   const benefits = TOOL_BENEFITS[toolId] || ['Advanced analytics', 'Pro-level insights', 'Enhanced modeling'];
 
   return (
-    <div className="bg-gradient-to-br from-[var(--emerald-600)] via-[var(--emerald-700)] to-[var(--color-info)] rounded-3xl p-8 md:p-10 text-white relative overflow-hidden shadow-xl">
+    <div
+      data-theme="dark"
+      className="bg-gradient-to-br from-[var(--obsidian-900)] via-[var(--emerald-700)] to-[var(--emerald-500)] rounded-3xl p-8 md:p-10 text-white relative overflow-hidden shadow-xl"
+    >
       <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12">
         <Sparkles size={160} fill="currentColor" />
       </div>
       <div className="relative z-10">
-        <div className="flex items-center gap-2 mb-4">
+        <div className="flex items-center gap-2 mb-4 text-white">
           <Sparkles size={20} />
-          <span className="text-[10px] font-semibold uppercase tracking-widest text-[var(--emerald-200)]">Pro Feature</span>
+          <span className="text-[10px] font-semibold uppercase tracking-widest text-white/85">Pro Feature</span>
         </div>
-        <h3 className="text-2xl font-bold mb-2">Unlock Pro</h3>
-        <p className="text-[var(--emerald-100)] font-medium text-sm mb-6 max-w-lg">
+        <h3 className="text-2xl font-bold mb-2 text-white">Unlock Pro</h3>
+        <p className="text-white/85 font-medium text-sm mb-6 max-w-lg">
           Unlock the full analysis with advanced modeling tools to make smarter financial decisions.
         </p>
         <div className="space-y-3 mb-8">
           {benefits.map((benefit, i) => (
             <div key={i} className="flex items-center gap-3">
-              <div className="bg-[var(--bg-card)]/20 rounded-full p-1">
+              <div className="bg-white/15 rounded-full p-1 text-white">
                 <Check size={12} strokeWidth={3} />
               </div>
-              <span className="text-sm font-semibold text-[var(--emerald-50)]">{benefit}</span>
+              <span className="text-sm font-semibold text-white/90">{benefit}</span>
             </div>
           ))}
         </div>
         <button
           onClick={() => router.push('/pricing')}
-          className="bg-[var(--bg-card)] text-[var(--emerald-500)] px-6 py-3 rounded-xl font-bold text-sm hover:bg-[var(--emerald-50)] transition-all shadow-md hover:scale-105 active:scale-95"
+          className="bg-white text-[var(--emerald-700)] px-6 py-3 rounded-xl font-bold text-sm hover:bg-[var(--emerald-50)] transition-all shadow-md hover:scale-105 active:scale-95"
         >
           Upgrade to Pro
         </button>

@@ -245,7 +245,7 @@ export default function SaveScenarioButton({
       {showUpsell && (
         <div className="fixed inset-0 bg-[var(--obsidian-900)]/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-[var(--bg-card)] rounded-3xl w-full max-w-md overflow-hidden shadow-2xl">
-            <div className="bg-gradient-to-br from-[var(--emerald-500)] to-[var(--emerald-500)] p-6 text-white">
+            <div className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] p-6 text-white">
               <div className="w-12 h-12 bg-[var(--bg-card)]/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-3">
                 <Crown size={24} />
               </div>
@@ -280,7 +280,7 @@ export default function SaveScenarioButton({
                 </button>
                 <a
                   href="/pricing"
-                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-[var(--emerald-500)] to-[var(--emerald-500)] text-white font-bold text-sm text-center hover:from-[var(--emerald-600)] hover:to-[var(--emerald-600)] transition-all shadow-md flex items-center justify-center gap-2"
+                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-[var(--emerald-700)] to-[var(--emerald-500)] text-white font-bold text-sm text-center hover:from-[var(--emerald-600)] hover:to-[var(--emerald-600)] transition-all shadow-md flex items-center justify-center gap-2"
                 >
                   <Crown size={16} />
                   Upgrade

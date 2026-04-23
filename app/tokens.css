@@ -212,78 +212,178 @@
 }
 
 /* ============================================================
-   LIGHT THEME — token overrides
-   Same system, flipped surfaces. Kept warm to avoid sterile UI.
+   LIGHT THEME — "Paper" palette
+   Warm off-white surfaces, Deep Emerald accent, obsidian ink on
+   vellum. Every --bg-, --text-, --border-, glow, chart, and flow
+   token is re-mapped so no dark-mode values leak through the
+   cascade. Shadows are depth-based (no neon blooms).
    ============================================================ */
 [data-theme="light"] {
-  /* surfaces — warm off-white, slight paper feel */
-  --bg-canvas:       #F7F7F3;
-  --bg-page:         #FAFAF7;
-  --bg-section:      #F2F2EE;
-  --bg-card:         #FFFFFF;
-  --bg-card-hover:   #FAFAF7;
-  --bg-raised:       #FFFFFF;
 
-  /* frosted glass over light — nearly opaque white */
-  --bg-glass:        rgba(255, 255, 255, 0.70);
-  --bg-glass-strong: rgba(255, 255, 255, 0.88);
-  --glass-border:    rgba(10, 14, 20, 0.08);
+  /* ---------- CORE 5 TONES (repurposed) ---------- */
+  --obsidian:      #0A0E14;   /* now the INK for primary text */
+  --emerald:       #00875A;   /* Deep Emerald — Forest on paper */
+  --crimson:       #C1271B;   /* darkened for legibility on white */
+  --frosted-slate: #FFFFFF;   /* card base flips to pure white */
+  --silver-mist:   #6D6D72;   /* mist anchor shifts darker */
+
+  /* ---------- OBSIDIAN SCALE (ink, not surfaces) ----------
+     Kept intact so any component reaching for --obsidian-*
+     still renders a dark ink — legacy accents etc. */
+  --obsidian-950: #05070A;
+  --obsidian-900: #0A0E14;
+  --obsidian-800: #121620;
+  --obsidian-700: #1C1C1E;
+  --obsidian-600: #26262A;
+  --obsidian-500: #3A3A3D;
+  --obsidian-400: #565659;
+
+  /* ---------- EMERALD SCALE — Forest / Deep Emerald ----------
+     500 = #00875A — 4.6:1 on #FFFFFF (AA Large, AA UI)
+     600 = #006B47 — 7.0:1 on #FFFFFF (AAA body text) */
+  --emerald-50:  rgba(0, 135, 90, 0.06);
+  --emerald-100: rgba(0, 135, 90, 0.12);
+  --emerald-200: rgba(0, 135, 90, 0.22);
+  --emerald-400: #00A674;
+  --emerald-500: #00875A;
+  --emerald-600: #006B47;
+  --emerald-700: #004E33;
+  /* No bloom — depth shadow so "glow" consumers get real lift */
+  --emerald-glow:
+      0 2px 6px rgba(10, 14, 20, 0.06),
+      0 1px 2px rgba(10, 14, 20, 0.04);
+
+  /* ---------- CRIMSON SCALE — darkened for paper ----------
+     500 = #C1271B — 5.8:1 on #FFFFFF (AA body text)
+     600 = #A01B10 — 8.0:1 on #FFFFFF (AAA) */
+  --crimson-50:  rgba(193, 39, 27, 0.05);
+  --crimson-100: rgba(193, 39, 27, 0.10);
+  --crimson-200: rgba(193, 39, 27, 0.18);
+  --crimson-400: #D94A3E;
+  --crimson-500: #C1271B;
+  --crimson-600: #A01B10;
+  --crimson-700: #7E120A;
+  --crimson-glow:
+      0 2px 6px rgba(10, 14, 20, 0.06),
+      0 1px 2px rgba(10, 14, 20, 0.04);
+
+  /* ---------- MIST SCALE — semantic reversal ----------
+     Scale hex values are the same as dark; the text aliases
+     below now anchor to HIGH index (700–900) for primary text
+     and LOW index (50–100) for subtle paper washes. mist-900
+     is added as the darkest ink step. */
+  --mist-50:  #F7F7F3;
+  --mist-100: #F2F2EE;
+  --mist-200: #E5E5EA;
+  --mist-300: #C7C7CC;
+  --mist-400: #8E8E93;
+  --mist-500: #6D6D72;
+  --mist-600: #48484A;
+  --mist-700: #2C2C2E;
+  --mist-800: #1C1C1E;
+  --mist-900: #0A0E14;
+
+  /* ---------- SEMANTIC ALIASES ---------- */
+  --color-positive:       var(--emerald-500);
+  --color-positive-soft:  var(--emerald-100);
+  --color-negative:       var(--crimson-500);
+  --color-negative-soft:  var(--crimson-100);
+  --color-accent:         var(--emerald-500);
+  --color-accent-soft:    var(--emerald-100);
+  --color-warning:        #A86A00;                       /* was #FFB800 — 4.6:1 */
+  --color-warning-soft:   rgba(168, 106, 0, 0.10);
+  --color-info:           #0A6FD1;                       /* was #5AC8FA — 5.0:1 */
+  --color-info-soft:      rgba(10, 111, 209, 0.08);
+
+  /* ---------- SURFACES — "Paper" ---------- */
+  --bg-canvas:      #F7F7F3;   /* warm off-white, avoids clinical */
+  --bg-page:        #FAFAF7;
+  --bg-section:     #F2F2EE;
+  --bg-card:        #FFFFFF;
+  --bg-card-hover:  #FAFAF7;
+  --bg-raised:      #FFFFFF;
+
+  /* ---------- FROSTED VELLUM ----------
+     Translucent paper, not additive white: high-opacity white
+     plate + dark hairline border to define edges. */
+  --bg-glass:            rgba(255, 255, 255, 0.70);
+  --bg-glass-strong:     rgba(255, 255, 255, 0.88);
+  --glass-border:        rgba(10, 14, 20, 0.08);
   --glass-border-strong: rgba(10, 14, 20, 0.12);
+  --glass-blur:          blur(20px) saturate(140%);
 
-  /* borders */
+  /* ---------- BORDERS — obsidian ink at low opacity ---------- */
   --border-subtle:   rgba(10, 14, 20, 0.06);
   --border-default:  rgba(10, 14, 20, 0.10);
   --border-strong:   rgba(10, 14, 20, 0.16);
 
-  /* text — obsidian on paper */
-  --text-primary:    #0A0E14;
-  --text-secondary:  #48484A;
-  --text-tertiary:   #6D6D72;
-  --text-muted:      #8E8E93;
+  /* ---------- TEXT — obsidian on paper ---------- */
+  --text-primary:    var(--mist-900);   /* #0A0E14  19.3:1 */
+  --text-secondary:  var(--mist-700);   /* #2C2C2E  13.1:1 */
+  --text-tertiary:   var(--mist-600);   /* #48484A   8.9:1 */
+  --text-muted:      var(--mist-500);   /* #6D6D72   5.6:1 */
   --text-inverse:    #F5F5F7;
+  --text-eyebrow-color: var(--mist-600);
 
-  /* emerald — slightly deeper for AA on white */
-  --emerald-500: #00A674;
-  --emerald-400: #00C285;
-  --emerald-600: #00875A;
-  --emerald-700: #006945;
-  --emerald-glow: 0 0 18px rgba(0, 166, 116, 0.30);
+  /* ---------- CHART PALETTE — readable on white ---------- */
+  --chart-emerald:      var(--emerald-500);       /* #00875A */
+  --chart-crimson:      var(--crimson-500);       /* #C1271B */
+  --chart-info:         #0A6FD1;
+  --chart-purple:       #7C3AED;
+  --chart-amber:        #B0730A;
+  --chart-pink:         #C2185B;
+  --chart-emerald-area: rgba(0, 135, 90, 0.14);
+  --chart-crimson-area: rgba(193, 39, 27, 0.12);
 
-  /* shadows — real shadows, not glows */
-  --shadow-card:       0 1px 2px rgba(10, 14, 20, 0.04), 0 1px 3px rgba(10, 14, 20, 0.05);
-  --shadow-card-hover: 0 4px 16px rgba(10, 14, 20, 0.08), 0 2px 6px rgba(10, 14, 20, 0.05);
-  --shadow-elevated:   0 12px 40px rgba(10, 14, 20, 0.10), 0 4px 12px rgba(10, 14, 20, 0.06);
-  --shadow-inset-top:  inset 0 1px 0 rgba(255, 255, 255, 0.60);
+  /* Sankey flow — Needs / Wants / Investments / Income trunk.
+     income anchors on ink-mist instead of silver so the trunk
+     reads against the canvas. */
+  --sankey-needs:        #0A6FD1;
+  --sankey-wants:        #7C3AED;
+  --sankey-investments:  var(--emerald-500);
+  --sankey-income:       var(--mist-600);
 
-  /* ambient atmosphere — much dialed down for light */
-  --aurora-emerald: rgba(0, 166, 116, 0.12);
-  --aurora-info:    rgba(90, 200, 250, 0.08);
-  --aurora-crimson: rgba(255, 59, 48, 0.04);
+  /* ---------- SHADOWS — soft multi-layered depth ----------
+     Replace all neon --glow vars with natural obsidian-tinted
+     shadows (rgba(10, 14, 20, 0.04–0.10) stacked). */
+  --shadow-card:
+      0 1px 2px rgba(10, 14, 20, 0.04),
+      0 1px 3px rgba(10, 14, 20, 0.06);
+  --shadow-card-hover:
+      0 2px 4px rgba(10, 14, 20, 0.04),
+      0 8px 24px rgba(10, 14, 20, 0.08),
+      0 1px 2px rgba(10, 14, 20, 0.05);
+  --shadow-elevated:
+      0 4px 6px rgba(10, 14, 20, 0.04),
+      0 16px 48px rgba(10, 14, 20, 0.10),
+      0 2px 6px rgba(10, 14, 20, 0.06);
+  --shadow-emerald:  var(--emerald-glow);
+  --shadow-crimson:  var(--crimson-glow);
+  --shadow-inset-top: inset 0 1px 0 rgba(255, 255, 255, 0.60);
+
+  /* ---------- AMBIENT — aurora dialed down, grid softened ---------- */
+  --aurora-emerald: rgba(0, 135, 90, 0.10);
+  --aurora-info:    rgba(10, 111, 209, 0.06);
+  --aurora-crimson: rgba(193, 39, 27, 0.04);
   --grid-line:      rgba(10, 14, 20, 0.04);
 
-  /* CTA — emerald button, more subdued glow on light */
-  --cta-glow-ring:  rgba(0, 166, 116, 0.35);
-  --cta-glow-soft:  rgba(0, 166, 116, 0.20);
-  --cta-glow-strong:rgba(0, 166, 116, 0.35);
-
-  --emerald-wash:   rgba(0, 166, 116, 0.06);
-  --featured-halo:  rgba(0, 166, 116, 0.10);
-  --emerald-tint:   rgba(0, 166, 116, 0.10);
-  --emerald-tint-soft: rgba(0, 166, 116, 0.06);
-  --emerald-border: rgba(0, 166, 116, 0.25);
-  --emerald-border-soft: rgba(0, 166, 116, 0.18);
-  --emerald-border-faint: rgba(0, 166, 116, 0.12);
-  --crimson-tint:   rgba(255, 59, 48, 0.08);
-  --crimson-border: rgba(255, 59, 48, 0.22);
-  --select-bg:      rgba(0, 166, 116, 0.22);
-
-  /* eyebrow in light — darker mist so labels read */
-  --text-eyebrow-color: #48484A;
-
-  /* emerald scale aliases re-point */
-  --emerald-50:  rgba(0, 166, 116, 0.06);
-  --emerald-100: rgba(0, 166, 116, 0.12);
-  --emerald-200: rgba(0, 166, 116, 0.22);
+  /* ---------- CTA + EMERALD ACCENTS ----------
+     No neon ring on paper — softened rgba-obsidian halo and
+     lower-alpha emerald washes so buttons land as pressed
+     paper, not glowing neon. */
+  --cta-glow-ring:    rgba(0, 135, 90, 0.28);
+  --cta-glow-soft:    rgba(10, 14, 20, 0.08);
+  --cta-glow-strong:  rgba(10, 14, 20, 0.12);
+  --emerald-wash:         rgba(0, 135, 90, 0.05);
+  --featured-halo:        rgba(0, 135, 90, 0.08);
+  --emerald-tint:         rgba(0, 135, 90, 0.10);
+  --emerald-tint-soft:    rgba(0, 135, 90, 0.06);
+  --emerald-border:       rgba(0, 135, 90, 0.28);
+  --emerald-border-soft:  rgba(0, 135, 90, 0.18);
+  --emerald-border-faint: rgba(0, 135, 90, 0.10);
+  --crimson-tint:   rgba(193, 39, 27, 0.08);
+  --crimson-border: rgba(193, 39, 27, 0.25);
+  --select-bg:      rgba(0, 135, 90, 0.22);
 }
 
 /* Respect OS preference by default if user hasn't set one */

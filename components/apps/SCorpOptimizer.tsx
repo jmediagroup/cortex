@@ -79,7 +79,7 @@ export default function SCorpOptimizer({ isPro = false, onUpgrade, isLoggedIn = 
           <h4 className="text-3xl font-bold text-[var(--emerald-500)]">${Math.round(stats.distributions).toLocaleString()}</h4>
           <p className="text-xs font-bold text-[var(--text-tertiary)] mt-1">FICA-exempt income</p>
         </div>
-        <div className="bg-[var(--emerald-500)] p-6 rounded-3xl shadow-lg text-white">
+        <div className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] p-6 rounded-3xl shadow-lg text-white">
           <p className="text-[10px] font-bold text-[var(--mist-200)] uppercase tracking-widest mb-1">Tax Efficiency</p>
           <h4 className="text-3xl font-bold text-white">{Math.round(stats.efficiency)}%</h4>
           <p className="text-xs font-bold text-[var(--mist-100)] mt-1">Reduction in SE Taxes</p>
@@ -99,14 +99,14 @@ export default function SCorpOptimizer({ isPro = false, onUpgrade, isLoggedIn = 
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Annual Net Profit</label>
                 <div className="relative">
                   <span className="absolute left-4 top-2.5 text-[var(--text-muted)] font-bold">$</span>
-                  <input type="number" value={profit} onChange={(e) => setProfit(parseFloat(e.target.value) || 0)} className="w-full pl-8 pr-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--color-warning)]" />
+                  <input type="number" value={profit} onChange={(e) => setProfit(parseFloat(e.target.value) || 0)} className="w-full pl-8 pr-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
                 </div>
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Proposed Reasonable Salary<Tooltip content="The IRS requires S-Corp owners to pay themselves a reasonable salary. This is typically 40-60% of net profit." /></label>
                 <div className="relative">
                   <span className="absolute left-4 top-2.5 text-[var(--text-muted)] font-bold">$</span>
-                  <input type="number" value={salary} onChange={(e) => setSalary(parseFloat(e.target.value) || 0)} className="w-full pl-8 pr-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--color-warning)]" />
+                  <input type="number" value={salary} onChange={(e) => setSalary(parseFloat(e.target.value) || 0)} className="w-full pl-8 pr-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
                 </div>
               </div>
             </div>

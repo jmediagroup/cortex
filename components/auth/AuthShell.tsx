@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ShieldCheck } from 'lucide-react';
 import { LogoMark } from '@/components/marketing/Nav';
+import { ThemeToggle } from '@/components/theme/ThemeToggle';
 
 type Props = {
   children: React.ReactNode;
@@ -10,13 +11,12 @@ type Props = {
 
 /**
  * Auth shell — aurora + grid background with a centered frosted-glass
- * card. Force-dark subtree so sign-in / sign-up / reset flows always
- * look like the product, regardless of the user's marketing theme.
+ * card. Inherits the user's chosen theme so sign-in / sign-up /
+ * reset flows honour the marketing toggle.
  */
 export function AuthShell({ children, footer }: Props) {
   return (
     <div
-      data-theme="dark"
       className="hero-gradient grid-bg"
       style={{
         minHeight: '100vh',
@@ -27,8 +27,19 @@ export function AuthShell({ children, footer }: Props) {
         alignItems: 'center',
         justifyContent: 'center',
         gap: 24,
+        position: 'relative',
       }}
     >
+      <div
+        style={{
+          position: 'absolute',
+          top: 20,
+          right: 20,
+          zIndex: 10,
+        }}
+      >
+        <ThemeToggle />
+      </div>
       <Link
         href="/"
         aria-label="Cortex home"

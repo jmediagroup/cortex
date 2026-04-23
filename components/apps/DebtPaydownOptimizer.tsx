@@ -402,7 +402,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                     type="number"
                     value={monthlyIncome}
                     onChange={(e) => setMonthlyIncome(parseFloat(e.target.value) || 0)}
-                    className="w-full bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg px-3 py-2 mt-1 outline-none focus:ring-2 focus:ring-[var(--emerald-200)]"
+                    className="w-full bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg px-3 py-2 mt-1 outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                   />
                   <p className="text-[10px] text-[var(--text-muted)] mt-1 italic">
                     Used for debt-to-income calculations
@@ -415,7 +415,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                     value={age || ''}
                     placeholder="e.g. 35"
                     onChange={(e) => setAge(e.target.value ? parseInt(e.target.value) : null)}
-                    className="w-full bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg px-3 py-2 mt-1 outline-none focus:ring-2 focus:ring-[var(--emerald-200)]"
+                    className="w-full bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg px-3 py-2 mt-1 outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                   />
                   <p className="text-[10px] text-[var(--text-muted)] mt-1 italic">
                     Enables life-stage recommendations
@@ -465,7 +465,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                     type="number"
                     value={investmentRate}
                     onChange={(e) => setInvestmentRate(parseFloat(e.target.value) || 0)}
-                    className="w-full bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg px-3 py-2 mt-1 outline-none focus:ring-2 focus:ring-[var(--emerald-200)]"
+                    className="w-full bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg px-3 py-2 mt-1 outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                   />
                 </div>
                 <div>
@@ -474,7 +474,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                     type="number"
                     value={taxRate}
                     onChange={(e) => setTaxRate(parseFloat(e.target.value) || 0)}
-                    className="w-full bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg px-3 py-2 mt-1 outline-none focus:ring-2 focus:ring-[var(--emerald-200)]"
+                    className="w-full bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg px-3 py-2 mt-1 outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                   />
                 </div>
               </div>
@@ -622,7 +622,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
 
       {/* PRO FEATURES UPGRADE CARD */}
       {!isPro && (
-        <div className="bg-gradient-to-br from-[var(--emerald-600)] to-[var(--color-info)] rounded-[3rem] p-12 text-white relative overflow-hidden shadow-2xl">
+        <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-600)] to-[var(--color-info)] rounded-[3rem] p-12 text-white relative overflow-hidden shadow-2xl">
           <div className="absolute top-0 right-0 p-12 opacity-10 rotate-12">
             <Zap size={200} fill="currentColor" />
           </div>
@@ -631,29 +631,29 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
               <Lock size={24} />
               <h3 className="text-3xl font-bold">Opportunity Cost Rebalancer</h3>
             </div>
-            <p className="text-[var(--emerald-50)] text-lg font-medium mb-8 max-w-3xl leading-relaxed">
+            <p className="text-white/85 text-lg font-medium mb-8 max-w-3xl leading-relaxed">
               Unlock advanced analysis that compares paying extra on debt vs. investing. See when it makes mathematical sense to pay minimums and invest the difference.
             </p>
             <div className="grid md:grid-cols-3 gap-6 mb-8">
               <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                 <Target size={24} className="mb-3" />
                 <h4 className="font-bold text-sm mb-2">Investment vs. Paydown</h4>
-                <p className="text-[var(--emerald-100)] text-xs font-medium">Calculate whether paying extra on 4% debt or investing at 7% creates more wealth</p>
+                <p className="text-white/85 text-xs font-medium">Calculate whether paying extra on 4% debt or investing at 7% creates more wealth</p>
               </div>
               <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                 <Shield size={24} className="mb-3" />
                 <h4 className="font-bold text-sm mb-2">Tax-Adjusted Reality</h4>
-                <p className="text-[var(--emerald-100)] text-xs font-medium">Account for mortgage interest deduction and long-term capital gains rates</p>
+                <p className="text-white/85 text-xs font-medium">Account for mortgage interest deduction and long-term capital gains rates</p>
               </div>
               <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                 <Repeat size={24} className="mb-3" />
                 <h4 className="font-bold text-sm mb-2">Hybrid Strategy Designer</h4>
-                <p className="text-[var(--emerald-100)] text-xs font-medium">Smart rebalancing: aggressive on high-rate debt, minimum + invest on low-rate</p>
+                <p className="text-white/85 text-xs font-medium">Smart rebalancing: aggressive on high-rate debt, minimum + invest on low-rate</p>
               </div>
             </div>
             <button
               onClick={onUpgrade}
-              className="bg-[var(--bg-card)] text-[var(--emerald-500)] px-8 py-4 rounded-2xl font-bold hover:bg-[var(--emerald-50)] transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
+              className="bg-white text-[var(--emerald-700)] px-8 py-4 rounded-2xl font-bold hover:bg-[var(--emerald-50)] transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
             >
               <Zap size={20} fill="currentColor" />
               Upgrade to Pro - $9/month
@@ -678,7 +678,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
 
           {/* Life-Stage Strategic Context */}
           {age && (
-            <div className="bg-gradient-to-br from-[var(--color-warning)] to-[var(--color-warning)] rounded-[3rem] p-10 text-white shadow-xl">
+            <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] rounded-[3rem] p-10 text-white shadow-xl">
               <div className="flex items-start gap-4">
                 <div className="bg-[var(--bg-card)]/20 p-3 rounded-2xl backdrop-blur-sm">
                   <Brain size={32} />
@@ -687,12 +687,12 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                   <h4 className="text-2xl font-bold mb-3">Life-Stage Strategic Context</h4>
                   {age < 35 && (
                     <>
-                      <p className="text-[var(--color-warning-soft)] font-medium text-lg leading-relaxed mb-4">
+                      <p className="text-white/85 font-medium text-lg leading-relaxed mb-4">
                         At age {age}, you have significant time for compound growth. Your ${debts.reduce((sum, d) => sum + d.balance, 0).toLocaleString()} debt load requires a careful balance.
                       </p>
                       <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                         <h5 className="font-bold mb-3">Early-Career Opportunity Cost</h5>
-                        <p className="text-[var(--color-warning-soft)] text-sm font-medium leading-relaxed">
+                        <p className="text-white/85 text-sm font-medium leading-relaxed">
                           {debts.filter(d => d.rate < investmentRate).length > 0 ? (
                             <>You have {debts.filter(d => d.rate < investmentRate).length} debt(s) with rates below {investmentRate}%. Every dollar of extra payment on these debts costs you decades of compound growth. With {results.avalanche.months} months to debt-freedom, investing your ${monthlyBudget - debts.reduce((s, d) => s + d.minPayment, 0)}/month surplus could become ${(opportunityAnalysis.investmentValue * 2).toLocaleString()} by retirement (age 65). Don't sacrifice 30+ years of market returns to rush debt payoff.</>
                           ) : (
@@ -704,12 +704,12 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                   )}
                   {age >= 35 && age < 50 && (
                     <>
-                      <p className="text-[var(--color-warning-soft)] font-medium text-lg leading-relaxed mb-4">
+                      <p className="text-white/85 font-medium text-lg leading-relaxed mb-4">
                         At age {age}, you're in peak earning years. Your ${debts.reduce((sum, d) => sum + d.balance, 0).toLocaleString()} debt requires strategic balance between freedom and growth.
                       </p>
                       <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                         <h5 className="font-bold mb-3">Mid-Career Dual Strategy</h5>
-                        <p className="text-[var(--color-warning-soft)] text-sm font-medium leading-relaxed">
+                        <p className="text-white/85 text-sm font-medium leading-relaxed">
                           {debts.filter(d => d.rate >= investmentRate).length > 0 && debts.filter(d => d.rate < investmentRate).length > 0 ? (
                             <>Your debt portfolio splits perfectly for a hybrid approach: crush your {debts.filter(d => d.rate >= investmentRate).map(d => `${d.name} ($${d.balance.toLocaleString()} at ${d.rate.toFixed(1)}%)`).join(' and ')} with aggressive payments while paying minimums on your {debts.filter(d => d.rate < investmentRate).map(d => d.name).join(' and ')}. This captures both debt-freedom momentum AND compound growth over your {65 - age} years until retirement. Your current ${monthlyBudget}/month strategy hits debt-free in {results.hybrid.months} months.</>
                           ) : debts.filter(d => d.rate >= investmentRate).length > 0 ? (
@@ -723,12 +723,12 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                   )}
                   {age >= 50 && (
                     <>
-                      <p className="text-[var(--color-warning-soft)] font-medium text-lg leading-relaxed mb-4">
+                      <p className="text-white/85 font-medium text-lg leading-relaxed mb-4">
                         At age {age}, entering retirement with ${debts.reduce((sum, d) => sum + d.balance, 0).toLocaleString()} debt creates risk. Certainty matters more than optimal returns.
                       </p>
                       <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                         <h5 className="font-bold mb-3">Pre-Retirement Risk Reduction</h5>
-                        <p className="text-[var(--color-warning-soft)] text-sm font-medium leading-relaxed">
+                        <p className="text-white/85 text-sm font-medium leading-relaxed">
                           {results.avalanche.months < (65 - age) * 12 ? (
                             <>Your current ${monthlyBudget}/month budget eliminates all debt in {results.avalanche.months} months (age {age + Math.floor(results.avalanche.months / 12)}). This gets you debt-free before retirement with {(65 - age) * 12 - results.avalanche.months} months to shift focus entirely to retirement savings. Priority: clear your ${debts.reduce((max, d) => d.rate > max.rate ? d : max, debts[0]).name} at ${debts.reduce((max, d) => d.rate > max.rate ? d : max, debts[0]).rate.toFixed(1)}% first—this ${debts.reduce((max, d) => d.rate > max.rate ? d : max, debts[0]).balance.toLocaleString()} balance costs you ${((debts.reduce((max, d) => d.rate > max.rate ? d : max, debts[0]).balance * debts.reduce((max, d) => d.rate > max.rate ? d : max, debts[0]).rate / 100) / 12).toFixed(0)}/month in interest you can't afford on fixed retirement income.</>
                           ) : (
@@ -744,7 +744,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
           )}
 
           {/* Investment vs Paydown Showdown */}
-          <div className="bg-gradient-to-br from-[var(--emerald-500)] to-[var(--emerald-500)] rounded-[3rem] p-10 text-white shadow-xl">
+          <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] rounded-[3rem] p-10 text-white shadow-xl">
             <div className="flex items-start gap-4 mb-6">
               <div className="bg-[var(--bg-card)]/20 p-3 rounded-2xl backdrop-blur-sm">
                 <Target size={32} />
@@ -782,7 +782,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
               </div>
             </div>
             <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-              <p className="text-sm font-bold text-[var(--mist-100)] mb-2">CORTEX INSIGHT</p>
+              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
               <p className="font-medium text-white">
                 {(() => {
                   const lowestRateDebt = debts.reduce((min, d) => d.rate < min.rate ? d : min, debts[0]);
@@ -842,7 +842,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
           </div>
 
           {/* Hybrid Strategy Designer */}
-          <div className="bg-gradient-to-br from-[var(--emerald-500)] to-[var(--emerald-500)] rounded-[3rem] p-10 text-white shadow-xl">
+          <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] rounded-[3rem] p-10 text-white shadow-xl">
             <div className="flex items-start gap-4 mb-6">
               <div className="bg-[var(--bg-card)]/20 p-3 rounded-2xl backdrop-blur-sm">
                 <Repeat size={32} />
@@ -860,7 +860,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                       return effectiveRate >= investmentRate;
                     }).length > 0 && (
                       <div className="bg-[var(--crimson-500)]/20 backdrop-blur-sm rounded-xl p-4 border border-[var(--crimson-border)]/30">
-                        <p className="text-xs font-bold text-[var(--crimson-100)] mb-2">🔥 AGGRESSIVE PAYDOWN ZONE</p>
+                        <p className="text-xs font-bold text-white/85 mb-2">🔥 AGGRESSIVE PAYDOWN ZONE</p>
                         {debts.filter(d => {
                           const effectiveRate = d.isTaxDeductible ? d.rate * (1 - taxRate / 100) : d.rate;
                           return effectiveRate >= investmentRate;
@@ -880,7 +880,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                       return effectiveRate < investmentRate;
                     }).length > 0 && (
                       <div className="bg-[var(--emerald-100)] backdrop-blur-sm rounded-xl p-4 border border-[var(--emerald-border-soft)]">
-                        <p className="text-xs font-bold text-[var(--emerald-100)] mb-2">💰 MINIMUM PAYMENT + INVEST ZONE</p>
+                        <p className="text-xs font-bold text-white/85 mb-2">💰 MINIMUM PAYMENT + INVEST ZONE</p>
                         {debts.filter(d => {
                           const effectiveRate = d.isTaxDeductible ? d.rate * (1 - taxRate / 100) : d.rate;
                           return effectiveRate < investmentRate;
@@ -936,7 +936,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
               </div>
             </div>
             <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-              <p className="text-sm font-bold text-[var(--mist-100)] mb-2">CORTEX INSIGHT</p>
+              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
               <p className="font-medium text-white">
                 {(() => {
                   const highRateDebt = debts.find(d => {

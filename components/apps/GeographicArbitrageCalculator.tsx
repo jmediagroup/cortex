@@ -319,7 +319,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
               type="text"
               value={value.toLocaleString()}
               onChange={handleInputChange}
-              className="w-full px-4 py-2.5 text-center font-bold text-lg rounded-lg border-2 border-[var(--border-default)] bg-[var(--bg-section)] hover:bg-[var(--bg-card)] hover:border-[var(--emerald-border)] focus:outline-none focus:ring-2 focus:ring-[var(--emerald-200)] focus:border-[var(--emerald-border)] transition-all tabular-nums"
+              className="w-full px-4 py-2.5 text-center font-bold text-lg rounded-lg border-2 border-[var(--border-default)] bg-[var(--bg-section)] hover:bg-[var(--bg-card)] hover:border-[var(--emerald-border)] focus:outline-none focus:ring-2 focus:ring-[var(--emerald-500)] focus:border-[var(--emerald-border)] transition-all tabular-nums"
             />
             {suffix && (
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-[var(--text-muted)] pointer-events-none">
@@ -366,7 +366,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
         <select
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full p-3.5 rounded-xl border-2 border-[var(--border-subtle)] bg-[var(--bg-section)] hover:bg-[var(--bg-card)] hover:border-[var(--emerald-border-soft)] focus:ring-4 focus:ring-[var(--emerald-100)] focus:border-[var(--emerald-border)] outline-none appearance-none cursor-pointer transition-all font-medium text-[var(--text-primary)]"
+          className="w-full p-3.5 rounded-xl border-2 border-[var(--border-subtle)] bg-[var(--bg-section)] hover:bg-[var(--bg-card)] hover:border-[var(--emerald-border-soft)] focus:ring-4 focus:ring-[var(--emerald-500)] focus:border-[var(--emerald-border)] outline-none appearance-none cursor-pointer transition-all font-medium text-[var(--text-primary)]"
         >
           {sortedLocationKeys.map(loc => <option key={loc} value={loc}>{loc}</option>)}
         </select>
@@ -428,7 +428,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                       : Math.max(40000, annualIncome);
                     setAnnualIncome(numValue);
                   }}
-                  className="w-full pl-7 pr-4 py-2.5 bg-[var(--bg-section)] border-2 border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--emerald-200)] focus:border-[var(--emerald-border)] outline-none font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="w-full pl-7 pr-4 py-2.5 bg-[var(--bg-section)] border-2 border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--emerald-500)] focus:border-[var(--emerald-border)] outline-none font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
               </div>
               <div className="mt-1.5 text-xs text-[var(--text-muted)] font-medium">
@@ -588,7 +588,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
 
           {/* PRO FEATURES SECTION */}
           {!isPro && (
-            <div className="bg-gradient-to-br from-[var(--color-warning)] via-[var(--color-warning)] to-[var(--crimson-500)] rounded-3xl p-8 shadow-2xl shadow-[0_0_24px_var(--color-warning-soft)] text-white relative overflow-hidden">
+            <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] rounded-3xl p-8 shadow-2xl text-white relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--bg-card)]/10 rounded-full -mr-32 -mt-32 blur-3xl"></div>
               <div className="relative">
                 <div className="flex items-start justify-between gap-6">
@@ -663,7 +663,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                   <div className="flex items-start gap-3">
                     <Zap size={20} className="flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="font-bold text-sm uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
+                      <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
                       <p className="text-[var(--mist-100)] text-sm font-medium leading-relaxed">
                         The #1 destination delivers ${Math.round(multiCityAnalysis.destinations[0].delta).toLocaleString()} more in annual savings than your current location.
                         Over {years} years, this compounds to ${Math.round(multiCityAnalysis.compoundedArbitrageWealth - projectionData[projectionData.length - 1].current).toLocaleString()} in extra wealth.
@@ -696,8 +696,8 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                     <div className="flex items-start gap-3">
                       <Zap size={18} className="flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="font-bold text-xs uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
-                        <p className="text-[var(--emerald-100)] text-sm font-medium leading-relaxed">
+                        <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
+                        <p className="text-white/85 text-sm font-medium leading-relaxed">
                           Moving to a zero-tax state like Texas, Florida, or Nevada would save you ${Math.round(multiCityAnalysis.yearlyTaxWindfall).toLocaleString()}/year
                           in pure tax arbitrage, assuming comparable cost of living.
                         </p>
@@ -730,8 +730,8 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                     <div className="flex items-start gap-3">
                       <Zap size={18} className="flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="font-bold text-xs uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
-                        <p className="text-[var(--crimson-100)] text-sm font-medium leading-relaxed">
+                        <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
+                        <p className="text-white/85 text-sm font-medium leading-relaxed">
                           {multiCityAnalysis.mobilityPremium >= 0
                             ? `Even accounting for career trajectory loss, arbitrage still nets you ${Math.abs(Math.round(multiCityAnalysis.mobilityPremium)).toLocaleString()} in extra wealth.`
                             : `The savings from arbitrage may not offset the career trajectory loss. Consider hybrid strategies like 5-year sprints in hubs.`}
@@ -777,7 +777,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                   <div className="flex items-start gap-3">
                     <Zap size={18} className="flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="font-bold text-xs uppercase tracking-wider mb-1">CORTEX INSIGHT</p>
+                      <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
                       <p className="text-[var(--text-muted)] text-sm font-medium leading-relaxed">
                         {multiCityAnalysis.lifestyleScore >= 75
                           ? 'Your target location maintains a sustainable lifestyle while delivering arbitrage gains. Low risk of burnout or regret.'
