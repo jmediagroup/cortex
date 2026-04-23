@@ -267,7 +267,7 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
                       <button
                         key={idx}
                         onClick={() => setInputs(p => ({...p, targetBracketIndex: idx}))}
-                        className={`py-2 px-1 rounded-xl text-xs font-bold transition-all ${inputs.targetBracketIndex === idx ? 'bg-[var(--bg-card)] text-[var(--text-primary)] shadow-lg' : 'bg-[var(--emerald-600)] text-[var(--mist-200)] hover:bg-[var(--emerald-500)]'}`}
+                        className={`py-2 px-1 rounded-xl text-xs font-bold transition-all ${inputs.targetBracketIndex === idx ? 'bg-[var(--bg-card)] text-[var(--text-primary)] shadow-lg' : 'bg-[var(--emerald-600)] text-white hover:bg-[var(--emerald-500)]'}`}
                       >
                         {TAX_BRACKETS[idx].label}
                       </button>

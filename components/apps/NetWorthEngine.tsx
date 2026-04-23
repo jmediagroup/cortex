@@ -748,7 +748,7 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
           </section>
 
           {/* Forces Selector */}
-          <section className="bg-[var(--obsidian-900)] rounded-3xl p-8 text-[var(--mist-100)] shadow-2xl shadow-[0_0_24px_var(--cta-glow-soft)] overflow-hidden relative group">
+          <section className="bg-[var(--obsidian-900)] rounded-3xl p-8 text-white shadow-2xl shadow-[0_0_24px_var(--cta-glow-soft)] overflow-hidden relative group">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--emerald-400)]/10 rounded-full -mr-16 -mt-16 blur-3xl transition-opacity opacity-0 group-hover:opacity-100"></div>
             <h3 className="font-bold mb-6 flex items-center gap-2 tracking-tight">
               <Activity size={18} className="text-[var(--emerald-400)]" />
