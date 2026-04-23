@@ -402,7 +402,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                     type="number"
                     value={monthlyIncome}
                     onChange={(e) => setMonthlyIncome(parseFloat(e.target.value) || 0)}
-                    className="w-full bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg px-3 py-2 mt-1 outline-none focus:ring-2 focus:ring-[var(--emerald-200)]"
+                    className="w-full bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg px-3 py-2 mt-1 outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                   />
                   <p className="text-[10px] text-[var(--text-muted)] mt-1 italic">
                     Used for debt-to-income calculations
@@ -415,7 +415,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                     value={age || ''}
                     placeholder="e.g. 35"
                     onChange={(e) => setAge(e.target.value ? parseInt(e.target.value) : null)}
-                    className="w-full bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg px-3 py-2 mt-1 outline-none focus:ring-2 focus:ring-[var(--emerald-200)]"
+                    className="w-full bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg px-3 py-2 mt-1 outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                   />
                   <p className="text-[10px] text-[var(--text-muted)] mt-1 italic">
                     Enables life-stage recommendations
@@ -465,7 +465,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                     type="number"
                     value={investmentRate}
                     onChange={(e) => setInvestmentRate(parseFloat(e.target.value) || 0)}
-                    className="w-full bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg px-3 py-2 mt-1 outline-none focus:ring-2 focus:ring-[var(--emerald-200)]"
+                    className="w-full bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg px-3 py-2 mt-1 outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                   />
                 </div>
                 <div>
@@ -474,7 +474,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                     type="number"
                     value={taxRate}
                     onChange={(e) => setTaxRate(parseFloat(e.target.value) || 0)}
-                    className="w-full bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg px-3 py-2 mt-1 outline-none focus:ring-2 focus:ring-[var(--emerald-200)]"
+                    className="w-full bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg px-3 py-2 mt-1 outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                   />
                 </div>
               </div>
@@ -653,7 +653,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
             </div>
             <button
               onClick={onUpgrade}
-              className="bg-[var(--bg-card)] text-[var(--emerald-500)] px-8 py-4 rounded-2xl font-bold hover:bg-[var(--emerald-50)] transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
+              className="bg-white text-[var(--emerald-700)] px-8 py-4 rounded-2xl font-bold hover:bg-[var(--emerald-50)] transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
             >
               <Zap size={20} fill="currentColor" />
               Upgrade to Pro - $9/month
@@ -782,7 +782,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
               </div>
             </div>
             <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-              <p className="text-sm font-bold text-[var(--mist-100)] mb-2">CORTEX INSIGHT</p>
+              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
               <p className="font-medium text-white">
                 {(() => {
                   const lowestRateDebt = debts.reduce((min, d) => d.rate < min.rate ? d : min, debts[0]);
@@ -936,7 +936,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
               </div>
             </div>
             <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-              <p className="text-sm font-bold text-[var(--mist-100)] mb-2">CORTEX INSIGHT</p>
+              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
               <p className="font-medium text-white">
                 {(() => {
                   const highRateDebt = debts.find(d => {

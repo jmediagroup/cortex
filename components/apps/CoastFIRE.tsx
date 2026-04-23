@@ -472,7 +472,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
 
       {/* Metrics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-[var(--bg-card)] p-6 rounded-2xl border border-[var(--border-default)] shadow-sm">
+        <div className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border-default)] shadow-sm">
           <div className="bg-[var(--emerald-50)] w-10 h-10 rounded-full flex items-center justify-center mb-3">
             <Target className="text-[var(--emerald-500)]" size={20} />
           </div>
@@ -481,7 +481,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
           <p className="text-xs text-[var(--text-muted)] mt-1">at {inputs.withdrawalRate}% withdrawal</p>
         </div>
 
-        <div className="bg-[var(--bg-card)] p-6 rounded-2xl border border-[var(--border-default)] shadow-sm">
+        <div className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border-default)] shadow-sm">
           <div className="bg-[var(--emerald-50)] w-10 h-10 rounded-full flex items-center justify-center mb-3">
             <Calendar className="text-[var(--emerald-500)]" size={20} />
           </div>
@@ -490,7 +490,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
           <p className="text-xs text-[var(--text-muted)] mt-1">Age {inputs.currentAge} → {inputs.retirementAge}</p>
         </div>
 
-        <div className="bg-[var(--bg-card)] p-6 rounded-2xl border border-[var(--border-default)] shadow-sm">
+        <div className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border-default)] shadow-sm">
           <div className="bg-[var(--emerald-50)] w-10 h-10 rounded-full flex items-center justify-center mb-3">
             <TrendingUp className="text-[var(--emerald-500)]" size={20} />
           </div>
@@ -647,7 +647,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
               Coast FIRE is reaching the point where your current investments will grow to your FIRE number by retirement age, <strong className="text-white">even if you never contribute another cent</strong>.
             </p>
             <div className="bg-[var(--obsidian-700)]/50 rounded-xl p-4 border border-[var(--emerald-border)]">
-              <p className="text-xs font-bold text-[var(--emerald-400)] mb-1">THE FORMULA</p>
+              <p className="text-xs font-bold text-[var(--emerald-400)] uppercase tracking-widest mb-1">THE FORMULA</p>
               <p className="text-sm font-mono text-[var(--mist-100)]">
                 Coast Number = FIRE Target ÷ (1 + r)^years
               </p>
@@ -918,7 +918,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
             </div>
 
             <div className="mt-6 p-4 bg-[var(--obsidian-800)] text-white rounded-2xl">
-              <p className="text-xs font-bold text-[var(--mist-200)] mb-1">CORTEX INSIGHT</p>
+              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
               <p className="text-sm font-medium">
                 {proAnalytics.flexibilityScore >= 75
                   ? "Your coast position is highly resilient. You're protected against most adverse scenarios."
@@ -972,7 +972,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
             </div>
 
             <div className="mt-6 p-4 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20">
-              <p className="text-xs font-bold text-[var(--emerald-400)] mb-1 tracking-widest">CORTEX INSIGHT</p>
+              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
               <p className="text-sm font-medium text-white/90">
                 {proAnalytics.baristaScenarios.some(s => s.canCoastNow && s.hoursPerWeek > 0)
                   ? `You could switch to part-time work today! Consider the "${proAnalytics.baristaScenarios.find(s => s.canCoastNow && s.hoursPerWeek > 0)?.name}" option for immediate freedom with some income.`
@@ -1047,7 +1047,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
             </div>
 
             <div className="mt-6 p-4 bg-[var(--obsidian-800)] text-white rounded-2xl">
-              <p className="text-xs font-bold text-[var(--mist-200)] mb-1">CORTEX INSIGHT</p>
+              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
               <p className="text-sm font-medium">
                 {calculations.hasReachedCoast
                   ? "You've already reached Coast FIRE! Every dollar you save now accelerates your timeline or increases your retirement income."
@@ -1152,7 +1152,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
             </div>
 
             <div className="mt-6 p-4 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20">
-              <p className="text-xs font-bold text-[var(--emerald-400)] mb-1 tracking-widest">CORTEX INSIGHT</p>
+              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
               <p className="text-sm font-medium text-white/90">
                 {proAnalytics.ssIntegration.ssAdjustedCoastReached
                   ? "When factoring in Social Security, you've already hit your adjusted Coast number! SS will cover part of your expenses, reducing what you need from investments."

@@ -373,7 +373,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
           </div>
 
           {/* Chart Area */}
-          <div className="bg-[var(--bg-card)] p-6 rounded-2xl border border-[var(--border-default)] shadow-sm">
+          <div className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border-default)] shadow-sm">
             <div className="flex justify-between items-center mb-6">
               <div>
                 <h3 className="font-bold text-[var(--text-primary)]">Net Worth Trajectory</h3>
@@ -496,7 +496,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
             </div>
             <button
               onClick={onUpgrade}
-              className="bg-[var(--bg-card)] text-[var(--emerald-500)] px-8 py-4 rounded-2xl font-bold hover:bg-[var(--emerald-50)] transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
+              className="bg-white text-[var(--emerald-700)] px-8 py-4 rounded-2xl font-bold hover:bg-[var(--emerald-50)] transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
             >
               <Zap size={20} fill="currentColor" />
               Upgrade to Pro - $9/month
@@ -572,7 +572,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
               </div>
             </div>
             <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-              <p className="text-sm font-bold text-white/85 mb-2">CORTEX INSIGHT</p>
+              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
               <p className="font-medium text-white">
                 Over 3 expected moves, renting preserves {formatCurrency(lifecycleAnalysis.moves.extraFriction + nwDiff)} more wealth due to transaction costs and mobility value—even with "wasted" rent.
               </p>
@@ -675,7 +675,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
               </div>
             </div>
             <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-              <p className="text-sm font-bold text-white/85 mb-2">CORTEX INSIGHT</p>
+              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
               <p className="font-medium text-white">
                 Career mobility has quantifiable value. Being locked into a property when a life-changing opportunity appears has a real cost that traditional rent vs. buy calculators ignore.
               </p>

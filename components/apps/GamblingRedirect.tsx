@@ -455,7 +455,7 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
               </div>
             </div>
             <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-              <p className="text-sm font-bold text-white/85 mb-2">CORTEX INSIGHT</p>
+              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
               <p className="font-medium text-white">
                 Problem gamblers typically spend 3.5x their stated "budget." That could mean a real cost of {formatCurrency(proAnalysis.realCostEstimate)} over {inputs.years} years.
               </p>
@@ -519,7 +519,7 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
               </div>
             </div>
             <div data-theme="dark" className="bg-[var(--obsidian-800)] text-white rounded-2xl p-6">
-              <p className="text-xs font-bold text-[var(--mist-200)] mb-2">THE TRANSFORMATION</p>
+              <p className="text-xs font-bold text-[var(--emerald-400)] uppercase tracking-widest mb-1">THE TRANSFORMATION</p>
               <p className="text-sm font-medium text-[var(--mist-50)]">
                 Instead of giving money to sportsbooks, you could be receiving {formatCurrency(proAnalysis.monthlyIncome)}/month in passive income. That's what financial freedom looks like.
               </p>

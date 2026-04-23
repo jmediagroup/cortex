@@ -363,7 +363,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
               </div>
             </div>
             <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-              <p className="text-sm font-bold text-white/85 mb-2">CORTEX INSIGHT</p>
+              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
               <p className="font-medium text-white">
                 Time is more valuable than amount. Starting today with ${inputs.monthlyContribution}/mo beats waiting 5 years and saving {lifeImpactAnalysis.requiredIncreasePct.toFixed(0)}% more per month.
               </p>
@@ -431,7 +431,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
               </div>
             </div>
             <div data-theme="dark" className="bg-[var(--obsidian-800)] text-white rounded-2xl p-6">
-              <p className="text-xs font-bold text-[var(--mist-200)] mb-2">THE 4% RULE</p>
+              <p className="text-xs font-bold text-[var(--emerald-400)] uppercase tracking-widest mb-1">THE 4% RULE</p>
               <p className="text-sm font-medium text-[var(--mist-50)]">
                 Research shows withdrawing 4% annually from a balanced portfolio historically sustains wealth for 30+ years through market cycles. This is your "work optional" number.
               </p>
