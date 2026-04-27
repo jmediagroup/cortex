@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import { getAllArticleSlugs } from '@/lib/wordpress/client';
+import { getAllOutlookSlugs } from '@/lib/outlook/content';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://cortex.vip';
@@ -18,10 +19,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error('Failed to fetch articles for sitemap:', error);
   }
 
+  // Outlook entries from local Markdown.
+  const outlookEntries: MetadataRoute.Sitemap = getAllOutlookSlugs().map((o) => ({
+    url: `${baseUrl}/thinking/${o.slug}`,
+    lastModified: new Date(`${o.date}T12:00:00Z`),
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+  }));
+
   // Articles listing page
   const articlesListingEntry: MetadataRoute.Sitemap = [
     {
       url: `${baseUrl}/articles`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/thinking`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.8,
@@ -130,5 +145,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  return [...staticRoutes, ...articlesListingEntry, ...articleEntries];
+  return [...staticRoutes, ...articlesListingEntry, ...articleEntries, ...outlookEntries];
 }

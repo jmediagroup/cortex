@@ -4,5 +4,15 @@
       "source": "/api/:path*",
       "destination": "/api/:path*"
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/outlook/email/daily",
+      "schedule": "0 11 * * 1-5"
+    },
+    {
+      "path": "/api/outlook/email/weekly",
+      "schedule": "0 11 * * 0"
+    }
   ]
 }
