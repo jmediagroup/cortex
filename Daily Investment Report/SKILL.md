@@ -6,7 +6,9 @@ user-invocable: true
 
 # Daily Investment Report
 
-This skill produces a structured daily investment report for a mix of long-term core and active opportunistic investing. The report is research and idea generation — **not personalized financial advice**. It should always include a disclaimer to that effect.
+This skill produces a structured daily investment report for a mix of long-term core and active opportunistic investing. The report is research and idea generation — **not personalized financial advice**.
+
+> **MANDATORY — non-negotiable.** Every report produced by this skill MUST end with the full disclaimer block from `assets/report-template.md`. Reports without a disclaimer at the bottom MUST NOT be saved, presented, or published. This applies to every output: the Markdown file in `/mnt/user-data/outputs/`, any post adapted into another publishing surface (e.g. the Cortex `/thinking` daily outlook), and any summary or excerpt that stands on its own. If you are tempted to drop or trim the disclaimer because "the surface already has editorial framing" or "it doesn't fit the format" — don't. Keep the disclaimer verbatim, at the bottom, in every report.
 
 ## When to use
 
@@ -85,9 +87,9 @@ Before saving, self-check:
 - Is every "idea" framed as research, not a recommendation?
 - Did I include a bear case for each idea?
 - Does the report distinguish the long-term bucket from the opportunistic bucket?
-- Is the disclaimer present and clear?
+- **Is the full disclaimer block from `assets/report-template.md` present at the bottom of the report, verbatim?** (This is mandatory. Not "is there a disclaimer somewhere" — is the full block at the bottom.)
 
-If any answer is no, fix it before saving.
+If any answer is no, fix it before saving. **Never save a report without the disclaimer.**
 
 ## Important constraints
 

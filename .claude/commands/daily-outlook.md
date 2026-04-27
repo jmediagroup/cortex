@@ -71,35 +71,96 @@ Match the tone of existing posts (see `content/outlook/daily/2026-04-24-earnings
 
 ### Body
 
-The first H2 is the email lead. Everything before the **second** `## ` is what email subscribers see in their inbox — keep it tight.
+This routine is a **publishing surface for the `daily-investment-report` skill**, not a substitute for it. The body must align closely with the skill's `assets/report-template.md` structure. The published post must include all of the skill's sections in the order below — the only differences vs. the raw skill output are (a) the frontmatter on top (so the cortex content system can parse it), (b) the section names slightly tightened for inline reading, and (c) the title/date header is dropped from the body since the cortex layout renders them from frontmatter.
+
+The first H2 is the email lead — `lib/outlook/content.ts` extracts everything from the start of the body up to the **second** `## ` heading and uses that as the email preview. Keep the first section short for that reason.
 
 ```markdown
-## Lead
+> Research and idea generation for personal use. Not investment advice. See full disclaimer at the bottom.
 
-<1–3 paragraphs. One dominant idea. The "top of mind" from the skill, rewritten in
-Cortex's editorial voice. Concrete numbers > vague language.>
+## Top of mind
 
-## What we're watching
+<2–3 sentences. The single most important thing happening in markets today and why
+it matters for a long-term + opportunistic investor. This is the email lead — keep
+it short. Concrete numbers > vague language.>
 
-<2–4 bullets or short paragraphs covering the headlines that actually matter.
-Each one has a "so what" — what it means for a long-term + opportunistic investor.
-Drop noise.>
+## Market snapshot
 
-## The decision worth making today
+| Asset | Level | Change | Notes |
+|---|---|---|---|
+| S&P 500 | <level> | <% change> | <1-line context> |
+| Nasdaq Composite | <level> | <% change> | <1-line context> |
+| Dow Jones | <level> | <% change> | <1-line context> |
+| 10Y Treasury | <yield> | <bps change> | <1-line context> |
+| VIX | <level> | <% change> | <1-line context> |
+| <DXY / WTI / Gold> | <level> | <% change> | <only if notable> |
 
-<Either 1 long-term core idea OR 1 opportunistic setup, framed as a hypothesis.
-Include: thesis, valuation/setup, what would invalidate. Use "watch list candidate,"
-"setup worth researching" — never "buy this." If today doesn't offer a compelling
-single idea, write a short section on the regime read instead — don't force a name.>
+**Sector leaders:** <top 2–3 — OMIT THE WHOLE LINE if data is >2 trading days stale>
+**Sector laggards:** <bottom 2–3 — OMIT THE WHOLE LINE if data is >2 trading days stale>
 
-## Risks to the call
+**Read-through:** <1–2 sentences on what the tape is saying — risk-on, risk-off, rotation, etc.>
 
-<Bear case for the lead thesis. The obvious risk + at least one non-obvious one.>
+## Headlines & analysis
+
+### 1. <Headline, paraphrased>
+**Source:** <outlet>
+**So what:** <1–2 sentences on why this matters and for whom.>
+
+### 2. <Headline>
+...
+
+<3–5 stories. Drop anything that's just noise.>
+
+## Ideas — long-term core
+
+*Quality businesses, durable competitive advantages, reasonable valuation. Hold horizon: years.*
+
+### <TICKER> — <Company>
+- **Thesis:** <2–3 sentences on the durable case.>
+- **Valuation note:** <P/E, P/S, FCF yield, etc., vs. history/peers.>
+- **Why now (or why patient):** <Is the setup timely or are we just maintaining a watch?>
+- **Risks / bear case:** <What would break the thesis.>
+
+<1–3 names. If today doesn't offer compelling long-term setups, say so — don't force it.>
+
+## Ideas — opportunistic
+
+*Catalyst-driven, time-bound, sized smaller. Hold horizon: days to months. Define exit before entry.*
+
+### <TICKER> — <Setup>
+- **Catalyst:** <Earnings, FDA, macro print, M&A rumor, technical breakout, etc.>
+- **Time horizon:** <Days / weeks / through next earnings.>
+- **What would invalidate:** <Specific level, event, or condition.>
+- **Risk note:** <Sizing reminder, volatility, liquidity, headline risk.>
+
+<1–3 setups. Empty section is fine if nothing qualifies.>
+
+## Portfolio-level guidance
+
+*Allocation and risk observations. Not specific buy/sell calls — those depend on a full picture this report doesn't see.*
+
+- **Concentration check:** <…>
+- **Rates positioning:** <…>
+- **Cash & dry powder:** <…>
+- **Risk regime read:** <…>
+
+<3–5 observations tailored to today.>
+
+## Watch list — tomorrow / this week
+
+**Earnings:** <Companies reporting + why they matter.>
+**Economic data:** <CPI, PCE, NFP, retail sales, etc., with consensus where available.>
+**Fed / central bank:** <Speakers, FOMC minutes, decisions.>
+**Other:** <OPEC, geopolitical events, key auctions.>
+
+## Disclaimer
+
+This report is prepared for personal research and informational purposes only. It does not constitute investment advice, an offer, or a solicitation to buy or sell any security. Information is drawn from public sources believed to be reliable but is not guaranteed accurate or complete. Markets change rapidly; data may be stale by the time of reading. Any "ideas" mentioned are research candidates, not recommendations, and do not consider any specific person's financial situation, objectives, or risk tolerance. Consult a licensed financial advisor before making investment decisions. Past performance does not predict future results.
 ```
 
-Do **NOT** copy the skill template verbatim — the long market-snapshot table, full disclaimer block, and 3-tier idea sections do not fit this format. The cortex `/thinking` post is editorial, not a digest. If you produced a long skill artifact along the way, save it under `/mnt/user-data/outputs/` for the user to download, but the published post is the rewritten version.
+The disclaimer block above is **mandatory**, **verbatim**, and **always at the bottom**. Do not paraphrase, trim, or relocate it. Do not omit it because the cortex marketing layout has a footer. Do not omit it because earlier `/thinking` posts shipped without one. The skill's `SKILL.md` makes this a non-negotiable contract for every report this skill produces, on every surface — `/thinking` included.
 
-Do **NOT** inline a long disclaimer in the post body — the existing posts don't, and the editorial "Cortex Research" framing handles it. (If a single tasteful "research not advice" line fits at the end, fine — match the existing posts.)
+If you also produced a longer raw artifact for the user to download, that file goes to `/mnt/user-data/outputs/` per the skill's Step 4 — and it must also end with this disclaimer.
 
 ### Slug
 
@@ -116,16 +177,18 @@ Run through this list. If any answer is no, fix before writing the file.
 
 - [ ] Frontmatter has `title`, `date` (YYYY-MM-DD), `summary`, `type: daily`.
 - [ ] Slug matches `^[a-z0-9][a-z0-9-]*$` and the full filename is unique for that date.
-- [ ] Body starts with `## Lead` and has at least 2 more `## ` sections.
-- [ ] Lead is 1–3 paragraphs (it's the email-only preview).
-- [ ] At least one bear case is in the body (in "Risks to the call" or inline).
+- [ ] Body opens with the one-line "Research and idea generation… See full disclaimer at the bottom." callout.
+- [ ] Body has all required sections in order: `## Top of mind`, `## Market snapshot`, `## Headlines & analysis`, `## Ideas — long-term core`, `## Ideas — opportunistic`, `## Portfolio-level guidance`, `## Watch list — tomorrow / this week`, `## Disclaimer`.
+- [ ] `## Top of mind` is 2–3 sentences (it's the email-only preview, extracted as everything before the second `## `).
+- [ ] At least one bear case is in the body (per-idea "Risks / bear case" + an obvious + non-obvious risk in the lead's risk framing).
+- [ ] Long-term core and opportunistic are clearly separated; opportunistic ideas have an explicit "what would invalidate."
 - [ ] No fabricated prices, headlines, or analyst calls. If a search didn't surface it, it isn't in the post.
-- [ ] Headline market-direction line backed by ≥2 independent sources (or, if sources conflict, lead is built from internals + conflict is flagged in "Risks to the call").
+- [ ] Headline market-direction line backed by ≥2 independent sources (or, if sources conflict, lead is built from internals + conflict is flagged in the disclaimer-adjacent risk note).
 - [ ] Every datapoint is from `TARGET_DATE` (or the most recent prior close for after-hours runs). No stale readings smuggled in via search summaries.
-- [ ] If sector leaders/laggards data is older than two trading days, that section is omitted — not caveated.
+- [ ] If sector leaders/laggards data is older than two trading days, those lines are omitted — not caveated.
 - [ ] Tickers/sectors are arrays of plain strings; tickers ALL-CAPS, sectors lowercase.
-- [ ] No long disclaimer block — editorial framing only.
-- [ ] Tone matches existing daily posts (variant-view, opinionated, concrete).
+- [ ] **The full disclaimer block is at the bottom, verbatim, exactly as in the template above. NOT paraphrased. NOT trimmed. NOT relocated. This is a hard requirement — if the disclaimer is missing or altered, the post must not be saved.**
+- [ ] Tone is variant-view, opinionated, concrete (matches existing daily posts).
 
 ## 4. Save
 
@@ -163,6 +226,7 @@ Don't restate the post — they have the file and the PR.
 
 ## Constraints (carried over from the skill — non-negotiable)
 
+- **Disclaimer required.** The full disclaimer block from the template above MUST appear verbatim at the bottom of every published post. No exceptions. If you cannot include it for any reason, do not publish.
 - **Never invent prices, headlines, or analyst calls.** Better short than fabricated.
 - **No personalized advice.** This routine doesn't know the reader's holdings, tax, time horizon, or risk tolerance.
 - **Paraphrase news content.** Quotes under 15 words, one quote per source max.
