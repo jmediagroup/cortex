@@ -153,6 +153,36 @@ export type Database = {
           key_result?: string;
         };
       };
+      outlook_subscribers: {
+        Row: {
+          id: string;
+          email: string;
+          confirmation_token: string;
+          confirmed_at: string | null;
+          unsubscribe_token: string;
+          user_id: string | null;
+          source: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          email: string;
+          confirmation_token?: string;
+          confirmed_at?: string | null;
+          unsubscribe_token?: string;
+          user_id?: string | null;
+          source?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          email?: string;
+          confirmation_token?: string;
+          confirmed_at?: string | null;
+          unsubscribe_token?: string;
+          user_id?: string | null;
+          source?: string | null;
+        };
+      };
     };
   };
 };

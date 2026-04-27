@@ -146,4 +146,7 @@ export const RATE_LIMITS = {
 
   // Enterprise lead form: 10 requests per minute per IP
   enterpriseLead: { limit: 10, windowSeconds: 60 },
+
+  // Outlook subscribe form: 5 requests per 5 minutes per IP
+  outlookSubscribe: { limit: 5, windowSeconds: 300 },
 } as const;
