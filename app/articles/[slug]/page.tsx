@@ -6,6 +6,7 @@ import { Clock, ArrowLeft, Calendar } from 'lucide-react';
 import { getArticleBySlug, getAllArticleSlugs, formatArticleDate } from '@/lib/wordpress/client';
 import { Article } from '@/lib/wordpress/types';
 import { ShareButtons } from './ShareButtons';
+import { RelatedArticles } from './RelatedArticles';
 import { MarketingIcon } from '@/components/marketing/Icons';
 import './article-styles.css';
 
@@ -27,18 +28,32 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const description = seo?.description || article.excerpt;
   const ogImage = seo?.ogImage || article.featuredImage?.url || '/og-image.png';
 
+  const articleUrl = `https://cortex.vip/articles/${slug}`;
+  const tagNames = article.tags.map((t) => t.name);
+  const fallbackKeywords =
+    seo?.keywords?.split(',').map((k) => k.trim()).filter(Boolean) || tagNames;
+
   return {
     title,
     description,
-    keywords: seo?.keywords?.split(',').map((k) => k.trim()) || [],
+    keywords: fallbackKeywords,
+    authors: article.author?.name
+      ? [{ name: article.author.name }]
+      : [{ name: 'Cortex Technologies' }],
+    category: article.categories[0]?.name,
     openGraph: {
       title: seo?.ogTitle || title,
       description: seo?.ogDescription || description,
       type: 'article',
-      url: `https://cortex.vip/articles/${slug}`,
+      url: articleUrl,
+      siteName: 'Cortex',
+      locale: 'en_US',
       images: [{ url: ogImage, width: 1200, height: 630, alt: article.title }],
       publishedTime: article.date,
       modifiedTime: article.modified,
+      authors: article.author?.name ? [article.author.name] : undefined,
+      tags: tagNames,
+      section: article.categories[0]?.name,
     },
     twitter: {
       card: 'summary_large_image',
@@ -46,7 +61,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description: seo?.ogDescription || description,
       images: [ogImage],
     },
-    alternates: { canonical: seo?.canonical || `https://cortex.vip/articles/${slug}` },
+    alternates: {
+      canonical: seo?.canonical || articleUrl,
+      types: {
+        'application/rss+xml': 'https://cortex.vip/articles/rss.xml',
+      },
+    },
   };
 }
 
@@ -79,7 +99,7 @@ export default async function ArticlePage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
 
-      <article style={{ position: 'relative' }}>
+      <article lang="en-US" style={{ position: 'relative' }}>
         {article.featuredImage && (
           <div
             style={{
@@ -192,10 +212,30 @@ export default async function ArticlePage({ params }: PageProps) {
                 fontFamily: 'var(--font-mono)',
               }}
             >
+              {article.author?.name && (
+                <>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                    By{' '}
+                    <span style={{ color: 'var(--text-secondary)' }}>{article.author.name}</span>
+                  </span>
+                  <span aria-hidden="true">·</span>
+                </>
+              )}
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                 <Calendar size={13} />
                 <time dateTime={article.date}>{formatArticleDate(article.date)}</time>
               </span>
+              {article.modified && article.modified !== article.date && (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                    Updated{' '}
+                    <time dateTime={article.modified}>
+                      {formatArticleDate(article.modified)}
+                    </time>
+                  </span>
+                </>
+              )}
               <span aria-hidden="true">·</span>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                 <Clock size={13} /> {article.readingTime} min read
@@ -349,8 +389,9 @@ export default async function ArticlePage({ params }: PageProps) {
                 TAGS
               </span>
               {article.tags.map((tag) => (
-                <span
+                <Link
                   key={tag.slug}
+                  href={`/articles?tag=${tag.slug}`}
                   style={{
                     fontSize: 12,
                     fontWeight: 500,
@@ -359,13 +400,19 @@ export default async function ArticlePage({ params }: PageProps) {
                     border: '1px solid var(--glass-border)',
                     padding: '4px 10px',
                     borderRadius: 9999,
+                    textDecoration: 'none',
                   }}
                 >
                   {tag.name}
-                </span>
+                </Link>
               ))}
             </div>
           )}
+
+          <RelatedArticles
+            currentSlug={article.slug}
+            categorySlug={article.categories[0]?.slug}
+          />
         </div>
 
         <div
@@ -423,16 +470,64 @@ export default async function ArticlePage({ params }: PageProps) {
   );
 }
 
+function articleBodyText(html: string): string {
+  // Plain-text body for both schema.org articleBody and AI consumption.
+  // Keeps line breaks but strips HTML tags and decodes a small set of entities.
+  return html
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<\/(p|div|li|h[1-6]|blockquote)>/gi, '\n')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/[ \t]+/g, ' ')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
 function generateArticleSchema(article: Article) {
+  const body = articleBodyText(article.content);
+  const wordCount = body ? body.split(/\s+/).filter(Boolean).length : 0;
+  const articleUrl = `https://cortex.vip/articles/${article.slug}`;
+
+  const author = article.author?.name
+    ? {
+        '@type': 'Person',
+        name: article.author.name,
+        url: `https://cortex.vip/articles?author=${article.author.slug}`,
+        ...(article.author.bio ? { description: article.author.bio } : {}),
+        ...(article.author.avatar ? { image: article.author.avatar } : {}),
+      }
+    : {
+        '@type': 'Organization',
+        '@id': 'https://cortex.vip/#organization',
+        name: 'Cortex Technologies',
+      };
+
   return {
     '@context': 'https://schema.org',
-    '@type': 'Article',
-    '@id': `https://cortex.vip/articles/${article.slug}#article`,
+    '@type': 'BlogPosting',
+    '@id': `${articleUrl}#article`,
+    url: articleUrl,
     headline: article.title,
+    name: article.title,
     description: article.excerpt,
-    image: article.featuredImage?.url || 'https://cortex.vip/og-image.png',
+    image: article.featuredImage?.url
+      ? {
+          '@type': 'ImageObject',
+          url: article.featuredImage.url,
+          width: article.featuredImage.width,
+          height: article.featuredImage.height,
+        }
+      : 'https://cortex.vip/og-image.png',
     datePublished: article.date,
     dateModified: article.modified,
+    author,
     publisher: {
       '@type': 'Organization',
       '@id': 'https://cortex.vip/#organization',
@@ -441,11 +536,17 @@ function generateArticleSchema(article: Article) {
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://cortex.vip/articles/${article.slug}`,
+      '@id': articleUrl,
     },
-    wordCount: article.content.replace(/<[^>]*>/g, '').split(/\s+/).length,
+    wordCount,
+    timeRequired: `PT${article.readingTime}M`,
     articleSection: article.categories[0]?.name || 'Finance',
     keywords: article.tags.map((t) => t.name).join(', '),
+    inLanguage: 'en-US',
+    isAccessibleForFree: true,
+    // articleBody helps LLMs and AI search index the full content even when
+    // they only fetch the structured-data block.
+    articleBody: body,
   };
 }
 

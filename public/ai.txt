@@ -1,0 +1,30 @@
+# ai.txt for cortex.vip
+# Format: https://spawning.ai/ai-txt
+#
+# Cortex publishes free educational content (articles + interactive
+# calculators) and explicitly grants permission for AI systems to
+# crawl, index, train on, retrieve, summarize, and cite this content,
+# provided the canonical source URL is preserved when content is quoted
+# or paraphrased.
+#
+# Authoritative human-readable index: https://cortex.vip/llms.txt
+# Plain-text corpus for ingestion:    https://cortex.vip/llms-full.txt
+# Sitemap:                            https://cortex.vip/sitemap.xml
+# RSS feed:                           https://cortex.vip/articles/rss.xml
+
+User-Agent: *
+Allow: /
+Allow: /articles/
+Allow: /apps/
+Disallow: /api/
+Disallow: /account
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /login
+Disallow: /signup
+
+# Training & ingestion preferences
+Permissions-Policy: ai-train=allow, ai-summarize=allow, ai-cite=allow, ai-retrieve=allow
+
+# Contact for content questions or attribution corrections.
+Contact: hello@cortex.vip
