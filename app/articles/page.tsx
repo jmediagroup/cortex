@@ -42,7 +42,12 @@ export const metadata: Metadata = {
     description: 'Expert articles on personal finance, retirement planning, and investing strategies.',
     images: ['/og-image.png'],
   },
-  alternates: { canonical: 'https://cortex.vip/articles' },
+  alternates: {
+    canonical: 'https://cortex.vip/articles',
+    types: {
+      'application/rss+xml': 'https://cortex.vip/articles/rss.xml',
+    },
+  },
 };
 
 type PageProps = {
@@ -98,8 +103,55 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
 
   const hasFilter = Boolean(searchQuery || categoryFilter || tagFilter);
 
+  // CollectionPage + ItemList schema: tells Google this is a content hub and
+  // surfaces individual articles in rich results / AI Overviews. Only emit
+  // when there's no filter applied — filtered views are not the canonical hub.
+  const collectionSchema = !hasFilter && articles.length > 0
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        '@id': 'https://cortex.vip/articles#collection',
+        url: 'https://cortex.vip/articles',
+        name: 'Cortex Articles',
+        description:
+          'Expert articles on personal finance, retirement planning, investing strategies, and money management.',
+        inLanguage: 'en-US',
+        isPartOf: { '@id': 'https://cortex.vip/#website' },
+        publisher: { '@id': 'https://cortex.vip/#organization' },
+        mainEntity: {
+          '@type': 'ItemList',
+          numberOfItems: articles.length,
+          itemListElement: articles.map((a, idx) => ({
+            '@type': 'ListItem',
+            position: idx + 1,
+            url: `https://cortex.vip/articles/${a.slug}`,
+            name: a.title,
+          })),
+        },
+      }
+    : null;
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cortex.vip' },
+      { '@type': 'ListItem', position: 2, name: 'Articles', item: 'https://cortex.vip/articles' },
+    ],
+  };
+
   return (
     <>
+      {collectionSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }}
+        />
+      )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <section
         className="hero-gradient"
         style={{ padding: '96px 24px 48px', textAlign: 'center' }}

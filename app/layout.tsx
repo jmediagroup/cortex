@@ -165,6 +165,14 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        {/* Auto-discovery for AI search engines and feed readers. */}
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="Cortex — Articles RSS"
+          href="https://cortex.vip/articles/rss.xml"
+        />
+        <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
       </head>
       <body
         className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}
