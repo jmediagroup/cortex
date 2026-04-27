@@ -35,6 +35,14 @@ Follow `Daily Investment Report/SKILL.md` end-to-end:
 3. **Synthesize** per the skill's principles: lead with what matters, signal vs noise, ideas as hypotheses (not calls), bear case for every idea, quantify where possible, separate long-term core from opportunistic.
 4. **Quality bar** — every number/quote attributed to a real source from today; every idea framed as research; every idea has a bear case; long-term and opportunistic clearly separated.
 
+### Source-corroboration rules (learned from prior runs)
+
+- **Headline market direction needs ≥2 independent sources.** The "S&P/Dow/Nasdaq closed up/down X%" line is the spine of the lead — if only one source supports it (or two summaries from the same outlet), run another search before drafting. If two reputable outlets still disagree on direction, lead with the *internals* (movers, breadth, vol, rates) instead of the index print, and explicitly call out the conflict in "Risks to the call."
+- **Index level + percent change must come from the same source.** Don't stitch a level from one outlet with a percent move from another — that's how you publish a fabricated close.
+- **Date-stamp every datapoint.** Before using a number, confirm it's from `TARGET_DATE` (or, for after-hours runs, the most recent prior trading-day close). Yields, VIX, and sector data are the most common offenders here — search summaries often mix in older readings.
+- **Sector leaders/laggards: today only, or skip.** If the freshest sector-performance data you can find is more than two trading days old, **drop the sector section entirely** rather than caveat it. A week-old leaders/laggards readout is noise, not signal — don't backfill the post with it. The dominant story can carry the lead without sector context.
+- **Single-stock moves: cross-check the percent.** Big intraday moves (≥10%) get reported with different intraday vs close numbers. Use the closing print, and confirm against a second source if the move is the post's anchor.
+
 Do **not** save the raw skill template output to `/mnt/user-data/outputs/`. The cortex post format is different.
 
 ## 2. Adapt to the Cortex `/thinking` daily post format
@@ -112,6 +120,9 @@ Run through this list. If any answer is no, fix before writing the file.
 - [ ] Lead is 1–3 paragraphs (it's the email-only preview).
 - [ ] At least one bear case is in the body (in "Risks to the call" or inline).
 - [ ] No fabricated prices, headlines, or analyst calls. If a search didn't surface it, it isn't in the post.
+- [ ] Headline market-direction line backed by ≥2 independent sources (or, if sources conflict, lead is built from internals + conflict is flagged in "Risks to the call").
+- [ ] Every datapoint is from `TARGET_DATE` (or the most recent prior close for after-hours runs). No stale readings smuggled in via search summaries.
+- [ ] If sector leaders/laggards data is older than two trading days, that section is omitted — not caveated.
 - [ ] Tickers/sectors are arrays of plain strings; tickers ALL-CAPS, sectors lowercase.
 - [ ] No long disclaimer block — editorial framing only.
 - [ ] Tone matches existing daily posts (variant-view, opinionated, concrete).
