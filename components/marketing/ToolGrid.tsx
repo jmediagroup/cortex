@@ -107,6 +107,13 @@ export const DEFAULT_TOOLS: MarketingTool[] = [
     href: '/apps/car-affordability',
     tag: 'PRO',
   },
+  {
+    icon: 'brain',
+    title: 'Financial Personality Quiz',
+    desc: 'Map your money instincts to one of six investor archetypes — from patient Accumulator to high-conviction Visionary.',
+    href: '/apps/personality-quiz',
+    tag: 'FREE',
+  },
 ];
 
 function ToolCard({ tool }: { tool: MarketingTool }) {
@@ -280,7 +287,7 @@ export function MarketingToolGrid({ tools = DEFAULT_TOOLS }: { tools?: Marketing
               lineHeight: 1.1,
             }}
           >
-            Thirteen tools.
+            Fourteen tools.
             <br />
             One mental model.
           </h2>
