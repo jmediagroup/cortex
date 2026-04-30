@@ -20,9 +20,16 @@ export default function DashboardHome({ userName, userTier = 'free', appOrder }:
   }, []);
 
   return (
-    <div style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 24px 48px' }}>
+    <div
+      style={{
+        maxWidth: 1200,
+        margin: '0 auto',
+        padding:
+          'clamp(20px, 4vw, 32px) clamp(16px, 4vw, 24px) clamp(32px, 6vw, 48px)',
+      }}
+    >
       {/* Greeting */}
-      <header style={{ marginBottom: 32 }}>
+      <header style={{ marginBottom: 28 }}>
         <div
           className="eyebrow"
           style={{ color: 'var(--text-tertiary)', marginBottom: 8 }}
@@ -31,11 +38,12 @@ export default function DashboardHome({ userName, userTier = 'free', appOrder }:
         </div>
         <h1
           style={{
-            fontSize: 28,
+            fontSize: 'clamp(24px, 6vw, 28px)',
             fontWeight: 700,
             color: 'var(--text-primary)',
             letterSpacing: '-0.02em',
             margin: 0,
+            lineHeight: 1.15,
           }}
         >
           {userName ? `Welcome back, ${userName}.` : 'Welcome back.'}

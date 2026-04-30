@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { cookies } from "next/headers";
 import Script from "next/script";
@@ -75,6 +75,27 @@ export const metadata: Metadata = {
     ],
   },
   manifest: '/manifest.webmanifest',
+  appleWebApp: {
+    capable: true,
+    title: 'Cortex',
+    statusBarStyle: 'black-translucent',
+  },
+  formatDetection: {
+    telephone: false,
+    email: false,
+    address: false,
+  },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: 'cover',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#F7F7F3' },
+    { media: '(prefers-color-scheme: dark)', color: '#0A0E14' },
+  ],
 };
 
 const jsonLd = {

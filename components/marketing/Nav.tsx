@@ -38,22 +38,28 @@ export function MarketingNav() {
         position: 'sticky',
         top: 0,
         zIndex: 50,
+        width: '100%',
         background: scrolled ? 'var(--bg-glass-strong)' : 'var(--bg-glass)',
         backdropFilter: 'blur(24px) saturate(180%)',
         WebkitBackdropFilter: 'blur(24px) saturate(180%)',
         borderBottom: `1px solid ${scrolled ? 'var(--border-default)' : 'var(--border-subtle)'}`,
         transition: 'background 200ms var(--ease-out-quart), border-color 200ms',
+        paddingTop: 'var(--safe-top)',
+        paddingLeft: 'var(--safe-left)',
+        paddingRight: 'var(--safe-right)',
+        boxSizing: 'border-box',
       }}
     >
       <div
         style={{
           maxWidth: 1280,
           margin: '0 auto',
-          padding: '16px 24px',
+          padding: '14px 20px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           position: 'relative',
+          gap: 12,
         }}
       >
         <Link
@@ -109,6 +115,7 @@ export function MarketingNav() {
           </Link>
           <Link
             href="/signup"
+            className="marketing-nav-cta"
             style={{
               background: 'var(--emerald-500)',
               color: 'var(--text-inverse)',
@@ -186,15 +193,88 @@ function MobilePanel({ onClose }: { onClose: () => void }) {
   return (
     <div
       className="marketing-nav-mobile-panel"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Site navigation"
       style={{
         position: 'fixed',
-        inset: '64px 0 0 0',
-        zIndex: 49,
-        background: 'var(--bg-canvas)',
-        borderTop: '1px solid var(--border-default)',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 70,
+        background: 'var(--bg-page)',
+        display: 'flex',
+        flexDirection: 'column',
+        overscrollBehavior: 'contain',
+        animation: 'fadeIn 180ms var(--ease-out-quart) both',
       }}
     >
-      <div style={{ maxWidth: 640, margin: '0 auto', padding: '24px 24px 48px' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '14px 20px',
+          paddingTop: `calc(14px + var(--safe-top))`,
+          paddingLeft: `calc(20px + var(--safe-left))`,
+          paddingRight: `calc(20px + var(--safe-right))`,
+          borderBottom: '1px solid var(--border-subtle)',
+        }}
+      >
+        <Link
+          href="/"
+          aria-label="Cortex home"
+          onClick={onClose}
+          style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}
+        >
+          <LogoMark />
+          <span
+            style={{
+              fontWeight: 700,
+              fontSize: 17,
+              letterSpacing: '-0.02em',
+              color: 'var(--text-primary)',
+            }}
+          >
+            Cortex
+          </span>
+        </Link>
+        <button
+          type="button"
+          aria-label="Close menu"
+          onClick={onClose}
+          className="tappable"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 40,
+            height: 40,
+            borderRadius: 9999,
+            background: 'var(--bg-glass)',
+            border: '1px solid var(--glass-border)',
+            color: 'var(--text-primary)',
+            cursor: 'pointer',
+          }}
+        >
+          <X size={18} />
+        </button>
+      </div>
+      <div
+        style={{
+          flex: 1,
+          overflowY: 'auto',
+          WebkitOverflowScrolling: 'touch',
+          maxWidth: 640,
+          width: '100%',
+          margin: '0 auto',
+          padding: '8px 24px 24px',
+          paddingLeft: `calc(24px + var(--safe-left))`,
+          paddingRight: `calc(24px + var(--safe-right))`,
+          paddingBottom: `calc(24px + var(--safe-bottom))`,
+        }}
+      >
         {NAV_LINKS.map((item) => (
           <Link
             key={item.href}

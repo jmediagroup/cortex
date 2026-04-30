@@ -37,7 +37,9 @@ export function AppShell({ children, user, userTier = 'free', onSignOut }: Props
         }}
       >
         <AppTopBar user={user} userTier={userTier} onSignOut={onSignOut} />
-        <main style={{ flex: 1, paddingBottom: 80 }}>{children}</main>
+        <main className="with-mobile-tab-bar" style={{ flex: 1 }}>
+          {children}
+        </main>
       </div>
       <AppMobileTabBar />
     </div>

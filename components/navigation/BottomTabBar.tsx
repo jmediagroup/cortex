@@ -32,8 +32,12 @@ export default function BottomTabBar() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 border-t border-[var(--border-primary)] bg-[var(--surface-primary)]/95 backdrop-blur-lg md:hidden"
-      style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+      className="fixed bottom-0 left-0 right-0 z-[60] border-t border-[var(--border-primary)] bg-[var(--surface-primary)]/95 backdrop-blur-lg md:hidden"
+      style={{
+        paddingBottom: 'var(--safe-bottom)',
+        paddingLeft: 'var(--safe-left)',
+        paddingRight: 'var(--safe-right)',
+      }}
     >
       <div className="flex items-center justify-around px-4 py-2">
         {tabs.map((tab) => {
@@ -43,7 +47,9 @@ export default function BottomTabBar() {
             <Link
               key={tab.href}
               href={tab.href}
-              className="flex flex-col items-center gap-1 px-6 py-1.5"
+              aria-label={tab.label}
+              aria-current={active ? 'page' : undefined}
+              className="tappable flex flex-1 flex-col items-center gap-1 px-2 py-2 min-h-[44px]"
             >
               <tab.icon
                 size={22}

@@ -42,10 +42,17 @@ export function ToolLayout({
   cta,
 }: Props) {
   return (
-    <div style={{ maxWidth: 1280, margin: '0 auto', padding: '24px 24px 64px' }}>
+    <div
+      style={{
+        maxWidth: 1280,
+        margin: '0 auto',
+        padding:
+          'clamp(16px, 3vw, 24px) clamp(16px, 4vw, 24px) clamp(40px, 6vw, 64px)',
+      }}
+    >
       {breadcrumb && <div style={{ marginBottom: 20 }}>{breadcrumb}</div>}
 
-      <header style={{ marginBottom: 32, maxWidth: 780 }}>
+      <header style={{ marginBottom: 28, maxWidth: 780 }}>
         <div
           className="eyebrow"
           style={{ color: 'var(--text-tertiary)', marginBottom: 12 }}
@@ -54,21 +61,21 @@ export function ToolLayout({
         </div>
         <h1
           style={{
-            fontSize: 'clamp(28px, 4vw, 40px)',
+            fontSize: 'clamp(24px, 6vw, 40px)',
             fontWeight: 700,
             color: 'var(--text-primary)',
             letterSpacing: '-0.025em',
-            lineHeight: 1.1,
-            margin: '0 0 12px',
+            lineHeight: 1.12,
+            margin: '0 0 10px',
           }}
         >
           {title}
         </h1>
         <p
           style={{
-            fontSize: 16,
+            fontSize: 'clamp(15px, 2.4vw, 16px)',
             color: 'var(--text-secondary)',
-            lineHeight: 1.6,
+            lineHeight: 1.55,
             margin: 0,
           }}
         >
