@@ -34,7 +34,15 @@ export default function DashboardShell({
       />
 
       {/* Mobile header - hidden on desktop */}
-      <header className="flex items-center justify-between border-b border-[var(--border-primary)] bg-[var(--surface-primary)] px-4 py-3 md:hidden">
+      <header
+        className="sticky top-0 z-40 flex items-center justify-between border-b border-[var(--border-primary)] bg-[var(--surface-primary)]/95 backdrop-blur-lg md:hidden"
+        style={{
+          paddingTop: 'calc(0.75rem + var(--safe-top))',
+          paddingBottom: '0.75rem',
+          paddingLeft: 'calc(1rem + var(--safe-left))',
+          paddingRight: 'calc(1rem + var(--safe-right))',
+        }}
+      >
         <div className="flex items-center gap-2">
           <div className="bg-[var(--color-accent)] p-1.5 rounded-lg text-white">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -66,7 +74,7 @@ export default function DashboardShell({
       </header>
 
       {/* Main content area */}
-      <main className="pb-20 md:pb-0">
+      <main className="with-mobile-tab-bar">
         {children}
       </main>
 

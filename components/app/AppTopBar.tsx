@@ -48,15 +48,19 @@ export function AppTopBar({ user, userTier = 'free', onSignOut }: Props) {
 
   return (
     <header
+      className="app-top-bar"
       style={{
         position: 'sticky',
         top: 0,
-        zIndex: 40,
+        zIndex: 50,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        gap: 16,
-        padding: '12px 24px',
+        gap: 12,
+        paddingTop: `calc(12px + var(--safe-top))`,
+        paddingBottom: 12,
+        paddingLeft: `calc(16px + var(--safe-left))`,
+        paddingRight: `calc(16px + var(--safe-right))`,
         background: 'var(--bg-glass-strong)',
         backdropFilter: 'blur(20px) saturate(180%)',
         WebkitBackdropFilter: 'blur(20px) saturate(180%)',
@@ -96,6 +100,7 @@ export function AppTopBar({ user, userTier = 'free', onSignOut }: Props) {
             <Link
               href="/account"
               aria-label="Settings"
+              className="app-top-bar-settings"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -160,6 +165,7 @@ export function AppTopBar({ user, userTier = 'free', onSignOut }: Props) {
                   {displayName}
                 </span>
                 <span
+                  className="app-top-bar-user-tier"
                   style={{
                     fontSize: 10,
                     fontWeight: 700,

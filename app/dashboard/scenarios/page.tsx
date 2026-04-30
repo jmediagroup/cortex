@@ -99,7 +99,14 @@ export default function ScenariosPage() {
   }, {});
 
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto', padding: '32px 24px 96px' }}>
+    <div
+      style={{
+        maxWidth: 900,
+        margin: '0 auto',
+        padding:
+          'clamp(20px, 4vw, 32px) clamp(16px, 4vw, 24px) clamp(48px, 8vw, 96px)',
+      }}
+    >
       <Link
         href="/dashboard"
         style={{

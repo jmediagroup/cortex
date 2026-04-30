@@ -17,10 +17,13 @@ type Props = {
 export function AuthShell({ children, footer }: Props) {
   return (
     <div
-      className="hero-gradient grid-bg"
+      className="hero-gradient grid-bg auth-shell"
       style={{
-        minHeight: '100vh',
-        padding: '48px 16px',
+        minHeight: '100dvh',
+        paddingTop: `calc(48px + var(--safe-top))`,
+        paddingBottom: `calc(48px + var(--safe-bottom))`,
+        paddingLeft: `calc(20px + var(--safe-left))`,
+        paddingRight: `calc(20px + var(--safe-right))`,
         background: 'var(--bg-canvas)',
         display: 'flex',
         flexDirection: 'column',
@@ -33,8 +36,8 @@ export function AuthShell({ children, footer }: Props) {
       <div
         style={{
           position: 'absolute',
-          top: 20,
-          right: 20,
+          top: `calc(20px + var(--safe-top))`,
+          right: `calc(20px + var(--safe-right))`,
           zIndex: 10,
         }}
       >
@@ -69,12 +72,14 @@ export function AuthShell({ children, footer }: Props) {
           width: '100%',
           maxWidth: 460,
           position: 'relative',
-          background: 'var(--bg-glass-strong)',
+          isolation: 'isolate',
+          zIndex: 1,
+          background: 'var(--bg-card)',
           backdropFilter: 'var(--glass-blur)',
           WebkitBackdropFilter: 'var(--glass-blur)',
           border: '1px solid var(--glass-border-strong)',
           borderRadius: 'var(--radius-2xl)',
-          padding: 32,
+          padding: 28,
           boxShadow: 'var(--shadow-elevated), var(--shadow-inset-top)',
         }}
       >
