@@ -32,6 +32,7 @@ export function MarketingNav() {
   }, [mobileOpen]);
 
   return (
+    <>
     <nav
       aria-label="Primary"
       style={{
@@ -154,9 +155,9 @@ export function MarketingNav() {
           </button>
         </div>
       </div>
-
-      {mobileOpen && <MobilePanel onClose={() => setMobileOpen(false)} />}
     </nav>
+    {mobileOpen && <MobilePanel onClose={() => setMobileOpen(false)} />}
+    </>
   );
 }
 
