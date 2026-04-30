@@ -18,8 +18,7 @@ import {
   type ArchetypeId,
   type ScoreMap,
 } from '@/lib/personality-quiz-data';
-
-const SHARE_URL = 'https://cortex.vip/apps/personality-quiz';
+import { ShareBar } from './personality-quiz/ShareBar';
 
 type Stage = 'intro' | 'quiz' | 'result';
 
@@ -267,7 +266,6 @@ function ResultPanel({
   const secondaryArchetype = ARCHETYPES[secondary];
   const maxScore = useMemo(() => maxPossibleScore(), []);
   const [typed, setTyped] = useState('');
-  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     let i = 0;
@@ -279,20 +277,6 @@ function ResultPanel({
     }, 55);
     return () => window.clearInterval(interval);
   }, [archetype.name]);
-
-  const shareText = `I got ${archetype.name} on the Cortex Financial Personality Quiz. "${archetype.tagline}" → ${SHARE_URL}`;
-
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(shareText);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 2200);
-    } catch {
-      /* clipboard blocked — silently no-op */
-    }
-  };
-
-  const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
 
   return (
     <section className="pq-card pq-card--result pq-fade-in" aria-live="polite">
@@ -387,22 +371,7 @@ function ResultPanel({
         </div>
       </div>
 
-      <div className="pq-share">
-        <button type="button" className="pq-btn pq-btn--primary" onClick={handleCopy}>
-          {copied ? '✓ Copied' : 'Copy result'}
-        </button>
-        <a
-          className="pq-btn pq-btn--ghost"
-          href={tweetUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Share on X
-        </a>
-        <button type="button" className="pq-link" onClick={onRetake}>
-          Retake quiz
-        </button>
-      </div>
+      <ShareBar primary={primary} secondary={secondary} onRetake={onRetake} />
     </section>
   );
 }
@@ -791,15 +760,6 @@ const quizCss = `
     border-color: var(--emerald-500);
   }
 
-  .pq-share {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 12px;
-    padding-top: 20px;
-    border-top: 1px solid var(--border-subtle);
-  }
-
   /* keyframes */
   @keyframes pq-fade-up {
     from { opacity: 0; transform: translateY(12px); }
@@ -833,8 +793,6 @@ const quizCss = `
   @media (max-width: 540px) {
     .pq-grid { grid-template-columns: 1fr; }
     .pq-option { font-size: 14px; padding: 14px 16px; }
-    .pq-share { flex-direction: column; align-items: stretch; }
-    .pq-share .pq-btn { justify-content: center; }
   }
 
   @media (prefers-reduced-motion: reduce) {
