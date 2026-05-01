@@ -143,6 +143,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly',
       priority: 0.8,
     },
+    // Financial Personality Quiz
+    {
+      url: `${baseUrl}/apps/personality-quiz`,
+      lastModified: lastUpdated,
+      changeFrequency: 'monthly',
+      priority: 0.9,
+    },
+    ...['accumulator', 'optimizer', 'fortress', 'tactician', 'visionary', 'steward'].map(
+      (id) => ({
+        url: `${baseUrl}/apps/personality-quiz/r/${id}`,
+        lastModified: lastUpdated,
+        changeFrequency: 'monthly' as const,
+        priority: 0.6,
+      }),
+    ),
   ];
 
   return [...staticRoutes, ...articlesListingEntry, ...articleEntries, ...outlookEntries];
