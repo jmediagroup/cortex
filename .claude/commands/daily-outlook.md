@@ -5,7 +5,7 @@ argument-hint: "[YYYY-MM-DD]   (optional — defaults to today in ET)"
 
 # /daily-outlook — publish today's daily outlook
 
-End-to-end runbook: research the tape with the `daily-investment-report` skill, rewrite the output into a Cortex `/thinking` daily post, commit, push, open a PR.
+End-to-end runbook: research the tape with the `daily-investment-report` skill, rewrite the output into a Cortex `/thinking` daily post, commit directly to main, and push.
 
 `$ARGUMENTS` may be a single ISO date (`YYYY-MM-DD`). If omitted, use today's date in the **America/New_York** timezone (markets are ET).
 
@@ -22,9 +22,7 @@ End-to-end runbook: research the tape with the `daily-investment-report` skill, 
    ls content/outlook/daily/${TARGET_DATE}-*.md 2>/dev/null
    ```
    If one exists, **stop and ask the user**: replace it, publish under a different slug for the same date, or abort. Do not silently overwrite.
-4. Branch:
-   - If on `main`, create `claude/daily-outlook-${TARGET_DATE}` and switch to it.
-   - If already on a feature branch (e.g. `claude/...`), stay there and commit on top.
+4. Branch: Stay on `main`. Do NOT create a branch. Daily outlook posts commit directly to main.
 
 ## 1. Run the daily-investment-report skill
 
@@ -201,26 +199,25 @@ Then verify it parses by checking the file is non-empty and the frontmatter deli
 ```bash
 git add content/outlook/daily/${TARGET_DATE}-${slug}.md
 git commit -m "feat(outlook): daily outlook for ${TARGET_DATE} — <short headline>"
-git push -u origin <current-branch>
+git push origin main
 ```
 
 If push fails on transient network errors, retry up to 4 times with exponential backoff (2s, 4s, 8s, 16s).
 
-## 6. PR
+Do NOT create a branch. Do NOT open a PR. Daily outlook posts go directly to main.
 
-- If the current branch already has an open PR, just push — Vercel will rebuild and the post will go live at `/thinking/${TARGET_DATE}-${slug}` after merge.
-- If not, open one as ready-for-review (not draft):
-  - Title: `feat(outlook): daily outlook for ${TARGET_DATE}`
-  - Body: summary of the dominant story + the variant view, plus a checklist of what was verified (sources cited, bear case present, tickers match body).
+## 6. Post is live
+
+The post goes live at `/thinking/${TARGET_DATE}-${slug}` immediately after the push. Vercel will pick up the commit and rebuild automatically. No merge step required.
 
 ## 7. Report back
 
-After the PR is open / push complete, give the user a one-paragraph summary in chat:
+After the push completes, give the user a one-paragraph summary in chat:
 - The dominant story
 - The single most important takeaway
-- The PR / commit URL
+- The commit URL (or just confirm "pushed to main")
 
-Don't restate the post — they have the file and the PR.
+Don't restate the post — they have the file.
 
 ---
 
