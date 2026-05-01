@@ -1,0 +1,46 @@
+name: Daily Investment Outlook
+
+on:
+  schedule:
+    # 5:30 PM ET on market weekdays.
+    # 21:30 UTC covers EDT (UTC-4). During EST (UTC-5) this fires at 4:30 PM ET — still fine,
+    # market data is available within minutes of the 4 PM close.
+    - cron: '30 21 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Target date YYYY-MM-DD (leave blank for today in ET)'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git identity
+        run: |
+          git config user.name "cortex-bot"
+          git config user.email "bot@users.noreply.github.com"
+
+      - name: Generate and publish daily outlook
+        uses: anthropics/claude-code-action@v1
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        with:
+          prompt: |
+            /daily-outlook ${{ inputs.date || '' }}
+
+            You are running in GitHub Actions. Commit the finished post directly to main —
+            do NOT create a branch or open a PR.
+          claude_args: "--allowedTools WebSearch,WebFetch,Bash,Read,Write,Edit --max-turns 50"
