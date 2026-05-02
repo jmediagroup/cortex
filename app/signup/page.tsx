@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense, useEffect, useMemo, useState } from 'react';
-import { ArrowRight, Check, Loader2, Lock, Mail } from 'lucide-react';
+import { ArrowRight, Check, Loader2, Lock, Mail, User as UserIcon } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createBrowserClient } from '@/lib/supabase/client';
@@ -16,6 +16,7 @@ import {
 } from '@/components/auth/AuthShell';
 
 function SignupForm() {
+  const [firstName, setFirstName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -33,8 +34,8 @@ function SignupForm() {
   const billing = searchParams.get('billing');
   const hasProIntent = plan === 'finance_pro' || plan === 'pro';
 
-  const dashboardRedirect = useMemo(() => {
-    if (!hasProIntent) return '/dashboard';
+  const postVerifyRedirect = useMemo(() => {
+    if (!hasProIntent) return '/onboarding';
     const params = new URLSearchParams({ plan: 'finance_pro' });
     if (billing === 'annual' || billing === 'monthly') params.set('billing', billing);
     return `/dashboard?${params.toString()}`;
@@ -42,17 +43,17 @@ function SignupForm() {
 
   const signInHref = useMemo(() => {
     if (!hasProIntent) return '/login';
-    return `/login?redirect=${encodeURIComponent(dashboardRedirect)}`;
-  }, [hasProIntent, dashboardRedirect]);
+    return `/login?redirect=${encodeURIComponent(postVerifyRedirect)}`;
+  }, [hasProIntent, postVerifyRedirect]);
 
   useEffect(() => {
     (async () => {
       const {
         data: { session },
       } = await supabase.auth.getSession();
-      if (session) router.push(dashboardRedirect);
+      if (session) router.push(postVerifyRedirect);
     })();
-  }, [router, supabase, dashboardRedirect]);
+  }, [router, supabase, postVerifyRedirect]);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,11 +61,13 @@ function SignupForm() {
     setError(null);
 
     try {
+      const trimmedFirstName = firstName.trim();
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}${dashboardRedirect}`,
+          emailRedirectTo: `${window.location.origin}${postVerifyRedirect}`,
+          data: trimmedFirstName ? { first_name: trimmedFirstName } : undefined,
         },
       });
       if (signUpError) throw signUpError;
@@ -73,7 +76,11 @@ function SignupForm() {
           await fetch('/api/create-user-record', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId: data.user.id, email: data.user.email || '' }),
+            body: JSON.stringify({
+              userId: data.user.id,
+              email: data.user.email || '',
+              firstName: trimmedFirstName || undefined,
+            }),
           });
         } catch (insertErr) {
           console.error('Error creating user record:', insertErr);
@@ -126,6 +133,7 @@ function SignupForm() {
   const handleStartOver = () => {
     setSignupComplete(false);
     setUserEmail('');
+    setFirstName('');
     setEmail('');
     setPassword('');
     setError(null);
@@ -282,6 +290,19 @@ function SignupForm() {
         </div>
 
         {error && <div style={authErrorStyle}>{error}</div>}
+
+        <AuthField label="First name" icon={<UserIcon size={16} />}>
+          <input
+            type="text"
+            required
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            placeholder="Alex"
+            style={authInputStyle}
+            autoComplete="given-name"
+            maxLength={60}
+          />
+        </AuthField>
 
         <AuthField label="Email address" icon={<Mail size={16} />}>
           <input

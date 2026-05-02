@@ -1,12 +1,12 @@
 'use client';
 
 import { Suspense, useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowRight, Loader2, ShieldCheck, Sparkles, X } from 'lucide-react';
 import { createBrowserClient, type OnboardingAnswers } from '@/lib/supabase/client';
 import { type Tier } from '@/lib/access-control';
 import { trackEvent } from '@/lib/analytics';
-import { OnboardingQuiz } from '@/components/dashboard';
 import DashboardHome from '@/components/dashboard/DashboardHome';
 import { SkeletonDashboard } from '@/components/ui/Skeleton';
 import { getRecommendedAppOrder } from '@/lib/onboarding-recommendations';
@@ -35,7 +35,8 @@ function DashboardInner() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<{ id: string; email: string | null; name: string } | null>(null);
   const [userTier, setUserTier] = useState<Tier>('free');
-  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [needsOnboarding, setNeedsOnboarding] = useState(false);
+  const [onboardingDismissed, setOnboardingDismissed] = useState(false);
   const [appOrder, setAppOrder] = useState<string[] | null>(null);
   const [showProWelcome, setShowProWelcome] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
@@ -71,18 +72,14 @@ function DashboardInner() {
       if (userData?.tier) setUserTier(userData.tier);
 
       const isProSuccess = successParam === 'true';
-      const hasPendingCheckout = pendingProCheckout && tier === 'free';
 
       if (isProSuccess) {
         setShowProWelcome(true);
         trackEvent('subscription_success_view');
       }
 
-      // Suppress onboarding modal during the post-purchase celebration or
-      // when the user is mid-checkout — we don't want a quiz to interrupt.
-      if (userData && !userData.has_completed_onboarding && !isProSuccess && !hasPendingCheckout) {
-        setShowOnboarding(true);
-        trackEvent('onboarding_started');
+      if (userData && !userData.has_completed_onboarding) {
+        setNeedsOnboarding(true);
       }
       if (userData?.onboarding_answers) {
         setAppOrder(getRecommendedAppOrder(userData.onboarding_answers));
@@ -143,16 +140,17 @@ function DashboardInner() {
     router.replace('/dashboard');
   };
 
-  const handleOnboardingComplete = (answers: OnboardingAnswers) => {
-    setShowOnboarding(false);
-    setAppOrder(getRecommendedAppOrder(answers));
-  };
-  const handleOnboardingSkip = () => setShowOnboarding(false);
-
   const showCheckoutCard = useMemo(
     () => !loading && pendingProCheckout && userTier === 'free',
     [loading, pendingProCheckout, userTier],
   );
+
+  const showPersonalizeBanner =
+    !loading &&
+    needsOnboarding &&
+    !onboardingDismissed &&
+    !showCheckoutCard &&
+    !showProWelcome;
 
   if (loading || !user) {
     return (
@@ -174,12 +172,8 @@ function DashboardInner() {
           onDismiss={handleDismissCheckout}
         />
       )}
-      {showOnboarding && (
-        <OnboardingQuiz
-          userId={user.id}
-          onComplete={handleOnboardingComplete}
-          onSkip={handleOnboardingSkip}
-        />
+      {showPersonalizeBanner && (
+        <PersonalizeBanner onDismiss={() => setOnboardingDismissed(true)} />
       )}
       <DashboardHome
         userName={user.name}
@@ -187,6 +181,69 @@ function DashboardInner() {
         appOrder={appOrder}
       />
     </>
+  );
+}
+
+function PersonalizeBanner({ onDismiss }: { onDismiss: () => void }) {
+  return (
+    <div
+      role="status"
+      style={{
+        margin: '16px 24px 0',
+        padding: '14px 16px',
+        borderRadius: 12,
+        background: 'var(--bg-glass)',
+        backdropFilter: 'var(--glass-blur)',
+        WebkitBackdropFilter: 'var(--glass-blur)',
+        border: '1px solid var(--glass-border)',
+        color: 'var(--text-primary)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12,
+      }}
+    >
+      <Sparkles size={18} style={{ color: 'var(--emerald-500)', flexShrink: 0 }} />
+      <div style={{ flex: 1, fontSize: 14, lineHeight: 1.4 }}>
+        <strong>Personalize your dashboard.</strong>{' '}
+        <span style={{ color: 'var(--text-secondary)' }}>
+          Answer five quick questions to surface the tools that fit you best.
+        </span>
+      </div>
+      <Link
+        href="/onboarding"
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 6,
+          background: 'var(--emerald-500)',
+          color: 'var(--text-inverse)',
+          padding: '8px 14px',
+          borderRadius: 10,
+          fontWeight: 600,
+          fontSize: 13,
+          textDecoration: 'none',
+          flexShrink: 0,
+        }}
+      >
+        Start <ArrowRight size={14} />
+      </Link>
+      <button
+        type="button"
+        onClick={onDismiss}
+        aria-label="Dismiss"
+        style={{
+          background: 'transparent',
+          border: 0,
+          color: 'var(--text-tertiary)',
+          cursor: 'pointer',
+          padding: 4,
+          display: 'flex',
+          flexShrink: 0,
+        }}
+      >
+        <X size={16} />
+      </button>
+    </div>
   );
 }
 

@@ -12,7 +12,7 @@ type UserInsert = Database['public']['Tables']['users']['Insert'];
  */
 export async function POST(request: NextRequest) {
   try {
-    const { userId, email } = await request.json();
+    const { userId, email, firstName } = await request.json();
 
     if (!userId || !email) {
       return NextResponse.json(
@@ -23,25 +23,38 @@ export async function POST(request: NextRequest) {
 
     const supabase = createServiceClient();
 
+    const trimmedFirstName =
+      typeof firstName === 'string' ? firstName.trim().slice(0, 60) : '';
     const record: UserInsert = {
       id: userId,
       email: email,
       tier: 'free',
+      ...(trimmedFirstName ? { first_name: trimmedFirstName } : {}),
     };
 
-    // Upsert to handle both cases:
-    // 1. Trigger already created the record (ON CONFLICT DO NOTHING)
-    // 2. Trigger didn't fire or failed (INSERT succeeds)
-    const { error } = await supabase
+    // Insert the row if the auth trigger didn't fire. If the row already
+    // exists, fall through and patch in the optional first_name so it isn't
+    // dropped just because the trigger ran first.
+    const { error: insertError } = await supabase
       .from('users')
       .upsert(record as any, { onConflict: 'id', ignoreDuplicates: true });
 
-    if (error) {
-      console.error('[Create User Record] Database error:', error);
+    if (insertError) {
+      console.error('[Create User Record] Database error:', insertError);
       return NextResponse.json(
         { error: 'Failed to create user record' },
         { status: 500 }
       );
+    }
+
+    if (trimmedFirstName) {
+      const { error: updateError } = await (supabase
+        .from('users')
+        .update as any)({ first_name: trimmedFirstName })
+        .eq('id', userId);
+      if (updateError) {
+        console.error('[Create User Record] Failed to set first_name:', updateError);
+      }
     }
 
     return NextResponse.json({ success: true });

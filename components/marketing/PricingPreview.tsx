@@ -41,7 +41,7 @@ const TIERS: Tier[] = [
       'Strategy modeling with live data',
     ],
     cta: 'Get Pro',
-    href: '/pricing',
+    href: '/signup?plan=finance_pro&billing=monthly',
     featured: true,
   },
 ];
