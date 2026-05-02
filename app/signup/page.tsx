@@ -1,8 +1,8 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { ArrowRight, Check, Loader2, Lock, Mail } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createBrowserClient } from '@/lib/supabase/client';
 import {
@@ -26,16 +26,33 @@ function SignupForm() {
   const [resendLoading, setResendLoading] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = createBrowserClient();
+
+  const plan = searchParams.get('plan');
+  const billing = searchParams.get('billing');
+  const hasProIntent = plan === 'finance_pro' || plan === 'pro';
+
+  const dashboardRedirect = useMemo(() => {
+    if (!hasProIntent) return '/dashboard';
+    const params = new URLSearchParams({ plan: 'finance_pro' });
+    if (billing === 'annual' || billing === 'monthly') params.set('billing', billing);
+    return `/dashboard?${params.toString()}`;
+  }, [hasProIntent, billing]);
+
+  const signInHref = useMemo(() => {
+    if (!hasProIntent) return '/login';
+    return `/login?redirect=${encodeURIComponent(dashboardRedirect)}`;
+  }, [hasProIntent, dashboardRedirect]);
 
   useEffect(() => {
     (async () => {
       const {
         data: { session },
       } = await supabase.auth.getSession();
-      if (session) router.push('/dashboard');
+      if (session) router.push(dashboardRedirect);
     })();
-  }, [router, supabase]);
+  }, [router, supabase, dashboardRedirect]);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +63,9 @@ function SignupForm() {
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: `${window.location.origin}/dashboard` },
+        options: {
+          emailRedirectTo: `${window.location.origin}${dashboardRedirect}`,
+        },
       });
       if (signUpError) throw signUpError;
       if (data.user) {
@@ -169,6 +188,15 @@ function SignupForm() {
             </span>
             .
           </p>
+          {hasProIntent ? (
+            <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: '0 0 12px' }}>
+              Once verified, we&apos;ll take you straight to checkout for{' '}
+              <strong style={{ color: 'var(--text-primary)' }}>
+                Finance Pro · {billing === 'annual' ? 'Annual' : 'Monthly'}
+              </strong>
+              .
+            </p>
+          ) : null}
           <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '0 0 20px' }}>
             The link expires in 24 hours.
           </p>
@@ -244,10 +272,12 @@ function SignupForm() {
               margin: '0 0 8px',
             }}
           >
-            Create your Cortex account.
+            {hasProIntent ? 'Create your account to continue.' : 'Create your Cortex account.'}
           </h1>
           <p style={{ fontSize: 14, color: 'var(--text-tertiary)', margin: 0 }}>
-            Free forever. No credit card required.
+            {hasProIntent
+              ? `Verify your email, then checkout for Finance Pro · ${billing === 'annual' ? 'Annual' : 'Monthly'}.`
+              : 'Free forever. No credit card required.'}
           </p>
         </div>
 
@@ -323,7 +353,7 @@ function SignupForm() {
         >
           Already have an account?{' '}
           <Link
-            href="/login"
+            href={signInHref}
             style={{ color: 'var(--emerald-500)', fontWeight: 600, textDecoration: 'none' }}
           >
             Sign in

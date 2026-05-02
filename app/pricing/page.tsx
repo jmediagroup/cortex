@@ -104,11 +104,12 @@ export default function PricingPage() {
 
   const handleUpgrade = async (priceId: string | null, tier: string) => {
     if (!priceId) {
-      router.push(user ? '/dashboard' : '/login');
+      router.push(user ? '/dashboard' : '/signup');
       return;
     }
     if (!user) {
-      router.push('/login?redirect=/pricing');
+      const params = new URLSearchParams({ plan: tier, billing: billingPeriod });
+      router.push(`/signup?${params.toString()}`);
       return;
     }
 
