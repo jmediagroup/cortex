@@ -1,8 +1,8 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
-import { ArrowRight, Check, Loader2, Lock, Mail } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useEffect, useMemo, useState } from 'react';
+import { ArrowRight, Check, Loader2, Lock, Mail, User as UserIcon } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createBrowserClient } from '@/lib/supabase/client';
 import {
@@ -16,6 +16,7 @@ import {
 } from '@/components/auth/AuthShell';
 
 function SignupForm() {
+  const [firstName, setFirstName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,16 +27,33 @@ function SignupForm() {
   const [resendLoading, setResendLoading] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = createBrowserClient();
+
+  const plan = searchParams.get('plan');
+  const billing = searchParams.get('billing');
+  const hasProIntent = plan === 'finance_pro' || plan === 'pro';
+
+  const postVerifyRedirect = useMemo(() => {
+    if (!hasProIntent) return '/onboarding';
+    const params = new URLSearchParams({ plan: 'finance_pro' });
+    if (billing === 'annual' || billing === 'monthly') params.set('billing', billing);
+    return `/dashboard?${params.toString()}`;
+  }, [hasProIntent, billing]);
+
+  const signInHref = useMemo(() => {
+    if (!hasProIntent) return '/login';
+    return `/login?redirect=${encodeURIComponent(postVerifyRedirect)}`;
+  }, [hasProIntent, postVerifyRedirect]);
 
   useEffect(() => {
     (async () => {
       const {
         data: { session },
       } = await supabase.auth.getSession();
-      if (session) router.push('/dashboard');
+      if (session) router.push(postVerifyRedirect);
     })();
-  }, [router, supabase]);
+  }, [router, supabase, postVerifyRedirect]);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,10 +61,14 @@ function SignupForm() {
     setError(null);
 
     try {
+      const trimmedFirstName = firstName.trim();
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: `${window.location.origin}/dashboard` },
+        options: {
+          emailRedirectTo: `${window.location.origin}${postVerifyRedirect}`,
+          data: trimmedFirstName ? { first_name: trimmedFirstName } : undefined,
+        },
       });
       if (signUpError) throw signUpError;
       if (data.user) {
@@ -54,7 +76,11 @@ function SignupForm() {
           await fetch('/api/create-user-record', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId: data.user.id, email: data.user.email || '' }),
+            body: JSON.stringify({
+              userId: data.user.id,
+              email: data.user.email || '',
+              firstName: trimmedFirstName || undefined,
+            }),
           });
         } catch (insertErr) {
           console.error('Error creating user record:', insertErr);
@@ -107,6 +133,7 @@ function SignupForm() {
   const handleStartOver = () => {
     setSignupComplete(false);
     setUserEmail('');
+    setFirstName('');
     setEmail('');
     setPassword('');
     setError(null);
@@ -169,6 +196,15 @@ function SignupForm() {
             </span>
             .
           </p>
+          {hasProIntent ? (
+            <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: '0 0 12px' }}>
+              Once verified, we&apos;ll take you straight to checkout for{' '}
+              <strong style={{ color: 'var(--text-primary)' }}>
+                Finance Pro · {billing === 'annual' ? 'Annual' : 'Monthly'}
+              </strong>
+              .
+            </p>
+          ) : null}
           <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '0 0 20px' }}>
             The link expires in 24 hours.
           </p>
@@ -244,14 +280,29 @@ function SignupForm() {
               margin: '0 0 8px',
             }}
           >
-            Create your Cortex account.
+            {hasProIntent ? 'Create your account to continue.' : 'Create your Cortex account.'}
           </h1>
           <p style={{ fontSize: 14, color: 'var(--text-tertiary)', margin: 0 }}>
-            Free forever. No credit card required.
+            {hasProIntent
+              ? `Verify your email, then checkout for Finance Pro · ${billing === 'annual' ? 'Annual' : 'Monthly'}.`
+              : 'Free forever. No credit card required.'}
           </p>
         </div>
 
         {error && <div style={authErrorStyle}>{error}</div>}
+
+        <AuthField label="First name" icon={<UserIcon size={16} />}>
+          <input
+            type="text"
+            required
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            placeholder="Alex"
+            style={authInputStyle}
+            autoComplete="given-name"
+            maxLength={60}
+          />
+        </AuthField>
 
         <AuthField label="Email address" icon={<Mail size={16} />}>
           <input
@@ -323,7 +374,7 @@ function SignupForm() {
         >
           Already have an account?{' '}
           <Link
-            href="/login"
+            href={signInHref}
             style={{ color: 'var(--emerald-500)', fontWeight: 600, textDecoration: 'none' }}
           >
             Sign in

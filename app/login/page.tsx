@@ -1,7 +1,8 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, ArrowRight, Loader2, Lock, Mail } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { trackEvent } from '@/lib/analytics';
@@ -16,7 +17,6 @@ import {
 import { MarketingIcon } from '@/components/marketing/Icons';
 
 function AuthForm() {
-  const [isLogin, setIsLogin] = useState(true);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const [email, setEmail] = useState('');
@@ -26,6 +26,30 @@ function AuthForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createBrowserClient();
+
+  const signupHref = useMemo(() => {
+    const redirect = searchParams.get('redirect');
+    const plan = searchParams.get('plan');
+    const billing = searchParams.get('billing');
+    const params = new URLSearchParams();
+    if (plan) params.set('plan', plan);
+    if (billing) params.set('billing', billing);
+    // If a redirect was provided, surface plan/billing it carries to signup
+    // so the post-signup checkout flow stays intact.
+    if (!plan && redirect && redirect.startsWith('/dashboard')) {
+      try {
+        const url = new URL(redirect, 'http://x');
+        const p = url.searchParams.get('plan');
+        const b = url.searchParams.get('billing');
+        if (p) params.set('plan', p);
+        if (b) params.set('billing', b);
+      } catch {
+        // ignore malformed redirect
+      }
+    }
+    const qs = params.toString();
+    return qs ? `/signup?${qs}` : '/signup';
+  }, [searchParams]);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -46,38 +70,12 @@ function AuthForm() {
     setError(null);
 
     try {
-      if (isLogin) {
-        const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
-        if (signInError) throw signInError;
-        if (data.session) {
-          await trackEvent('user_login', {}, true);
-          const redirect = searchParams.get('redirect') || '/dashboard';
-          router.push(redirect);
-        }
-      } else {
-        const { data, error: signUpError } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { emailRedirectTo: `${window.location.origin}/dashboard` },
-        });
-        if (signUpError) throw signUpError;
-        if (data.user) {
-          try {
-            await fetch('/api/create-user-record', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ userId: data.user.id, email: data.user.email || '' }),
-            });
-          } catch (insertErr) {
-            console.error('Error creating user record:', insertErr);
-          }
-          await trackEvent('user_signup', { tier: 'free' }, true);
-          setError(null);
-          setLoading(false);
-          alert('Account created. Check your email to confirm.');
-          setIsLogin(true);
-          setPassword('');
-        }
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+      if (signInError) throw signInError;
+      if (data.session) {
+        await trackEvent('user_login', {}, true);
+        const redirect = searchParams.get('redirect') || '/dashboard';
+        router.push(redirect);
       }
     } catch (err: unknown) {
       const e = err as { message?: string; code?: string };
@@ -89,7 +87,7 @@ function AuthForm() {
         {
           error_message: e.message ?? 'unknown',
           error_code: e.code || 'unknown',
-          context: isLogin ? 'login' : 'signup',
+          context: 'login',
         },
         true,
       );
@@ -257,7 +255,7 @@ function AuthForm() {
       <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         <div>
           <div className="eyebrow" style={{ marginBottom: 10, color: 'var(--text-tertiary)' }}>
-            {isLogin ? 'WELCOME BACK' : 'GET STARTED'}
+            WELCOME BACK
           </div>
           <h1
             style={{
@@ -268,12 +266,10 @@ function AuthForm() {
               margin: '0 0 8px',
             }}
           >
-            {isLogin ? 'Sign in to Cortex.' : 'Create your account.'}
+            Sign in to Cortex.
           </h1>
           <p style={{ fontSize: 14, color: 'var(--text-tertiary)', margin: 0 }}>
-            {isLogin
-              ? 'Pick up where you left off.'
-              : 'Access the full suite of decision-support tools.'}
+            Pick up where you left off.
           </p>
         </div>
 
@@ -300,30 +296,28 @@ function AuthForm() {
             placeholder="••••••••"
             style={authInputStyle}
             minLength={6}
-            autoComplete={isLogin ? 'current-password' : 'new-password'}
+            autoComplete="current-password"
           />
         </AuthField>
 
-        {isLogin && (
-          <div style={{ marginTop: -6, textAlign: 'right' }}>
-            <button
-              type="button"
-              onClick={() => setIsForgotPassword(true)}
-              style={{ ...authSecondaryBtn, fontSize: 12 }}
-            >
-              Forgot password?
-            </button>
-          </div>
-        )}
+        <div style={{ marginTop: -6, textAlign: 'right' }}>
+          <button
+            type="button"
+            onClick={() => setIsForgotPassword(true)}
+            style={{ ...authSecondaryBtn, fontSize: 12 }}
+          >
+            Forgot password?
+          </button>
+        </div>
 
         <button type="submit" disabled={loading} style={{ ...authPrimaryBtn, opacity: loading ? 0.7 : 1 }}>
           {loading ? (
             <>
-              <Loader2 size={16} className="animate-spin" /> {isLogin ? 'Signing in...' : 'Creating account...'}
+              <Loader2 size={16} className="animate-spin" /> Signing in...
             </>
           ) : (
             <>
-              {isLogin ? 'Sign in' : 'Create account'} <ArrowRight size={16} />
+              Sign in <ArrowRight size={16} />
             </>
           )}
         </button>
@@ -336,14 +330,13 @@ function AuthForm() {
             paddingTop: 8,
           }}
         >
-          {isLogin ? 'New to Cortex?' : 'Already have an account?'}{' '}
-          <button
-            type="button"
-            onClick={() => setIsLogin((v) => !v)}
-            style={{ ...authSecondaryBtn, display: 'inline' }}
+          New to Cortex?{' '}
+          <Link
+            href={signupHref}
+            style={{ color: 'var(--emerald-500)', fontWeight: 600, textDecoration: 'none' }}
           >
-            {isLogin ? 'Create an account' : 'Sign in'}
-          </button>
+            Create an account
+          </Link>
         </div>
       </form>
     </AuthShell>

@@ -10,6 +10,7 @@ export type EventType =
   | 'password_reset_completed'
   | 'subscription_upgrade'
   | 'subscription_cancel'
+  | 'subscription_success_view'
 
   // App usage events
   | 'app_opened'
