@@ -34,10 +34,19 @@ jobs:
           git config user.name "cortex-bot"
           git config user.email "bot@users.noreply.github.com"
 
+      - name: Sanitize OAuth token
+        id: oauth
+        env:
+          RAW_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          TRIMMED=$(printf '%s' "$RAW_TOKEN" | tr -d '\r\n' | awk '{$1=$1; print}')
+          echo "::add-mask::$TRIMMED"
+          echo "token=$TRIMMED" >> "$GITHUB_OUTPUT"
+
       - name: Generate and publish daily outlook
         uses: anthropics/claude-code-action@v1
         with:
-          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_code_oauth_token: ${{ steps.oauth.outputs.token }}
           prompt: |
             /daily-outlook ${{ inputs.date || '' }}
 
