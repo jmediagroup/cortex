@@ -60,6 +60,7 @@ export type Database = {
           onboarding_answers?: OnboardingAnswers | null;
           updated_at?: string;
         };
+        Relationships: [];
       };
       events: {
         Row: {
@@ -90,6 +91,7 @@ export type Database = {
           page_url?: string | null;
           user_agent?: string | null;
         };
+        Relationships: [];
       };
       enterprise_leads: {
         Row: {
@@ -126,6 +128,7 @@ export type Database = {
           message?: string;
           status?: 'new' | 'contacted' | 'qualified' | 'closed';
         };
+        Relationships: [];
       };
       scenarios: {
         Row: {
@@ -152,6 +155,7 @@ export type Database = {
           inputs?: Record<string, any>;
           key_result?: string;
         };
+        Relationships: [];
       };
       outlook_subscribers: {
         Row: {
@@ -182,8 +186,13 @@ export type Database = {
           user_id?: string | null;
           source?: string | null;
         };
+        Relationships: [];
       };
     };
+    Views: Record<never, never>;
+    Functions: Record<never, never>;
+    Enums: Record<never, never>;
+    CompositeTypes: Record<never, never>;
   };
 };
 

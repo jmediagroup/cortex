@@ -13,24 +13,29 @@ export async function GET(request: NextRequest) {
 
   const supabase = createServiceClient();
 
-  const { data: row } = (await supabase
+  const { data: row, error: lookupError } = await supabase
     .from('outlook_subscribers')
     .select('id, confirmed_at')
     .eq('confirmation_token', token)
-    .maybeSingle()) as { data: { id: string; confirmed_at: string | null } | null };
+    .maybeSingle();
+
+  if (lookupError) {
+    console.error('[outlook/confirm] lookup:', lookupError);
+    return NextResponse.redirect(new URL('/thinking?confirm=error', APP_URL));
+  }
 
   if (!row) {
     return NextResponse.redirect(new URL('/thinking?confirm=invalid', APP_URL));
   }
 
   if (!row.confirmed_at) {
-    const update = supabase.from('outlook_subscribers').update as unknown as (
-      values: Record<string, unknown>,
-    ) => { eq: (col: string, val: string) => Promise<{ error: { message: string } | null }> };
-    const { error } = await update({ confirmed_at: new Date().toISOString() }).eq('id', row.id);
+    const { error: updateError } = await supabase
+      .from('outlook_subscribers')
+      .update({ confirmed_at: new Date().toISOString() })
+      .eq('id', row.id);
 
-    if (error) {
-      console.error('Failed to confirm outlook subscriber:', error);
+    if (updateError) {
+      console.error('[outlook/confirm] update:', updateError);
       return NextResponse.redirect(new URL('/thinking?confirm=error', APP_URL));
     }
   }

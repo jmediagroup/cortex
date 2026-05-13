@@ -19,10 +19,14 @@ export function OutlookSubscribeForm({ source = 'thinking' }: { source?: string 
       const res = await fetch('/api/outlook/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source }),
+        body: JSON.stringify({ email: email.trim(), source }),
       });
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok) {
+      const json = (await res.json().catch(() => ({}))) as {
+        error?: string;
+        message?: string;
+        success?: boolean;
+      };
+      if (!res.ok || json.success === false) {
         setStatus('error');
         setMessage(json.error || 'Could not subscribe. Please try again.');
         return;
@@ -32,8 +36,33 @@ export function OutlookSubscribeForm({ source = 'thinking' }: { source?: string 
       setEmail('');
     } catch {
       setStatus('error');
-      setMessage('Network error. Please try again.');
+      setMessage('Network error. Please check your connection and try again.');
     }
+  }
+
+  if (status === 'success') {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <span
+          className="eyebrow"
+          style={{ color: 'var(--text-tertiary)', fontSize: 11 }}
+        >
+          DAILY OUTLOOK BY EMAIL
+        </span>
+        <p
+          role="status"
+          aria-live="polite"
+          style={{
+            margin: 0,
+            fontSize: 13,
+            lineHeight: 1.5,
+            color: 'var(--emerald-500)',
+          }}
+        >
+          {message}
+        </p>
+      </div>
+    );
   }
 
   return (

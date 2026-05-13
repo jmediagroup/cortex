@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
       query = query.or(`email.ilike.%${search}%,first_name.ilike.%${search}%,last_name.ilike.%${search}%`);
     }
 
-    if (tier && ['free', 'finance_pro'].includes(tier)) {
+    if (tier === 'free' || tier === 'finance_pro') {
       query = query.eq('tier', tier);
     }
 
