@@ -1,11 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServiceClient } from '@/lib/supabase/client';
 import { renderMarkdown } from '@/lib/outlook/markdown';
-import { getLatestOutlookForEmail } from '@/lib/outlook/content';
+import { getOutlookForDigest } from '@/lib/outlook/content';
 import { sendDigestEmail } from '@/lib/outlook/email';
 import type { OutlookType } from '@/lib/outlook/types';
 
 const CRON_SECRET = process.env.CRON_SECRET;
+
+// How many days back a post is still considered fresh enough to send. This
+// window means a post that deployed a little late — after the cron already
+// fired — still goes out on the next run instead of being silently dropped.
+const LOOKBACK_DAYS: Record<OutlookType, number> = {
+  daily: 1,
+  weekly: 7,
+};
 
 function todayInET(): string {
   return new Intl.DateTimeFormat('en-CA', {
@@ -31,35 +39,64 @@ export async function runDigest(
   }
 
   const targetDate = request.nextUrl.searchParams.get('date') || todayInET();
-  const found = await getLatestOutlookForEmail(type, targetDate);
+  // ?force=1 re-sends even if this post is already in the send log (manual replay).
+  const force = request.nextUrl.searchParams.get('force') === '1';
 
-  // No post for today — also accept the latest post that's <= today, but only if
-  // it's the same calendar week (for weekly) or the same calendar day (for daily).
-  const outlookData =
-    found ??
-    (type === 'weekly' ? await getLatestOutlookForEmail(type) : null);
+  const outlookData = await getOutlookForDigest(type, targetDate, LOOKBACK_DAYS[type]);
 
   if (!outlookData) {
+    // A scheduled send found nothing to send — this is an unhealthy state
+    // (missed publish or date mismatch). Warn so it surfaces in Vercel logs.
+    console.warn(
+      `[outlook/${type}] no ${type} outlook within ${LOOKBACK_DAYS[type]}d of ${targetDate} — nothing sent`,
+    );
     return NextResponse.json({
       sent: 0,
       skipped: true,
-      reason: `No ${type} outlook found for ${targetDate}.`,
+      reason: `No ${type} outlook within ${LOOKBACK_DAYS[type]} day(s) of ${targetDate}.`,
     });
+  }
+
+  const outlook = outlookData.list;
+  const supabase = createServiceClient();
+
+  // Claim the send: insert a log row keyed on (type, slug). A unique-violation
+  // means this post already went out — skip to avoid double-sending, unless the
+  // caller explicitly forced a replay.
+  const { error: claimError } = await supabase.from('outlook_email_sends').insert({
+    type,
+    slug: outlook.slug,
+    outlook_date: outlook.date,
+  });
+
+  if (claimError) {
+    if (claimError.code === '23505') {
+      if (!force) {
+        console.log(`[outlook/${type}] ${outlook.slug} already sent — skipping`);
+        return NextResponse.json({
+          sent: 0,
+          skipped: true,
+          reason: 'Already sent.',
+          slug: outlook.slug,
+        });
+      }
+      // force: the log row exists; fall through and re-send.
+      console.warn(`[outlook/${type}] forced replay of ${outlook.slug}`);
+    } else {
+      console.error(`[outlook/${type}] failed to claim send:`, claimError);
+      return NextResponse.json({ error: 'Failed to claim send' }, { status: 500 });
+    }
   }
 
   const leadHtml = await renderMarkdown(outlookData.leadMarkdown);
 
-  const supabase = createServiceClient();
-  const { data: subscribers, error } = (await supabase
+  const { data: subscribers, error } = await supabase
     .from('outlook_subscribers')
     .select('email, unsubscribe_token')
-    .not('confirmed_at', 'is', null)) as {
-    data: { email: string; unsubscribe_token: string }[] | null;
-    error: { message: string } | null;
-  };
+    .not('confirmed_at', 'is', null);
 
   if (error) {
-    console.error('Failed to load outlook subscribers:', error);
+    console.error(`[outlook/${type}] failed to load subscribers:`, error);
     return NextResponse.json({ error: 'Failed to load subscribers' }, { status: 500 });
   }
 
@@ -67,11 +104,11 @@ export async function runDigest(
   let sent = 0;
   let failed = 0;
 
-  // Throttle to a safe Resend rate (10/sec). Sequential is fine for low volume;
-  // bump to chunked Promise.all + sleep when subscriber count grows.
+  // Throttle to a safe Resend rate. Sequential is fine for low volume; bump to
+  // chunked Promise.all + sleep when subscriber count grows.
   for (const sub of recipients) {
     const result = await sendDigestEmail({
-      outlook: outlookData.list,
+      outlook,
       leadHtml,
       leadText: outlookData.leadText,
       to: sub.email,
@@ -81,12 +118,31 @@ export async function runDigest(
     else failed += 1;
   }
 
+  // Record the outcome on the claimed row (best-effort — don't fail the response).
+  const { error: updateError } = await supabase
+    .from('outlook_email_sends')
+    .update({
+      recipient_count: recipients.length,
+      sent_count: sent,
+      failed_count: failed,
+      completed_at: new Date().toISOString(),
+    })
+    .eq('type', type)
+    .eq('slug', outlook.slug);
+  if (updateError) {
+    console.error(`[outlook/${type}] failed to record send outcome:`, updateError);
+  }
+
+  console.log(
+    `[outlook/${type}] sent ${sent}/${recipients.length} for ${outlook.slug} (failed ${failed})`,
+  );
+
   return NextResponse.json({
     sent,
     failed,
     total: recipients.length,
-    slug: outlookData.list.slug,
-    type: outlookData.list.type,
-    date: outlookData.list.date,
+    slug: outlook.slug,
+    type: outlook.type,
+    date: outlook.date,
   });
 }
