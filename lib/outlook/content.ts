@@ -131,11 +131,27 @@ export function getLatestOutlook(type: OutlookType, onDate?: string): ParsedFile
   return all[0] ?? null;
 }
 
-export async function getLatestOutlookForEmail(
+// Subtracts `days` from an ISO yyyy-mm-dd string, returning the same format.
+function isoDateMinusDays(iso: string, days: number): string {
+  const d = new Date(`${iso}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() - days);
+  return d.toISOString().slice(0, 10);
+}
+
+// Picks the newest outlook of `type` whose date falls within
+// [targetDate - lookbackDays, targetDate]. The lookback window means a post
+// deployed a little late (after the cron fired) still goes out on the next run
+// instead of being silently dropped. ISO yyyy-mm-dd strings sort lexically, so
+// plain string comparison is correct here.
+export async function getOutlookForDigest(
   type: OutlookType,
-  onDate?: string,
+  targetDate: string,
+  lookbackDays: number,
 ): Promise<{ list: OutlookListItem; leadMarkdown: string; leadText: string } | null> {
-  const parsed = getLatestOutlook(type, onDate);
+  const minDate = isoDateMinusDays(targetDate, lookbackDays);
+  const all = loadAll().filter((p) => p.type === type);
+  // loadAll() is newest-first, so the first in-window match is the freshest.
+  const parsed = all.find((p) => p.data.date <= targetDate && p.data.date >= minDate);
   if (!parsed) return null;
 
   const leadMarkdown = extractLeadMarkdown(parsed.body);

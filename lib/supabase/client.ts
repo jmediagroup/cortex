@@ -188,6 +188,37 @@ export type Database = {
         };
         Relationships: [];
       };
+      outlook_email_sends: {
+        Row: {
+          id: string;
+          type: string;
+          slug: string;
+          outlook_date: string;
+          recipient_count: number;
+          sent_count: number;
+          failed_count: number;
+          claimed_at: string;
+          completed_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          type: string;
+          slug: string;
+          outlook_date: string;
+          recipient_count?: number;
+          sent_count?: number;
+          failed_count?: number;
+          claimed_at?: string;
+          completed_at?: string | null;
+        };
+        Update: {
+          recipient_count?: number;
+          sent_count?: number;
+          failed_count?: number;
+          completed_at?: string | null;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<never, never>;
     Functions: Record<never, never>;
