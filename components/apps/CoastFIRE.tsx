@@ -13,6 +13,7 @@ import SaveScenarioButton from './SaveScenarioButton';
 import Tooltip from '@/components/ui/Tooltip';
 import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 import ProGatedPreview from '@/components/monetization/ProGatedPreview';
+import NumberInput from '@/components/ui/NumberInput';
 
 interface CoastFIREProps {
   isPro?: boolean;
@@ -383,11 +384,6 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
     };
   }, [isPro, inputs, calculations]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setInputs(prev => ({ ...prev, [name]: name === 'riskTolerance' ? value : parseFloat(value) || 0 }));
-  };
-
   const formatCurrency = (val: number) =>
     new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
 
@@ -526,21 +522,19 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Current Age</label>
-                  <input
-                    type="number"
-                    name="currentAge"
+                  <NumberInput
                     value={inputs.currentAge}
-                    onChange={handleInputChange}
+                    min={0}
+                    onValueChange={(n) => setInputs(prev => ({ ...prev, currentAge: n }))}
                     className="w-full px-3 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                   />
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Retirement Age</label>
-                  <input
-                    type="number"
-                    name="retirementAge"
+                  <NumberInput
                     value={inputs.retirementAge}
-                    onChange={handleInputChange}
+                    min={0}
+                    onValueChange={(n) => setInputs(prev => ({ ...prev, retirementAge: n }))}
                     className="w-full px-3 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                   />
                 </div>
@@ -550,11 +544,10 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Current Investments ($)</label>
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-[var(--text-muted)] font-bold">$</span>
-                  <input
-                    type="number"
-                    name="currentInvested"
+                  <NumberInput
                     value={inputs.currentInvested}
-                    onChange={handleInputChange}
+                    min={0}
+                    onValueChange={(n) => setInputs(prev => ({ ...prev, currentInvested: n }))}
                     className="w-full pl-7 pr-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                   />
                 </div>
@@ -564,11 +557,10 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Monthly Contribution ($)</label>
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-[var(--text-muted)] font-bold">$</span>
-                  <input
-                    type="number"
-                    name="monthlyContribution"
+                  <NumberInput
                     value={inputs.monthlyContribution}
-                    onChange={handleInputChange}
+                    min={0}
+                    onValueChange={(n) => setInputs(prev => ({ ...prev, monthlyContribution: n }))}
                     className="w-full pl-7 pr-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                   />
                 </div>
@@ -578,11 +570,10 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Annual Spending in Retirement ($)</label>
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-[var(--text-muted)] font-bold">$</span>
-                  <input
-                    type="number"
-                    name="annualSpending"
+                  <NumberInput
                     value={inputs.annualSpending}
-                    onChange={handleInputChange}
+                    min={0}
+                    onValueChange={(n) => setInputs(prev => ({ ...prev, annualSpending: n }))}
                     className="w-full pl-7 pr-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                   />
                 </div>
@@ -596,46 +587,38 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                 <div className="space-y-3">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-[var(--text-tertiary)] font-medium">Growth Rate (%)</span>
-                    <input
-                      type="number"
-                      name="investmentGrowth"
+                    <NumberInput
                       step="0.1"
                       className="w-20 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg px-2 py-1.5 text-right font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                       value={inputs.investmentGrowth}
-                      onChange={handleInputChange}
+                      onValueChange={(n) => setInputs(prev => ({ ...prev, investmentGrowth: n }))}
                     />
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-[var(--text-tertiary)] font-medium">Inflation Rate (%)</span>
-                    <input
-                      type="number"
-                      name="inflationRate"
+                    <NumberInput
                       step="0.1"
                       className="w-20 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg px-2 py-1.5 text-right font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                       value={inputs.inflationRate}
-                      onChange={handleInputChange}
+                      onValueChange={(n) => setInputs(prev => ({ ...prev, inflationRate: n }))}
                     />
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-[var(--text-tertiary)] font-medium">Withdrawal Rate (%)<Tooltip content="The percentage of your portfolio you plan to withdraw annually in retirement. 4% is the traditional safe withdrawal rate." /></span>
-                    <input
-                      type="number"
-                      name="withdrawalRate"
+                    <NumberInput
                       step="0.1"
                       className="w-20 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg px-2 py-1.5 text-right font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                       value={inputs.withdrawalRate}
-                      onChange={handleInputChange}
+                      onValueChange={(n) => setInputs(prev => ({ ...prev, withdrawalRate: n }))}
                     />
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-[var(--text-tertiary)] font-medium">Investment Fees (%)<Tooltip content="Annual fund expense ratio. Low-cost index funds typically charge 0.03-0.20%." /></span>
-                    <input
-                      type="number"
-                      name="investmentFees"
+                    <NumberInput
                       step="0.01"
                       className="w-20 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg px-2 py-1.5 text-right font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                       value={inputs.investmentFees}
-                      onChange={handleInputChange}
+                      onValueChange={(n) => setInputs(prev => ({ ...prev, investmentFees: n }))}
                     />
                   </div>
                 </div>
@@ -836,22 +819,20 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                 <label className="block text-[10px] font-bold text-[var(--mist-300)] uppercase mb-2">Current Annual Income ($)</label>
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-[var(--mist-300)] font-bold">$</span>
-                  <input
-                    type="number"
-                    name="currentIncome"
+                  <NumberInput
                     value={inputs.currentIncome}
-                    onChange={handleInputChange}
+                    min={0}
+                    onValueChange={(n) => setInputs(prev => ({ ...prev, currentIncome: n }))}
                     className="w-full pl-7 pr-4 py-2.5 bg-[var(--obsidian-700)] border border-[var(--border-strong)] rounded-xl font-bold text-white outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                   />
                 </div>
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--mist-300)] uppercase mb-2">Social Security Start Age</label>
-                <input
-                  type="number"
-                  name="socialSecurityAge"
+                <NumberInput
                   value={inputs.socialSecurityAge}
-                  onChange={handleInputChange}
+                  min={0}
+                  onValueChange={(n) => setInputs(prev => ({ ...prev, socialSecurityAge: n }))}
                   className="w-full px-4 py-2.5 bg-[var(--obsidian-700)] border border-[var(--border-strong)] rounded-xl font-bold text-white outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                 />
               </div>
@@ -859,11 +840,10 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                 <label className="block text-[10px] font-bold text-[var(--mist-300)] uppercase mb-2">Est. Monthly SS Benefit ($)</label>
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-[var(--mist-300)] font-bold">$</span>
-                  <input
-                    type="number"
-                    name="estimatedSocialSecurity"
+                  <NumberInput
                     value={inputs.estimatedSocialSecurity}
-                    onChange={handleInputChange}
+                    min={0}
+                    onValueChange={(n) => setInputs(prev => ({ ...prev, estimatedSocialSecurity: n }))}
                     className="w-full pl-7 pr-4 py-2.5 bg-[var(--obsidian-700)] border border-[var(--border-strong)] rounded-xl font-bold text-white outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                   />
                 </div>

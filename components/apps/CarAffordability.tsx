@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { Car, DollarSign, Calendar, TrendingDown, AlertCircle, CheckCircle } from 'lucide-react';
 import SaveScenarioButton from './SaveScenarioButton';
+import NumberInput from '@/components/ui/NumberInput';
 import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 
 /**
@@ -30,6 +31,7 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
     ...(initialValues || {}),
   });
 
+  // Used by the down-payment range slider; numeric fields use <NumberInput>.
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setInputs(prev => ({ ...prev, [name]: parseFloat(value) || 0 }));
@@ -159,11 +161,11 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
                 <label className="block text-sm font-bold text-[var(--text-secondary)] mb-2">Annual Gross Income</label>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] font-bold">$</span>
-                  <input
-                    type="number"
+                  <NumberInput
                     name="annualIncome"
                     value={inputs.annualIncome}
-                    onChange={handleInputChange}
+                    onValueChange={(n) => setInputs(prev => ({ ...prev, annualIncome: n }))}
+                    min={0}
                     className="w-full pl-8 pr-4 py-3 border-2 border-[var(--border-default)] rounded-2xl font-bold text-[var(--text-primary)] focus:border-[var(--emerald-border)] focus:outline-none transition-colors"
                   />
                 </div>
@@ -174,11 +176,10 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
               <div>
                 <label className="block text-sm font-bold text-[var(--text-secondary)] mb-2">Interest Rate</label>
                 <div className="relative">
-                  <input
-                    type="number"
+                  <NumberInput
                     name="interestRate"
                     value={inputs.interestRate}
-                    onChange={handleInputChange}
+                    onValueChange={(n) => setInputs(prev => ({ ...prev, interestRate: n }))}
                     step="0.1"
                     className="w-full pr-8 pl-4 py-3 border-2 border-[var(--border-default)] rounded-2xl font-bold text-[var(--text-primary)] focus:border-[var(--emerald-border)] focus:outline-none transition-colors"
                   />
@@ -192,11 +193,11 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
                 <label className="block text-sm font-bold text-[var(--text-secondary)] mb-2">Current Monthly Car Payments</label>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] font-bold">$</span>
-                  <input
-                    type="number"
+                  <NumberInput
                     name="currentMonthlyPayment"
                     value={inputs.currentMonthlyPayment}
-                    onChange={handleInputChange}
+                    onValueChange={(n) => setInputs(prev => ({ ...prev, currentMonthlyPayment: n }))}
+                    min={0}
                     className="w-full pl-8 pr-4 py-3 border-2 border-[var(--border-default)] rounded-2xl font-bold text-[var(--text-primary)] focus:border-[var(--emerald-border)] focus:outline-none transition-colors"
                   />
                 </div>
