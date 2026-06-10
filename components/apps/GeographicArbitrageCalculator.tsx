@@ -103,6 +103,143 @@ const LOCATION_PRESETS: Record<string, LocationData> = {
   "Remote / LCOL": { taxRate: 0.03, colIndex: 0.8, housingBase: 1200, note: "The 'Ideal Arbitrage' scenario. Assumes rural or mid-west living while keeping city salary." },
 };
 
+interface SliderFieldProps {
+  label: string;
+  icon?: React.ComponentType<{ size?: number; className?: string }>;
+  value: number;
+  onChange: (value: number) => void;
+  min?: number;
+  max?: number;
+  suffix?: string;
+  tooltip?: string;
+}
+
+// Defined at module scope: defining these inside the calculator created a
+// new component type on every render, remounting the inputs and dropping
+// keyboard focus after each keystroke.
+const SliderField = ({ label, icon: Icon, value, onChange, min = 0, max = 100, suffix = "", tooltip }: SliderFieldProps) => {
+  // Determine step size based on the range
+  const getStep = () => {
+    const range = max - min;
+    if (range > 100000) return 5000;
+    if (range > 10000) return 1000;
+    if (range > 1000) return 100;
+    if (range > 100) return 10;
+    return 1;
+  };
+
+  const step = getStep();
+
+  const handleIncrement = () => {
+    const newValue = Math.min(value + step, max);
+    onChange(newValue);
+  };
+
+  const handleDecrement = () => {
+    const newValue = Math.max(value - step, min);
+    onChange(newValue);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = parseInt(e.target.value.replace(/,/g, '')) || min;
+    if (newValue >= min && newValue <= max) {
+      onChange(newValue);
+    }
+  };
+
+  return (
+    <div className="mb-6 group">
+      <div className="flex justify-between items-center mb-2">
+        <label className="text-sm font-semibold text-[var(--text-secondary)] flex items-center gap-2">
+          {Icon && <Icon size={16} className="text-[var(--emerald-400)]" />}
+          {label}
+          {tooltip && <Tooltip content={tooltip} />}
+        </label>
+      </div>
+      <div className="relative flex items-center gap-2">
+        <button
+          type="button"
+          onClick={handleDecrement}
+          disabled={value <= min}
+          className="flex-shrink-0 w-10 h-10 rounded-lg border-2 border-[var(--border-default)] bg-[var(--bg-card)] hover:bg-[var(--bg-section)] hover:border-[var(--emerald-border)] active:bg-[var(--bg-glass)] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center font-bold text-[var(--text-secondary)] hover:text-[var(--emerald-500)]"
+        >
+          −
+        </button>
+        <div className="flex-1 relative">
+          <input
+            type="text"
+            value={value.toLocaleString()}
+            onChange={handleInputChange}
+            className="w-full px-4 py-2.5 text-center font-bold text-lg rounded-lg border-2 border-[var(--border-default)] bg-[var(--bg-section)] hover:bg-[var(--bg-card)] hover:border-[var(--emerald-border)] focus:outline-none focus:ring-2 focus:ring-[var(--emerald-500)] focus:border-[var(--emerald-border)] transition-all tabular-nums"
+          />
+          {suffix && (
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-[var(--text-muted)] pointer-events-none">
+              {suffix}
+            </span>
+          )}
+        </div>
+        <button
+          type="button"
+          onClick={handleIncrement}
+          disabled={value >= max}
+          className="flex-shrink-0 w-10 h-10 rounded-lg border-2 border-[var(--border-default)] bg-[var(--bg-card)] hover:bg-[var(--bg-section)] hover:border-[var(--emerald-border)] active:bg-[var(--bg-glass)] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center font-bold text-[var(--text-secondary)] hover:text-[var(--emerald-500)]"
+        >
+          +
+        </button>
+      </div>
+      <div className="mt-1.5 flex justify-between text-xs text-[var(--text-muted)] font-medium">
+        <span>Min: {min.toLocaleString()}</span>
+        <span>Max: {max.toLocaleString()}</span>
+      </div>
+    </div>
+  );
+};
+
+interface LocationSelectorProps {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+}
+
+const LocationSelector = ({ label, value, onChange }: LocationSelectorProps) => (
+  <div className="mb-6 relative group">
+    <div className="flex justify-between items-center mb-2">
+      <label className="text-sm font-semibold text-[var(--text-secondary)] block">{label}</label>
+      <div className="relative">
+        <Info size={14} className="text-[var(--text-muted)] hover:text-[var(--emerald-500)] cursor-help transition-colors" />
+        <div className="absolute right-0 bottom-full mb-2 w-72 bg-[var(--obsidian-900)] text-white text-[11px] p-4 rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-20 pointer-events-none leading-relaxed border border-[var(--border-strong)]">
+          <p className="font-bold text-[var(--emerald-400)] border-b border-[var(--border-strong)] pb-2 mb-2 uppercase tracking-wider">{value} Regional Profile</p>
+          {LOCATION_PRESETS[value].note}
+        </div>
+      </div>
+    </div>
+    <div className="relative">
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full p-3.5 rounded-xl border-2 border-[var(--border-subtle)] bg-[var(--bg-section)] hover:bg-[var(--bg-card)] hover:border-[var(--emerald-border-soft)] focus:ring-4 focus:ring-[var(--emerald-500)] focus:border-[var(--emerald-border)] outline-none appearance-none cursor-pointer transition-all font-medium text-[var(--text-primary)]"
+      >
+        {sortedLocationKeys.map(loc => <option key={loc} value={loc}>{loc}</option>)}
+      </select>
+      <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--text-muted)]">
+        <ChevronRight size={18} className="rotate-90" />
+      </div>
+    </div>
+  </div>
+);
+
+// Sort keys by State (suffix) then City (prefix)
+const sortedLocationKeys = Object.keys(LOCATION_PRESETS).sort((a, b) => {
+  if (a === "Remote / LCOL") return 1;
+  if (b === "Remote / LCOL") return -1;
+  const partsA = a.split(', ');
+  const partsB = b.split(', ');
+  const stateA = partsA[1] || "";
+  const stateB = partsB[1] || "";
+  if (stateA !== stateB) return stateA.localeCompare(stateB);
+  return partsA[0].localeCompare(partsB[0]);
+});
+
 export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLoggedIn = false, initialValues }: GeographicArbitrageCalculatorProps) {
   const [currentLoc, setCurrentLoc] = useState("San Francisco, CA");
   const [targetLoc, setTargetLoc] = useState("Austin, TX");
@@ -132,20 +269,6 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
     if (v.years != null) setYears(v.years);
     if (v.lifestyle != null) setLifestyle(v.lifestyle);
   }, [initialValues]);
-
-  // Sort keys by State (suffix) then City (prefix)
-  const sortedLocationKeys = useMemo(() => {
-    return Object.keys(LOCATION_PRESETS).sort((a, b) => {
-      if (a === "Remote / LCOL") return 1;
-      if (b === "Remote / LCOL") return -1;
-      const partsA = a.split(', ');
-      const partsB = b.split(', ');
-      const stateA = partsA[1] || "";
-      const stateB = partsB[1] || "";
-      if (stateA !== stateB) return stateA.localeCompare(stateB);
-      return partsA[0].localeCompare(partsB[0]);
-    });
-  }, []);
 
   const calculateMetrics = (locKey: string, income: number | string) => {
     const incomeNum = typeof income === 'string' ? parseFloat(income) || 0 : income;
@@ -211,15 +334,18 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
 
     // 3. Career Mobility Premium
     // Assumption: staying in expensive locations may boost salary trajectory by 5-10% over 10 years
-    const mobilityPenalty = incomeNum * 0.07 * years; // 7% cumulative salary trajectory loss
+    const mobilityPenalty = incomeNum * 0.07 * years; // 7% of salary lost per year
     const mobilityPremium = savingsDelta * years - mobilityPenalty;
 
-    // 4. Lifestyle Downgrade Risk Score
-    // Calculate how much lifestyle is being compressed (lower = more compression)
-    const lifestyleScore = Math.round(
+    // 4. Lifestyle Downgrade Risk Score (0-100)
+    // Calculate how much lifestyle is being compressed (lower = more compression).
+    // The savings ratio is clamped so a zero-savings origin city can't blow
+    // the score past the 0-100 scale.
+    const savingsRatio = Math.min(1.2, targetMetrics.netSavings / Math.max(1, currentMetrics.netSavings));
+    const lifestyleScore = Math.min(100, Math.round(
       ((lifestyle.housing + lifestyle.dining + lifestyle.transit + lifestyle.discretionary) / 4) *
-      (targetMetrics.netSavings / Math.max(1, currentMetrics.netSavings))
-    );
+      savingsRatio
+    ));
 
     // 5. Compounding Leverage - How much extra wealth from arbitrage savings invested
     let compoundedArbitrageWealth = 0;
@@ -254,128 +380,6 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
     }
     return data;
   }, [currentMetrics.netSavings, targetMetrics.netSavings, investmentReturn, years]);
-
-  interface SliderFieldProps {
-    label: string;
-    icon?: React.ComponentType<{ size?: number; className?: string }>;
-    value: number;
-    onChange: (value: number) => void;
-    min?: number;
-    max?: number;
-    suffix?: string;
-    tooltip?: string;
-  }
-
-  const SliderField = ({ label, icon: Icon, value, onChange, min = 0, max = 100, suffix = "", tooltip }: SliderFieldProps) => {
-    // Determine step size based on the range
-    const getStep = () => {
-      const range = max - min;
-      if (range > 100000) return 5000;
-      if (range > 10000) return 1000;
-      if (range > 1000) return 100;
-      if (range > 100) return 10;
-      return 1;
-    };
-
-    const step = getStep();
-
-    const handleIncrement = () => {
-      const newValue = Math.min(value + step, max);
-      onChange(newValue);
-    };
-
-    const handleDecrement = () => {
-      const newValue = Math.max(value - step, min);
-      onChange(newValue);
-    };
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newValue = parseInt(e.target.value.replace(/,/g, '')) || min;
-      if (newValue >= min && newValue <= max) {
-        onChange(newValue);
-      }
-    };
-
-    return (
-      <div className="mb-6 group">
-        <div className="flex justify-between items-center mb-2">
-          <label className="text-sm font-semibold text-[var(--text-secondary)] flex items-center gap-2">
-            {Icon && <Icon size={16} className="text-[var(--emerald-400)]" />}
-            {label}
-            {tooltip && <Tooltip content={tooltip} />}
-          </label>
-        </div>
-        <div className="relative flex items-center gap-2">
-          <button
-            type="button"
-            onClick={handleDecrement}
-            disabled={value <= min}
-            className="flex-shrink-0 w-10 h-10 rounded-lg border-2 border-[var(--border-default)] bg-[var(--bg-card)] hover:bg-[var(--bg-section)] hover:border-[var(--emerald-border)] active:bg-[var(--bg-glass)] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center font-bold text-[var(--text-secondary)] hover:text-[var(--emerald-500)]"
-          >
-            −
-          </button>
-          <div className="flex-1 relative">
-            <input
-              type="text"
-              value={value.toLocaleString()}
-              onChange={handleInputChange}
-              className="w-full px-4 py-2.5 text-center font-bold text-lg rounded-lg border-2 border-[var(--border-default)] bg-[var(--bg-section)] hover:bg-[var(--bg-card)] hover:border-[var(--emerald-border)] focus:outline-none focus:ring-2 focus:ring-[var(--emerald-500)] focus:border-[var(--emerald-border)] transition-all tabular-nums"
-            />
-            {suffix && (
-              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-[var(--text-muted)] pointer-events-none">
-                {suffix}
-              </span>
-            )}
-          </div>
-          <button
-            type="button"
-            onClick={handleIncrement}
-            disabled={value >= max}
-            className="flex-shrink-0 w-10 h-10 rounded-lg border-2 border-[var(--border-default)] bg-[var(--bg-card)] hover:bg-[var(--bg-section)] hover:border-[var(--emerald-border)] active:bg-[var(--bg-glass)] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center font-bold text-[var(--text-secondary)] hover:text-[var(--emerald-500)]"
-          >
-            +
-          </button>
-        </div>
-        <div className="mt-1.5 flex justify-between text-xs text-[var(--text-muted)] font-medium">
-          <span>Min: {min.toLocaleString()}</span>
-          <span>Max: {max.toLocaleString()}</span>
-        </div>
-      </div>
-    );
-  };
-
-  interface LocationSelectorProps {
-    label: string;
-    value: string;
-    onChange: (value: string) => void;
-  }
-
-  const LocationSelector = ({ label, value, onChange }: LocationSelectorProps) => (
-    <div className="mb-6 relative group">
-      <div className="flex justify-between items-center mb-2">
-        <label className="text-sm font-semibold text-[var(--text-secondary)] block">{label}</label>
-        <div className="relative">
-          <Info size={14} className="text-[var(--text-muted)] hover:text-[var(--emerald-500)] cursor-help transition-colors" />
-          <div className="absolute right-0 bottom-full mb-2 w-72 bg-[var(--obsidian-900)] text-white text-[11px] p-4 rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-20 pointer-events-none leading-relaxed border border-[var(--border-strong)]">
-            <p className="font-bold text-[var(--emerald-400)] border-b border-[var(--border-strong)] pb-2 mb-2 uppercase tracking-wider">{value} Regional Profile</p>
-            {LOCATION_PRESETS[value].note}
-          </div>
-        </div>
-      </div>
-      <div className="relative">
-        <select
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-full p-3.5 rounded-xl border-2 border-[var(--border-subtle)] bg-[var(--bg-section)] hover:bg-[var(--bg-card)] hover:border-[var(--emerald-border-soft)] focus:ring-4 focus:ring-[var(--emerald-500)] focus:border-[var(--emerald-border)] outline-none appearance-none cursor-pointer transition-all font-medium text-[var(--text-primary)]"
-        >
-          {sortedLocationKeys.map(loc => <option key={loc} value={loc}>{loc}</option>)}
-        </select>
-        <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--text-muted)]">
-          <ChevronRight size={18} className="rotate-90" />
-        </div>
-      </div>
-    </div>
-  );
 
   return (
     <div className="space-y-8">
@@ -666,7 +670,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                       <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
                       <p className="text-[var(--mist-100)] text-sm font-medium leading-relaxed">
                         The #1 destination delivers ${Math.round(multiCityAnalysis.destinations[0].delta).toLocaleString()} more in annual savings than your current location.
-                        Over {years} years, this compounds to ${Math.round(multiCityAnalysis.compoundedArbitrageWealth - projectionData[projectionData.length - 1].current).toLocaleString()} in extra wealth.
+                        Your selected destination's savings advantage compounds to ${Math.round(multiCityAnalysis.compoundedArbitrageWealth).toLocaleString()} in extra wealth over {years} years.
                       </p>
                     </div>
                   </div>
@@ -723,7 +727,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                       {multiCityAnalysis.mobilityPremium >= 0 ? '+' : ''}${Math.round(multiCityAnalysis.mobilityPremium).toLocaleString()}
                     </p>
                     <p className="text-sm text-[var(--text-secondary)] font-medium">
-                      Assumes ~7% cumulative salary trajectory loss over {years} years
+                      Assumes ~7% of salary lost per year in trajectory over {years} years
                     </p>
                   </div>
                   <div className="bg-[var(--crimson-500)] rounded-2xl p-5 text-white">

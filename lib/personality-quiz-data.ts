@@ -523,15 +523,25 @@ export function resolveResult(
   };
 }
 
+/**
+ * Highest score any single archetype can earn across all questions.
+ * Summing each option's points across archetypes would overshoot (a single
+ * archetype can never collect another archetype's points), which made the
+ * result meters top out below 100% even on a perfect run.
+ */
 export function maxPossibleScore(): number {
-  let total = 0;
-  for (const q of QUESTIONS) {
-    let best = 0;
-    for (const opt of q.options) {
-      const sum = Object.values(opt.points).reduce((a, b) => a + (b ?? 0), 0);
-      if (sum > best) best = sum;
+  let best = 0;
+  for (const archetype of ARCHETYPE_ORDER) {
+    let total = 0;
+    for (const q of QUESTIONS) {
+      let bestForQuestion = 0;
+      for (const opt of q.options) {
+        const pts = opt.points[archetype] ?? 0;
+        if (pts > bestForQuestion) bestForQuestion = pts;
+      }
+      total += bestForQuestion;
     }
-    total += best;
+    if (total > best) best = total;
   }
-  return total;
+  return best;
 }

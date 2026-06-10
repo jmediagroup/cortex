@@ -63,8 +63,11 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
     const monthlyRate = mortgageRate / 100 / 12;
     const totalPayments = 30 * 12; // 30-year fixed assumption
 
-    // Standard Mortgage Payment (P&I)
-    const monthlyPI = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, totalPayments)) / (Math.pow(1 + monthlyRate, totalPayments) - 1);
+    // Standard Mortgage Payment (P&I) — at 0% the annuity formula is 0/0,
+    // so fall back to straight-line principal repayment.
+    const monthlyPI = monthlyRate === 0
+      ? loanAmount / totalPayments
+      : loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, totalPayments)) / (Math.pow(1 + monthlyRate, totalPayments) - 1);
 
     // Initial Sunk Costs (Closing costs + Down Payment)
     let totalSunkBuying = purchasePrice * (buyingCosts / 100);
@@ -132,6 +135,13 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
 
   const formatCurrency = (val: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
 
+  // Full P&I payment for display (same convention as the simulation above).
+  const displayLoanAmount = purchasePrice * (1 - downPaymentPct / 100);
+  const displayMonthlyRate = mortgageRate / 100 / 12;
+  const displayMonthlyPI = displayMonthlyRate === 0
+    ? displayLoanAmount / 360
+    : displayLoanAmount * (displayMonthlyRate * Math.pow(1 + displayMonthlyRate, 360)) / (Math.pow(1 + displayMonthlyRate, 360) - 1);
+
   // PRO FEATURE: Lifecycle Housing Strategy
   const lifecycleAnalysis = useMemo(() => {
     if (!isPro) {
@@ -165,8 +175,11 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
       // Move 3: Downsize (years 22-30)
       const downsize = { price: purchasePrice * 0.6, years: 8, rent: monthlyRent * 0.7 };
 
-      // Simplified calculation: transaction costs eat wealth
-      const transactionCosts = (starter.price + family.price + downsize.price) * (buyingCosts + sellingCosts) / 100;
+      // Simplified calculation: transaction costs eat wealth.
+      // 3 purchases, but only 2 sales — the downsize home isn't sold.
+      const transactionCosts =
+        (starter.price + family.price + downsize.price) * (buyingCosts / 100) +
+        (starter.price + family.price) * (sellingCosts / 100);
       const singleHomeTransactionCost = purchasePrice * (buyingCosts + sellingCosts) / 100;
 
       return {
@@ -624,7 +637,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                   <p className="text-[var(--color-warning)] text-sm font-bold mb-2">Monthly Hidden Drag</p>
                   <p className="text-4xl font-bold text-[var(--text-primary)]">{formatCurrency(lifecycleAnalysis.monthlyHiddenDrag)}/mo</p>
                   <p className="text-[var(--text-tertiary)] text-xs font-medium mt-2">
-                    This is ON TOP of your {formatCurrency((purchasePrice - (purchasePrice * downPaymentPct / 100)) * (mortgageRate / 100 / 12))} monthly mortgage payment
+                    This is ON TOP of your {formatCurrency(displayMonthlyPI)} monthly mortgage payment
                   </p>
                 </div>
               </div>

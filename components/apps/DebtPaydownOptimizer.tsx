@@ -49,6 +49,7 @@ interface SimulationResult {
     totalBalance: number;
     interestPaid: number;
   }>;
+  paidOff: boolean;
 }
 
 const COLORS = ['#00F0A0', '#00F0A0', '#FF66C4', '#FF3B30', '#FFB800', '#FFB800', '#00F0A0', '#5AC8FA'];
@@ -146,9 +147,9 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
         // Hybrid: Weighs interest rate and balance based on psychologicalWeight
         // High rate = good for math. Low balance = good for momentum.
         sorted.sort((a, b) => {
-          const scoreA = (b.rate * (100 - psychologicalWeight)) + ((1/a.currentBalance) * psychologicalWeight * 100000);
-          const scoreB = (a.rate * (100 - psychologicalWeight)) + ((1/b.currentBalance) * psychologicalWeight * 100000);
-          return scoreA - scoreB;
+          const scoreA = (a.rate * (100 - psychologicalWeight)) + ((1/a.currentBalance) * psychologicalWeight * 100000);
+          const scoreB = (b.rate * (100 - psychologicalWeight)) + ((1/b.currentBalance) * psychologicalWeight * 100000);
+          return scoreB - scoreA; // highest priority (high rate / small balance) first
         });
       }
 
@@ -166,7 +167,8 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
       });
     }
 
-    return { months, totalInterest, timeline };
+    const paidOff = currentDebts.every(d => d.currentBalance <= 0);
+    return { months, totalInterest, timeline, paidOff };
   };
 
   const results = useMemo(() => ({
@@ -213,7 +215,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
     // 1. Investment vs Paydown Comparison
     // Scenario A: Pay minimum + invest difference
     const totalMinPayments = debts.reduce((sum, d) => sum + d.minPayment, 0);
-    const investableAmount = monthlyBudget - totalMinPayments;
+    const investableAmount = Math.max(0, monthlyBudget - totalMinPayments);
 
     // Simulate investing the extra cash instead of aggressive paydown
     const monthlyRate = (investmentRate / 100) / 12;
@@ -258,9 +260,11 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
     // 5. Debt-to-Income Improvement
     const totalDebt = debts.reduce((sum, d) => sum + d.balance, 0);
     const annualIncome = monthlyIncome * 12;
-    const initialDTI = (totalDebt / annualIncome) * 100;
+    const initialDTI = annualIncome > 0 ? (totalDebt / annualIncome) * 100 : 0;
     const targetDTI = 30; // Industry standard
-    const monthsToTargetDTI = Math.ceil((initialDTI - targetDTI) * paydownMonths / initialDTI);
+    const monthsToTargetDTI = initialDTI > targetDTI
+      ? Math.ceil((initialDTI - targetDTI) * paydownMonths / initialDTI)
+      : 0;
 
     // 6. Hybrid Strategy Recommendation
     const lowRateDebts = debts.filter(d => {
@@ -300,7 +304,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
         <SaveScenarioButton
           toolId="debt-paydown"
           toolName="Debt Paydown Optimizer"
-          getInputs={() => ({ debts, monthlyBudget, monthlyIncome })}
+          getInputs={() => ({ debts, monthlyBudget, monthlyIncome, age, investmentRate, taxRate, psychologicalWeight })}
           getKeyResult={() => {
             const totalDebt = debts.reduce((sum, d) => sum + d.balance, 0);
             return `Total debt: $${totalDebt.toLocaleString()}, Budget: $${monthlyBudget}/mo`;
@@ -492,6 +496,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
               icon={<TrendingDown className="text-[var(--color-info)]" />}
               months={results.avalanche.months}
               interest={results.avalanche.totalInterest}
+              paidOff={results.avalanche.paidOff}
               active={true}
             />
             <StrategyCard
@@ -500,6 +505,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
               icon={<Zap className="text-[var(--color-warning)]" />}
               months={results.snowball.months}
               interest={results.snowball.totalInterest}
+              paidOff={results.snowball.paidOff}
               active={false}
             />
             <StrategyCard
@@ -508,6 +514,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
               icon={<Brain className="text-[var(--emerald-400)]" />}
               months={results.hybrid.months}
               interest={results.hybrid.totalInterest}
+              paidOff={results.hybrid.paidOff}
               active={true}
               highlight={true}
             />
@@ -677,7 +684,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
           </div>
 
           {/* Life-Stage Strategic Context */}
-          {age && (
+          {age !== null && age > 0 && debts.length > 0 && (
             <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] rounded-[3rem] p-10 text-white shadow-xl">
               <div className="flex items-start gap-4">
                 <div className="bg-[var(--bg-card)]/20 p-3 rounded-2xl backdrop-blur-sm">
@@ -785,6 +792,9 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
               <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
               <p className="font-medium text-white">
                 {(() => {
+                  if (debts.length === 0) {
+                    return 'Add a debt above to see a personalized payoff-vs-invest analysis.';
+                  }
                   const lowestRateDebt = debts.reduce((min, d) => d.rate < min.rate ? d : min, debts[0]);
                   const highestBalanceDebt = debts.reduce((max, d) => d.balance > max.balance ? d : max, debts[0]);
                   const totalDebt = debts.reduce((sum, d) => sum + d.balance, 0);
@@ -1009,9 +1019,10 @@ interface StrategyCardProps {
   interest: number;
   highlight?: boolean;
   active?: boolean;
+  paidOff?: boolean;
 }
 
-const StrategyCard = ({ title, subtitle, icon, months, interest, highlight = false }: StrategyCardProps) => (
+const StrategyCard = ({ title, subtitle, icon, months, interest, highlight = false, paidOff = true }: StrategyCardProps) => (
   <div className={`p-4 rounded-2xl border transition-all ${
     highlight
       ? 'bg-[var(--emerald-500)] border-[var(--emerald-border)] text-white shadow-lg shadow-[0_0_24px_var(--cta-glow-soft)]'
@@ -1026,7 +1037,11 @@ const StrategyCard = ({ title, subtitle, icon, months, interest, highlight = fal
       </span>
     </div>
     <div className="space-y-1">
-      <div className="text-2xl font-bold">{months} <span className="text-xs font-normal opacity-80">months</span></div>
+      {paidOff ? (
+        <div className="text-2xl font-bold">{months} <span className="text-xs font-normal opacity-80">months</span></div>
+      ) : (
+        <div className="text-2xl font-bold">30+ <span className="text-xs font-normal opacity-80">yrs — never at this budget</span></div>
+      )}
       <div className={`text-sm font-medium ${highlight ? 'text-[var(--mist-200)]' : 'text-[var(--text-tertiary)]'}`}>
         ${Math.round(interest).toLocaleString()} <span className="text-[10px] uppercase">Interest</span>
       </div>

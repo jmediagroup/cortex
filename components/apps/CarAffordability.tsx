@@ -26,7 +26,7 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
     annualIncome: 150000,
     interestRate: 4.0,
     currentMonthlyPayment: 0,
-    downPaymentPercent: 44,
+    downPaymentPercent: 20, // default to the 20/3/8 rule's recommended 20%
     ...(initialValues || {}),
   });
 
@@ -38,7 +38,8 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
   // Calculate car affordability based on 20/3/8 rule
   const calculations = useMemo(() => {
     const monthlyIncome = inputs.annualIncome / 12;
-    const maxMonthlyPayment = monthlyIncome * 0.08; // 8% of pre-tax income
+    // 8% of pre-tax income, minus payments on any existing car loan
+    const maxMonthlyPayment = Math.max(0, monthlyIncome * 0.08 - inputs.currentMonthlyPayment);
 
     // Calculate max car price based on 3-year loan at given interest rate
     const monthlyRate = inputs.interestRate / 100 / 12;
@@ -52,8 +53,10 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
       maxLoanAmount = maxMonthlyPayment * ((1 - Math.pow(1 + monthlyRate, -numPayments)) / monthlyRate);
     }
 
-    // Total car price = loan amount / 0.8 (since 20% down payment)
-    const maxCarPrice = maxLoanAmount / 0.8;
+    // Total car price the budget supports at the user's actual down payment %
+    // (a bigger down payment supports a more expensive car for the same loan).
+    const downPaymentFraction = Math.min(99, inputs.downPaymentPercent) / 100;
+    const maxCarPrice = maxLoanAmount / (1 - downPaymentFraction);
     const recommendedDownPayment = maxCarPrice * 0.20;
 
     // Calculate user's actual down payment amount
@@ -315,7 +318,7 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
                   }`}>
                     <span>{calculations.meetsPaymentRule ? '✓' : '⚠'}</span>
                     <span>
-                      Monthly payment: {((calculations.userMonthlyPayment / (inputs.annualIncome / 12)) * 100).toFixed(1)}% of income
+                      Monthly payment: {inputs.annualIncome > 0 ? ((calculations.userMonthlyPayment / (inputs.annualIncome / 12)) * 100).toFixed(1) : '0.0'}% of income
                       {calculations.meetsPaymentRule ? ' (under 8%)' : ' (exceeds 8%)'}
                     </span>
                   </div>

@@ -47,7 +47,9 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
     const yearsToRetire = inputs.retirementAge - inputs.currentAge;
 
     // FIRE Number = Annual Spending / (Withdrawal Rate / 100)
-    const targetFIRENumber = inputs.annualSpending / (inputs.withdrawalRate / 100);
+    // Clamp the withdrawal rate so a cleared/zero input can't divide by zero.
+    const safeWithdrawalRate = Math.max(0.1, inputs.withdrawalRate);
+    const targetFIRENumber = inputs.annualSpending / (safeWithdrawalRate / 100);
 
     // Coast FIRE Formula: Target / (1 + R)^n
     const coastFIRENumber = targetFIRENumber / Math.pow(1 + realGrowthRate, yearsToRetire);
@@ -62,10 +64,11 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
     if (!hasReachedCoast) {
       let testBalance = inputs.currentInvested;
       const annualContribution = inputs.monthlyContribution * 12;
-      const nominalRate = inputs.investmentGrowth / 100;
 
+      // Grow at the real rate so this matches the coast threshold (which is
+      // expressed in today's dollars) and the projection chart below.
       for (let year = 1; year <= yearsToRetire; year++) {
-        testBalance = (testBalance + annualContribution) * (1 + nominalRate);
+        testBalance = (testBalance + annualContribution) * (1 + realGrowthRate);
         const yearsRemaining = yearsToRetire - year;
         const futureCoastNumber = targetFIRENumber / Math.pow(1 + realGrowthRate, yearsRemaining);
 
@@ -81,9 +84,9 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
     const projectionData = [];
     let currentBalance = inputs.currentInvested;
     let coastBalance = inputs.currentInvested;
-    const nominalRate = inputs.investmentGrowth / 100;
+    const maxProjectionAge = Math.max(85, inputs.retirementAge);
 
-    for (let age = inputs.currentAge; age <= 85; age++) {
+    for (let age = inputs.currentAge; age <= maxProjectionAge; age++) {
       const yearsRemaining = Math.max(0, inputs.retirementAge - age);
       const coastLineAtAge = yearsRemaining > 0
         ? targetFIRENumber / Math.pow(1 + realGrowthRate, yearsRemaining)
@@ -153,7 +156,6 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
     }
 
     const realGrowthRate = calculations.realGrowthRate;
-    const nominalRate = inputs.investmentGrowth / 100;
 
     // 1. COAST DATE OPTIMIZER - Find optimal age to stop contributing
     const coastDateAnalysis = [];
@@ -176,10 +178,14 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
       const n = yearsToCoastTarget;
       const r = realGrowthRate;
 
-      // Using PMT formula: PMT = (FV - PV*(1+r)^n) / (((1+r)^n - 1) / r)
+      // Annuity-due PMT (deposits at start of year, matching the projection
+      // loop above): PMT = (FV - PV*(1+r)^n) / ((((1+r)^n - 1) / r) * (1+r))
+      // Falls back to straight-line division when the real rate is ~0.
       const compoundFactor = Math.pow(1 + r, n);
       const requiredMonthly = n > 0
-        ? ((FV - PV * compoundFactor) / ((compoundFactor - 1) / r)) / 12
+        ? (Math.abs(r) < 1e-9
+            ? (FV - PV) / n / 12
+            : ((FV - PV * compoundFactor) / (((compoundFactor - 1) / r) * (1 + r))) / 12)
         : 0;
 
       // Calculate "freedom years" gained (years of not having to save)
@@ -393,10 +399,9 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
           toolId="coast-fire"
           toolName="Coast FIRE Calculator"
           getInputs={() => inputs}
-          getKeyResult={() => {
-            const coastNumber = inputs.annualSpending / (inputs.withdrawalRate / 100);
-            return `Coast FIRE number: $${Math.round(coastNumber).toLocaleString()}`;
-          }}
+          getKeyResult={() =>
+            `Coast FIRE number: $${Math.round(calculations.coastFIRENumber).toLocaleString()}`
+          }
           isLoggedIn={isLoggedIn}
           onLoginPrompt={onUpgrade}
         />

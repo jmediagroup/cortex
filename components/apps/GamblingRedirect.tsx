@@ -78,12 +78,8 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
 
     // 1. House Edge Analysis - What the house actually takes
     const houseEdge = 0.08; // 8% average house edge
-    let totalWagered = 0;
-    let expectedLoss = 0;
-    for (let year = 0; year <= inputs.years; year++) {
-      totalWagered += yearlyContribution * 10; // Assumes 10x churn on deposits
-      expectedLoss = totalWagered * houseEdge;
-    }
+    const totalWagered = yearlyContribution * 10 * inputs.years; // Assumes 10x churn on deposits
+    const expectedLoss = totalWagered * houseEdge;
 
     // 2. Addiction cost multiplier - What problem gamblers actually spend
     const addictionMultiplier = 3.5; // Problem gamblers spend 3.5x their "budget"
@@ -96,7 +92,7 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
 
     // 4. Life milestones you could afford
     const milestones = [
-      { name: 'Emergency Fund (6 months)', cost: inputs.monthlyBet * 6 * 12, yearsToReach: 0 },
+      { name: 'Emergency Fund (6 months @ $3k/mo)', cost: 18000, yearsToReach: 0 },
       { name: 'Used Car (Cash)', cost: 15000, yearsToReach: 0 },
       { name: 'House Down Payment', cost: 60000, yearsToReach: 0 },
       { name: 'Child College Fund', cost: 100000, yearsToReach: 0 }
