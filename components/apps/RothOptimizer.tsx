@@ -16,6 +16,7 @@ import {
   History,
   Lock
 } from 'lucide-react';
+import NumberInput from '@/components/ui/NumberInput';
 
 // 2024 Federal Brackets for Single Filer (Simplified)
 const TAX_BRACKETS = [
@@ -72,25 +73,20 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
     showComparison: false
   });
 
+  // Checkbox-only handler; numeric fields use <NumberInput> with direct setters.
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
+    const { name, checked } = e.target;
 
     // Gating logic: Intercept interaction for Pro features if user is on Free tier
     if ((name === 'isAutoOptimize' || name === 'showComparison') && !isPro && checked) {
       return;
     }
 
-    const val = type === 'checkbox' ? checked : (isNaN(parseFloat(value)) ? value : parseFloat(value));
-
-    if (name.includes('.')) {
-      const [cat, field] = name.split('.');
-      if (cat === 'balances') {
-        setInputs(prev => ({ ...prev, balances: { ...prev.balances, [field]: val as number } }));
-      }
-    } else {
-      setInputs(prev => ({ ...prev, [name]: val as any }));
-    }
+    setInputs(prev => ({ ...prev, [name]: checked }));
   };
+
+  const setField = (name: string) => (n: number) =>
+    setInputs(prev => ({ ...prev, [name]: n }));
 
   const runSimulation = (simInputs: typeof inputs, useLadder: boolean) => {
     const data = [];
@@ -284,8 +280,8 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
               ) : (
                 <div>
                   <label className="text-xs font-bold text-[var(--mist-200)] uppercase mb-2 block">Manual Annual Conversion</label>
-                  <input
-                    type="number" name="manualConvAmount" value={inputs.manualConvAmount} onChange={handleInputChange}
+                  <NumberInput
+                    min={0} value={inputs.manualConvAmount} onValueChange={setField('manualConvAmount')}
                     className="w-full px-4 py-2.5 bg-[var(--emerald-600)] border-none rounded-2xl text-white font-bold"
                   />
                 </div>
@@ -297,12 +293,36 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
           <div className="bg-[var(--bg-card)] p-7 rounded-[2rem] border border-[var(--border-default)] shadow-sm space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <div>
+                <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Current Age</label>
+                <NumberInput min={18} max={100} value={inputs.currentAge} onValueChange={setField('currentAge')} className="w-full px-4 py-2 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold" />
+              </div>
+              <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Retire Age</label>
-                <input type="number" name="retirementAge" value={inputs.retirementAge} onChange={handleInputChange} className="w-full px-4 py-2 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold" />
+                <NumberInput min={18} max={100} value={inputs.retirementAge} onValueChange={setField('retirementAge')} className="w-full px-4 py-2 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Plan To Age</label>
+                <NumberInput min={60} max={110} value={inputs.endAge} onValueChange={setField('endAge')} className="w-full px-4 py-2 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold" />
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Annual Spend</label>
-                <input type="number" name="annualSpending" value={inputs.annualSpending} onChange={handleInputChange} className="w-full px-4 py-2 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold" />
+                <NumberInput min={0} value={inputs.annualSpending} onValueChange={setField('annualSpending')} className="w-full px-4 py-2 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Avg Return %</label>
+                <NumberInput step={0.1} value={inputs.avgReturn} onValueChange={setField('avgReturn')} className="w-full px-4 py-2 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Inflation %</label>
+                <NumberInput step={0.1} value={inputs.inflationRate} onValueChange={setField('inflationRate')} className="w-full px-4 py-2 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Annual Soc. Sec.</label>
+                <NumberInput min={0} value={inputs.ssAmount} onValueChange={setField('ssAmount')} className="w-full px-4 py-2 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">SS Start Age</label>
+                <NumberInput min={62} max={70} value={inputs.ssStartAge} onValueChange={setField('ssStartAge')} className="w-full px-4 py-2 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold" />
               </div>
             </div>
 
@@ -311,9 +331,25 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
               {['taxable', 'traditional', 'roth'].map(t => (
                 <div key={t} className="flex items-center justify-between mb-2">
                   <span className="text-[10px] font-semibold uppercase text-[var(--text-muted)]">{t}</span>
-                  <input type="number" name={`balances.${t}`} value={inputs.balances[t as keyof typeof inputs.balances]} onChange={handleInputChange} className="bg-[var(--bg-section)] border-none text-right font-bold w-32 px-3 py-1 rounded-lg" />
+                  <NumberInput min={0} value={inputs.balances[t as keyof typeof inputs.balances]} onValueChange={(n) => setInputs(prev => ({ ...prev, balances: { ...prev.balances, [t]: n } }))} className="bg-[var(--bg-section)] border-none text-right font-bold w-32 px-3 py-1 rounded-lg" />
                 </div>
               ))}
+            </div>
+
+            <div className="pt-4 border-t border-[var(--border-subtle)]">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-[var(--text-muted)] uppercase">
+                  Sequence Risk Stress Test
+                </label>
+                <input
+                  type="checkbox"
+                  name="sequenceRisk"
+                  checked={inputs.sequenceRisk}
+                  onChange={handleInputChange}
+                  className="w-5 h-5 accent-indigo-600"
+                />
+              </div>
+              <p className="text-[10px] font-medium text-[var(--text-muted)] mt-2">Models a −12% market in the first 3 years of retirement.</p>
             </div>
 
             <div className="pt-4 border-t border-[var(--border-subtle)]">

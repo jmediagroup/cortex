@@ -21,6 +21,7 @@ import {
   Scale
 } from 'lucide-react';
 import SaveScenarioButton from './SaveScenarioButton';
+import NumberInput from '@/components/ui/NumberInput';
 import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 
 // IRS Uniform Lifetime Table (simplified for RMD age 73+)
@@ -102,7 +103,9 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
     ...(initialValues || {}),
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>, category: string | null = null) => {
+  // Handles the select/checkbox controls ('strategy', 'sequenceRisk',
+  // 'useAutoOptimize'); numeric fields use <NumberInput> with direct setters.
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
 
     // Pro feature gating
@@ -111,18 +114,8 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
       if (checked) return; // Block enabling for free users
     }
 
-    const val = (name === 'strategy' || name === 'sequenceRisk' || name === 'useAutoOptimize') ?
-                (type === 'checkbox' ? (e.target as HTMLInputElement).checked : value) :
-                parseFloat(value) || 0;
-
-    if (category === 'balances') {
-      setInputs(prev => ({
-        ...prev,
-        balances: { ...prev.balances, [name]: val as number }
-      }));
-    } else {
-      setInputs(prev => ({ ...prev, [name]: val as any }));
-    }
+    const val = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
+    setInputs(prev => ({ ...prev, [name]: val as any }));
   };
 
   const simulationResults = useMemo(() => {
@@ -329,34 +322,37 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-[var(--text-tertiary)] uppercase mb-1">Current Age</label>
-                  <input
-                    type="number" name="currentAge" value={inputs.currentAge}
-                    onChange={handleInputChange}
+                  <NumberInput
+                    name="currentAge" value={inputs.currentAge}
+                    onValueChange={(n) => setInputs(prev => ({ ...prev, currentAge: n }))}
+                    min={1}
                     className="w-full px-4 py-2 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl focus:ring-2 focus:ring-[var(--emerald-500)] outline-none font-medium"
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-[var(--text-tertiary)] uppercase mb-1">Target Retire Age</label>
-                  <input
-                    type="number" name="targetRetirementAge" value={inputs.targetRetirementAge}
-                    onChange={handleInputChange}
+                  <NumberInput
+                    name="targetRetirementAge" value={inputs.targetRetirementAge}
+                    onValueChange={(n) => setInputs(prev => ({ ...prev, targetRetirementAge: n }))}
+                    min={1}
                     className="w-full px-4 py-2 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl focus:ring-2 focus:ring-[var(--emerald-500)] outline-none font-medium"
                   />
                 </div>
               </div>
               <div>
                 <label className="block text-xs font-bold text-[var(--text-tertiary)] uppercase mb-1">Annual Spending</label>
-                <input
-                  type="number" name="annualSpending" value={inputs.annualSpending}
-                  onChange={handleInputChange}
+                <NumberInput
+                  name="annualSpending" value={inputs.annualSpending}
+                  onValueChange={(n) => setInputs(prev => ({ ...prev, annualSpending: n }))}
+                  min={0}
                   className="w-full px-4 py-2 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl focus:ring-2 focus:ring-[var(--emerald-500)] outline-none font-medium"
                 />
               </div>
               <div>
                 <label className="block text-xs font-bold text-[var(--text-tertiary)] uppercase mb-1">Portfolio Growth Rate (%)</label>
-                <input
-                  type="number" name="avgReturn" value={inputs.avgReturn} step="0.1"
-                  onChange={handleInputChange}
+                <NumberInput
+                  name="avgReturn" value={inputs.avgReturn} step="0.1"
+                  onValueChange={(n) => setInputs(prev => ({ ...prev, avgReturn: n }))}
                   className="w-full px-4 py-2 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl focus:ring-2 focus:ring-[var(--emerald-500)] outline-none font-medium"
                 />
                 <p className="text-[9px] text-[var(--text-muted)] mt-1">Assumed annual return</p>
@@ -375,9 +371,10 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
                   <label className="block text-xs font-bold text-[var(--text-tertiary)] uppercase mb-1">{type}</label>
                   <div className="relative">
                     <span className="absolute left-3 top-2 text-[var(--text-muted)]">$</span>
-                    <input
-                      type="number" name={type} value={inputs.balances[type as keyof typeof inputs.balances]}
-                      onChange={(e) => handleInputChange(e, 'balances')}
+                    <NumberInput
+                      name={type} value={inputs.balances[type as keyof typeof inputs.balances]}
+                      onValueChange={(n) => setInputs(prev => ({ ...prev, balances: { ...prev.balances, [type]: n } }))}
+                      min={0}
                       className="w-full pl-8 pr-4 py-2 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl focus:ring-2 focus:ring-[var(--emerald-500)] outline-none font-medium"
                     />
                   </div>
@@ -394,17 +391,19 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold text-[var(--text-tertiary)] uppercase mb-1">Annual Amount</label>
-                <input
-                  type="number" name="ssAmount" value={inputs.ssAmount}
-                  onChange={handleInputChange}
+                <NumberInput
+                  name="ssAmount" value={inputs.ssAmount}
+                  onValueChange={(n) => setInputs(prev => ({ ...prev, ssAmount: n }))}
+                  min={0}
                   className="w-full px-4 py-2 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-medium"
                 />
               </div>
               <div>
                 <label className="block text-xs font-bold text-[var(--text-tertiary)] uppercase mb-1">Start Age</label>
-                <input
-                  type="number" name="ssStartAge" value={inputs.ssStartAge}
-                  onChange={handleInputChange}
+                <NumberInput
+                  name="ssStartAge" value={inputs.ssStartAge}
+                  onValueChange={(n) => setInputs(prev => ({ ...prev, ssStartAge: n }))}
+                  min={1}
                   className="w-full px-4 py-2 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-medium"
                 />
               </div>
@@ -469,9 +468,10 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
               <div className="space-y-4">
                 <div>
                   <label className="block text-xs font-bold text-[var(--emerald-500)] uppercase mb-1">Annual Conv. Amount</label>
-                  <input
-                    type="number" name="rothConvAmount" value={inputs.rothConvAmount}
-                    onChange={handleInputChange}
+                  <NumberInput
+                    name="rothConvAmount" value={inputs.rothConvAmount}
+                    onValueChange={(n) => setInputs(prev => ({ ...prev, rothConvAmount: n }))}
+                    min={0}
                     className="w-full px-4 py-2 bg-[var(--bg-card)] border border-[var(--emerald-border)] rounded-xl font-medium"
                   />
                 </div>
@@ -482,17 +482,19 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
             <div className="grid grid-cols-2 gap-4 mt-4">
               <div>
                 <label className="block text-xs font-bold text-[var(--emerald-500)] uppercase mb-1">Start Age</label>
-                <input
-                  type="number" name="rothConvStartAge" value={inputs.rothConvStartAge}
-                  onChange={handleInputChange}
+                <NumberInput
+                  name="rothConvStartAge" value={inputs.rothConvStartAge}
+                  onValueChange={(n) => setInputs(prev => ({ ...prev, rothConvStartAge: n }))}
+                  min={1}
                   className="w-full px-4 py-2 bg-[var(--bg-card)] border border-[var(--emerald-border)] rounded-xl font-medium"
                 />
               </div>
               <div>
                 <label className="block text-xs font-bold text-[var(--emerald-500)] uppercase mb-1">End Age</label>
-                <input
-                  type="number" name="rothConvEndAge" value={inputs.rothConvEndAge}
-                  onChange={handleInputChange}
+                <NumberInput
+                  name="rothConvEndAge" value={inputs.rothConvEndAge}
+                  onValueChange={(n) => setInputs(prev => ({ ...prev, rothConvEndAge: n }))}
+                  min={1}
                   className="w-full px-4 py-2 bg-[var(--bg-card)] border border-[var(--emerald-border)] rounded-xl font-medium"
                 />
               </div>
