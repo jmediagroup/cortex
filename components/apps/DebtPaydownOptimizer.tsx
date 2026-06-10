@@ -24,6 +24,7 @@ import {
 import SaveScenarioButton from './SaveScenarioButton';
 import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 import ProGatedPreview from '@/components/monetization/ProGatedPreview';
+import NumberInput from '@/components/ui/NumberInput';
 
 interface Debt {
   id: number;
@@ -352,28 +353,27 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                     </div>
                     <div>
                       <label className="text-xs font-bold text-[var(--text-muted)] uppercase">Balance ($)</label>
-                      <input
-                        type="number"
+                      <NumberInput
                         value={debt.balance}
-                        onChange={(e) => updateDebt(debt.id, 'balance', parseFloat(e.target.value) || 0)}
+                        min={0}
+                        onValueChange={(n) => updateDebt(debt.id, 'balance', n)}
                         className="w-full bg-transparent border-b border-[var(--border-default)] focus:border-[var(--emerald-border)] outline-none py-1"
                       />
                     </div>
                     <div>
                       <label className="text-xs font-bold text-[var(--text-muted)] uppercase">APR (%)</label>
-                      <input
-                        type="number"
+                      <NumberInput
                         value={debt.rate}
-                        onChange={(e) => updateDebt(debt.id, 'rate', parseFloat(e.target.value) || 0)}
+                        onValueChange={(n) => updateDebt(debt.id, 'rate', n)}
                         className="w-full bg-transparent border-b border-[var(--border-default)] focus:border-[var(--emerald-border)] outline-none py-1"
                       />
                     </div>
                     <div>
                       <label className="text-xs font-bold text-[var(--text-muted)] uppercase">Min Pay ($)</label>
-                      <input
-                        type="number"
+                      <NumberInput
                         value={debt.minPayment}
-                        onChange={(e) => updateDebt(debt.id, 'minPayment', parseFloat(e.target.value) || 0)}
+                        min={0}
+                        onValueChange={(n) => updateDebt(debt.id, 'minPayment', n)}
                         className="w-full bg-transparent border-b border-[var(--border-default)] focus:border-[var(--emerald-border)] outline-none py-1"
                       />
                     </div>
@@ -402,10 +402,10 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-xs font-bold text-[var(--text-muted)] uppercase">Monthly Income ($)</label>
-                  <input
-                    type="number"
+                  <NumberInput
                     value={monthlyIncome}
-                    onChange={(e) => setMonthlyIncome(parseFloat(e.target.value) || 0)}
+                    min={0}
+                    onValueChange={(n) => setMonthlyIncome(n)}
                     className="w-full bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg px-3 py-2 mt-1 outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                   />
                   <p className="text-[10px] text-[var(--text-muted)] mt-1 italic">
@@ -465,19 +465,17 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
               <div className="grid grid-cols-2 gap-4 pt-2">
                 <div>
                   <label className="text-xs font-bold text-[var(--text-muted)] uppercase">Invest Return (%)</label>
-                  <input
-                    type="number"
+                  <NumberInput
                     value={investmentRate}
-                    onChange={(e) => setInvestmentRate(parseFloat(e.target.value) || 0)}
+                    onValueChange={(n) => setInvestmentRate(n)}
                     className="w-full bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg px-3 py-2 mt-1 outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                   />
                 </div>
                 <div>
                   <label className="text-xs font-bold text-[var(--text-muted)] uppercase">Tax Bracket (%)</label>
-                  <input
-                    type="number"
+                  <NumberInput
                     value={taxRate}
-                    onChange={(e) => setTaxRate(parseFloat(e.target.value) || 0)}
+                    onValueChange={(n) => setTaxRate(n)}
                     className="w-full bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg px-3 py-2 mt-1 outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                   />
                 </div>

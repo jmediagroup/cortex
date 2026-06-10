@@ -182,6 +182,17 @@ const APPS: AppConfig[] = [
     category: 'Personal Finance',
     path: '/apps/gambling-redirect',
   },
+  {
+    id: 'personality-quiz',
+    name: 'Financial Personality Quiz',
+    description: 'Map your money instincts to one of six investor archetypes — from patient Accumulator to high-conviction Visionary.',
+    icon: Brain,
+    iconColor: 'text-[var(--color-accent)]',
+    tier: 'free',
+    sector: 'finance',
+    category: 'Personal Finance',
+    path: '/apps/personality-quiz',
+  },
 ];
 
 interface AppLibraryProps {

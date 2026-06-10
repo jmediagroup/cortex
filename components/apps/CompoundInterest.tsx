@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import SaveScenarioButton from './SaveScenarioButton';
 import Tooltip from '@/components/ui/Tooltip';
+import NumberInput from '@/components/ui/NumberInput';
 import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 import ProGatedPreview from '@/components/monetization/ProGatedPreview';
 
@@ -25,6 +26,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
     monthlyContribution: 500,
     annualReturn: 8,
     years: 30,
+    currentAge: 30,
     compoundingFrequency: 12,
     ...(initialValues || {}),
   });
@@ -124,10 +126,9 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
 
     // 4. Critical Ages - Identify momentum milestones
     const criticalAges = [];
-    const currentAge = 30; // Could make this an input
-    for (let year = 5; year <= inputs.years; year += 5) {
+    for (let year = 5; year <= totalYears; year += 5) {
       criticalAges.push({
-        age: currentAge + year,
+        age: inputs.currentAge + year,
         year,
         balance: simulationData[year].balance
       });
@@ -153,10 +154,8 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
     };
   }, [isPro, inputs, simulationData, finalStats]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setInputs(prev => ({ ...prev, [name]: parseFloat(value) || 0 }));
-  };
+  const setField = (name: string) => (n: number) =>
+    setInputs(prev => ({ ...prev, [name]: n }));
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
@@ -204,23 +203,27 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Initial Principal</label>
                 <div className="relative">
                   <span className="absolute left-4 top-2.5 text-[var(--text-muted)] font-bold">$</span>
-                  <input type="number" name="principal" value={inputs.principal} onChange={handleInputChange} className="w-full pl-8 pr-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
+                  <NumberInput value={inputs.principal} onValueChange={setField('principal')} min={0} className="w-full pl-8 pr-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
                 </div>
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Monthly Contribution</label>
                 <div className="relative">
                   <span className="absolute left-4 top-2.5 text-[var(--text-muted)] font-bold">$</span>
-                  <input type="number" name="monthlyContribution" value={inputs.monthlyContribution} onChange={handleInputChange} className="w-full pl-8 pr-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
+                  <NumberInput value={inputs.monthlyContribution} onValueChange={setField('monthlyContribution')} min={0} className="w-full pl-8 pr-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
                 </div>
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Avg. Return Rate (%)</label>
-                <input type="number" name="annualReturn" value={inputs.annualReturn} onChange={handleInputChange} className="w-full px-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
+                <NumberInput value={inputs.annualReturn} onValueChange={setField('annualReturn')} step={0.1} className="w-full px-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Investment Horizon (Years)</label>
-                <input type="number" name="years" value={inputs.years} onChange={handleInputChange} className="w-full px-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
+                <NumberInput value={inputs.years} onValueChange={setField('years')} min={0} max={80} className="w-full px-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Current Age</label>
+                <NumberInput value={inputs.currentAge} onValueChange={setField('currentAge')} min={0} max={100} className="w-full px-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">
@@ -444,6 +447,32 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
               </p>
             </div>
           </div>
+
+          {/* Critical Milestones */}
+          {lifeImpactAnalysis.criticalAges.length > 0 && (
+            <div className="bg-[var(--bg-card)] rounded-[3rem] p-10 border border-[var(--border-default)] shadow-sm">
+              <div className="flex items-start gap-4 mb-6">
+                <div className="bg-[var(--emerald-100)] text-[var(--emerald-500)] p-3 rounded-2xl">
+                  <Clock size={32} />
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-2xl font-bold text-[var(--text-primary)] mb-3">Critical Milestones</h4>
+                  <p className="text-[var(--text-secondary)] font-medium text-lg leading-relaxed mb-6">
+                    Where your balance lands at each five-year checkpoint, starting from age {inputs.currentAge}:
+                  </p>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {lifeImpactAnalysis.criticalAges.map((m) => (
+                      <div key={m.year} className="bg-[var(--emerald-50)] rounded-2xl p-5 border border-[var(--emerald-border-soft)]">
+                        <p className="text-[var(--emerald-500)] text-sm font-bold mb-1">Age {m.age}</p>
+                        <p className="text-2xl font-bold text-[var(--text-primary)]">${m.balance.toLocaleString()}</p>
+                        <p className="text-[var(--text-tertiary)] text-xs font-medium mt-1">Year {m.year}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Multi-Goal Allocation */}
           <div className="bg-[var(--bg-card)] rounded-[3rem] p-10 border border-[var(--border-default)] shadow-sm">

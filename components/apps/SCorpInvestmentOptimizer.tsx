@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { TrendingUp, DollarSign, PiggyBank, Shield, AlertCircle, Lock } from 'lucide-react';
 import SaveScenarioButton from './SaveScenarioButton';
+import NumberInput from '@/components/ui/NumberInput';
 import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 
 /**
@@ -40,14 +41,6 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
     adjustInflation: false,
     ...(initialValues || {}),
   });
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
-    const val = type === 'checkbox' ? (e.target as HTMLInputElement).checked :
-                (type === 'select-one' || name === 'taxStrategy') ? value :
-                parseFloat(value) || 0;
-    setInputs(prev => ({ ...prev, [name]: val }));
-  };
 
   // 2026 IRS Limits
   const LIMITS = useMemo(() => {
@@ -235,11 +228,11 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
                 <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Annual W-2 Salary</label>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] font-bold">$</span>
-                  <input
-                    type="number"
+                  <NumberInput
                     name="annualSalary"
                     value={inputs.annualSalary}
-                    onChange={handleInputChange}
+                    onValueChange={(n) => setInputs(prev => ({ ...prev, annualSalary: n }))}
+                    min={0}
                     step="1000"
                     className="w-full pl-8 pr-4 py-3 border-2 border-[var(--border-default)] rounded-2xl font-bold text-[var(--text-primary)] focus:border-[var(--emerald-border)] focus:outline-none transition-colors"
                   />
@@ -249,21 +242,20 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Your Age</label>
-                  <input
-                    type="number"
+                  <NumberInput
                     name="age"
                     value={inputs.age}
-                    onChange={handleInputChange}
+                    onValueChange={(n) => setInputs(prev => ({ ...prev, age: n }))}
+                    min={1}
                     className="w-full px-4 py-3 border-2 border-[var(--border-default)] rounded-2xl font-bold text-[var(--text-primary)] focus:border-[var(--emerald-border)] focus:outline-none transition-colors"
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Est. Tax Rate %</label>
-                  <input
-                    type="number"
+                  <NumberInput
                     name="estTaxRate"
                     value={inputs.estTaxRate}
-                    onChange={handleInputChange}
+                    onValueChange={(n) => setInputs(prev => ({ ...prev, estTaxRate: n }))}
                     step="1"
                     className="w-full px-4 py-3 border-2 border-[var(--border-default)] rounded-2xl font-bold text-[var(--text-primary)] focus:border-[var(--emerald-border)] focus:outline-none transition-colors"
                   />
@@ -275,7 +267,7 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
                 <select
                   name="taxStrategy"
                   value={inputs.taxStrategy}
-                  onChange={handleInputChange}
+                  onChange={(e) => setInputs(prev => ({ ...prev, taxStrategy: e.target.value }))}
                   className="w-full px-4 py-3 border-2 border-[var(--border-default)] rounded-2xl font-bold text-[var(--text-primary)] focus:border-[var(--emerald-border)] focus:outline-none transition-colors"
                 >
                   <option value="roth">Roth (Employee)</option>
@@ -298,11 +290,11 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
                   <span>Employee 401(k)</span>
                   <span className="text-[10px] text-[var(--color-info)]">Max: ${Math.floor(LIMITS.emp401k.monthly).toLocaleString()}</span>
                 </label>
-                <input
-                  type="number"
+                <NumberInput
                   name="monthlyEmp401k"
                   value={inputs.monthlyEmp401k}
-                  onChange={handleInputChange}
+                  onValueChange={(n) => setInputs(prev => ({ ...prev, monthlyEmp401k: n }))}
+                  min={0}
                   step="50"
                   className={`w-full px-4 py-3 border-2 rounded-2xl font-bold text-[var(--text-primary)] focus:outline-none transition-colors ${
                     inputs.monthlyEmp401k > LIMITS.emp401k.monthly ? 'border-[var(--crimson-border)] bg-[var(--crimson-50)]' : 'border-[var(--border-default)] focus:border-[var(--color-info)]'
@@ -315,11 +307,11 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
                   <span>Company 401(k) Match</span>
                   <span className="text-[10px] text-[var(--color-info)]">Max: ${Math.floor(LIMITS.co401k.monthly).toLocaleString()}</span>
                 </label>
-                <input
-                  type="number"
+                <NumberInput
                   name="monthlyCo401k"
                   value={inputs.monthlyCo401k}
-                  onChange={handleInputChange}
+                  onValueChange={(n) => setInputs(prev => ({ ...prev, monthlyCo401k: n }))}
+                  min={0}
                   step="50"
                   className={`w-full px-4 py-3 border-2 rounded-2xl font-bold text-[var(--text-primary)] focus:outline-none transition-colors ${
                     inputs.monthlyCo401k > LIMITS.co401k.monthly ? 'border-[var(--crimson-border)] bg-[var(--crimson-50)]' : 'border-[var(--border-default)] focus:border-[var(--color-info)]'
@@ -332,11 +324,11 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
                   <span>IRA Contribution</span>
                   <span className="text-[10px] text-[var(--color-info)]">Max: ${Math.floor(LIMITS.ira.monthly).toLocaleString()}</span>
                 </label>
-                <input
-                  type="number"
+                <NumberInput
                   name="monthlyIra"
                   value={inputs.monthlyIra}
-                  onChange={handleInputChange}
+                  onValueChange={(n) => setInputs(prev => ({ ...prev, monthlyIra: n }))}
+                  min={0}
                   step="50"
                   className={`w-full px-4 py-3 border-2 rounded-2xl font-bold text-[var(--text-primary)] focus:outline-none transition-colors ${
                     inputs.monthlyIra > LIMITS.ira.monthly ? 'border-[var(--crimson-border)] bg-[var(--crimson-50)]' : 'border-[var(--border-default)] focus:border-[var(--color-info)]'
@@ -349,11 +341,11 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
                   <span>HSA Contribution</span>
                   <span className="text-[10px] text-[var(--color-info)]">Max: ${Math.floor(LIMITS.hsa.monthly).toLocaleString()}</span>
                 </label>
-                <input
-                  type="number"
+                <NumberInput
                   name="monthlyHsa"
                   value={inputs.monthlyHsa}
-                  onChange={handleInputChange}
+                  onValueChange={(n) => setInputs(prev => ({ ...prev, monthlyHsa: n }))}
+                  min={0}
                   step="10"
                   className={`w-full px-4 py-3 border-2 rounded-2xl font-bold text-[var(--text-primary)] focus:outline-none transition-colors ${
                     inputs.monthlyHsa > LIMITS.hsa.monthly ? 'border-[var(--crimson-border)] bg-[var(--crimson-50)]' : 'border-[var(--border-default)] focus:border-[var(--color-info)]'
@@ -363,11 +355,11 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
 
               <div>
                 <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Brokerage / Excess</label>
-                <input
-                  type="number"
+                <NumberInput
                   name="monthlyBrokerage"
                   value={inputs.monthlyBrokerage}
-                  onChange={handleInputChange}
+                  onValueChange={(n) => setInputs(prev => ({ ...prev, monthlyBrokerage: n }))}
+                  min={0}
                   step="100"
                   className="w-full px-4 py-3 border-2 border-[var(--border-default)] rounded-2xl font-bold text-[var(--text-primary)] focus:border-[var(--color-info)] focus:outline-none transition-colors"
                 />
@@ -382,22 +374,20 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Return %</label>
-                  <input
-                    type="number"
+                  <NumberInput
                     name="growthRate"
                     value={inputs.growthRate}
-                    onChange={handleInputChange}
+                    onValueChange={(n) => setInputs(prev => ({ ...prev, growthRate: n }))}
                     step="0.5"
                     className="w-full px-4 py-3 border-2 border-[var(--border-default)] rounded-2xl font-bold text-[var(--text-primary)] focus:border-[var(--emerald-border)] focus:outline-none transition-colors"
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Inflation %</label>
-                  <input
-                    type="number"
+                  <NumberInput
                     name="inflationRate"
                     value={inputs.inflationRate}
-                    onChange={handleInputChange}
+                    onValueChange={(n) => setInputs(prev => ({ ...prev, inflationRate: n }))}
                     step="0.1"
                     className="w-full px-4 py-3 border-2 border-[var(--border-default)] rounded-2xl font-bold text-[var(--text-primary)] focus:border-[var(--emerald-border)] focus:outline-none transition-colors"
                   />

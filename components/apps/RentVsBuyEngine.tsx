@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import SaveScenarioButton from './SaveScenarioButton';
 import Tooltip from '@/components/ui/Tooltip';
+import NumberInput from '@/components/ui/NumberInput';
 import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 import ProGatedPreview from '@/components/monetization/ProGatedPreview';
 
@@ -132,6 +133,17 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
   const currentYearData = results[years];
   const winner = currentYearData.buyNetWorth > currentYearData.rentNetWorth ? 'Buy' : 'Rent';
   const nwDiff = Math.abs(currentYearData.buyNetWorth - currentYearData.rentNetWorth);
+
+  // First year where buying pulls ahead of renting and stays ahead.
+  const breakEvenYear = (() => {
+    for (let yr = 1; yr < results.length; yr++) {
+      if (results[yr].buyNetWorth > results[yr].rentNetWorth &&
+          results.slice(yr).every(d => d.buyNetWorth >= d.rentNetWorth)) {
+        return yr;
+      }
+    }
+    return null;
+  })();
 
   const formatCurrency = (val: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
 
@@ -284,15 +296,15 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-[var(--text-tertiary)] uppercase mb-1">Mortgage Rate %</label>
-                  <input
-                    type="number" step="0.1" value={mortgageRate} onChange={(e) => setMortgageRate(Number(e.target.value))}
+                  <NumberInput
+                    step={0.1} min={0} max={25} value={mortgageRate} onValueChange={setMortgageRate}
                     className="w-full p-2 border border-[var(--border-default)] rounded-md bg-[var(--bg-section)] focus:outline-indigo-600"
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-[var(--text-tertiary)] uppercase mb-1">Down Payment %</label>
-                  <input
-                    type="number" value={downPaymentPct} onChange={(e) => setDownPaymentPct(Number(e.target.value))}
+                  <NumberInput
+                    min={0} max={100} value={downPaymentPct} onValueChange={setDownPaymentPct}
                     className="w-full p-2 border border-[var(--border-default)] rounded-md bg-[var(--bg-section)] focus:outline-indigo-600"
                   />
                 </div>
@@ -380,6 +392,11 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                       by <span className="font-bold font-mono">{formatCurrency(nwDiff)}</span> in net worth
                     </p>
                   </div>
+                  <p className="text-[var(--mist-200)] text-xs font-medium mt-2">
+                    {breakEvenYear !== null
+                      ? `Buying pulls ahead of renting in year ${breakEvenYear} and stays ahead.`
+                      : 'Renting stays ahead of buying for the entire 30-year horizon.'}
+                  </p>
                 </div>
               </div>
             </div>
