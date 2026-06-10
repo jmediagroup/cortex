@@ -32,13 +32,19 @@ export default function SCorpOptimizer({ isPro = false, onUpgrade, isLoggedIn = 
   }, [initialValues]);
 
   const stats = useMemo(() => {
-    // Self-Employment Tax (15.3% on 92.35% of profit)
+    // The 12.4% Social Security portion only applies up to the wage base;
+    // the 2.9% Medicare portion is uncapped. Applying the full 15.3% to
+    // unlimited income overstates both sides (and the savings) badly at
+    // high incomes.
+    const SS_WAGE_BASE = 176100; // 2025 Social Security wage base
+
+    // Self-Employment Tax on 92.35% of profit
     const seTaxBase = profit * 0.9235;
-    const seTax = seTaxBase * 0.153;
+    const seTax = Math.min(seTaxBase, SS_WAGE_BASE) * 0.124 + seTaxBase * 0.029;
 
     // S-Corp Calculation
-    // Salary is subject to FICA (15.3% total employer/employee)
-    const ficaTax = salary * 0.153;
+    // Salary is subject to FICA (employer + employee)
+    const ficaTax = Math.min(salary, SS_WAGE_BASE) * 0.124 + salary * 0.029;
     const distributions = Math.max(0, profit - salary);
     // Distributions are NOT subject to FICA
 
@@ -49,7 +55,7 @@ export default function SCorpOptimizer({ isPro = false, onUpgrade, isLoggedIn = 
       sCorpTax: ficaTax,
       savings: sCorpSavings,
       distributions,
-      efficiency: (sCorpSavings / seTax) * 100
+      efficiency: seTax > 0 ? (sCorpSavings / seTax) * 100 : 0
     };
   }, [profit, salary]);
 

@@ -396,7 +396,10 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
       const rate = Number(l.rate) / 100 / 12;
       const term = Number(l.term) * 12;
       const balance = Number(l.value);
-      const payment = balance > 0 && term > 0 ? (balance * rate * Math.pow(1 + rate, term)) / (Math.pow(1 + rate, term) - 1) : 0;
+      // 0%-rate loans amortize linearly; the annuity formula is 0/0 there.
+      const payment = balance > 0 && term > 0
+        ? (rate === 0 ? balance / term : (balance * rate * Math.pow(1 + rate, term)) / (Math.pow(1 + rate, term) - 1))
+        : 0;
       return sum + (isFinite(payment) ? payment : 0);
     }, 0);
     const annualDebtDrag = debtPayments * 12;
@@ -404,10 +407,17 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
     const debtDragPercentage = momentumWithoutDebt > 0 ? (annualDebtDrag / momentumWithoutDebt) * 100 : 0;
 
     // 4. Tipping Point Analysis - When does growth exceed savings?
-    const tippingPointNetWorth = (monthlySavings * 12) / (growthRate / 100);
-    const yearsToTippingPoint = metrics.totalAssets > 0
-      ? Math.max(0, (tippingPointNetWorth - metrics.totalAssets) / (monthlySavings * 12))
-      : tippingPointNetWorth / (monthlySavings * 12);
+    // Only meaningful with positive growth and savings; otherwise there is no
+    // crossover point to report.
+    const hasTippingPoint = growthRate > 0 && monthlySavings > 0;
+    const tippingPointNetWorth = hasTippingPoint
+      ? (monthlySavings * 12) / (growthRate / 100)
+      : Infinity;
+    const yearsToTippingPoint = !hasTippingPoint
+      ? Infinity
+      : metrics.totalAssets > 0
+        ? Math.max(0, (tippingPointNetWorth - metrics.totalAssets) / (monthlySavings * 12))
+        : tippingPointNetWorth / (monthlySavings * 12);
 
     // 5. Liquid vs Illiquid Allocation Risk
     const idealLiquidRatio = 0.25; // 25% liquid is generally safe
@@ -432,6 +442,27 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
     };
   }, [isPro, assets, liabilities, metrics, monthlySavings, growthRate]);
 
+  // 10-year trajectory: assets compound at the chosen growth rate with annual
+  // savings added; liabilities are held flat (conservative — no amortization
+  // schedule is collected). Replaces the previous hardcoded chart data.
+  const trajectory = useMemo(() => {
+    const project = (rate: number, savingsMultiplier: number) => {
+      const r = rate / 100;
+      let assetsFV = metrics.totalAssets;
+      const points: number[] = [];
+      for (let y = 1; y <= 10; y++) {
+        assetsFV = assetsFV * (1 + r) + monthlySavings * 12 * savingsMultiplier;
+        points.push(assetsFV - metrics.totalLiabilities);
+      }
+      return points;
+    };
+    const current = project(growthRate, 1);
+    const conservative = project(growthRate - 3, 0.9);
+    const optimistic = project(growthRate + 3, 1.4);
+    const maxValue = Math.max(1, ...current, ...conservative);
+    return { current, conservative, optimistic, maxValue };
+  }, [metrics.totalAssets, metrics.totalLiabilities, monthlySavings, growthRate]);
+
   return (
     <div className="space-y-8">
       {/* Save Scenario */}
@@ -439,7 +470,7 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
         <SaveScenarioButton
           toolId="net-worth"
           toolName="Net Worth Engine"
-          getInputs={() => ({ assets, liabilities })}
+          getInputs={() => ({ assets, liabilities, monthlySavings, growthRate })}
           getKeyResult={() => {
             const totalAssets = assets.reduce((s: number, a: any) => s + (typeof a.value === 'number' ? a.value : parseFloat(a.value) || 0), 0);
             const totalLiabilities = liabilities.reduce((s: number, l: any) => s + (typeof l.value === 'number' ? l.value : parseFloat(l.value) || 0), 0);
@@ -909,11 +940,11 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
                 </div>
 
                 <div className="h-72 w-full relative mb-16 flex items-end justify-between border-b border-l border-[var(--border-subtle)] px-8">
-                  {[0.15, 0.22, 0.30, 0.42, 0.55, 0.72, 0.90, 1.15, 1.45, 1.80].map((val, i) => (
+                  {trajectory.current.map((val, i) => (
                     <div key={i} className="flex flex-col items-center w-full group">
-                      <div className="flex flex-col-reverse w-16 gap-2 items-center h-60">
-                        <div className="w-3 bg-[var(--emerald-400)] rounded-t transition-all group-hover:bg-[var(--emerald-500)] group-hover:w-4" style={{ height: `${val * 90}%` }} />
-                        <div className="w-3 bg-[var(--emerald-100)] rounded-t" style={{ height: `${val * 40}%` }} />
+                      <div className="flex flex-col-reverse w-16 gap-2 items-center h-60" title={`Year ${i + 1}: $${Math.round(val).toLocaleString()}`}>
+                        <div className="w-3 bg-[var(--emerald-400)] rounded-t transition-all group-hover:bg-[var(--emerald-500)] group-hover:w-4" style={{ height: `${Math.max(0, (val / trajectory.maxValue) * 90)}%` }} />
+                        <div className="w-3 bg-[var(--emerald-100)] rounded-t" style={{ height: `${Math.max(0, (trajectory.conservative[i] / trajectory.maxValue) * 40)}%` }} />
                       </div>
                       <span className="text-[10px] text-[var(--text-muted)] mt-5 font-semibold uppercase tracking-widest">Y{i+1}</span>
                     </div>
@@ -930,18 +961,18 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   <div className="p-8 border border-[var(--border-subtle)] rounded-3xl bg-[var(--bg-card)] shadow-sm hover:shadow-md transition-all">
-                    <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-[0.2em] mb-3">Cautious Outlook</p>
-                    <p className="text-2xl font-bold text-[var(--text-primary)] tracking-tighter">${(metrics.netWorth * 1.3 + (monthlySavings * 120 * 0.9)).toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
+                    <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-[0.2em] mb-3">Cautious Outlook ({growthRate - 3}%)</p>
+                    <p className="text-2xl font-bold text-[var(--text-primary)] tracking-tighter">${Math.round(trajectory.conservative[9]).toLocaleString()}</p>
                     <p className="text-[10px] text-[var(--text-muted)] font-bold mt-2 italic">Low velocity + steady savings</p>
                   </div>
                   <div className="p-8 border-4 border-[var(--emerald-border)] bg-[var(--emerald-50)]/30 rounded-3xl shadow-2xl shadow-[0_0_16px_var(--cta-glow-soft)]/50 relative transform hover:-translate-y-1 transition-all">
                     <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[var(--emerald-400)] text-white px-3 py-1 rounded-full text-[9px] font-bold tracking-widest uppercase">Target Momentum</div>
                     <p className="text-[10px] font-bold text-[var(--emerald-400)] uppercase tracking-[0.2em] mb-3">Current Path ({growthRate}%)</p>
-                    <p className="text-3xl font-bold text-[var(--text-primary)] tracking-tighter">${(metrics.netWorth * Math.pow(1 + (growthRate/100), 10) + (monthlySavings * 120)).toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
+                    <p className="text-3xl font-bold text-[var(--text-primary)] tracking-tighter">${Math.round(trajectory.current[9]).toLocaleString()}</p>
                   </div>
                   <div className="p-8 border border-[var(--border-subtle)] rounded-3xl bg-[var(--bg-card)] shadow-sm hover:shadow-md transition-all">
-                    <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-[0.2em] mb-3">Optimistic Pivot</p>
-                    <p className="text-2xl font-bold text-[var(--text-primary)] tracking-tighter">${(metrics.netWorth * 2.8 + (monthlySavings * 120 * 1.4)).toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
+                    <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-[0.2em] mb-3">Optimistic Pivot ({growthRate + 3}%)</p>
+                    <p className="text-2xl font-bold text-[var(--text-primary)] tracking-tighter">${Math.round(trajectory.optimistic[9]).toLocaleString()}</p>
                     <p className="text-[10px] text-[var(--text-muted)] font-bold mt-2 italic">High alpha + aggressive savings</p>
                   </div>
                 </div>
@@ -1176,7 +1207,11 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div className="bg-[var(--bg-card)] rounded-2xl p-6 border border-[var(--emerald-border-soft)]">
                 <p className="text-xs text-[var(--text-tertiary)] font-semibold uppercase tracking-wider mb-2">Tipping Point Net Worth</p>
-                <p className="text-4xl font-bold text-[var(--emerald-500)] mb-2">${Math.round(momentumIntelligence.tippingPointNetWorth).toLocaleString()}</p>
+                <p className="text-4xl font-bold text-[var(--emerald-500)] mb-2">
+                  {isFinite(momentumIntelligence.tippingPointNetWorth)
+                    ? `$${Math.round(momentumIntelligence.tippingPointNetWorth).toLocaleString()}`
+                    : '—'}
+                </p>
                 <p className="text-sm text-[var(--text-secondary)] font-medium">
                   Where {growthRate}% growth = ${(monthlySavings * 12).toLocaleString()}/year savings
                 </p>
@@ -1199,9 +1234,11 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
                 <div>
                   <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
                   <p className="text-[var(--mist-100)] text-sm font-medium leading-relaxed">
-                    {metrics.totalAssets >= momentumIntelligence.tippingPointNetWorth
+                    {!isFinite(momentumIntelligence.tippingPointNetWorth)
+                      ? `Set a positive growth rate and monthly savings to see your tipping point — the net worth where asset growth outpaces what you save.`
+                      : metrics.totalAssets >= momentumIntelligence.tippingPointNetWorth
                       ? `Congratulations: You've crossed the tipping point. Asset growth now exceeds your annual savings. Your wealth compounds faster than you can manually add to it.`
-                      : `You need ${Math.round((momentumIntelligence.tippingPointNetWorth - metrics.totalAssets) / (monthlySavings * 12)).toFixed(1)} more years of disciplined saving to reach the tipping point. After that, compound growth takes over.`}
+                      : `You need ${((momentumIntelligence.tippingPointNetWorth - metrics.totalAssets) / (monthlySavings * 12)).toFixed(1)} more years of disciplined saving to reach the tipping point. After that, compound growth takes over.`}
                   </p>
                 </div>
               </div>

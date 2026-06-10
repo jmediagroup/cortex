@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Zap,
@@ -178,31 +178,32 @@ const App = () => {
   const taxDrag = grossIncomeNum * taxRate;
   const takeHomePay = grossIncomeNum - taxDrag;
 
+  // Stored numbers are always monthly; in-flight strings (mid-typing) are in
+  // the current view mode, so annual-mode input must be divided by 12 before
+  // it joins the monthly totals.
+  const toMonthly = useCallback((val: number | string) => {
+    if (typeof val === 'string') {
+      const parsed = parseFloat(val) || 0;
+      return viewMode === 'annual' ? parsed / 12 : parsed;
+    }
+    return val;
+  }, [viewMode]);
+
   const totalAllocated = useMemo(() =>
-    Object.values(allocations).reduce((sum: number, val) => {
-      const numVal = typeof val === 'string' ? (parseFloat(val) || 0) : (val as number);
-      return sum + numVal;
-    }, 0)
-  , [allocations]);
+    Object.values(allocations).reduce((sum: number, val) => sum + toMonthly(val), 0)
+  , [allocations, toMonthly]);
 
   const remaining = takeHomePay - totalAllocated;
   const multiplier = viewMode === 'annual' ? 12 : 1;
 
   // Analysis Metrics
-  const fixedTotal = CATEGORIES.fixed.reduce((sum, cat) => {
-    const val = allocations[cat.id];
-    return sum + (typeof val === 'string' ? parseFloat(val) || 0 : val);
-  }, 0);
-  const flexibleTotal = CATEGORIES.flexible.reduce((sum, cat) => {
-    const val = allocations[cat.id];
-    return sum + (typeof val === 'string' ? parseFloat(val) || 0 : val);
-  }, 0);
-  const futureTotal = CATEGORIES.future.reduce((sum, cat) => {
-    const val = allocations[cat.id];
-    return sum + (typeof val === 'string' ? parseFloat(val) || 0 : val);
-  }, 0);
+  const fixedTotal = CATEGORIES.fixed.reduce((sum, cat) => sum + toMonthly(allocations[cat.id]), 0);
+  const flexibleTotal = CATEGORIES.flexible.reduce((sum, cat) => sum + toMonthly(allocations[cat.id]), 0);
+  const futureTotal = CATEGORIES.future.reduce((sum, cat) => sum + toMonthly(allocations[cat.id]), 0);
 
-  const flexibilityIndex = Math.max(0, Math.min(100, ((takeHomePay - fixedTotal) / takeHomePay) * 100));
+  const flexibilityIndex = takeHomePay > 0
+    ? Math.max(0, Math.min(100, ((takeHomePay - fixedTotal) / takeHomePay) * 100))
+    : 0;
 
   const tensionScore = useMemo(() => {
     let score = 0;
@@ -262,11 +263,8 @@ const App = () => {
       const newAllocations = { ...allocations };
       let reasoning = '';
 
-      // Get numeric values for calculations
-      const getCurrentValue = (id: string) => {
-        const val = allocations[id];
-        return typeof val === 'string' ? parseFloat(val) || 0 : val;
-      };
+      // Get numeric values for calculations (normalized to monthly)
+      const getCurrentValue = (id: string) => toMonthly(allocations[id]);
 
       if (goal === 'Maximize Monthly Slack') {
         // Strategy: Minimize flexible spending, maximize unallocated funds
@@ -279,20 +277,27 @@ const App = () => {
         reasoning = "Reduced discretionary spending (dining, personal) by 40% and sinking funds by 50% to maximize available monthly cash flow. This creates breathing room for unexpected expenses.";
       }
       else if (goal === 'Maximize Future Savings') {
-        // Strategy: Aggressive future allocation
-        const currentFlexible = getCurrentValue('groceries') + getCurrentValue('dining') +
-                                getCurrentValue('transport') + getCurrentValue('personal');
-        const savings = currentFlexible * 0.25; // Take 25% from flexible
+        // Strategy: Aggressive future allocation — redirect exactly what the
+        // cuts free up, so the optimization never allocates money that
+        // doesn't exist.
+        const newDining = Math.max(150, getCurrentValue('dining') * 0.7);
+        const newPersonal = Math.max(80, getCurrentValue('personal') * 0.6);
+        const newTransport = Math.max(150, getCurrentValue('transport') * 0.85);
+        const freed = Math.max(0,
+          (getCurrentValue('dining') - newDining) +
+          (getCurrentValue('personal') - newPersonal) +
+          (getCurrentValue('transport') - newTransport)
+        );
 
-        newAllocations.dining = Math.max(150, getCurrentValue('dining') * 0.7);
-        newAllocations.personal = Math.max(80, getCurrentValue('personal') * 0.6);
-        newAllocations.transport = Math.max(150, getCurrentValue('transport') * 0.85);
+        newAllocations.dining = newDining;
+        newAllocations.personal = newPersonal;
+        newAllocations.transport = newTransport;
 
         // Allocate to investing and emergency
-        newAllocations.investing = getCurrentValue('investing') + (savings * 0.6);
-        newAllocations.emergency = getCurrentValue('emergency') + (savings * 0.4);
+        newAllocations.investing = getCurrentValue('investing') + (freed * 0.6);
+        newAllocations.emergency = getCurrentValue('emergency') + (freed * 0.4);
 
-        reasoning = "Reduced flexible spending to redirect 25% toward future goals. 60% allocated to investing for wealth building, 40% to emergency buffer for resilience. This prioritizes long-term financial security.";
+        reasoning = "Reduced flexible spending and redirected the freed-up cash toward future goals. 60% allocated to investing for wealth building, 40% to emergency buffer for resilience. This prioritizes long-term financial security.";
       }
       else if (goal === 'Minimize Fragility') {
         // Strategy: Balance across all categories, boost emergency fund
@@ -306,8 +311,9 @@ const App = () => {
         // Calculate remaining after fixed and desired future allocations
         const remainingForFlexible = takeHomePay - totalFixed - targetEmergency - targetInvesting - targetSinking;
 
-        // Distribute flexible proportionally
-        const flexibleRatio = remainingForFlexible / flexibleTotal;
+        // Distribute flexible proportionally (guard against an empty
+        // flexible budget — 0/0 would write NaN into every category)
+        const flexibleRatio = flexibleTotal > 0 ? Math.max(0, remainingForFlexible / flexibleTotal) : 0;
 
         newAllocations.groceries = Math.max(400, getCurrentValue('groceries') * flexibleRatio);
         newAllocations.dining = Math.max(150, getCurrentValue('dining') * flexibleRatio);
@@ -321,10 +327,12 @@ const App = () => {
         reasoning = "Rebalanced to achieve systemic stability: 15% to emergency buffer, 12% to investing, 8% to sinking funds. Flexible spending proportionally adjusted to maintain livability while building resilience across all categories.";
       }
 
-      // Round all values to 2 decimal places
+      // Round all values to 2 decimal places (cleared fields may still hold
+      // '' — parse with a 0 fallback so NaN never lands in state)
       Object.keys(newAllocations).forEach(key => {
         const val = newAllocations[key];
-        newAllocations[key] = typeof val === 'string' ? parseFloat(val) : Math.round(val * 100) / 100;
+        const num = typeof val === 'string' ? (parseFloat(val) || 0) : val;
+        newAllocations[key] = Math.round(num * 100) / 100;
       });
 
       setAllocations(newAllocations);
@@ -532,7 +540,7 @@ const App = () => {
                     <h4 className="text-xs font-bold text-[var(--text-secondary)] mb-1">Tradeoff Lens</h4>
                     {remaining < 0 ? (
                       <p className="text-[11px] text-[var(--color-warning)] leading-relaxed">
-                        System is over-constrained by <span className="font-bold">${Math.abs(remaining)}</span>.
+                        System is over-constrained by <span className="font-bold">${Math.round(Math.abs(remaining)).toLocaleString()}</span>.
                         Decrease flexible spending or sinking funds to restore slack.
                       </p>
                     ) : remaining > 0 ? (

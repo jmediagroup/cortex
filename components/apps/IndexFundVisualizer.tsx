@@ -232,19 +232,44 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
     const sharpeRatio = (fund.cagr - 3) / fund.volatility; // Assuming 3% risk-free rate
     const maxDrawdownEstimate = fund.volatility * 2.5; // Rough estimate
 
-    // Monte Carlo percentiles (simplified)
-    const worstCase = finalStats.steady * 0.6;
-    const bestCase = finalStats.steady * 1.5;
-    const median = finalStats.steady * 0.95;
+    // Monte Carlo percentiles: run seeded random-return paths (same return
+    // model as the main chart) and take the 5th/50th/95th percentile of
+    // final balances, so the range actually responds to volatility/duration.
+    const monthlyReturn = Math.pow(1 + fund.cagr / 100, 1 / 12) - 1;
+    const monthlyContrib = frequency === 'monthly' ? contribution : contribution / 12;
+    const monthlyVol = (fund.volatility / 100) / Math.sqrt(12);
+    const months = Math.max(1, Math.round(duration * 12));
+
+    const rand = (i: number) => {
+      const x = Math.sin(i * 12.9898 + 78.233) * 43758.5453;
+      return x - Math.floor(x);
+    };
+
+    const NUM_PATHS = 200;
+    const finals: number[] = [];
+    for (let p = 0; p < NUM_PATHS; p++) {
+      let bal = principal;
+      for (let m = 1; m <= months; m++) {
+        const idx = p * months + m;
+        const u1 = Math.max(rand(idx * 2), 1e-10);
+        const u2 = rand(idx * 2 + 1);
+        const z = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+        bal = (bal + monthlyContrib) * (1 + monthlyReturn + z * monthlyVol);
+        if (bal < 0) bal = 0;
+      }
+      finals.push(bal);
+    }
+    finals.sort((a, b) => a - b);
+    const percentile = (pct: number) => finals[Math.min(finals.length - 1, Math.floor(pct * finals.length))];
 
     return {
       sharpeRatio: sharpeRatio.toFixed(2),
       maxDrawdownEstimate: maxDrawdownEstimate.toFixed(1),
-      worstCase: Math.round(worstCase),
-      bestCase: Math.round(bestCase),
-      median: Math.round(median)
+      worstCase: Math.round(percentile(0.05)),
+      bestCase: Math.round(percentile(0.95)),
+      median: Math.round(percentile(0.5))
     };
-  }, [isPro, selectedFund, finalStats.steady]);
+  }, [isPro, selectedFund, principal, contribution, frequency, duration]);
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
@@ -412,7 +437,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
             <p className="text-xs font-medium leading-relaxed opacity-80">
               With {FUND_METADATA[selectedFund].cagr}% average returns and {FUND_METADATA[selectedFund].volatility}% volatility,
               your contributions of {formatCurrency(contribution)}/{frequency === 'monthly' ? 'mo' : 'yr'} could compound
-              to {formatCurrency(finalStats.steady)} over {duration} years. That's {Math.round((totalGains / finalStats.invested) * 100)}% return on invested capital.
+              to {formatCurrency(finalStats.steady)} over {duration} years. That's {finalStats.invested > 0 ? Math.round((totalGains / finalStats.invested) * 100) : 0}% return on invested capital.
             </p>
           </div>
         </aside>
@@ -509,7 +534,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="w-6 h-6 rounded-full bg-[var(--emerald-400)]/20 text-[var(--emerald-400)] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">2</div>
-                  <p>Compounding: <span className="text-[var(--emerald-400)] font-bold">{Math.round((totalGains/finalStats.steady)*100)}%</span> of final wealth.</p>
+                  <p>Compounding: <span className="text-[var(--emerald-400)] font-bold">{finalStats.steady > 0 ? Math.round((totalGains/finalStats.steady)*100) : 0}%</span> of final wealth.</p>
                 </div>
               </div>
               <div className="space-y-3">

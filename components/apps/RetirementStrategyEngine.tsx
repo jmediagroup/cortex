@@ -44,27 +44,22 @@ const TAX_BRACKETS = [
 
 const STANDARD_DEDUCTION = 14600;
 
-// Simplified 2024 Federal Tax Brackets (Single Filer)
-const estimateTax = (taxableIncome: number) => {
+// Simplified 2024 Federal Tax Brackets (Single Filer).
+// `inflationFactor` indexes the bracket caps and standard deduction over the
+// simulation horizon (real brackets are CPI-indexed); without it, inflated
+// future spending gets taxed against frozen brackets and lifetime taxes are
+// badly overstated in later years.
+const estimateTax = (taxableIncome: number, inflationFactor: number = 1) => {
   if (taxableIncome <= 0) return 0;
-  const income = Math.max(0, taxableIncome - STANDARD_DEDUCTION);
-
-  const brackets = [
-    { cap: 11600, rate: 0.10 },
-    { cap: 47150, rate: 0.12 },
-    { cap: 100525, rate: 0.22 },
-    { cap: 191950, rate: 0.24 },
-    { cap: 243725, rate: 0.32 },
-    { cap: 609350, rate: 0.35 },
-    { cap: Infinity, rate: 0.37 },
-  ];
+  const income = Math.max(0, taxableIncome - STANDARD_DEDUCTION * inflationFactor);
 
   let tax = 0;
   let previousCap = 0;
-  for (const bracket of brackets) {
-    if (income > bracket.cap) {
-      tax += (bracket.cap - previousCap) * bracket.rate;
-      previousCap = bracket.cap;
+  for (const bracket of TAX_BRACKETS) {
+    const cap = bracket.cap * inflationFactor;
+    if (income > cap) {
+      tax += (cap - previousCap) * bracket.rate;
+      previousCap = cap;
     } else {
       tax += (income - previousCap) * bracket.rate;
       break;
@@ -134,7 +129,7 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
     const data: any[] = [];
     let currentBalances = { ...inputs.balances };
     let baseSpending = inputs.annualSpending;
-    const years = inputs.retirementEndAge - inputs.currentAge;
+    const years = Math.max(0, inputs.retirementEndAge - inputs.currentAge);
 
     for (let year = 0; year <= years; year++) {
       const age = inputs.currentAge + year;
@@ -153,17 +148,31 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
       };
 
       // 1. Calculate the Gap to fill after Social Security
-      const currentYearNeed = isRetired ? baseSpending * Math.pow(1 + inputs.inflationRate/100, year) : 0;
+      const inflationFactor = Math.pow(1 + inputs.inflationRate/100, year);
+      const currentYearNeed = isRetired ? baseSpending * inflationFactor : 0;
       let remainingNeed = Math.max(0, currentYearNeed - yrRes.ssIncome);
       let taxableIncome = yrRes.ssIncome * 0.85; // Rough estimate of taxable SS
 
-      // 2. Roth Conversion Logic (Enhanced with Pro Auto-Optimization)
+      // 2. RMD Logic — RMDs come first: they must be taken before any
+      // conversion and their income counts toward the bracket the
+      // auto-optimizer is trying to fill.
+      if (age >= 73) {
+        const divisor = RMD_TABLE[Math.min(age, 100)] || 6.4;
+        const rmd = currentBalances.traditional / divisor;
+        const takeRmd = Math.min(currentBalances.traditional, rmd);
+        yrRes.withdrawn.traditional += takeRmd;
+        currentBalances.traditional -= takeRmd;
+        taxableIncome += takeRmd;
+        remainingNeed = Math.max(0, remainingNeed - takeRmd);
+      }
+
+      // 3. Roth Conversion Logic (Enhanced with Pro Auto-Optimization)
       if (age >= inputs.rothConvStartAge && age <= inputs.rothConvEndAge && currentBalances.traditional > 0) {
         let potentialConv = 0;
 
         if (inputs.useAutoOptimize && isPro) {
-          // Auto-optimize to fill tax bracket
-          const targetCap = TAX_BRACKETS[inputs.targetBracketIndex].cap + STANDARD_DEDUCTION;
+          // Auto-optimize to fill tax bracket (caps indexed with inflation)
+          const targetCap = (TAX_BRACKETS[inputs.targetBracketIndex].cap + STANDARD_DEDUCTION) * inflationFactor;
           potentialConv = Math.max(0, targetCap - taxableIncome);
           potentialConv = Math.min(currentBalances.traditional, potentialConv);
         } else {
@@ -177,17 +186,6 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
         taxableIncome += potentialConv;
       }
 
-      // 3. RMD Logic
-      if (age >= 73) {
-        const divisor = RMD_TABLE[Math.min(age, 100)] || 6.4;
-        const rmd = currentBalances.traditional / divisor;
-        const takeRmd = Math.min(currentBalances.traditional, rmd);
-        yrRes.withdrawn.traditional += takeRmd;
-        currentBalances.traditional -= takeRmd;
-        taxableIncome += takeRmd;
-        remainingNeed = Math.max(0, remainingNeed - takeRmd);
-      }
-
       // 4. Fill remaining need based on Strategy
       if (inputs.strategy === 'taxable-first') {
         ['taxable', 'traditional', 'roth'].forEach(type => {
@@ -198,7 +196,7 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
             if (type === 'traditional') taxableIncome += take;
         });
       } else if (inputs.strategy === 'bracket-filler') {
-        const targetIncome = 60000; // Target bottom of 22% bracket roughly
+        const targetIncome = 60000 * inflationFactor; // Target bottom of 22% bracket roughly
         const tradBuffer = Math.max(0, targetIncome - taxableIncome);
         const takeTrad = Math.min(currentBalances.traditional, tradBuffer, remainingNeed);
 
@@ -230,7 +228,7 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
 
       yrRes.shortfall = remainingNeed;
       yrRes.taxableIncome = taxableIncome;
-      yrRes.taxesPaid = estimateTax(taxableIncome);
+      yrRes.taxesPaid = estimateTax(taxableIncome, inflationFactor);
 
       // Withdraw taxes from Taxable or Roth
       const taxToPull = yrRes.taxesPaid;
@@ -626,9 +624,9 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
                       contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}}
                       formatter={(val) => [`$${Math.round(Number(val) || 0).toLocaleString()}`, 'Balance']}
                   />
-                  <Area type="monotone" dataKey="endBalances.taxable" stackId="1" stroke="#00F0A0" fill="#33F3B3" fillOpacity={0.8} />
+                  <Area type="monotone" dataKey="endBalances.taxable" stackId="1" stroke="#33F3B3" fill="#33F3B3" fillOpacity={0.6} />
                   <Area type="monotone" dataKey="endBalances.traditional" stackId="1" stroke="#FFB800" fill="#FFB800" fillOpacity={0.8} />
-                  <Area type="monotone" dataKey="endBalances.roth" stackId="1" stroke="#00F0A0" fill="#33F3B3" fillOpacity={0.8} />
+                  <Area type="monotone" dataKey="endBalances.roth" stackId="1" stroke="#00F0A0" fill="#00F0A0" fillOpacity={0.9} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -647,7 +645,7 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
                           <Bar dataKey="ssIncome" stackId="a" fill="#E5E5EA" name="Social Security" />
                           <Bar dataKey="withdrawn.taxable" stackId="a" fill="#33F3B3" name="Taxable Dist." />
                           <Bar dataKey="withdrawn.traditional" stackId="a" fill="#FFB800" name="Trad. Dist." />
-                          <Bar dataKey="withdrawn.roth" stackId="a" fill="#33F3B3" name="Roth Dist." />
+                          <Bar dataKey="withdrawn.roth" stackId="a" fill="#00F0A0" name="Roth Dist." />
                       </BarChart>
                   </ResponsiveContainer>
               </div>

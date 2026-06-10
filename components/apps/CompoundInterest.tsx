@@ -33,8 +33,13 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
     let data = [];
     let balance = inputs.principal;
     let totalContributions = inputs.principal;
+    const years = Math.max(0, Math.floor(inputs.years));
+    // Convert nominal annual rate to the effective annual rate for the
+    // selected compounding frequency, so the dropdown actually moves the math.
+    const freq = inputs.compoundingFrequency || 1;
+    const rate = Math.pow(1 + (inputs.annualReturn / 100) / freq, freq) - 1;
 
-    for (let year = 0; year <= inputs.years; year++) {
+    for (let year = 0; year <= years; year++) {
       data.push({
         year,
         balance: Math.round(balance),
@@ -44,7 +49,6 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
 
       // Simple yearly calculation for performance
       const yearlyContribution = inputs.monthlyContribution * 12;
-      const rate = inputs.annualReturn / 100;
       balance = (balance + yearlyContribution) * (1 + rate);
       totalContributions += yearlyContribution;
     }
@@ -75,14 +79,17 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
       };
     }
 
-    const rate = inputs.annualReturn / 100;
+    const freq = inputs.compoundingFrequency || 1;
+    const rate = Math.pow(1 + (inputs.annualReturn / 100) / freq, freq) - 1;
     const yearlyContribution = inputs.monthlyContribution * 12;
+    const totalYears = Math.max(0, Math.floor(inputs.years));
 
     // 1. Delay Cost Analysis - What if you delay starting by 5 years?
     const delayYears = 5;
+    const delayedYears = Math.max(0, totalYears - delayYears);
     let delayedBalance = inputs.principal;
     let delayedContributions = inputs.principal;
-    for (let year = 0; year <= inputs.years - delayYears; year++) {
+    for (let year = 0; year < delayedYears; year++) {
       delayedBalance = (delayedBalance + yearlyContribution) * (1 + rate);
       delayedContributions += yearlyContribution;
     }
@@ -94,7 +101,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
     let testBalance = inputs.principal;
     for (let attempt = 0; attempt < 100; attempt++) {
       testBalance = inputs.principal;
-      for (let year = 0; year <= inputs.years - delayYears; year++) {
+      for (let year = 0; year < delayedYears; year++) {
         testBalance = (testBalance + requiredMonthly * 12) * (1 + rate);
       }
       if (testBalance >= finalStats.balance) break;
@@ -105,7 +112,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
     // 2. Contribution Optimization - What if you increase monthly by 20%?
     let optimizedBalance = inputs.principal;
     const optimizedMonthly = inputs.monthlyContribution * 1.2;
-    for (let year = 0; year <= inputs.years; year++) {
+    for (let year = 0; year < totalYears; year++) {
       optimizedBalance = (optimizedBalance + optimizedMonthly * 12) * (1 + rate);
     }
     const optimizationGain = optimizedBalance - finalStats.balance;

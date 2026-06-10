@@ -125,14 +125,21 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
         cashGap = Math.max(0, cashGap - takeRmd);
       }
 
-      if (useLadder && age < 73 && balances.traditional > 0) {
+      // Conversions only start at retirement: the model has no wage income,
+      // so converting during working years would be taxed from the bottom
+      // brackets up — far below the real marginal cost on top of a salary.
+      if (useLadder && isRetired && age < 73 && balances.traditional > 0) {
         let amountToConvert = 0;
         if (simInputs.isAutoOptimize && isPro) {
           const targetCap = TAX_BRACKETS[simInputs.targetBracketIndex].cap + STANDARD_DEDUCTION;
-          amountToConvert = Math.max(0, targetCap - taxableIncome);
+          // Spending pulled from the traditional account later this year is
+          // also taxable — reserve that headroom or the conversion busts the
+          // target bracket once the taxable account runs dry.
+          const estTradWithdrawal = Math.max(0, cashGap - balances.taxable);
+          amountToConvert = Math.max(0, targetCap - taxableIncome - estTradWithdrawal);
           amountToConvert = Math.min(balances.traditional, amountToConvert);
         } else {
-          amountToConvert = Math.min(balances.traditional, simInputs.manualConvAmount);
+          amountToConvert = Math.min(balances.traditional, Math.max(0, simInputs.manualConvAmount));
         }
 
         balances.traditional -= amountToConvert;
