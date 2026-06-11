@@ -23,13 +23,13 @@ export const metadata: Metadata = {
       'Daily and weekly investment outlooks from Cortex Research. Free to read; opt in for the daily email.',
     type: 'website',
     url: 'https://cortex.vip/thinking',
-    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Cortex Thinking' }],
+    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Cortex Thinking' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Cortex Thinking — Daily & Weekly Investment Outlook',
     description: 'Daily and weekly investment outlooks from Cortex Research.',
-    images: ['/og-image.png'],
+    images: ['/opengraph-image'],
   },
   alternates: {
     canonical: 'https://cortex.vip/thinking',

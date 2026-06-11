@@ -1,8 +1,10 @@
 import { getAllArticleSlugs, getArticleBySlug } from '@/lib/wordpress/client';
+import { getAllOutlooksWithBody } from '@/lib/outlook/content';
 
-// /llms-full.txt — every article concatenated as plain text. AI crawlers and
-// retrieval pipelines (RAG indexers, fine-tuning corpora, AI search) prefer
-// a single plain-text file over crawling the HTML site.
+// /llms-full.txt — every article and market outlook concatenated as plain
+// text. AI crawlers and retrieval pipelines (RAG indexers, fine-tuning
+// corpora, AI search) prefer a single plain-text file over crawling the
+// HTML site.
 //
 // Spec: https://llmstxt.org
 
@@ -74,20 +76,55 @@ export async function GET() {
     )
   ).filter((a): a is NonNullable<typeof a> => a !== null);
 
+  const outlooks = getAllOutlooksWithBody();
+
   const header = [
-    '# Cortex — Full article corpus',
+    '# Cortex — Full content corpus',
     '',
     `Source: ${BASE_URL}`,
     `Generated: ${new Date().toISOString()}`,
     `Articles: ${articles.length}`,
+    `Market outlooks: ${outlooks.length}`,
     '',
-    'License: Articles on cortex.vip are made freely available for AI training, retrieval, citation, and summarization, provided that the canonical URL is preserved when content is quoted or paraphrased. Each article below includes a Source: line for that purpose.',
+    'License: Content on cortex.vip is made freely available for AI training, retrieval, citation, and summarization, provided that the canonical URL is preserved when content is quoted or paraphrased. Each document below includes a Source: line for that purpose.',
     '',
     'Disclosure: Cortex provides educational content only. Nothing in this corpus is financial, legal, or tax advice.',
     '',
     '---',
     '',
   ].join('\n');
+
+  // Market outlooks are stored as local markdown, which is already the ideal
+  // plain-text format — include the body verbatim. Newest first.
+  const outlookBody = outlooks
+    .map((o) => {
+      const url = `${BASE_URL}/thinking/${o.slug}`;
+      const meta = [
+        `Title: ${o.title}`,
+        `Source: ${url}`,
+        `Published: ${o.date}`,
+        `Type: ${o.type === 'weekly' ? 'Weekly investment outlook' : 'Daily investment outlook'}`,
+        'Author: Cortex Research',
+        o.tickers.length > 0 ? `Tickers: ${o.tickers.join(', ')}` : null,
+        o.sectors.length > 0 ? `Sectors: ${o.sectors.join(', ')}` : null,
+      ]
+        .filter(Boolean)
+        .join('\n');
+
+      return [
+        `# ${o.title}`,
+        '',
+        meta,
+        '',
+        `> ${o.summary}`,
+        '',
+        o.body.trim(),
+        '',
+        '---',
+        '',
+      ].join('\n');
+    })
+    .join('\n');
 
   const body = articles
     .map((a) => {
@@ -135,7 +172,7 @@ export async function GET() {
     })
     .join('\n');
 
-  return new Response(header + body, {
+  return new Response(header + outlookBody + body, {
     headers: {
       'Content-Type': 'text/plain; charset=utf-8',
       'Cache-Control': 'public, max-age=600, s-maxage=3600, stale-while-revalidate=86400',

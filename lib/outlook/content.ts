@@ -96,6 +96,12 @@ export function getAllOutlookSlugs(): { slug: string; date: string; type: Outloo
   return loadAll().map((p) => ({ slug: p.slug, date: p.data.date, type: p.data.type }));
 }
 
+// Raw markdown bodies for plain-text corpora (/llms-full.txt). Markdown is
+// already an ideal ingestion format for LLMs, so no HTML round-trip is needed.
+export function getAllOutlooksWithBody(): Array<OutlookListItem & { body: string }> {
+  return loadAll().map((p) => ({ ...toListItem(p), body: p.body }));
+}
+
 export async function getOutlookBySlug(slug: string): Promise<Outlook | null> {
   if (!VALID_SLUG.test(slug)) return null;
 

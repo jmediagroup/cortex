@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const url = `https://cortex.vip/thinking/${slug}`;
   const description = outlook.metaDescription || outlook.summary;
-  const ogImage = outlook.ogImage || '/og-image.png';
+  const ogImage = outlook.ogImage || `/thinking/${slug}/opengraph-image`;
 
   return {
     title: outlook.title,
@@ -404,7 +404,7 @@ function generateArticleSchema(outlook: Outlook, url: string) {
     isAccessibleForFree: true,
     image: outlook.ogImage
       ? { '@type': 'ImageObject', url: outlook.ogImage }
-      : 'https://cortex.vip/og-image.png',
+      : `https://cortex.vip/thinking/${outlook.slug}/opengraph-image`,
   };
 }
 

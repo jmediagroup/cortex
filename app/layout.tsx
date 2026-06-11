@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     title: 'Cortex - Financial Decision Tools & Budget Planning Software',
     description: 'Free online financial calculators and budget planning tools. Make smarter money decisions with Cortex.',
     images: [{
-      url: '/og-image.png',
+      url: '/opengraph-image',
       width: 1200,
       height: 630,
       alt: 'Cortex Financial Tools',
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Cortex - Financial Decision Tools',
     description: 'Free online financial calculators and budget planning tools.',
-    images: ['/og-image.png'],
+    images: ['/opengraph-image'],
     creator: '@cortextools',
   },
   icons: {
@@ -192,6 +192,12 @@ export default async function RootLayout({
           type="application/rss+xml"
           title="Cortex — Articles RSS"
           href="https://cortex.vip/articles/rss.xml"
+        />
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="Cortex Research — Daily & Weekly Investment Outlook RSS"
+          href="https://cortex.vip/thinking/rss.xml"
         />
         <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
       </head>

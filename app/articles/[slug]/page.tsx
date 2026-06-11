@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const seo = article.seo;
   const title = seo?.title || article.title;
   const description = seo?.description || article.excerpt;
-  const ogImage = seo?.ogImage || article.featuredImage?.url || '/og-image.png';
+  const ogImage = seo?.ogImage || article.featuredImage?.url || '/opengraph-image';
 
   const articleUrl = `https://cortex.vip/articles/${slug}`;
   const tagNames = article.tags.map((t) => t.name);
@@ -524,7 +524,7 @@ function generateArticleSchema(article: Article) {
           width: article.featuredImage.width,
           height: article.featuredImage.height,
         }
-      : 'https://cortex.vip/og-image.png',
+      : 'https://cortex.vip/opengraph-image',
     datePublished: article.date,
     dateModified: article.modified,
     author,

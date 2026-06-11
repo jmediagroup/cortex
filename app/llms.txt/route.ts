@@ -1,4 +1,5 @@
 import { getArticles, getCategories } from '@/lib/wordpress/client';
+import { getAllOutlooks } from '@/lib/outlook/content';
 
 // /llms.txt — curated, machine-readable index for LLMs and AI search engines.
 // Spec: https://llmstxt.org
@@ -124,10 +125,35 @@ export async function GET() {
     console.error('llms.txt: failed to fetch articles or categories', error);
   }
 
+  // Recent market outlooks from local markdown. These are the freshest pages
+  // on the site (published every weekday), so they lead the content sections.
+  let outlookSection = '';
+  try {
+    const outlooks = getAllOutlooks().slice(0, 30);
+    if (outlooks.length > 0) {
+      outlookSection = [
+        '## Market Outlook',
+        '',
+        '> Cortex Research publishes a daily investment outlook every weekday morning (plus a weekly recap) covering markets, the Fed, earnings, and specific tickers and sectors. Newest first.',
+        '',
+        ...outlooks.map((o) => {
+          const summary = o.summary.replace(/\s+/g, ' ').trim().slice(0, 200);
+          return `- [${o.title}](${BASE_URL}/thinking/${o.slug}): ${o.date} — ${summary}`;
+        }),
+        '',
+        `- [Full outlook archive](${BASE_URL}/thinking)`,
+        `- [Outlook RSS feed](${BASE_URL}/thinking/rss.xml)`,
+        '',
+      ].join('\n');
+    }
+  } catch (error) {
+    console.error('llms.txt: failed to load outlooks', error);
+  }
+
   const body = [
     '# Cortex',
     '',
-    '> Cortex builds free, interactive decision-support tools for life\'s biggest choices, starting with personal finance. We pair interactive calculators (compound interest, retirement strategy, budget, debt paydown, S-Corp tax optimization, geographic arbitrage, and more) with long-form articles that explain the reasoning behind each tool.',
+    '> Cortex builds free, interactive decision-support tools for life\'s biggest choices, starting with personal finance. We pair interactive calculators (compound interest, retirement strategy, budget, debt paydown, S-Corp tax optimization, geographic arbitrage, and more) with long-form articles that explain the reasoning behind each tool, plus a daily investment outlook from Cortex Research.',
     '',
     'This site is operated by J Media Group LLC. Content is original, written for an English-speaking U.S. audience, and updated regularly. Calculators are free to use without an account; saving scenarios requires sign-in.',
     '',
@@ -141,13 +167,15 @@ export async function GET() {
       (c) => `- [${c.name}](${BASE_URL}/apps/${c.slug}): ${c.summary}`,
     ),
     '',
+    outlookSection,
     topicsSection,
     articleSection,
     '## Reference',
     '',
     `- [Sitemap](${BASE_URL}/sitemap.xml): full machine-readable index of every public URL`,
     `- [Article RSS feed](${BASE_URL}/articles/rss.xml): subscribe to new articles`,
-    `- [Full article corpus](${BASE_URL}/llms-full.txt): every article concatenated as plain text, optimized for LLM ingestion`,
+    `- [Outlook RSS feed](${BASE_URL}/thinking/rss.xml): subscribe to the daily and weekly market outlook`,
+    `- [Full content corpus](${BASE_URL}/llms-full.txt): every article and market outlook concatenated as plain text, optimized for LLM ingestion`,
     `- [About Cortex](${BASE_URL}/about)`,
     `- [Pricing](${BASE_URL}/pricing)`,
     '',

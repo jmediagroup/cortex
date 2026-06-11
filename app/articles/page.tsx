@@ -34,13 +34,13 @@ export const metadata: Metadata = {
       'Expert articles on personal finance, retirement planning, investing strategies, and money management.',
     type: 'website',
     url: 'https://cortex.vip/articles',
-    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Cortex Articles' }],
+    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Cortex Articles' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Articles — Financial Insights & Guides',
     description: 'Expert articles on personal finance, retirement planning, and investing strategies.',
-    images: ['/og-image.png'],
+    images: ['/opengraph-image'],
   },
   alternates: {
     canonical: 'https://cortex.vip/articles',
