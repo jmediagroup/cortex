@@ -342,17 +342,9 @@ const App = () => {
     }, 1500);
   };
 
-  // Loading state
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-32">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--emerald-border)] mx-auto mb-4"></div>
-          <p className="text-[var(--text-secondary)] font-medium">Loading Budget System...</p>
-        </div>
-      </div>
-    );
-  }
+  // The auth check only affects the signup banner and Pro gating, so the page
+  // renders immediately — gating the whole page on it left crawlers (and
+  // users) staring at a spinner, since effects never run during SSR.
 
   const hasProFeatures = hasProAccess('finance', userTier);
 
@@ -360,7 +352,7 @@ const App = () => {
     <>
       <div className="max-w-6xl mx-auto p-4 md:p-8">
         <Breadcrumb toolName="Budget Planner" />
-        {!hasSession && (
+        {!loading && !hasSession && (
           <div className="bg-gradient-to-br from-[var(--emerald-500)] via-[var(--emerald-600)] to-[var(--emerald-600)] rounded-2xl p-8 mb-8 text-white shadow-xl relative overflow-hidden">
             <div className="absolute inset-0 opacity-5 grid-bg pointer-events-none" />
             <div className="flex items-start justify-between gap-6">
