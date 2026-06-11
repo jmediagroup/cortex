@@ -61,6 +61,42 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly',
       priority: 0.9,
     },
+    {
+      url: `${baseUrl}/about`,
+      lastModified: lastUpdated,
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    },
+    {
+      url: `${baseUrl}/enterprise`,
+      lastModified: lastUpdated,
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    },
+    {
+      url: `${baseUrl}/security`,
+      lastModified: lastUpdated,
+      changeFrequency: 'monthly',
+      priority: 0.4,
+    },
+    {
+      url: `${baseUrl}/terms`,
+      lastModified: lastUpdated,
+      changeFrequency: 'monthly',
+      priority: 0.3,
+    },
+    {
+      url: `${baseUrl}/changelog`,
+      lastModified: lastUpdated,
+      changeFrequency: 'weekly',
+      priority: 0.4,
+    },
+    {
+      url: `${baseUrl}/roadmap`,
+      lastModified: lastUpdated,
+      changeFrequency: 'monthly',
+      priority: 0.4,
+    },
     // Public Financial Calculators - highest priority for SEO
     {
       url: `${baseUrl}/apps/compound-interest`,

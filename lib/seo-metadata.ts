@@ -15,7 +15,7 @@ export function generateMetadata(config: SEOConfig): Metadata {
     title,
     description,
     keywords,
-    ogImage = '/og-image.png',
+    ogImage = '/opengraph-image',
     canonical,
   } = config;
 
