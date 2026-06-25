@@ -101,6 +101,13 @@ export const DEFAULT_TOOLS: MarketingTool[] = [
     tag: 'PRO',
   },
   {
+    icon: 'landmark',
+    title: 'Capital Gains Tax Estimator',
+    desc: 'See how much stock you can sell before each tax cliff — models the 0/15/20% brackets, NIIT, IRMAA, ACA, and Virginia tax for 2026.',
+    href: '/apps/capital-gains-tax',
+    tag: 'FREE',
+  },
+  {
     icon: 'car',
     title: 'Car Affordability Calculator',
     desc: 'Understand the true cost of vehicle ownership including depreciation and opportunity cost.',
@@ -287,7 +294,7 @@ export function MarketingToolGrid({ tools = DEFAULT_TOOLS }: { tools?: Marketing
               lineHeight: 1.1,
             }}
           >
-            Fourteen tools.
+            Fifteen tools.
             <br />
             One mental model.
           </h2>

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Lock, Sparkles, ArrowRight } from 'lucide-react';
 
 const TOOL_BENEFITS: Record<string, string[]> = {
+  'capital-gains-tax': ['NIIT & additional-Medicare modeling', 'ACA subsidy-cliff and IRMAA detection', 'QBI / §199A deduction layer'],
   'car-affordability': ['Lease vs. buy comparison', '10-year total cost of ownership', 'Opportunity cost modeling'],
   'coast-fire': ['Monte Carlo retirement simulations', 'Variable contribution modeling', 'Safe withdrawal rate analysis'],
   'compound-interest': ['Tax-advantaged account modeling', 'Inflation-adjusted projections', 'Multi-account comparison'],
