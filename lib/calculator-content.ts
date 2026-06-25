@@ -340,6 +340,34 @@ export const CALCULATOR_CONTENT: Record<string, CalculatorContent> = {
     ],
     relatedTools: ['retirement-strategy', 'compound-interest', 'net-worth'],
   },
+  'capital-gains-tax': {
+    slug: 'capital-gains-tax',
+    name: 'Capital Gains Tax Calculator',
+    shortName: 'Capital Gains Tax',
+    description: 'Estimate the 2026 tax on a stock sale and see how much you can realize before each tax cliff.',
+    intro: 'The Capital Gains Tax Calculator answers a single question: if you sell this much stock, what actually happens? It models the full 2026 picture — the 0%, 15%, and 20% long-term capital-gains brackets, the 3.8% Net Investment Income Tax, the §199A QBI deduction, the ACA premium-tax-credit cliff, Medicare IRMAA tiers, and Virginia state tax — then shows how much of a gain fits under each threshold. Long-term gains stack on top of your ordinary income, so the room left in the 0% bracket depends on everything else you earn. Use the slider to find the largest gain you can take before the next dollar gets more expensive.',
+    category: 'FinanceApplication',
+    features: ['0/15/20% long-term bracket ladder', '0%-bracket headroom calculator', 'NIIT, ACA, and IRMAA cliff detection', 'Next-dollar marginal rate', 'Federal + Virginia tax breakdown'],
+    faqs: [
+      {
+        question: 'What is the difference between long-term and short-term capital gains?',
+        answer: 'Long-term capital gains apply to assets held more than one year and are taxed at preferential rates of 0%, 15%, or 20% depending on your taxable income. Short-term gains (assets held one year or less) are taxed as ordinary income at rates up to 37%, making them far less efficient.',
+      },
+      {
+        question: 'How does the 0% capital gains bracket work?',
+        answer: 'Long-term gains stack on top of your ordinary income. If your total taxable income (ordinary income plus gains) stays under the 0% breakpoint — $49,450 for single filers and $98,900 for married-filing-jointly in 2026 — those gains are taxed at 0% federally. The calculator shows exactly how much room you have left in that bracket.',
+      },
+      {
+        question: 'What tax cliffs should I watch when selling stock?',
+        answer: 'Beyond the 0→15→20% bracket steps, a large gain can trigger the 3.8% Net Investment Income Tax (above $200k/$250k MAGI), bump your Medicare IRMAA tier (raising premiums two years later), or push you over the 400% federal-poverty ACA subsidy cliff — which forfeits the entire premium tax credit. The tool flags the headroom before each one.',
+      },
+      {
+        question: 'How are capital gains taxed in Virginia?',
+        answer: 'Virginia has no preferential capital-gains rate — all gains are taxed as ordinary income at rates up to 5.75%. So even a gain that is federally tax-free in the 0% bracket still owes Virginia tax. The calculator includes Virginia state tax in every total.',
+      },
+    ],
+    relatedTools: ['s-corp-optimizer', 'retirement-strategy', 'net-worth'],
+  },
 };
 
 /**
