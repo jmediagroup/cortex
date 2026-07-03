@@ -9,3 +9,4 @@ removing the line, so the topic isn't accidentally reused.
 
 | Date | Slug | Topic |
 |---|---|---|
+| 2026-07-02 | debt-avalanche-vs-snowball | Debt payoff strategy (avalanche vs snowball) |
