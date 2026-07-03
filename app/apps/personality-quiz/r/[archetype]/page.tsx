@@ -36,10 +36,7 @@ export async function generateMetadata({
   const a = ARCHETYPES[archetype];
   const secondary =
     s && isArchetype(s) && s !== archetype ? ARCHETYPES[s] : null;
-  const url = buildResultUrl(
-    archetype,
-    secondary?.id ?? ARCHETYPE_ORDER.find((i) => i !== archetype)!,
-  );
+  const url = buildResultUrl(archetype, secondary?.id);
   const title = `${a.name} — Cortex Financial Personality Quiz`;
   const description = secondary
     ? `${a.tagline} (Secondary: ${secondary.name}.) Take the 10-question quiz to find your investor archetype.`
@@ -379,10 +376,7 @@ export default async function SharedResultPage({
           </div>
         </div>
 
-        <SharedResultShareBar
-          primary={primary.id}
-          secondary={(secondary?.id ?? ARCHETYPE_ORDER.find((i) => i !== primary.id))!}
-        />
+        <SharedResultShareBar primary={primary.id} secondary={secondary?.id} />
       </article>
     </ToolLayout>
   );

@@ -12,7 +12,7 @@ export function SharedResultShareBar({
   secondary,
 }: {
   primary: ArchetypeId;
-  secondary: ArchetypeId;
+  secondary?: ArchetypeId;
 }) {
   return <ShareBar primary={primary} secondary={secondary} />;
 }
