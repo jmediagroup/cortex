@@ -19,7 +19,7 @@ import { MarketingIcon } from '@/components/marketing/Icons';
 export const metadata: Metadata = {
   title: 'Articles — Financial Insights & Guides',
   description:
-    'Expert articles on personal finance, retirement planning, investing strategies, and money management. Learn how to make smarter financial decisions with Cortex.',
+    'Expert articles on personal finance, retirement planning, investing strategies, and money management. Learn how to make smarter financial decisions with Money Guy Mutants.',
   keywords: [
     'financial articles',
     'personal finance blog',
@@ -29,12 +29,12 @@ export const metadata: Metadata = {
     'financial literacy',
   ],
   openGraph: {
-    title: 'Articles — Financial Insights & Guides | Cortex',
+    title: 'Articles — Financial Insights & Guides | Money Guy Mutants',
     description:
       'Expert articles on personal finance, retirement planning, investing strategies, and money management.',
     type: 'website',
-    url: 'https://cortex.vip/articles',
-    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Cortex Articles' }],
+    url: 'https://moneyguymutants.com/articles',
+    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Money Guy Mutants Articles' }],
   },
   twitter: {
     card: 'summary_large_image',
@@ -43,9 +43,9 @@ export const metadata: Metadata = {
     images: ['/opengraph-image'],
   },
   alternates: {
-    canonical: 'https://cortex.vip/articles',
+    canonical: 'https://moneyguymutants.com/articles',
     types: {
-      'application/rss+xml': 'https://cortex.vip/articles/rss.xml',
+      'application/rss+xml': 'https://moneyguymutants.com/articles/rss.xml',
     },
   },
 };
@@ -110,21 +110,21 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
     ? {
         '@context': 'https://schema.org',
         '@type': 'CollectionPage',
-        '@id': 'https://cortex.vip/articles#collection',
-        url: 'https://cortex.vip/articles',
-        name: 'Cortex Articles',
+        '@id': 'https://moneyguymutants.com/articles#collection',
+        url: 'https://moneyguymutants.com/articles',
+        name: 'Money Guy Mutants Articles',
         description:
           'Expert articles on personal finance, retirement planning, investing strategies, and money management.',
         inLanguage: 'en-US',
-        isPartOf: { '@id': 'https://cortex.vip/#website' },
-        publisher: { '@id': 'https://cortex.vip/#organization' },
+        isPartOf: { '@id': 'https://moneyguymutants.com/#website' },
+        publisher: { '@id': 'https://moneyguymutants.com/#organization' },
         mainEntity: {
           '@type': 'ItemList',
           numberOfItems: articles.length,
           itemListElement: articles.map((a, idx) => ({
             '@type': 'ListItem',
             position: idx + 1,
-            url: `https://cortex.vip/articles/${a.slug}`,
+            url: `https://moneyguymutants.com/articles/${a.slug}`,
             name: a.title,
           })),
         },
@@ -135,8 +135,8 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cortex.vip' },
-      { '@type': 'ListItem', position: 2, name: 'Articles', item: 'https://cortex.vip/articles' },
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://moneyguymutants.com' },
+      { '@type': 'ListItem', position: 2, name: 'Articles', item: 'https://moneyguymutants.com/articles' },
     ],
   };
 

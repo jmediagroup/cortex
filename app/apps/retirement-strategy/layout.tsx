@@ -9,12 +9,12 @@ export const metadata: Metadata = {
     title: 'Retirement Planning Calculator - Withdrawal Strategy Optimizer',
     description: 'Advanced retirement calculator with RMD calculations and Roth conversion planning.',
     type: 'website',
-    url: 'https://cortex.vip/apps/retirement-strategy',
+    url: 'https://moneyguymutants.com/apps/retirement-strategy',
     images: [{
       url: '/og-retirement.png',
       width: 1200,
       height: 630,
-      alt: 'Cortex Retirement Planning Calculator',
+      alt: 'Money Guy Mutants Retirement Planning Calculator',
     }],
   },
   twitter: {
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     images: ['/og-retirement.png'],
   },
   alternates: {
-    canonical: 'https://cortex.vip/apps/retirement-strategy',
+    canonical: 'https://moneyguymutants.com/apps/retirement-strategy',
   },
 };
 

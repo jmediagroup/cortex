@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { getTierDisplayName, type Tier } from '@/lib/access-control';
 import { isAdmin } from '@/lib/admin';
-import { LogoMark } from '@/components/marketing/Nav';
+import { Wordmark } from '@/components/brand/Wordmark';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
 
 type User = { email: string; name?: string } | null | undefined;
@@ -69,7 +69,7 @@ export function AppTopBar({ user, userTier = 'free', onSignOut }: Props) {
     >
       <Link
         href="/"
-        aria-label="Cortex home"
+        aria-label="Money Guy Mutants home"
         className="app-top-bar-logo"
         style={{
           display: 'none',
@@ -78,17 +78,7 @@ export function AppTopBar({ user, userTier = 'free', onSignOut }: Props) {
           textDecoration: 'none',
         }}
       >
-        <LogoMark size={28} iconSize={15} />
-        <span
-          style={{
-            fontWeight: 700,
-            fontSize: 15,
-            letterSpacing: '-0.02em',
-            color: 'var(--text-primary)',
-          }}
-        >
-          Cortex
-        </span>
+        <Wordmark size="sm" />
       </Link>
 
       <div style={{ flex: 1 }} />

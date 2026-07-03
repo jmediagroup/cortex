@@ -8,7 +8,7 @@ import { MarketingPrinciplesCTA } from '@/components/marketing/PrinciplesCTA';
 import LatestArticles from '@/components/home/LatestArticles';
 
 export const metadata: Metadata = {
-  title: 'Cortex — Tools for Long-Term Thinking',
+  title: 'Money Guy Mutants — Tools for Long-Term Thinking',
   description:
     'Interactive financial models that turn complexity into clarity — so you can see outcomes before you live them.',
 };

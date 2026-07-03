@@ -280,7 +280,7 @@ function SignupForm() {
               margin: '0 0 8px',
             }}
           >
-            {hasProIntent ? 'Create your account to continue.' : 'Create your Cortex account.'}
+            {hasProIntent ? 'Create your account to continue.' : 'Create your Money Guy Mutants account.'}
           </h1>
           <p style={{ fontSize: 14, color: 'var(--text-tertiary)', margin: 0 }}>
             {hasProIntent

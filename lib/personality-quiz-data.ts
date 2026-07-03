@@ -1,5 +1,5 @@
 /**
- * Cortex Financial Personality Quiz — content + scoring model.
+ * Money Guy Mutants Financial Personality Quiz — content + scoring model.
  *
  * Each answer awards points to one or more of six archetype dimensions.
  * The highest-scoring dimension is the user's primary archetype, the

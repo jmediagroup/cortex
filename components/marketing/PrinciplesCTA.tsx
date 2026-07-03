@@ -108,7 +108,7 @@ export function MarketingPrinciplesCTA() {
               margin: '0 auto 56px',
             }}
           >
-            Cortex is built by humans who care about rational decision-making, personal agency, and designing tools that respect intelligence.
+            Money Guy Mutants is built by humans who care about rational decision-making, personal agency, and designing tools that respect intelligence.
           </p>
 
           <div

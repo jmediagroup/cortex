@@ -142,7 +142,7 @@ function IntroPanel({ onStart }: { onStart: () => void }) {
           maxWidth: 560,
         }}
       >
-        Cortex maps your money instincts to one of six investor archetypes — from
+        Money Guy Mutants maps your money instincts to one of six investor archetypes — from
         the patient Accumulator to the high-conviction Visionary. No email required.
         Just answer honestly, and we&rsquo;ll tell you exactly how you&rsquo;re wired.
       </p>

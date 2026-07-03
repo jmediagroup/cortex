@@ -266,7 +266,7 @@ function AuthForm() {
               margin: '0 0 8px',
             }}
           >
-            Sign in to Cortex.
+            Sign in to Money Guy Mutants.
           </h1>
           <p style={{ fontSize: 14, color: 'var(--text-tertiary)', margin: 0 }}>
             Pick up where you left off.
@@ -330,7 +330,7 @@ function AuthForm() {
             paddingTop: 8,
           }}
         >
-          New to Cortex?{' '}
+          New to Money Guy Mutants?{' '}
           <Link
             href={signupHref}
             style={{ color: 'var(--emerald-500)', fontWeight: 600, textDecoration: 'none' }}

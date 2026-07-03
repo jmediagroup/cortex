@@ -3,9 +3,9 @@ import type { OutlookListItem } from './types';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const FROM = process.env.OUTLOOK_FROM_EMAIL || 'Cortex Outlook <outlook@cortex.vip>';
+const FROM = process.env.OUTLOOK_FROM_EMAIL || 'Money Guy Mutants Outlook <outlook@cortex.vip>';
 const REPLY_TO = process.env.OUTLOOK_REPLY_TO || undefined;
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://cortex.vip';
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://moneyguymutants.com';
 
 interface SendResult {
   success: boolean;
@@ -45,7 +45,7 @@ function shellHtml({
     ? `<a href="${unsubscribeUrl}" style="color:#94a3b8;text-decoration:underline;">Unsubscribe</a> · `
     : '';
   return `<!DOCTYPE html>
-<html><head><meta charset="utf-8"><title>Cortex Outlook</title></head>
+<html><head><meta charset="utf-8"><title>Money Guy Mutants Outlook</title></head>
 <body style="margin:0;padding:24px;background:#0a0e14;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
   <span style="display:none;visibility:hidden;opacity:0;color:transparent;height:0;width:0;">${escapeHtml(preheader)}</span>
   <div style="max-width:600px;margin:0 auto;background:#121620;border:1px solid rgba(255,255,255,0.08);border-radius:16px;overflow:hidden;">
@@ -67,11 +67,11 @@ export async function sendConfirmationEmail(params: {
   const confirmUrl = `${APP_URL}/api/outlook/confirm?token=${encodeURIComponent(params.confirmationToken)}`;
 
   const html = shellHtml({
-    preheader: 'Confirm your subscription to the Cortex Investment Outlook.',
+    preheader: 'Confirm your subscription to the Money Guy Mutants Investment Outlook.',
     bodyInner: `
       <div style="padding:32px 24px;color:#aeaeb2;line-height:1.6;">
         <h1 style="color:#f5f5f7;font-size:22px;font-weight:700;margin:0 0 16px;letter-spacing:-0.02em;">Confirm your subscription</h1>
-        <p style="margin:0 0 16px;">Click below to start receiving the daily and weekly Cortex Investment Outlook.</p>
+        <p style="margin:0 0 16px;">Click below to start receiving the daily and weekly Money Guy Mutants Investment Outlook.</p>
         <p style="margin:0 0 24px;">
           <a href="${confirmUrl}" style="display:inline-block;background:#00f0a0;color:#0a0e14;padding:12px 22px;border-radius:10px;font-weight:700;text-decoration:none;">Confirm subscription</a>
         </p>
@@ -79,13 +79,13 @@ export async function sendConfirmationEmail(params: {
       </div>`,
   });
 
-  const text = `Confirm your subscription to the Cortex Investment Outlook:\n${confirmUrl}\n\nIf you didn't request this, you can ignore this email.`;
+  const text = `Confirm your subscription to the Money Guy Mutants Investment Outlook:\n${confirmUrl}\n\nIf you didn't request this, you can ignore this email.`;
 
   try {
     const { error } = await resend.emails.send({
       from: FROM,
       to: params.email,
-      subject: 'Confirm your Cortex Outlook subscription',
+      subject: 'Confirm your Money Guy Mutants Outlook subscription',
       html,
       text,
       ...(REPLY_TO ? { replyTo: REPLY_TO } : {}),

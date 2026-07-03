@@ -1,10 +1,10 @@
 import { getAllGuides } from '@/lib/guides/content';
 
-// /guides/rss.xml — RSS 2.0 feed of Cortex personal-finance guides.
+// /guides/rss.xml — RSS 2.0 feed of Money Guy Mutants personal-finance guides.
 
 export const revalidate = 1800;
 
-const BASE_URL = 'https://cortex.vip';
+const BASE_URL = 'https://moneyguymutants.com';
 
 function escapeXml(input: string): string {
   return input
@@ -36,7 +36,7 @@ export async function GET() {
       <guid isPermaLink="true">${url}</guid>
       <pubDate>${toRfc822(g.date)}</pubDate>
       <description>${escapeXml(g.summary)}</description>
-      <author>noreply@cortex.vip (Cortex Research)</author>
+      <author>noreply@cortex.vip (Money Guy Mutants Research)</author>
       ${categoryTags}
     </item>`;
     })
@@ -45,10 +45,10 @@ export async function GET() {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>Cortex — Guides</title>
+    <title>Money Guy Mutants — Guides</title>
     <link>${BASE_URL}/guides</link>
     <atom:link href="${BASE_URL}/guides/rss.xml" rel="self" type="application/rss+xml" />
-    <description>In-depth, evergreen personal-finance guides from Cortex Research.</description>
+    <description>In-depth, evergreen personal-finance guides from Money Guy Mutants Research.</description>
     <language>en-us</language>
     <copyright>© ${new Date().getFullYear()} J Media Group LLC</copyright>
     <lastBuildDate>${toRfc822(latestDate)}</lastBuildDate>

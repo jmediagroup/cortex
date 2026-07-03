@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ShieldCheck } from 'lucide-react';
-import { LogoMark } from '@/components/marketing/Nav';
+import { Wordmark } from '@/components/brand/Wordmark';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
 
 type Props = {
@@ -45,7 +45,7 @@ export function AuthShell({ children, footer }: Props) {
       </div>
       <Link
         href="/"
-        aria-label="Cortex home"
+        aria-label="Money Guy Mutants home"
         style={{
           display: 'inline-flex',
           alignItems: 'center',
@@ -54,17 +54,7 @@ export function AuthShell({ children, footer }: Props) {
           marginBottom: 8,
         }}
       >
-        <LogoMark size={36} iconSize={19} />
-        <span
-          style={{
-            fontSize: 17,
-            fontWeight: 700,
-            letterSpacing: '-0.02em',
-            color: 'var(--text-primary)',
-          }}
-        >
-          Cortex
-        </span>
+        <Wordmark size="sm" />
       </Link>
 
       <div

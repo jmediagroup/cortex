@@ -4,6 +4,7 @@ import { type ReactNode } from 'react';
 import Link from 'next/link';
 import TopNav from './TopNav';
 import BottomTabBar from './BottomTabBar';
+import { Wordmark } from '@/components/brand/Wordmark';
 import { type Tier } from '@/lib/access-control';
 
 interface DashboardShellProps {
@@ -43,18 +44,7 @@ export default function DashboardShell({
           paddingRight: 'calc(1rem + var(--safe-right))',
         }}
       >
-        <div className="flex items-center gap-2">
-          <div className="bg-[var(--color-accent)] p-1.5 rounded-lg text-white">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2a8 8 0 0 0-8 8v12h16V10a8 8 0 0 0-8-8Z" />
-              <path d="M9.5 14.5 12 12l2.5 2.5" />
-              <path d="M12 12v6" />
-            </svg>
-          </div>
-          <span className="font-bold text-base tracking-tight text-[var(--text-primary)]">
-            Cortex
-          </span>
-        </div>
+        <Wordmark size="sm" />
 
         {user ? (
           <div className="relative">

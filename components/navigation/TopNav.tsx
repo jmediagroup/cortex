@@ -2,8 +2,8 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import { Wordmark } from '@/components/brand/Wordmark';
 import {
-  Brain,
   Grid3X3,
   BookOpen,
   Bookmark,
@@ -83,13 +83,8 @@ export default function TopNav({
     <nav className="hidden md:flex items-center justify-between border-b border-[var(--border-primary)] bg-[var(--surface-primary)] px-6 py-3 sticky top-0 z-50">
       {/* Left: Logo + Nav */}
       <div className="flex items-center gap-8">
-        <Link href="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
-          <div className="bg-[var(--color-accent)] p-1.5 rounded-lg text-white">
-            <Brain size={20} />
-          </div>
-          <span className="font-bold text-lg tracking-tight text-[var(--text-primary)]">
-            Cortex
-          </span>
+        <Link href="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity" aria-label="Money Guy Mutants home">
+          <Wordmark size="sm" />
         </Link>
 
         <div className="flex items-center gap-1">

@@ -9,12 +9,12 @@ export const metadata: Metadata = {
     title: 'S-Corp Tax Calculator - Self-Employment Tax Savings Tool',
     description: 'Calculate S-Corp tax savings and find your ideal salary/distribution split.',
     type: 'website',
-    url: 'https://cortex.vip/apps/s-corp-optimizer',
+    url: 'https://moneyguymutants.com/apps/s-corp-optimizer',
     images: [{
       url: '/og-s-corp.png',
       width: 1200,
       height: 630,
-      alt: 'Cortex S-Corp Tax Calculator',
+      alt: 'Money Guy Mutants S-Corp Tax Calculator',
     }],
   },
   twitter: {
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     images: ['/og-s-corp.png'],
   },
   alternates: {
-    canonical: 'https://cortex.vip/apps/s-corp-optimizer',
+    canonical: 'https://moneyguymutants.com/apps/s-corp-optimizer',
   },
 };
 

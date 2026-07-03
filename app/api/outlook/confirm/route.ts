@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServiceClient } from '@/lib/supabase/client';
 import { isValidUUID } from '@/lib/validation';
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://cortex.vip';
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://moneyguymutants.com';
 
 export async function GET(request: NextRequest) {
   const token = request.nextUrl.searchParams.get('token');

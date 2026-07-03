@@ -397,7 +397,7 @@ export function generateCalculatorJsonLd(slug: string) {
   const content = CALCULATOR_CONTENT[slug];
   if (!content) return null;
 
-  const baseUrl = 'https://cortex.vip';
+  const baseUrl = 'https://moneyguymutants.com';
 
   return {
     '@context': 'https://schema.org',

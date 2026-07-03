@@ -1,4 +1,5 @@
 import { ImageResponse } from 'next/og';
+import { MUTANT_MARK_DATA_URI, BRAND } from '@/lib/brand-assets';
 
 export const runtime = 'edge';
 
@@ -18,24 +19,12 @@ export default function Icon() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#0A0E14',
-          borderRadius: '6px',
+          backgroundColor: BRAND.navy,
+          borderRadius: '7px',
         }}
       >
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="#00F0A0"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M12 18V5" />
-          <path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4" />
-          <path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5" />
-        </svg>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={MUTANT_MARK_DATA_URI} width={24} height={25} alt="" />
       </div>
     ),
     {

@@ -102,7 +102,7 @@ export default function AppsIndexPage() {
   return (
     <ToolLayout
       eyebrow="FINANCE · ALL TOOLS"
-      title="Every Cortex tool."
+      title="Every Money Guy Mutants tool."
       sub="Calculators and engines for personal and small-business finance — free tools to explore, Pro tools for precision."
       breadcrumb={<Breadcrumb toolName="All Tools" />}
     >

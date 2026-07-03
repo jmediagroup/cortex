@@ -6,11 +6,11 @@ import { getAllOutlooks } from '@/lib/outlook/content';
 //
 // We hand-pick the highest-signal sections (calculators + recent articles)
 // rather than dumping the whole sitemap. The goal is: when an AI agent fetches
-// this file, it gets a clear map of what cortex.vip is and what to read.
+// this file, it gets a clear map of what moneyguymutants.com is and what to read.
 
 export const revalidate = 3600; // 1 hour
 
-const BASE_URL = 'https://cortex.vip';
+const BASE_URL = 'https://moneyguymutants.com';
 
 const CALCULATORS: Array<{ name: string; slug: string; summary: string }> = [
   {
@@ -134,7 +134,7 @@ export async function GET() {
       outlookSection = [
         '## Market Outlook',
         '',
-        '> Cortex Research publishes a daily investment outlook every weekday morning (plus a weekly recap) covering markets, the Fed, earnings, and specific tickers and sectors. Newest first.',
+        '> Money Guy Mutants Research publishes a daily investment outlook every weekday morning (plus a weekly recap) covering markets, the Fed, earnings, and specific tickers and sectors. Newest first.',
         '',
         ...outlooks.map((o) => {
           const summary = o.summary.replace(/\s+/g, ' ').trim().slice(0, 200);
@@ -151,13 +151,13 @@ export async function GET() {
   }
 
   const body = [
-    '# Cortex',
+    '# Money Guy Mutants',
     '',
-    '> Cortex builds free, interactive decision-support tools for life\'s biggest choices, starting with personal finance. We pair interactive calculators (compound interest, retirement strategy, budget, debt paydown, S-Corp tax optimization, geographic arbitrage, and more) with long-form articles that explain the reasoning behind each tool, plus a daily investment outlook from Cortex Research.',
+    '> Money Guy Mutants builds free, interactive decision-support tools for life\'s biggest choices, starting with personal finance. We pair interactive calculators (compound interest, retirement strategy, budget, debt paydown, S-Corp tax optimization, geographic arbitrage, and more) with long-form articles that explain the reasoning behind each tool, plus a daily investment outlook from Money Guy Mutants Research.',
     '',
     'This site is operated by J Media Group LLC. Content is original, written for an English-speaking U.S. audience, and updated regularly. Calculators are free to use without an account; saving scenarios requires sign-in.',
     '',
-    'Disclosure: Cortex provides educational tools only. Nothing on this site is financial, legal, or tax advice.',
+    'Disclosure: Money Guy Mutants provides educational tools only. Nothing on this site is financial, legal, or tax advice.',
     '',
     '## Calculators',
     '',
@@ -176,7 +176,7 @@ export async function GET() {
     `- [Article RSS feed](${BASE_URL}/articles/rss.xml): subscribe to new articles`,
     `- [Outlook RSS feed](${BASE_URL}/thinking/rss.xml): subscribe to the daily and weekly market outlook`,
     `- [Full content corpus](${BASE_URL}/llms-full.txt): every article and market outlook concatenated as plain text, optimized for LLM ingestion`,
-    `- [About Cortex](${BASE_URL}/about)`,
+    `- [About Money Guy Mutants](${BASE_URL}/about)`,
     `- [Pricing](${BASE_URL}/pricing)`,
     '',
     '## Optional',

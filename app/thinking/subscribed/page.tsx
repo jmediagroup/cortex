@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Subscription confirmed — Cortex Outlook',
+  title: 'Subscription confirmed — Money Guy Mutants Outlook',
   robots: { index: false, follow: false },
 };
 
@@ -35,7 +35,7 @@ export default function SubscribedPage() {
             margin: '0 0 32px',
           }}
         >
-          The next Cortex Investment Outlook will land in your inbox at 7am ET. You
+          The next Money Guy Mutants Investment Outlook will land in your inbox at 7am ET. You
           can unsubscribe in one click from any email.
         </p>
         <Link

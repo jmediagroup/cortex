@@ -4,8 +4,8 @@ import { MarketingShell } from '@/components/marketing/MarketingShell';
 export const metadata: Metadata = {
   title: 'Terms & Privacy',
   description:
-    'Cortex terms of service and privacy policy, covering acceptance of terms, intellectual property, usage data, and contact information.',
-  alternates: { canonical: 'https://cortex.vip/terms' },
+    'Money Guy Mutants terms of service and privacy policy, covering acceptance of terms, intellectual property, usage data, and contact information.',
+  alternates: { canonical: 'https://moneyguymutants.com/terms' },
 };
 
 const sectionStyle: React.CSSProperties = {

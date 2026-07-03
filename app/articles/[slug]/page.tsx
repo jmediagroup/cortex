@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const description = seo?.description || article.excerpt;
   const ogImage = seo?.ogImage || article.featuredImage?.url || '/opengraph-image';
 
-  const articleUrl = `https://cortex.vip/articles/${slug}`;
+  const articleUrl = `https://moneyguymutants.com/articles/${slug}`;
   const tagNames = article.tags.map((t) => t.name);
   const fallbackKeywords =
     seo?.keywords?.split(',').map((k) => k.trim()).filter(Boolean) || tagNames;
@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description: seo?.ogDescription || description,
       type: 'article',
       url: articleUrl,
-      siteName: 'Cortex',
+      siteName: 'Money Guy Mutants',
       locale: 'en_US',
       images: [{ url: ogImage, width: 1200, height: 630, alt: article.title }],
       publishedTime: article.date,
@@ -64,7 +64,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     alternates: {
       canonical: seo?.canonical || articleUrl,
       types: {
-        'application/rss+xml': 'https://cortex.vip/articles/rss.xml',
+        'application/rss+xml': 'https://moneyguymutants.com/articles/rss.xml',
       },
     },
   };
@@ -80,7 +80,7 @@ export default async function ArticlePage({ params }: PageProps) {
   const faqSchema = article.faq.length > 0 ? generateFAQSchema(article.faq) : null;
   const breadcrumbSchema = generateBreadcrumbSchema(article);
 
-  const articleUrl = `https://cortex.vip/articles/${slug}`;
+  const articleUrl = `https://moneyguymutants.com/articles/${slug}`;
 
   return (
     <>
@@ -493,19 +493,19 @@ function articleBodyText(html: string): string {
 function generateArticleSchema(article: Article) {
   const body = articleBodyText(article.content);
   const wordCount = body ? body.split(/\s+/).filter(Boolean).length : 0;
-  const articleUrl = `https://cortex.vip/articles/${article.slug}`;
+  const articleUrl = `https://moneyguymutants.com/articles/${article.slug}`;
 
   const author = article.author?.name
     ? {
         '@type': 'Person',
         name: article.author.name,
-        url: `https://cortex.vip/articles?author=${article.author.slug}`,
+        url: `https://moneyguymutants.com/articles?author=${article.author.slug}`,
         ...(article.author.bio ? { description: article.author.bio } : {}),
         ...(article.author.avatar ? { image: article.author.avatar } : {}),
       }
     : {
         '@type': 'Organization',
-        '@id': 'https://cortex.vip/#organization',
+        '@id': 'https://moneyguymutants.com/#organization',
         name: 'Cortex Technologies',
       };
 
@@ -524,15 +524,15 @@ function generateArticleSchema(article: Article) {
           width: article.featuredImage.width,
           height: article.featuredImage.height,
         }
-      : 'https://cortex.vip/opengraph-image',
+      : 'https://moneyguymutants.com/opengraph-image',
     datePublished: article.date,
     dateModified: article.modified,
     author,
     publisher: {
       '@type': 'Organization',
-      '@id': 'https://cortex.vip/#organization',
+      '@id': 'https://moneyguymutants.com/#organization',
       name: 'Cortex Technologies',
-      logo: { '@type': 'ImageObject', url: 'https://cortex.vip/icon' },
+      logo: { '@type': 'ImageObject', url: 'https://moneyguymutants.com/icon' },
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
@@ -567,13 +567,13 @@ function generateBreadcrumbSchema(article: Article) {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cortex.vip' },
-      { '@type': 'ListItem', position: 2, name: 'Articles', item: 'https://cortex.vip/articles' },
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://moneyguymutants.com' },
+      { '@type': 'ListItem', position: 2, name: 'Articles', item: 'https://moneyguymutants.com/articles' },
       {
         '@type': 'ListItem',
         position: 3,
         name: article.title,
-        item: `https://cortex.vip/articles/${article.slug}`,
+        item: `https://moneyguymutants.com/articles/${article.slug}`,
       },
     ],
   };

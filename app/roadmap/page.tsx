@@ -3,8 +3,8 @@ import { MarketingPlaceholder } from '@/components/marketing/Placeholder';
 
 export const metadata: Metadata = {
   title: 'Roadmap',
-  description: 'What we are building next at Cortex.',
-  alternates: { canonical: 'https://cortex.vip/roadmap' },
+  description: 'What we are building next at Money Guy Mutants.',
+  alternates: { canonical: 'https://moneyguymutants.com/roadmap' },
 };
 
 export default function RoadmapPage() {

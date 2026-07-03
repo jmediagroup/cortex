@@ -3,8 +3,8 @@ import { MarketingPlaceholder } from '@/components/marketing/Placeholder';
 
 export const metadata: Metadata = {
   title: 'Security',
-  description: 'How Cortex handles data, authentication, and the boring-but-important parts of security.',
-  alternates: { canonical: 'https://cortex.vip/security' },
+  description: 'How Money Guy Mutants handles data, authentication, and the boring-but-important parts of security.',
+  alternates: { canonical: 'https://moneyguymutants.com/security' },
 };
 
 export default function SecurityPage() {
@@ -12,7 +12,7 @@ export default function SecurityPage() {
     <MarketingPlaceholder
       eyebrow="SECURITY"
       title="How we protect your data."
-      description="Cortex stores the minimum information required to run your tools. Everything else — calculations, scenarios, projections — lives in your browser until you choose to save it."
+      description="Money Guy Mutants stores the minimum information required to run your tools. Everything else — calculations, scenarios, projections — lives in your browser until you choose to save it."
       body={
         <div
           style={{

@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
-import { MarketingIcon } from './Icons';
+import { Wordmark } from '@/components/brand/Wordmark';
+import { MutantMark } from '@/components/brand/MutantMark';
 
 const NAV_LINKS = [
   { label: 'Tools', href: '/#tools' },
@@ -66,20 +67,10 @@ export function MarketingNav() {
       >
         <Link
           href="/"
-          aria-label="Cortex home"
+          aria-label="Money Guy Mutants home"
           style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}
         >
-          <LogoMark />
-          <span
-            style={{
-              fontWeight: 700,
-              fontSize: 17,
-              letterSpacing: '-0.02em',
-              color: 'var(--text-primary)',
-            }}
-          >
-            Cortex
-          </span>
+          <Wordmark size="sm" />
         </Link>
 
         <div
@@ -119,7 +110,7 @@ export function MarketingNav() {
             href="/signup"
             className="marketing-nav-cta"
             style={{
-              background: 'var(--emerald-500)',
+              background: 'var(--orange)',
               color: 'var(--text-inverse)',
               padding: '9px 18px',
               borderRadius: 9999,
@@ -226,21 +217,11 @@ function MobilePanel({ onClose }: { onClose: () => void }) {
       >
         <Link
           href="/"
-          aria-label="Cortex home"
+          aria-label="Money Guy Mutants home"
           onClick={onClose}
           style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}
         >
-          <LogoMark />
-          <span
-            style={{
-              fontWeight: 700,
-              fontSize: 17,
-              letterSpacing: '-0.02em',
-              color: 'var(--text-primary)',
-            }}
-          >
-            Cortex
-          </span>
+          <Wordmark size="sm" />
         </Link>
         <button
           type="button"
@@ -320,7 +301,7 @@ function MobilePanel({ onClose }: { onClose: () => void }) {
               textAlign: 'center',
               padding: '14px 20px',
               borderRadius: 12,
-              background: 'var(--emerald-500)',
+              background: 'var(--orange)',
               color: 'var(--text-inverse)',
               fontWeight: 700,
               fontSize: 14,
@@ -336,25 +317,11 @@ function MobilePanel({ onClose }: { onClose: () => void }) {
   );
 }
 
-export function LogoMark({ size = 32, iconSize = 18 }: { size?: number; iconSize?: number }) {
-  return (
-    <span
-      style={{
-        position: 'relative',
-        width: size,
-        height: size,
-        borderRadius: 10,
-        background: 'linear-gradient(135deg, var(--obsidian-700), var(--obsidian-900))',
-        border: '1px solid var(--glass-border-strong)',
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: 'var(--emerald-500)',
-        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), 0 0 20px var(--cta-glow-soft)',
-        flexShrink: 0,
-      }}
-    >
-      <MarketingIcon name="brain" size={iconSize} stroke={1.8} />
-    </span>
-  );
+/**
+ * Standalone Money Guy Mutants mascot mark. Kept exported (app shell imports
+ * it) — `iconSize` is retained for call-site compatibility but unused now that
+ * the mark is the mascot itself rather than a glyph-in-a-tile.
+ */
+export function LogoMark({ size = 32 }: { size?: number; iconSize?: number }) {
+  return <MutantMark size={size} />;
 }

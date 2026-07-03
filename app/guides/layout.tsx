@@ -7,8 +7,8 @@ export default function GuidesLayout({ children }: { children: ReactNode }) {
       <link
         rel="alternate"
         type="application/rss+xml"
-        title="Cortex — Guides RSS"
-        href="https://cortex.vip/guides/rss.xml"
+        title="Money Guy Mutants — Guides RSS"
+        href="https://moneyguymutants.com/guides/rss.xml"
       />
       {children}
     </MarketingShell>

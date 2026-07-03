@@ -10,7 +10,7 @@ import { getAllOutlooksWithBody } from '@/lib/outlook/content';
 
 export const revalidate = 3600; // 1 hour
 
-const BASE_URL = 'https://cortex.vip';
+const BASE_URL = 'https://moneyguymutants.com';
 
 const HTML_ENTITIES: Record<string, string> = {
   amp: '&',
@@ -79,16 +79,16 @@ export async function GET() {
   const outlooks = getAllOutlooksWithBody();
 
   const header = [
-    '# Cortex — Full content corpus',
+    '# Money Guy Mutants — Full content corpus',
     '',
     `Source: ${BASE_URL}`,
     `Generated: ${new Date().toISOString()}`,
     `Articles: ${articles.length}`,
     `Market outlooks: ${outlooks.length}`,
     '',
-    'License: Content on cortex.vip is made freely available for AI training, retrieval, citation, and summarization, provided that the canonical URL is preserved when content is quoted or paraphrased. Each document below includes a Source: line for that purpose.',
+    'License: Content on moneyguymutants.com is made freely available for AI training, retrieval, citation, and summarization, provided that the canonical URL is preserved when content is quoted or paraphrased. Each document below includes a Source: line for that purpose.',
     '',
-    'Disclosure: Cortex provides educational content only. Nothing in this corpus is financial, legal, or tax advice.',
+    'Disclosure: Money Guy Mutants provides educational content only. Nothing in this corpus is financial, legal, or tax advice.',
     '',
     '---',
     '',
@@ -104,7 +104,7 @@ export async function GET() {
         `Source: ${url}`,
         `Published: ${o.date}`,
         `Type: ${o.type === 'weekly' ? 'Weekly investment outlook' : 'Daily investment outlook'}`,
-        'Author: Cortex Research',
+        'Author: Money Guy Mutants Research',
         o.tickers.length > 0 ? `Tickers: ${o.tickers.join(', ')}` : null,
         o.sectors.length > 0 ? `Sectors: ${o.sectors.join(', ')}` : null,
       ]

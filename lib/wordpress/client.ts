@@ -135,7 +135,7 @@ function transformArticle(wpArticle: WPArticle): Article {
         }
       : null,
     author: {
-      name: wpArticle.author?.node?.name || 'Cortex Team',
+      name: wpArticle.author?.node?.name || 'Money Guy Mutants Team',
       slug: wpArticle.author?.node?.slug || 'cortex-team',
       avatar: wpArticle.author?.node?.avatar?.url || '',
       bio: wpArticle.author?.node?.description || '',
@@ -156,7 +156,7 @@ function transformArticle(wpArticle: WPArticle): Article {
           ogTitle: wpArticle.seo.opengraphTitle || wpArticle.title,
           ogDescription: wpArticle.seo.opengraphDescription || (wpArticle.excerpt ? stripHtml(wpArticle.excerpt) : ''),
           ogImage: wpArticle.seo.opengraphImage?.sourceUrl || null,
-          canonical: wpArticle.seo.canonical || `https://cortex.vip/articles/${wpArticle.slug}`,
+          canonical: wpArticle.seo.canonical || `https://moneyguymutants.com/articles/${wpArticle.slug}`,
           schema: wpArticle.seo.schema?.raw || null,
         }
       : null,
@@ -193,7 +193,7 @@ function transformToListItem(wpArticle: WPArticle): ArticleListItem {
         }
       : null,
     author: {
-      name: wpArticle.author?.node?.name || 'Cortex Team',
+      name: wpArticle.author?.node?.name || 'Money Guy Mutants Team',
       avatar: wpArticle.author?.node?.avatar?.url || '',
     },
     categories: wpArticle.categories?.edges?.map((edge) => ({

@@ -4,7 +4,7 @@ import { ARCHETYPES, type ArchetypeId } from './personality-quiz-data';
  * Public origin for the quiz. Hardcoded because shareable URLs are
  * crawled by social cards and absolute by definition.
  */
-export const QUIZ_ORIGIN = 'https://cortex.vip';
+export const QUIZ_ORIGIN = 'https://moneyguymutants.com';
 export const QUIZ_PATH = '/apps/personality-quiz';
 export const QUIZ_URL = `${QUIZ_ORIGIN}${QUIZ_PATH}`;
 
@@ -51,28 +51,28 @@ export function buildShareCopy(
 
   return {
     url,
-    generic: `I got ${archetype.name} on the Cortex Financial Personality Quiz. "${archetype.tagline}" → ${url}`,
-    x: `I'm ${archetype.name} on the Cortex Financial Personality Quiz.
+    generic: `I got ${archetype.name} on the Money Guy Mutants Financial Personality Quiz. "${archetype.tagline}" → ${url}`,
+    x: `I'm ${archetype.name} on the Money Guy Mutants Financial Personality Quiz.
 
 "${archetype.tagline}"
 
 Find your investor archetype → ${url}`,
-    facebook: `Just took the Cortex Financial Personality Quiz and got ${archetype.name}.
+    facebook: `Just took the Money Guy Mutants Financial Personality Quiz and got ${archetype.name}.
 
 "${archetype.tagline}"
 
 Genuinely curious what you'd get. Take it (2 minutes, no email): ${url}`,
-    linkedin: `Cortex's Financial Personality Quiz pegged me as ${archetype.name} — "${archetype.tagline}"
+    linkedin: `Money Guy Mutants's Financial Personality Quiz pegged me as ${archetype.name} — "${archetype.tagline}"
 
 It's a sharp two-minute self-assessment of how you actually think about risk, conviction, and capital. Worth taking if you take your investing seriously:
 
 ${url}`,
     instagram: {
-      caption: `My Cortex investor archetype: ${archetype.name}.
+      caption: `My Money Guy Mutants investor archetype: ${archetype.name}.
 "${archetype.tagline}"
 
 What's yours? Take the quiz at cortex.vip/apps/personality-quiz`,
-      text: `My Cortex investor archetype: ${archetype.name}. "${archetype.tagline}" — find yours at ${QUIZ_URL}`,
+      text: `My Money Guy Mutants investor archetype: ${archetype.name}. "${archetype.tagline}" — find yours at ${QUIZ_URL}`,
     },
   };
 }

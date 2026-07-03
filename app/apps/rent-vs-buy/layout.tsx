@@ -9,12 +9,12 @@ export const metadata: Metadata = {
     title: 'Rent vs Buy Calculator - Home Ownership Cost Comparison',
     description: 'Compare renting vs buying a home with opportunity cost, maintenance, and tax factors.',
     type: 'website',
-    url: 'https://cortex.vip/apps/rent-vs-buy',
+    url: 'https://moneyguymutants.com/apps/rent-vs-buy',
     images: [{
       url: '/og-rent-vs-buy.png',
       width: 1200,
       height: 630,
-      alt: 'Cortex Rent vs Buy Calculator',
+      alt: 'Money Guy Mutants Rent vs Buy Calculator',
     }],
   },
   twitter: {
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     images: ['/og-rent-vs-buy.png'],
   },
   alternates: {
-    canonical: 'https://cortex.vip/apps/rent-vs-buy',
+    canonical: 'https://moneyguymutants.com/apps/rent-vs-buy',
   },
 };
 

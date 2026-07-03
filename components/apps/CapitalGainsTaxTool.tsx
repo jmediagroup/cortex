@@ -1,10 +1,10 @@
 "use client";
 
 /* =====================================================================
-   Capital-Gains Tax Efficiency — UI component for Cortex.vip
+   Capital-Gains Tax Efficiency — UI component for Money Guy Mutants.vip
    Imports the tested engine from @/lib/tax/taxEngine2026 (the source of
    truth for the math — do not edit the engine without re-running its tests).
-   Styling maps to Cortex's CSS-variable design tokens via `palette`.
+   Styling maps to Money Guy Mutants's CSS-variable design tokens via `palette`.
    The advanced modules (NIIT, QBI, ACA, IRMAA) are gated behind Finance Pro.
    ===================================================================== */
 

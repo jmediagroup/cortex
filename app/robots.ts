@@ -80,8 +80,8 @@ export default function robots(): MetadataRoute.Robots {
       ...aiRules,
     ],
     sitemap: [
-      'https://cortex.vip/sitemap.xml',
+      'https://moneyguymutants.com/sitemap.xml',
     ],
-    host: 'https://cortex.vip',
+    host: 'https://moneyguymutants.com',
   };
 }

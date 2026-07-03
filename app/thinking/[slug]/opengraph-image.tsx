@@ -5,7 +5,7 @@ import { getOutlookBySlug } from '@/lib/outlook/content';
 // generateStaticParams, so every slug gets a real branded image at build time
 // for shares on X/LinkedIn/iMessage (and AI answer-engine citations).
 
-export const alt = 'Cortex Research — Investment Outlook';
+export const alt = 'Money Guy Mutants Research — Investment Outlook';
 export const size = {
   width: 1200,
   height: 630,
@@ -90,7 +90,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
                 letterSpacing: '-1px',
               }}
             >
-              Cortex Research
+              Money Guy Mutants Research
             </span>
           </div>
           <div

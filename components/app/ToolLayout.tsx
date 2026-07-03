@@ -179,11 +179,11 @@ export function ToolUpsellCta({
       style={{
         position: 'relative',
         overflow: 'hidden',
-        background: 'linear-gradient(135deg, #121620 0%, #0A0E14 100%)',
-        border: '1px solid rgba(255,255,255,0.08)',
+        background: 'linear-gradient(135deg, #0A4A73 0%, #054C7D 100%)',
+        border: '1px solid rgba(255,255,255,0.10)',
         borderRadius: 'var(--radius-xl)',
         padding: '28px 32px',
-        color: '#F5F5F7',
+        color: '#ffffff',
       }}
     >
       <div
@@ -192,7 +192,7 @@ export function ToolUpsellCta({
           position: 'absolute',
           inset: 0,
           background:
-            'radial-gradient(ellipse at top right, rgba(0,240,160,0.18), transparent 60%)',
+            'radial-gradient(ellipse at top right, rgba(78,201,245,0.22), transparent 60%)',
           pointerEvents: 'none',
         }}
       />
@@ -207,7 +207,7 @@ export function ToolUpsellCta({
         }}
       >
         <div style={{ flex: '1 1 320px', minWidth: 0 }}>
-          <div className="eyebrow" style={{ color: '#00F0A0', marginBottom: 10 }}>
+          <div className="eyebrow" style={{ color: '#4EC9F5', marginBottom: 10 }}>
             ● FREE ACCOUNT
           </div>
           <h2
@@ -223,7 +223,7 @@ export function ToolUpsellCta({
           <p
             style={{
               fontSize: 14,
-              color: '#AEAEB2',
+              color: 'rgba(255,255,255,0.75)',
               margin: 0,
               lineHeight: 1.55,
             }}
@@ -238,15 +238,13 @@ export function ToolUpsellCta({
               display: 'inline-flex',
               alignItems: 'center',
               gap: 8,
-              background: '#00F0A0',
-              color: '#0A0E14',
+              background: 'var(--orange)',
+              color: '#ffffff',
               padding: '12px 20px',
-              borderRadius: 12,
+              borderRadius: 'var(--radius-sm)',
               fontWeight: 700,
               fontSize: 13,
               textDecoration: 'none',
-              boxShadow:
-                '0 0 0 1px rgba(0,240,160,0.4), 0 0 28px rgba(0,240,160,0.35)',
               whiteSpace: 'nowrap',
             }}
           >
@@ -258,11 +256,11 @@ export function ToolUpsellCta({
               display: 'inline-flex',
               alignItems: 'center',
               gap: 8,
-              background: 'rgba(255,255,255,0.06)',
-              color: '#F5F5F7',
-              border: '1px solid rgba(255,255,255,0.12)',
+              background: 'rgba(255,255,255,0.08)',
+              color: '#ffffff',
+              border: '1px solid rgba(255,255,255,0.30)',
               padding: '12px 20px',
-              borderRadius: 12,
+              borderRadius: 'var(--radius-sm)',
               fontWeight: 600,
               fontSize: 13,
               textDecoration: 'none',

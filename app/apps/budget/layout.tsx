@@ -9,12 +9,12 @@ export const metadata: Metadata = {
     title: 'Free Household Budget Calculator & AI Budget Optimizer',
     description: 'Smart budget calculator with AI-powered optimization. Track monthly expenses and optimize your household budget.',
     type: 'website',
-    url: 'https://cortex.vip/apps/budget',
+    url: 'https://moneyguymutants.com/apps/budget',
     images: [{
       url: '/og-budget.png',
       width: 1200,
       height: 630,
-      alt: 'Cortex Budget Calculator',
+      alt: 'Money Guy Mutants Budget Calculator',
     }],
   },
   twitter: {
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     images: ['/og-budget.png'],
   },
   alternates: {
-    canonical: 'https://cortex.vip/apps/budget',
+    canonical: 'https://moneyguymutants.com/apps/budget',
   },
 };
 

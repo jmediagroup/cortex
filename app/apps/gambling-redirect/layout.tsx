@@ -9,12 +9,12 @@ export const metadata: Metadata = {
     title: 'Gambling Spend Redirect Calculator - See Your Money\'s True Potential',
     description: 'Calculate what your gambling budget could become if invested. Visualize the wealth gap between betting and building.',
     type: 'website',
-    url: 'https://cortex.vip/apps/gambling-redirect',
+    url: 'https://moneyguymutants.com/apps/gambling-redirect',
     images: [{
       url: '/og-gambling-redirect.png',
       width: 1200,
       height: 630,
-      alt: 'Cortex Gambling Spend Redirect Calculator',
+      alt: 'Money Guy Mutants Gambling Spend Redirect Calculator',
     }],
   },
   twitter: {
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     images: ['/og-gambling-redirect.png'],
   },
   alternates: {
-    canonical: 'https://cortex.vip/apps/gambling-redirect',
+    canonical: 'https://moneyguymutants.com/apps/gambling-redirect',
   },
 };
 

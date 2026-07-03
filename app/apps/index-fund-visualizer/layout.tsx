@@ -9,12 +9,12 @@ export const metadata: Metadata = {
     title: 'Index Fund Growth Visualizer - ETF Investment Simulator',
     description: 'Simulate long-term growth for popular index funds with historical returns and volatility modeling.',
     type: 'website',
-    url: 'https://cortex.vip/apps/index-fund-visualizer',
+    url: 'https://moneyguymutants.com/apps/index-fund-visualizer',
     images: [{
       url: '/og-index-fund-visualizer.png',
       width: 1200,
       height: 630,
-      alt: 'Cortex Index Fund Growth Visualizer',
+      alt: 'Money Guy Mutants Index Fund Growth Visualizer',
     }],
   },
   twitter: {
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     images: ['/og-index-fund-visualizer.png'],
   },
   alternates: {
-    canonical: 'https://cortex.vip/apps/index-fund-visualizer',
+    canonical: 'https://moneyguymutants.com/apps/index-fund-visualizer',
   },
 };
 

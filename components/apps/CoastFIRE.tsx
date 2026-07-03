@@ -810,7 +810,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
               <h3 className="text-3xl font-bold">Coast FIRE Command Center</h3>
             </div>
             <p className="text-white/85 text-lg font-medium mb-8 max-w-3xl leading-relaxed">
-              Unlock advanced Cortex analytics that reveal hidden pathways to financial freedom. See exactly when you can coast, explore Barista FIRE options, and stress-test your plan against multiple scenarios.
+              Unlock advanced Money Guy Mutants analytics that reveal hidden pathways to financial freedom. See exactly when you can coast, explore Barista FIRE options, and stress-test your plan against multiple scenarios.
             </p>
             <div className="grid md:grid-cols-4 gap-4 mb-8">
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/20">
@@ -839,7 +839,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
               className="bg-white text-[var(--emerald-700)] px-8 py-4 rounded-2xl font-bold hover:bg-[var(--emerald-50)] transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
             >
               <Zap size={20} fill="currentColor" />
-              Upgrade to Cortex Pro - $9/month
+              Upgrade to Money Guy Mutants Pro - $9/month
             </button>
           </div>
         </div>
@@ -855,7 +855,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
             </div>
             <div>
               <h3 className="text-2xl font-bold text-[var(--text-primary)]">Coast FIRE Command Center</h3>
-              <p className="text-[var(--text-tertiary)] font-medium">Advanced Cortex analytics for financial freedom</p>
+              <p className="text-[var(--text-tertiary)] font-medium">Advanced Money Guy Mutants analytics for financial freedom</p>
             </div>
           </div>
 

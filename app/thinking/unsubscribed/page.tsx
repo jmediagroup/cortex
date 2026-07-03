@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Unsubscribed — Cortex Outlook',
+  title: 'Unsubscribed — Money Guy Mutants Outlook',
   robots: { index: false, follow: false },
 };
 
@@ -35,7 +35,7 @@ export default function UnsubscribedPage() {
             margin: '0 0 32px',
           }}
         >
-          You won&apos;t receive any more Cortex Outlook emails. The full archive stays
+          You won&apos;t receive any more Money Guy Mutants Outlook emails. The full archive stays
           free to read on the site.
         </p>
         <Link

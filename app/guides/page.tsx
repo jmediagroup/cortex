@@ -8,7 +8,7 @@ import { MarketingIcon } from '@/components/marketing/Icons';
 export const metadata: Metadata = {
   title: 'Guides — Personal Finance, Explained',
   description:
-    'Cortex Guides are in-depth, evergreen personal-finance explainers — budgeting, investing, debt, taxes, and retirement — paired with the Cortex calculators to put the ideas into practice.',
+    'Money Guy Mutants Guides are in-depth, evergreen personal-finance explainers — budgeting, investing, debt, taxes, and retirement — paired with the Money Guy Mutants calculators to put the ideas into practice.',
   keywords: [
     'personal finance guide',
     'financial planning guide',
@@ -18,23 +18,23 @@ export const metadata: Metadata = {
     'cortex guides',
   ],
   openGraph: {
-    title: 'Cortex Guides — Personal Finance, Explained',
+    title: 'Money Guy Mutants Guides — Personal Finance, Explained',
     description:
-      'In-depth, evergreen personal-finance guides from Cortex, paired with free calculators to put the ideas into practice.',
+      'In-depth, evergreen personal-finance guides from Money Guy Mutants, paired with free calculators to put the ideas into practice.',
     type: 'website',
-    url: 'https://cortex.vip/guides',
-    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Cortex Guides' }],
+    url: 'https://moneyguymutants.com/guides',
+    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Money Guy Mutants Guides' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Cortex Guides — Personal Finance, Explained',
-    description: 'In-depth, evergreen personal-finance guides from Cortex.',
+    title: 'Money Guy Mutants Guides — Personal Finance, Explained',
+    description: 'In-depth, evergreen personal-finance guides from Money Guy Mutants.',
     images: ['/opengraph-image'],
   },
   alternates: {
-    canonical: 'https://cortex.vip/guides',
+    canonical: 'https://moneyguymutants.com/guides',
     types: {
-      'application/rss+xml': 'https://cortex.vip/guides/rss.xml',
+      'application/rss+xml': 'https://moneyguymutants.com/guides/rss.xml',
     },
   },
 };
@@ -47,21 +47,21 @@ export default function GuidesPage() {
       ? {
           '@context': 'https://schema.org',
           '@type': 'CollectionPage',
-          '@id': 'https://cortex.vip/guides#collection',
-          url: 'https://cortex.vip/guides',
-          name: 'Cortex Guides — Personal Finance, Explained',
+          '@id': 'https://moneyguymutants.com/guides#collection',
+          url: 'https://moneyguymutants.com/guides',
+          name: 'Money Guy Mutants Guides — Personal Finance, Explained',
           description:
-            'In-depth, evergreen personal-finance guides from Cortex.',
+            'In-depth, evergreen personal-finance guides from Money Guy Mutants.',
           inLanguage: 'en-US',
-          isPartOf: { '@id': 'https://cortex.vip/#website' },
-          publisher: { '@id': 'https://cortex.vip/#organization' },
+          isPartOf: { '@id': 'https://moneyguymutants.com/#website' },
+          publisher: { '@id': 'https://moneyguymutants.com/#organization' },
           mainEntity: {
             '@type': 'ItemList',
             numberOfItems: guides.length,
             itemListElement: guides.map((g, idx) => ({
               '@type': 'ListItem',
               position: idx + 1,
-              url: `https://cortex.vip/guides/${g.slug}`,
+              url: `https://moneyguymutants.com/guides/${g.slug}`,
               name: g.title,
             })),
           },
@@ -72,8 +72,8 @@ export default function GuidesPage() {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cortex.vip' },
-      { '@type': 'ListItem', position: 2, name: 'Guides', item: 'https://cortex.vip/guides' },
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://moneyguymutants.com' },
+      { '@type': 'ListItem', position: 2, name: 'Guides', item: 'https://moneyguymutants.com/guides' },
     ],
   };
 
@@ -100,7 +100,7 @@ export default function GuidesPage() {
           </h1>
           <p style={{ fontSize: 18, color: 'var(--text-secondary)', lineHeight: 1.55, margin: 0 }}>
             In-depth, evergreen guides on budgeting, investing, debt, taxes, and retirement —
-            paired with the Cortex calculators to put the ideas into practice. New guide every Sunday.
+            paired with the Money Guy Mutants calculators to put the ideas into practice. New guide every Sunday.
           </p>
         </div>
       </section>

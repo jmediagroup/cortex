@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Bookmark, Grid3X3, BookOpen, type LucideIcon } from 'lucide-react';
-import { LogoMark } from '@/components/marketing/Nav';
+import { Wordmark } from '@/components/brand/Wordmark';
 
 type NavItem = {
   label: string;
@@ -57,20 +57,10 @@ export function AppSideNav() {
     >
       <Link
         href="/"
-        aria-label="Cortex home"
+        aria-label="Money Guy Mutants home"
         style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}
       >
-        <LogoMark size={30} iconSize={16} />
-        <span
-          style={{
-            fontWeight: 700,
-            fontSize: 15,
-            letterSpacing: '-0.02em',
-            color: 'var(--text-primary)',
-          }}
-        >
-          Cortex
-        </span>
+        <Wordmark size="sm" />
       </Link>
 
       <nav style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>

@@ -9,17 +9,17 @@ type Beat = {
 const BEATS: Beat[] = [
   {
     stance: 'Most advice is static.',
-    pivot: 'Cortex is interactive, scenario-based, and personal.',
+    pivot: 'Money Guy Mutants is interactive, scenario-based, and personal.',
     icon: 'pulse',
   },
   {
     stance: 'Most tools give answers.',
-    pivot: 'Cortex gives context.',
+    pivot: 'Money Guy Mutants gives context.',
     icon: 'compass',
   },
   {
     stance: 'Most platforms optimize for engagement.',
-    pivot: 'Cortex optimizes for clarity.',
+    pivot: 'Money Guy Mutants optimizes for clarity.',
     icon: 'orbit',
   },
 ];

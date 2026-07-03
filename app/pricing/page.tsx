@@ -54,7 +54,7 @@ const PRICING_PLANS: Plan[] = [
     annualSavings: 'Save $18/year',
     description: 'For people who want precision.',
     features: [
-      'Full access to all Cortex Finance tools',
+      'Full access to all Money Guy Mutants tools',
       'Advanced scenarios and comparisons',
       'Deeper projections and strategy modeling',
       'S-Corp tools and tax modeling',

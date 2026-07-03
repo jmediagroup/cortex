@@ -4,7 +4,7 @@ import { getAllOutlookSlugs } from '@/lib/outlook/content';
 import { getAllGuideSlugs } from '@/lib/guides/content';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://cortex.vip';
+  const baseUrl = 'https://moneyguymutants.com';
 
   // Fetch all article slugs from WordPress
   let articleEntries: MetadataRoute.Sitemap = [];

@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Financial Personality Quiz — What Kind of Investor Are You? | Cortex',
+  title: 'Financial Personality Quiz — What Kind of Investor Are You? | Money Guy Mutants',
   description:
-    'Discover your investor archetype in 10 questions. Cortex maps your money instincts to one of six personality types — from patient Accumulator to high-conviction Visionary. Free, no email required.',
+    'Discover your investor archetype in 10 questions. Money Guy Mutants maps your money instincts to one of six personality types — from patient Accumulator to high-conviction Visionary. Free, no email required.',
   keywords: [
     'financial personality quiz',
     'investor personality test',
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     description:
       'Map your money instincts to one of six investor archetypes. 10 questions, 2 minutes.',
     type: 'website',
-    url: 'https://cortex.vip/apps/personality-quiz',
+    url: 'https://moneyguymutants.com/apps/personality-quiz',
   },
   twitter: {
     card: 'summary_large_image',
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
       'Discover your investor archetype in 10 questions. Free, no email required.',
   },
   alternates: {
-    canonical: 'https://cortex.vip/apps/personality-quiz',
+    canonical: 'https://moneyguymutants.com/apps/personality-quiz',
   },
 };
 

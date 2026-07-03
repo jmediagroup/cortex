@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const guide = await getGuideBySlug(slug);
   if (!guide) return { title: 'Guide Not Found' };
 
-  const url = `https://cortex.vip/guides/${slug}`;
+  const url = `https://moneyguymutants.com/guides/${slug}`;
   const description = guide.metaDescription || guide.summary;
   const ogImage = guide.ogImage || `/guides/${slug}/opengraph-image`;
 
@@ -27,13 +27,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title: guide.title,
     description,
     keywords: [guide.topic, ...(guide.tags.length ? guide.tags : []), 'personal finance guide'],
-    authors: [{ name: 'Cortex Research' }],
+    authors: [{ name: 'Money Guy Mutants Research' }],
     openGraph: {
       title: guide.title,
       description,
       type: 'article',
       url,
-      siteName: 'Cortex',
+      siteName: 'Money Guy Mutants',
       locale: 'en_US',
       images: [{ url: ogImage, width: 1200, height: 630, alt: guide.title }],
       publishedTime: guide.date,
@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     alternates: {
       canonical: url,
       types: {
-        'application/rss+xml': 'https://cortex.vip/guides/rss.xml',
+        'application/rss+xml': 'https://moneyguymutants.com/guides/rss.xml',
       },
     },
   };
@@ -60,7 +60,7 @@ export default async function GuideDetailPage({ params }: PageProps) {
   const guide = await getGuideBySlug(slug);
   if (!guide) notFound();
 
-  const url = `https://cortex.vip/guides/${slug}`;
+  const url = `https://moneyguymutants.com/guides/${slug}`;
   const formattedDate = formatGuideDate(guide.date);
 
   const articleSchema = generateArticleSchema(guide, url);
@@ -152,7 +152,7 @@ export default async function GuideDetailPage({ params }: PageProps) {
               }}
             >
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                By <span style={{ color: 'var(--text-secondary)' }}>Cortex Research</span>
+                By <span style={{ color: 'var(--text-secondary)' }}>Money Guy Mutants Research</span>
               </span>
               <span aria-hidden="true">·</span>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
@@ -366,14 +366,14 @@ function generateArticleSchema(guide: Guide, url: string) {
     dateModified: guide.date,
     author: {
       '@type': 'Organization',
-      name: 'Cortex Research',
-      '@id': 'https://cortex.vip/#organization',
+      name: 'Money Guy Mutants Research',
+      '@id': 'https://moneyguymutants.com/#organization',
     },
     publisher: {
       '@type': 'Organization',
-      '@id': 'https://cortex.vip/#organization',
+      '@id': 'https://moneyguymutants.com/#organization',
       name: 'Cortex Technologies',
-      logo: { '@type': 'ImageObject', url: 'https://cortex.vip/icon' },
+      logo: { '@type': 'ImageObject', url: 'https://moneyguymutants.com/icon' },
     },
     mainEntityOfPage: { '@type': 'WebPage', '@id': url },
     timeRequired: `PT${guide.readingTime}M`,
@@ -383,7 +383,7 @@ function generateArticleSchema(guide: Guide, url: string) {
     isAccessibleForFree: true,
     image: guide.ogImage
       ? { '@type': 'ImageObject', url: guide.ogImage }
-      : `https://cortex.vip/guides/${guide.slug}/opengraph-image`,
+      : `https://moneyguymutants.com/guides/${guide.slug}/opengraph-image`,
   };
 }
 
@@ -392,9 +392,9 @@ function generateBreadcrumbSchema(guide: Guide) {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cortex.vip' },
-      { '@type': 'ListItem', position: 2, name: 'Guides', item: 'https://cortex.vip/guides' },
-      { '@type': 'ListItem', position: 3, name: guide.title, item: `https://cortex.vip/guides/${guide.slug}` },
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://moneyguymutants.com' },
+      { '@type': 'ListItem', position: 2, name: 'Guides', item: 'https://moneyguymutants.com/guides' },
+      { '@type': 'ListItem', position: 3, name: guide.title, item: `https://moneyguymutants.com/guides/${guide.slug}` },
     ],
   };
 }

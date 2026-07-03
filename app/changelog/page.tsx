@@ -3,8 +3,8 @@ import { MarketingPlaceholder } from '@/components/marketing/Placeholder';
 
 export const metadata: Metadata = {
   title: 'Changelog',
-  description: 'What shipped, when, and why. The Cortex product changelog.',
-  alternates: { canonical: 'https://cortex.vip/changelog' },
+  description: 'What shipped, when, and why. The Money Guy Mutants product changelog.',
+  alternates: { canonical: 'https://moneyguymutants.com/changelog' },
 };
 
 export default function ChangelogPage() {

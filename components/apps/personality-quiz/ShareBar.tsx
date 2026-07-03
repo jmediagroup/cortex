@@ -93,7 +93,7 @@ export function ShareBar({ primary, secondary, onRetake }: ShareBarProps) {
     if (typeof navigator === 'undefined' || !navigator.share) return;
     try {
       await navigator.share({
-        title: 'Cortex Financial Personality Quiz',
+        title: 'Money Guy Mutants Financial Personality Quiz',
         text: copy.generic,
         url: copy.url,
       });

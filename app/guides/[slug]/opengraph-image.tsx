@@ -5,7 +5,7 @@ import { getGuideBySlug } from '@/lib/guides/content';
 // generateStaticParams, so every slug gets a real branded image at build time
 // for shares on X/LinkedIn/iMessage (and AI answer-engine citations).
 
-export const alt = 'Cortex Guides — Personal Finance, Explained';
+export const alt = 'Money Guy Mutants Guides — Personal Finance, Explained';
 export const size = {
   width: 1200,
   height: 630,
@@ -90,7 +90,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
                 letterSpacing: '-1px',
               }}
             >
-              Cortex Guides
+              Money Guy Mutants Guides
             </span>
           </div>
           <div
