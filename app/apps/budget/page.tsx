@@ -630,10 +630,10 @@ const App = () => {
               </p>
               <button
                 onClick={() => hasProFeatures ? setShowOptimizer(true) : setShowUpgradeModal(true)}
-                className={`w-full py-2 transition-colors rounded-lg text-sm font-bold flex items-center justify-center gap-2 ${
+                className={`w-full py-2 transition-colors rounded-lg text-sm font-bold flex items-center justify-center gap-2 text-white ${
                   hasProFeatures
-                    ? 'bg-[var(--emerald-400)] hover:bg-[var(--emerald-400)]'
-                    : 'bg-[var(--color-warning)] hover:bg-[var(--color-warning)] text-white'
+                    ? 'bg-[var(--orange)] hover:opacity-90'
+                    : 'bg-[var(--color-warning)] hover:opacity-90'
                 }`}
               >
                 {hasProFeatures ? (

@@ -23,7 +23,7 @@ import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 import ProGatedPreview from '@/components/monetization/ProGatedPreview';
 
 /**
- * CORTEX: NET WORTH ENGINE
+ * MONEY GUY MUTANTS: NET WORTH ENGINE
  * A decision-support tool optimized for clarity and long-term agency.
  */
 
@@ -1093,7 +1093,7 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
                 </div>
                 <button
                   onClick={onUpgrade}
-                  className="bg-white text-[var(--emerald-700)] px-8 py-4 rounded-2xl font-bold hover:bg-[var(--emerald-50)] transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
+                  className="bg-[var(--orange)] text-white px-8 py-4 rounded-2xl font-bold hover:opacity-90 transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
                 >
                   Upgrade to Pro
                 </button>

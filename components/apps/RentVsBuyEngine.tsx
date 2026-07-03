@@ -432,18 +432,18 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                       <stop offset="95%" stopColor="#1D8072" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#2C2C2E" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E0DBDB" />
                   <XAxis
                     dataKey="year"
                     axisLine={false}
                     tickLine={false}
-                    tick={{fill: '#8E8E93', fontSize: 12}}
-                    label={{ value: 'Years', position: 'insideBottom', offset: -5, fill: '#8E8E93', fontSize: 10 }}
+                    tick={{fill: '#767676', fontSize: 12}}
+                    label={{ value: 'Years', position: 'insideBottom', offset: -5, fill: '#767676', fontSize: 10 }}
                   />
                   <YAxis
                     axisLine={false}
                     tickLine={false}
-                    tick={{fill: '#8E8E93', fontSize: 12}}
+                    tick={{fill: '#767676', fontSize: 12}}
                     tickFormatter={(val) => `$${val/1000}k`}
                   />
                   <ChartTooltip
@@ -452,7 +452,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                   />
                   <ReferenceLine x={years} stroke="#1D8072" strokeDasharray="3 3" />
                   <Area type="monotone" dataKey="buyNetWorth" name="Buy Net Worth" stroke="#1D8072" strokeWidth={3} fillOpacity={1} fill="url(#colorBuy)" />
-                  <Area type="monotone" dataKey="rentNetWorth" name="Rent Portfolio" stroke="#8E8E93" strokeWidth={2} fill="transparent" strokeDasharray="5 5" />
+                  <Area type="monotone" dataKey="rentNetWorth" name="Rent Portfolio" stroke="#767676" strokeWidth={2} fill="transparent" strokeDasharray="5 5" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -534,7 +534,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
             </div>
             <button
               onClick={onUpgrade}
-              className="bg-white text-[var(--emerald-700)] px-8 py-4 rounded-2xl font-bold hover:bg-[var(--emerald-50)] transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
+              className="bg-[var(--orange)] text-white px-8 py-4 rounded-2xl font-bold hover:opacity-90 transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
             >
               <Zap size={20} fill="currentColor" />
               Upgrade to Pro - $9/month

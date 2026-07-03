@@ -125,7 +125,7 @@ export default function SaveScenarioButton({
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex items-center gap-2 px-4 py-2 bg-[var(--emerald-500)] text-white rounded-xl text-sm font-bold hover:bg-[var(--emerald-500)] transition-all disabled:opacity-60 shadow-sm"
+          className="flex items-center gap-2 px-4 py-2 bg-[var(--orange)] text-white rounded-xl text-sm font-bold hover:opacity-90 transition-all disabled:opacity-60 shadow-sm"
         >
           {saving ? (
             <Loader2 size={16} className="animate-spin" />
@@ -177,7 +177,7 @@ export default function SaveScenarioButton({
           />
           <button
             onClick={handleCopy}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--emerald-500)] text-white rounded-lg text-xs font-bold hover:bg-[var(--emerald-500)] transition-colors flex-shrink-0"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--orange)] text-white rounded-lg text-xs font-bold hover:opacity-90 transition-colors flex-shrink-0"
           >
             {copied ? (
               <>

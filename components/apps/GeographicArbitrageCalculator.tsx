@@ -522,18 +522,18 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                       <stop offset="95%" stopColor="#1D8072" stopOpacity={0.02}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#2C2C2E" />
+                  <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#E0DBDB" />
                   <XAxis
                     dataKey="year"
                     axisLine={false}
                     tickLine={false}
-                    tick={{fill: '#8E8E93', fontSize: 11, fontWeight: 600}}
+                    tick={{fill: '#767676', fontSize: 11, fontWeight: 600}}
                     dy={15}
                   />
                   <YAxis
                     axisLine={false}
                     tickLine={false}
-                    tick={{fill: '#8E8E93', fontSize: 11, fontWeight: 600}}
+                    tick={{fill: '#767676', fontSize: 11, fontWeight: 600}}
                     tickFormatter={(val) => `$${(val/1000).toFixed(0)}k`}
                     dx={-10}
                   />
@@ -553,7 +553,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                   <Area
                     type="monotone"
                     dataKey="current"
-                    stroke="#6D6D72"
+                    stroke="#767676"
                     strokeWidth={2}
                     strokeDasharray="6 6"
                     fill="transparent"
@@ -639,7 +639,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                     </div>
                     <button
                       onClick={onUpgrade}
-                      className="bg-[var(--bg-card)] text-[var(--color-warning)] px-8 py-4 rounded-2xl font-bold text-lg hover:bg-[var(--color-warning-soft)] transition-all shadow-xl hover:shadow-2xl hover:scale-105 active:scale-100"
+                      className="bg-[var(--orange)] text-white px-8 py-4 rounded-2xl font-bold text-lg hover:opacity-90 transition-all shadow-xl hover:shadow-2xl hover:scale-105 active:scale-100"
                     >
                       Upgrade to Pro
                     </button>

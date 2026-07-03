@@ -1,6 +1,6 @@
 /* Article Content Typography — Money Guy Mutants token-driven */
 .article-content {
-  font-size: 1.125rem;
+  font-size: 1.1875rem;
   line-height: 1.75;
   color: var(--text-secondary);
   font-family: var(--font-sans);
@@ -218,7 +218,7 @@
 
 @media (max-width: 640px) {
   .article-content {
-    font-size: 1.0625rem;
+    font-size: 1.125rem;
     line-height: 1.7;
   }
 

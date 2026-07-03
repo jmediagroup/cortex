@@ -73,7 +73,7 @@ const FUND_METADATA = {
     description: 'Focuses on high-growth companies, primarily in tech and consumer sectors.',
     cagr: 13.5,
     volatility: 22.0,
-    color: '#FFB800',
+    color: '#FEBF14',
     icon: Zap,
     expenseRatio: '0.15% / 0.04%'
   }
@@ -465,23 +465,23 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
                       <stop offset="95%" stopColor="#1D8072" stopOpacity={0}/>
                     </linearGradient>
                     <linearGradient id="colorInvested" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#8E8E93" stopOpacity={0.1}/>
-                      <stop offset="95%" stopColor="#8E8E93" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#767676" stopOpacity={0.1}/>
+                      <stop offset="95%" stopColor="#767676" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#2C2C2E" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E0DBDB" />
                   <XAxis
                     dataKey="year"
                     axisLine={false}
                     tickLine={false}
-                    tick={{fill: '#8E8E93', fontSize: 11, fontWeight: 'bold'}}
-                    label={{ value: 'Years', position: 'insideBottom', offset: -5, fontSize: 11, fill: '#8E8E93' }}
+                    tick={{fill: '#767676', fontSize: 11, fontWeight: 'bold'}}
+                    label={{ value: 'Years', position: 'insideBottom', offset: -5, fontSize: 11, fill: '#767676' }}
                   />
                   <YAxis
                     axisLine={false}
                     tickLine={false}
                     tickFormatter={(v) => formatCompact(v)}
-                    tick={{fill: '#8E8E93', fontSize: 11, fontWeight: 'bold'}}
+                    tick={{fill: '#767676', fontSize: 11, fontWeight: 'bold'}}
                   />
                   <ChartTooltip
                     contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.1)' }}
@@ -500,7 +500,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
                     <Line
                       type="monotone"
                       dataKey="simulated"
-                      stroke="#FFB800"
+                      stroke="#FEBF14"
                       strokeWidth={2}
                       dot={false}
                       strokeDasharray="5 5"
@@ -510,7 +510,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
                   <Area
                     type="monotone"
                     dataKey="invested"
-                    stroke="#8E8E93"
+                    stroke="#767676"
                     strokeWidth={2}
                     fillOpacity={1}
                     fill="url(#colorInvested)"
@@ -590,7 +590,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
             </div>
             <button
               onClick={onUpgrade}
-              className="bg-white text-[var(--emerald-700)] px-8 py-4 rounded-2xl font-bold hover:bg-[var(--emerald-50)] transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
+              className="bg-[var(--orange)] text-white px-8 py-4 rounded-2xl font-bold hover:opacity-90 transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
             >
               <Zap size={20} fill="currentColor" />
               Upgrade to Pro - $9/month

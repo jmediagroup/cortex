@@ -713,10 +713,10 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                     <stop offset="95%" stopColor="#4EC9F5" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#2C2C2E" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E0DBDB" />
                 <XAxis
                   dataKey="age"
-                  stroke="#8E8E93"
+                  stroke="#767676"
                   fontSize={11}
                   fontWeight={600}
                   tickLine={false}
@@ -724,7 +724,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                   ticks={[inputs.currentAge, inputs.retirementAge, 85]}
                 />
                 <YAxis
-                  stroke="#8E8E93"
+                  stroke="#767676"
                   fontSize={11}
                   fontWeight={600}
                   tickLine={false}
@@ -737,15 +737,15 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                 />
                 <ReferenceLine
                   y={calculations.targetFIRENumber}
-                  stroke="#6D6D72"
+                  stroke="#767676"
                   strokeDasharray="5 5"
-                  label={{ position: 'right', value: 'FIRE Goal', fill: '#8E8E93', fontSize: 10, fontWeight: 700 }}
+                  label={{ position: 'right', value: 'FIRE Goal', fill: '#767676', fontSize: 10, fontWeight: 700 }}
                 />
                 <ReferenceLine
                   x={inputs.retirementAge}
-                  stroke="#6D6D72"
+                  stroke="#767676"
                   strokeDasharray="5 5"
-                  label={{ position: 'top', value: 'Retire', fill: '#8E8E93', fontSize: 10, fontWeight: 700 }}
+                  label={{ position: 'top', value: 'Retire', fill: '#767676', fontSize: 10, fontWeight: 700 }}
                 />
 
                 <Area
@@ -769,7 +769,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                 <Line
                   type="monotone"
                   dataKey="coastLine"
-                  stroke="#FFB800"
+                  stroke="#FEBF14"
                   strokeWidth={2}
                   strokeDasharray="5 5"
                   dot={false}
@@ -836,7 +836,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
             </div>
             <button
               onClick={onUpgrade}
-              className="bg-white text-[var(--emerald-700)] px-8 py-4 rounded-2xl font-bold hover:bg-[var(--emerald-50)] transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
+              className="bg-[var(--orange)] text-white px-8 py-4 rounded-2xl font-bold hover:opacity-90 transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
             >
               <Zap size={20} fill="currentColor" />
               Upgrade to Money Guy Mutants Pro - $9/month
@@ -1225,17 +1225,17 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                       <stop offset="95%" stopColor="#1D8072" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#2C2C2E" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E0DBDB" />
                   <XAxis
                     dataKey="age"
-                    stroke="#8E8E93"
+                    stroke="#767676"
                     fontSize={11}
                     fontWeight={600}
                     tickLine={false}
                     axisLine={false}
                   />
                   <YAxis
-                    stroke="#8E8E93"
+                    stroke="#767676"
                     fontSize={11}
                     fontWeight={600}
                     tickLine={false}
@@ -1249,7 +1249,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                   <Line
                     type="stepAfter"
                     dataKey="coastTarget"
-                    stroke="#8E8E93"
+                    stroke="#767676"
                     strokeWidth={2}
                     strokeDasharray="5 5"
                     dot={false}
