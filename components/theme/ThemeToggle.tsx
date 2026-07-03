@@ -1,36 +1,16 @@
 'use client';
 
-import { Moon, Sun } from 'lucide-react';
-import { useTheme } from './ThemeProvider';
-
 type Props = {
   className?: string;
 };
 
-export function ThemeToggle({ className }: Props) {
-  const { theme, toggleTheme } = useTheme();
-  const isLight = theme === 'light';
-  const nextLabel = isLight ? 'dark' : 'light';
-
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={isLight}
-      aria-label={`Switch to ${nextLabel} theme`}
-      data-state={theme}
-      onClick={toggleTheme}
-      className={['theme-toggle', className].filter(Boolean).join(' ')}
-    >
-      <span className="theme-toggle-track" aria-hidden="true">
-        <span className="theme-toggle-icon theme-toggle-icon--moon">
-          <Moon size={12} strokeWidth={2} />
-        </span>
-        <span className="theme-toggle-icon theme-toggle-icon--sun">
-          <Sun size={12} strokeWidth={2} />
-        </span>
-        <span className="theme-toggle-pill" />
-      </span>
-    </button>
-  );
+/**
+ * Money Guy Mutants is a light-only design system, so the light/dark
+ * theme toggle has been retired. This renders nothing, keeping every
+ * existing import site working with no visible control. The component
+ * (and ThemeProvider/ThemeScript) will be deleted outright in the
+ * Phase 7 cleanup.
+ */
+export function ThemeToggle(_props: Props) {
+  return null;
 }

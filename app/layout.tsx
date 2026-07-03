@@ -1,19 +1,15 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
-import { cookies } from "next/headers";
+import { Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import WebVitals from "@/components/WebVitals";
 import Analytics from "@/components/Analytics";
-import { ThemeProvider } from "@/components/theme/ThemeProvider";
-import { ThemeScript } from "@/components/theme/ThemeScript";
-import { THEME_COOKIE, THEME_DEFAULT, isTheme, type Theme } from "@/lib/theme";
 
-const inter = Inter({
-  variable: "--font-inter",
+const hanken = Hanken_Grotesk({
+  variable: "--font-hanken",
   subsets: ["latin"],
   display: "swap",
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -92,10 +88,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   viewportFit: 'cover',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#F7F7F3' },
-    { media: '(prefers-color-scheme: dark)', color: '#0A0E14' },
-  ],
+  themeColor: '#FFFFFF',
 };
 
 const jsonLd = {
@@ -157,19 +150,14 @@ const jsonLd = {
   ],
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookieStore = await cookies();
-  const cookieTheme = cookieStore.get(THEME_COOKIE)?.value;
-  const initialTheme: Theme | null = isTheme(cookieTheme) ? cookieTheme : null;
-
   return (
-    <html lang="en" data-theme={initialTheme ?? undefined} suppressHydrationWarning>
+    <html lang="en" data-theme="light">
       <head>
-        <ThemeScript />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-0PQ1RZVNTS"
           strategy="afterInteractive"
@@ -202,13 +190,11 @@ export default async function RootLayout({
         <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
       </head>
       <body
-        className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}
+        className={`${hanken.variable} ${jetbrainsMono.variable} antialiased`}
       >
-        <ThemeProvider initialTheme={initialTheme ?? THEME_DEFAULT}>
-          <WebVitals />
-          <Analytics />
-          {children}
-        </ThemeProvider>
+        <WebVitals />
+        <Analytics />
+        {children}
       </body>
     </html>
   );
