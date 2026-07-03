@@ -861,10 +861,10 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
                   <div className="space-y-10 flex flex-col items-center md:items-start">
                     <div className="relative h-56 flex items-center justify-center">
                       <svg viewBox="0 0 36 36" className="w-48 h-48 transform -rotate-90">
-                        <circle cx="18" cy="18" r="15.915" fill="none" stroke="#1C1C1E" strokeWidth="3.5"></circle>
+                        <circle cx="18" cy="18" r="15.915" fill="none" stroke="#08375A" strokeWidth="3.5"></circle>
                         <circle
                           cx="18" cy="18" r="15.915" fill="none"
-                          stroke="#00F0A0" strokeWidth="3.5"
+                          stroke="#1D8072" strokeWidth="3.5"
                           strokeDasharray={`${metrics.liquidityRatio * 100} ${100 - (metrics.liquidityRatio * 100)}`}
                           strokeLinecap="round"
                           className="transition-all duration-1000 delay-300 ease-in-out"
@@ -1143,7 +1143,7 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
               <div className="flex items-start gap-3">
                 <Zap size={18} className="flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
+                  <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">MUTANT INSIGHT</p>
                   <p className="text-[var(--mist-100)] text-sm font-medium leading-relaxed">
                     {momentumIntelligence.growthPercentage > 50
                       ? `You've entered the compound phase: ${momentumIntelligence.growthPercentage.toFixed(0)}% of momentum comes from asset growth. Your money works harder than you do.`
@@ -1177,7 +1177,7 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
                 <div className="flex items-start gap-3">
                   <Zap size={18} className="flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
+                    <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">MUTANT INSIGHT</p>
                     <p className="text-white/85 text-sm font-medium leading-relaxed">
                       Over 10 years, this acceleration compounds to approximately ${Math.round(momentumIntelligence.accelerationGain * momentumIntelligence.tenYearAnnuityFactor).toLocaleString()} in extra wealth.
                     </p>
@@ -1208,7 +1208,7 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
                 <div className="flex items-start gap-3">
                   <Zap size={18} className="flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
+                    <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">MUTANT INSIGHT</p>
                     <p className="text-white/85 text-sm font-medium leading-relaxed">
                       {momentumIntelligence.debtDragPercentage > 30
                         ? `Debt is creating significant drag (${momentumIntelligence.debtDragPercentage.toFixed(0)}%). Aggressive paydown could unlock substantial acceleration.`
@@ -1259,7 +1259,7 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
               <div className="flex items-start gap-3">
                 <Zap size={18} className="flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
+                  <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">MUTANT INSIGHT</p>
                   <p className="text-[var(--mist-100)] text-sm font-medium leading-relaxed">
                     {!isFinite(momentumIntelligence.tippingPointNetWorth)
                       ? `Set a positive growth rate and monthly savings to see your tipping point — the net worth where asset growth outpaces what you save.`

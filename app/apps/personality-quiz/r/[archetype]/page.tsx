@@ -31,16 +31,16 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { archetype } = await params;
   const { s } = await searchParams;
-  if (!isArchetype(archetype)) return { title: 'Cortex Financial Personality Quiz' };
+  if (!isArchetype(archetype)) return { title: 'Money Guy Mutants Financial Personality Quiz' };
 
   const a = ARCHETYPES[archetype];
   const secondary =
     s && isArchetype(s) && s !== archetype ? ARCHETYPES[s] : null;
   const url = buildResultUrl(archetype, secondary?.id);
-  const title = `${a.name} — Cortex Financial Personality Quiz`;
+  const title = `${a.name} — Money Guy Mutants Financial Personality Quiz`;
   const description = secondary
     ? `${a.tagline} (Secondary: ${secondary.name}.) Take the 10-question quiz to find your investor archetype.`
-    : `${a.tagline} Take the 10-question Cortex Financial Personality Quiz to find your investor archetype.`;
+    : `${a.tagline} Take the 10-question Money Guy Mutants Financial Personality Quiz to find your investor archetype.`;
 
   return {
     title,
@@ -79,7 +79,7 @@ export default async function SharedResultPage({
     <ToolLayout
       eyebrow="PSYCHOLOGY · SHARED RESULT"
       title={`${primary.name}.`}
-      sub={`"${primary.tagline}" — one of six investor archetypes from the Cortex Financial Personality Quiz.`}
+      sub={`"${primary.tagline}" — one of six investor archetypes from the Money Guy Mutants Financial Personality Quiz.`}
       breadcrumb={<Breadcrumb toolName={`Quiz · ${primary.shortName}`} />}
       narration="The investors who win don’t fight their wiring — they build a system around it. Knowing your archetype is step one."
       disclaimer="Educational self-assessment · not personalized advice · results are descriptive, not predictive."
@@ -344,13 +344,13 @@ export default async function SharedResultPage({
           </Link>
         </div>
 
-        {/* Cortex tools */}
+        {/* Money Guy Mutants tools */}
         <div style={{ marginBottom: 24 }}>
           <div
             className="eyebrow"
             style={{ color: 'var(--text-tertiary)', marginBottom: 10 }}
           >
-            EXPLORE WITH CORTEX
+            EXPLORE WITH MUTANTS
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
             {primary.tools.map((tool) => (

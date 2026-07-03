@@ -2,7 +2,7 @@
 @import "tailwindcss";
 
 /* ============================================================
-   Tailwind v4 theme — expose Cortex tokens as utilities.
+   Tailwind v4 theme — expose Money Guy Mutants tokens as utilities.
    `tokens.css` defines the CSS variables (dark default,
    `[data-theme="light"]` overrides). This block surfaces them
    as `bg-*`, `text-*`, `border-*`, `shadow-*`, `rounded-*`,
@@ -354,7 +354,7 @@ body :where(.text-white, [data-theme="dark"])
 
 /* ============================================================
    Signature backgrounds — aurora ellipses + 56px grid mask.
-   Ported from Cortex Design System ui_kits/marketing/Hero.jsx.
+   Ported from Money Guy Mutants Design System ui_kits/marketing/Hero.jsx.
    ============================================================ */
 .hero-gradient {
   position: relative;
@@ -547,6 +547,145 @@ body :where(.text-white, [data-theme="dark"])
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ============================================================
+   MGM buttons — uppercase, wide-tracked, thin 4px radius, flat.
+   Styling lives here so <Button> stays a server component.
+   primary = orange fill · tertiary = yellow · secondary = ghost outline.
+   ============================================================ */
+.mgm-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  letter-spacing: var(--tracking-button);
+  text-transform: uppercase;
+  line-height: 1.1;
+  border-radius: var(--radius-sm);
+  border: 2px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.18s ease, color 0.18s ease,
+              border-color 0.18s ease, box-shadow 0.18s ease;
+}
+.mgm-btn:disabled,
+.mgm-btn[aria-disabled='true'] { opacity: 0.5; cursor: not-allowed; }
+
+.mgm-btn--sm { padding: 8px 22px;  font-size: 12px; }
+.mgm-btn--md { padding: 12px 30px; font-size: 0.8125rem; }
+.mgm-btn--lg { padding: 16px 40px; font-size: 15px; }
+
+.mgm-btn--primary { background: var(--orange); border-color: var(--orange); color: #fff; }
+.mgm-btn--primary:hover { background: #d94f1e; border-color: #d94f1e; color: #fff; }
+
+.mgm-btn--tertiary { background: var(--yellow); border-color: var(--yellow); color: var(--navy-deep); }
+.mgm-btn--tertiary:hover { background: #e6ac06; border-color: #e6ac06; color: var(--navy-deep); }
+
+.mgm-btn--secondary { background: transparent; }
+.mgm-btn--secondary.mgm-btn--orange { border-color: var(--orange); color: var(--orange); }
+.mgm-btn--secondary.mgm-btn--orange:hover { background: var(--orange); color: #fff; }
+.mgm-btn--secondary.mgm-btn--navy { border-color: var(--navy); color: var(--navy); }
+.mgm-btn--secondary.mgm-btn--navy:hover { background: var(--navy); color: #fff; }
+.mgm-btn--secondary.mgm-btn--white { border-color: #fff; color: #fff; }
+.mgm-btn--secondary.mgm-btn--white:hover { background: #fff; color: var(--navy); }
+
+/* ============================================================
+   MGM surface + form primitives (used by <Card> and by restyled
+   calculators). White cards, navy-ink inputs, sky focus, navy
+   slider thumb, navy duotone bands. All flat + warm.
+   ============================================================ */
+.mgm-card {
+  display: block;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  color: var(--navy);
+  text-decoration: none;
+  transition: box-shadow 0.22s ease, transform 0.22s ease;
+}
+.mgm-card--hover:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+/* Navy duotone band — the MGM "dark section" (white text lives inside). */
+.mgm-band {
+  background: linear-gradient(135deg, #0a4a73 0%, var(--navy) 100%);
+  color: #fff;
+  border-radius: var(--radius-md);
+}
+
+/* Text inputs / selects / textareas. */
+.mgm-input {
+  width: 100%;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  color: var(--navy);
+  background: var(--white);
+  border: 1px solid var(--border-input);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.mgm-input::placeholder {
+  color: var(--navy);
+  opacity: 0.5;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-size: 0.85em;
+}
+.mgm-input:focus,
+.mgm-input:focus-visible {
+  outline: none;
+  border-color: var(--sky);
+  box-shadow: var(--focus-ring);
+}
+
+/* Range slider skin — navy track fill (set inline) + navy thumb. */
+.mgm-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--off-white);
+  outline: none;
+  cursor: pointer;
+}
+.mgm-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--navy);
+  border: 3px solid var(--white);
+  box-shadow: 0 1px 4px rgba(21, 48, 85, 0.4);
+  cursor: grab;
+}
+.mgm-range::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--navy);
+  border: 3px solid var(--white);
+  box-shadow: 0 1px 4px rgba(21, 48, 85, 0.4);
+  cursor: grab;
+}
+.mgm-range:focus-visible { box-shadow: var(--focus-ring); }
+
+/* MGM eyebrow — uppercase tracked micro-label. */
+.mgm-eyebrow {
+  font-size: var(--text-eyebrow);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+  color: var(--sky);
 }
 
 /* ============================================================

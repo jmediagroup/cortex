@@ -12,9 +12,8 @@ type Props = {
 };
 
 /**
- * Authenticated app shell — inherits the user's chosen theme
- * (dark or light) so dashboard, apps, scenarios, and account
- * surfaces honour the toggle set from marketing.
+ * Authenticated app shell — light MGM navy-on-white surfaces for the
+ * dashboard, apps, scenarios, and account.
  */
 export function AppShell({ children, user, userTier = 'free', onSignOut }: Props) {
   return (

@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { getTierDisplayName, type Tier } from '@/lib/access-control';
 import { isAdmin } from '@/lib/admin';
-import { LogoMark } from '@/components/marketing/Nav';
+import { Wordmark } from '@/components/brand/Wordmark';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
 
 type User = { email: string; name?: string } | null | undefined;
@@ -61,15 +61,13 @@ export function AppTopBar({ user, userTier = 'free', onSignOut }: Props) {
         paddingBottom: 12,
         paddingLeft: `calc(16px + var(--safe-left))`,
         paddingRight: `calc(16px + var(--safe-right))`,
-        background: 'var(--bg-glass-strong)',
-        backdropFilter: 'blur(20px) saturate(180%)',
-        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+        background: 'var(--bg-page)',
         borderBottom: '1px solid var(--border-subtle)',
       }}
     >
       <Link
         href="/"
-        aria-label="Cortex home"
+        aria-label="Money Guy Mutants home"
         className="app-top-bar-logo"
         style={{
           display: 'none',
@@ -78,17 +76,7 @@ export function AppTopBar({ user, userTier = 'free', onSignOut }: Props) {
           textDecoration: 'none',
         }}
       >
-        <LogoMark size={28} iconSize={15} />
-        <span
-          style={{
-            fontWeight: 700,
-            fontSize: 15,
-            letterSpacing: '-0.02em',
-            color: 'var(--text-primary)',
-          }}
-        >
-          Cortex
-        </span>
+        <Wordmark size="sm" />
       </Link>
 
       <div style={{ flex: 1 }} />
@@ -128,8 +116,8 @@ export function AppTopBar({ user, userTier = 'free', onSignOut }: Props) {
                   gap: 10,
                   padding: '6px 12px 6px 6px',
                   borderRadius: 9999,
-                  background: 'var(--bg-glass)',
-                  border: '1px solid var(--glass-border-strong)',
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border-default)',
                   color: 'var(--text-primary)',
                   cursor: 'pointer',
                   fontFamily: 'inherit',
@@ -140,7 +128,7 @@ export function AppTopBar({ user, userTier = 'free', onSignOut }: Props) {
                     width: 28,
                     height: 28,
                     borderRadius: '50%',
-                    background: 'var(--emerald-500)',
+                    background: 'var(--navy)',
                     color: 'var(--text-inverse)',
                     fontWeight: 700,
                     fontSize: 12,
@@ -175,16 +163,16 @@ export function AppTopBar({ user, userTier = 'free', onSignOut }: Props) {
                     borderRadius: 9999,
                     background:
                       userTier === 'finance_pro'
-                        ? 'var(--emerald-tint)'
-                        : 'var(--bg-glass-strong)',
+                        ? 'rgba(78, 201, 245, 0.16)'
+                        : 'var(--bg-section)',
                     color:
                       userTier === 'finance_pro'
-                        ? 'var(--emerald-500)'
+                        ? 'var(--navy)'
                         : 'var(--text-tertiary)',
                     border: `1px solid ${
                       userTier === 'finance_pro'
-                        ? 'var(--emerald-border)'
-                        : 'var(--glass-border)'
+                        ? 'rgba(78, 201, 245, 0.40)'
+                        : 'var(--border-default)'
                     }`,
                   }}
                 >
@@ -217,7 +205,7 @@ export function AppTopBar({ user, userTier = 'free', onSignOut }: Props) {
                     style={{
                       padding: '14px 16px',
                       borderBottom: '1px solid var(--border-subtle)',
-                      background: 'var(--bg-glass)',
+                      background: 'var(--bg-section)',
                     }}
                   >
                     <div
@@ -289,13 +277,12 @@ export function AppTopBar({ user, userTier = 'free', onSignOut }: Props) {
             href="/login"
             style={{
               padding: '8px 16px',
-              borderRadius: 9999,
-              background: 'var(--emerald-500)',
-              color: 'var(--text-inverse)',
+              borderRadius: 'var(--radius-sm)',
+              background: 'var(--orange)',
+              color: '#ffffff',
               fontWeight: 700,
               fontSize: 13,
               textDecoration: 'none',
-              boxShadow: '0 0 0 1px var(--cta-glow-ring), 0 0 16px var(--cta-glow-soft)',
             }}
           >
             Sign in

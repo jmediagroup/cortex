@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 
-const BASE_URL = 'https://cortex.vip';
+const BASE_URL = 'https://moneyguymutants.com';
 
 interface SEOConfig {
   title: string;
@@ -20,7 +20,7 @@ export function generateMetadata(config: SEOConfig): Metadata {
   } = config;
 
   return {
-    title: `${title} | Cortex`,
+    title: `${title} | Money Guy Mutants`,
     description,
     keywords: keywords.join(', '),
     authors: [{ name: 'Cortex Technologies' }],
@@ -43,7 +43,7 @@ export function generateMetadata(config: SEOConfig): Metadata {
       url: canonical || BASE_URL,
       title,
       description,
-      siteName: 'Cortex - Tools for Long-Term Thinking',
+      siteName: 'Money Guy Mutants',
       images: [
         {
           url: ogImage,
@@ -58,7 +58,6 @@ export function generateMetadata(config: SEOConfig): Metadata {
       title,
       description,
       images: [ogImage],
-      creator: '@cortextools',
     },
     alternates: {
       canonical: canonical || BASE_URL,
@@ -72,8 +71,8 @@ export function generateMetadata(config: SEOConfig): Metadata {
 // SEO configurations for each page
 export const SEO_CONFIGS = {
   home: {
-    title: 'Cortex - Financial Decision Tools & Budget Planning Software',
-    description: 'Free online financial calculators and budget planning tools. Retirement planning, compound interest calculator, budget optimizer, net worth tracker, and more. Make smarter money decisions with Cortex.',
+    title: 'Money Guy Mutants - Financial Decision Tools & Budget Planning Software',
+    description: 'Free online financial calculators and budget planning tools. Retirement planning, compound interest calculator, budget optimizer, net worth tracker, and more. Make smarter money decisions with Money Guy Mutants.',
     keywords: [
       'financial calculator',
       'budget planner',

@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Button } from '@/components/ui/Button';
 import { MarketingShell } from './MarketingShell';
 import { MarketingIcon } from './Icons';
 
@@ -21,15 +21,9 @@ export function MarketingPlaceholder({
 }: Props) {
   return (
     <MarketingShell>
-      <section
-        className="hero-gradient"
-        style={{ padding: '96px 24px 48px', textAlign: 'center' }}
-      >
+      <section style={{ padding: '96px 24px 48px', textAlign: 'center' }}>
         <div style={{ maxWidth: 720, margin: '0 auto', position: 'relative' }}>
-          <div
-            className="eyebrow"
-            style={{ marginBottom: 16, color: 'var(--text-tertiary)' }}
-          >
+          <div className="mgm-eyebrow" style={{ marginBottom: 16 }}>
             {eyebrow}
           </div>
           <h1
@@ -56,13 +50,11 @@ export function MarketingPlaceholder({
           {body && (
             <div
               style={{
-                background: 'var(--bg-glass)',
-                backdropFilter: 'var(--glass-blur)',
-                WebkitBackdropFilter: 'var(--glass-blur)',
-                border: '1px solid var(--glass-border)',
-                borderRadius: 'var(--radius-xl)',
+                background: 'var(--white)',
+                border: '1px solid var(--border-default)',
+                borderRadius: 'var(--radius-md)',
                 padding: 32,
-                boxShadow: 'var(--shadow-card), var(--shadow-inset-top)',
+                boxShadow: 'var(--shadow-card)',
                 marginBottom: 40,
               }}
             >
@@ -71,25 +63,9 @@ export function MarketingPlaceholder({
           )}
 
           <div style={{ textAlign: 'center' }}>
-            <Link
-              href={ctaHref}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 8,
-                background: 'var(--emerald-500)',
-                color: 'var(--text-inverse)',
-                padding: '13px 24px',
-                borderRadius: 12,
-                fontWeight: 700,
-                fontSize: 14,
-                textDecoration: 'none',
-                boxShadow:
-                  '0 0 0 1px var(--cta-glow-ring), 0 0 24px var(--cta-glow-soft)',
-              }}
-            >
+            <Button variant="primary" href={ctaHref}>
               {ctaLabel} <MarketingIcon name="arrowRight" size={14} />
-            </Link>
+            </Button>
           </div>
         </div>
       </section>

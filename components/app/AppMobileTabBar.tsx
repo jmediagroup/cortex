@@ -48,9 +48,7 @@ export function AppMobileTabBar() {
         paddingBottom: `calc(10px + var(--safe-bottom))`,
         paddingLeft: `calc(16px + var(--safe-left))`,
         paddingRight: `calc(16px + var(--safe-right))`,
-        background: 'var(--bg-glass-strong)',
-        backdropFilter: 'blur(24px) saturate(180%)',
-        WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+        background: 'var(--bg-page)',
         borderTop: '1px solid var(--border-subtle)',
         display: 'none',
         justifyContent: 'space-around',
@@ -73,14 +71,14 @@ export function AppMobileTabBar() {
               gap: 4,
               padding: '6px 0',
               textDecoration: 'none',
-              color: active ? 'var(--emerald-500)' : 'var(--text-tertiary)',
+              color: active ? 'var(--navy)' : 'var(--text-tertiary)',
             }}
           >
             <Icon size={20} strokeWidth={active ? 2.25 : 2} />
             <span
               style={{
                 fontSize: 10,
-                fontWeight: 500,
+                fontWeight: active ? 700 : 500,
                 letterSpacing: '0.02em',
               }}
             >

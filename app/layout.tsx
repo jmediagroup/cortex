@@ -20,12 +20,12 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://cortex.vip'),
+  metadataBase: new URL('https://moneyguymutants.com'),
   title: {
-    default: "Cortex - Financial Decision Tools & Budget Planning Software",
-    template: "%s | Cortex"
+    default: "Money Guy Mutants - Financial Decision Tools & Budget Planning Software",
+    template: "%s | Money Guy Mutants"
   },
-  description: "Free online financial calculators and budget planning tools. Retirement planning, compound interest calculator, budget optimizer, net worth tracker, and more. Make smarter money decisions with Cortex.",
+  description: "Free online financial calculators and budget planning tools. Retirement planning, compound interest calculator, budget optimizer, net worth tracker, and more. Make smarter money decisions with Money Guy Mutants.",
   keywords: ['financial calculator', 'budget planner', 'retirement calculator', 'compound interest calculator', 'net worth tracker', 'budget optimizer', 'financial planning tool', 'money management app', 'investment calculator', 'debt payoff calculator', 'financial decision making', 'personal finance software'],
   authors: [{ name: 'Cortex Technologies' }],
   creator: 'Cortex Technologies',
@@ -44,23 +44,22 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://cortex.vip',
-    siteName: 'Cortex - Tools for Long-Term Thinking',
-    title: 'Cortex - Financial Decision Tools & Budget Planning Software',
-    description: 'Free online financial calculators and budget planning tools. Make smarter money decisions with Cortex.',
+    url: 'https://moneyguymutants.com',
+    siteName: 'Money Guy Mutants',
+    title: 'Money Guy Mutants - Financial Decision Tools & Budget Planning Software',
+    description: 'Free online financial calculators and budget planning tools. Make smarter money decisions with Money Guy Mutants.',
     images: [{
       url: '/opengraph-image',
       width: 1200,
       height: 630,
-      alt: 'Cortex Financial Tools',
+      alt: 'Money Guy Mutants Financial Tools',
     }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Cortex - Financial Decision Tools',
+    title: 'Money Guy Mutants - Financial Decision Tools',
     description: 'Free online financial calculators and budget planning tools.',
     images: ['/opengraph-image'],
-    creator: '@cortextools',
   },
   icons: {
     icon: [
@@ -73,8 +72,8 @@ export const metadata: Metadata = {
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
-    title: 'Cortex',
-    statusBarStyle: 'black-translucent',
+    title: 'Money Guy Mutants',
+    statusBarStyle: 'default',
   },
   formatDetection: {
     telephone: false,
@@ -96,42 +95,39 @@ const jsonLd = {
   '@graph': [
     {
       '@type': 'Organization',
-      '@id': 'https://cortex.vip/#organization',
+      '@id': 'https://moneyguymutants.com/#organization',
       name: 'Cortex Technologies',
-      url: 'https://cortex.vip',
+      url: 'https://moneyguymutants.com',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://cortex.vip/icon',
+        url: 'https://moneyguymutants.com/icon',
         width: 512,
         height: 512,
       },
-      sameAs: [
-        'https://twitter.com/cortextools',
-      ],
-      description: 'Cortex builds interactive decision-support tools for life\'s biggest choices, starting with personal finance.',
+      description: 'Money Guy Mutants builds interactive decision-support tools for life\'s biggest choices, starting with personal finance.',
     },
     {
       '@type': 'WebSite',
-      '@id': 'https://cortex.vip/#website',
-      url: 'https://cortex.vip',
-      name: 'Cortex',
+      '@id': 'https://moneyguymutants.com/#website',
+      url: 'https://moneyguymutants.com',
+      name: 'Money Guy Mutants',
       description: 'Tools for thinking clearly about life\'s biggest decisions.',
       publisher: {
-        '@id': 'https://cortex.vip/#organization',
+        '@id': 'https://moneyguymutants.com/#organization',
       },
       potentialAction: {
         '@type': 'SearchAction',
         target: {
           '@type': 'EntryPoint',
-          urlTemplate: 'https://cortex.vip/dashboard?search={search_term_string}',
+          urlTemplate: 'https://moneyguymutants.com/dashboard?search={search_term_string}',
         },
         'query-input': 'required name=search_term_string',
       },
     },
     {
       '@type': 'SoftwareApplication',
-      '@id': 'https://cortex.vip/#application',
-      name: 'Cortex Financial Tools',
+      '@id': 'https://moneyguymutants.com/#application',
+      name: 'Money Guy Mutants Financial Tools',
       applicationCategory: 'FinanceApplication',
       operatingSystem: 'Web',
       offers: {
@@ -178,14 +174,14 @@ export default function RootLayout({
         <link
           rel="alternate"
           type="application/rss+xml"
-          title="Cortex — Articles RSS"
-          href="https://cortex.vip/articles/rss.xml"
+          title="Money Guy Mutants — Articles RSS"
+          href="https://moneyguymutants.com/articles/rss.xml"
         />
         <link
           rel="alternate"
           type="application/rss+xml"
-          title="Cortex Research — Daily & Weekly Investment Outlook RSS"
-          href="https://cortex.vip/thinking/rss.xml"
+          title="Money Guy Mutants Research — Daily & Weekly Investment Outlook RSS"
+          href="https://moneyguymutants.com/thinking/rss.xml"
         />
         <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
       </head>

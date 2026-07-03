@@ -123,7 +123,7 @@ export default function AdminOverview() {
         <h2 className="text-base font-bold text-[var(--text-primary)] mb-4">User Distribution</h2>
         <div className="space-y-3">
           {[
-            { label: 'Free', count: stats?.users.free || 0, color: '#94a3b8' },
+            { label: 'Free', count: stats?.users.free || 0, color: '#767676' },
             { label: 'Pro', count: stats?.users.finance_pro || 0, color: 'var(--color-accent)' },
           ].map((tier) => {
             const pct = stats?.users.total ? Math.round((tier.count / stats.users.total) * 100) : 0;

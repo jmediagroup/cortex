@@ -192,17 +192,16 @@ function PersonalizeBanner({ onDismiss }: { onDismiss: () => void }) {
         margin: '16px 24px 0',
         padding: '14px 16px',
         borderRadius: 12,
-        background: 'var(--bg-glass)',
-        backdropFilter: 'var(--glass-blur)',
-        WebkitBackdropFilter: 'var(--glass-blur)',
-        border: '1px solid var(--glass-border)',
+        background: 'var(--bg-card)',
+        border: '1px solid var(--border-default)',
+        boxShadow: 'var(--shadow-card)',
         color: 'var(--text-primary)',
         display: 'flex',
         alignItems: 'center',
         gap: 12,
       }}
     >
-      <Sparkles size={18} style={{ color: 'var(--emerald-500)', flexShrink: 0 }} />
+      <Sparkles size={18} style={{ color: 'var(--sky)', flexShrink: 0 }} />
       <div style={{ flex: 1, fontSize: 14, lineHeight: 1.4 }}>
         <strong>Personalize your dashboard.</strong>{' '}
         <span style={{ color: 'var(--text-secondary)' }}>
@@ -215,11 +214,11 @@ function PersonalizeBanner({ onDismiss }: { onDismiss: () => void }) {
           display: 'inline-flex',
           alignItems: 'center',
           gap: 6,
-          background: 'var(--emerald-500)',
-          color: 'var(--text-inverse)',
+          background: 'var(--orange)',
+          color: '#ffffff',
           padding: '8px 14px',
-          borderRadius: 10,
-          fontWeight: 600,
+          borderRadius: 'var(--radius-sm)',
+          fontWeight: 700,
           fontSize: 13,
           textDecoration: 'none',
           flexShrink: 0,
@@ -261,7 +260,7 @@ function ProWelcomeBanner({ onDismiss }: { onDismiss: () => void }) {
         display: 'flex',
         alignItems: 'center',
         gap: 12,
-        boxShadow: '0 0 24px var(--cta-glow-soft)',
+        boxShadow: 'var(--shadow-card)',
       }}
     >
       <ShieldCheck size={18} style={{ color: 'var(--emerald-500)', flexShrink: 0 }} />
@@ -307,10 +306,10 @@ function ContinueCheckoutCard({
       style={{
         margin: '16px 24px 0',
         padding: '20px 20px',
-        borderRadius: 16,
-        background: 'var(--bg-glass-strong)',
-        border: '1px solid var(--emerald-border)',
-        boxShadow: '0 0 32px var(--cta-glow-soft)',
+        borderRadius: 12,
+        background: 'var(--bg-card)',
+        border: '1px solid var(--border-default)',
+        boxShadow: 'var(--shadow-card)',
         display: 'flex',
         alignItems: 'center',
         gap: 16,
@@ -322,10 +321,9 @@ function ContinueCheckoutCard({
         style={{
           width: 40,
           height: 40,
-          borderRadius: 10,
-          background: 'var(--emerald-tint)',
-          border: '1px solid var(--emerald-border)',
-          color: 'var(--emerald-500)',
+          borderRadius: 'var(--radius-md)',
+          background: 'var(--mint)',
+          color: 'var(--navy-deep)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -335,7 +333,7 @@ function ContinueCheckoutCard({
         <Sparkles size={20} />
       </div>
       <div style={{ flex: 1, minWidth: 220 }}>
-        <div className="eyebrow" style={{ color: 'var(--emerald-500)', marginBottom: 4 }}>
+        <div className="eyebrow" style={{ color: 'var(--gray-500)', marginBottom: 4 }}>
           ONE STEP LEFT
         </div>
         <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)' }}>

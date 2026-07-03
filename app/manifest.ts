@@ -2,13 +2,13 @@ import { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Cortex - Financial Decision Tools',
-    short_name: 'Cortex',
-    description: 'Tools for thinking clearly about life\'s biggest decisions. Financial calculators, budget planning, and more.',
+    name: 'Money Guy Mutants - Financial Tools',
+    short_name: 'Money Guy Mutants',
+    description: 'Financial calculators, guides, and tools to help you build wealth.',
     start_url: '/',
     display: 'standalone',
-    background_color: '#0A0E14',
-    theme_color: '#0A0E14',
+    background_color: '#FFFFFF',
+    theme_color: '#054C7D',
     orientation: 'portrait-primary',
     categories: ['finance', 'productivity', 'business'],
     icons: [

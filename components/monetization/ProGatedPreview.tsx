@@ -48,7 +48,7 @@ export default function ProGatedPreview({ isLocked, toolId, previewLabel, childr
 
       {/* Overlay with upgrade CTA */}
       <div className="absolute inset-0 flex items-center justify-center z-10">
-        <div className="bg-[var(--bg-card)]/95 backdrop-blur-sm border border-[var(--border-default)] rounded-2xl p-8 max-w-md mx-4 shadow-2xl text-center">
+        <div className="bg-[var(--bg-card)]/95 border border-[var(--border-default)] rounded-xl p-8 max-w-md mx-4 shadow-[var(--shadow-elevated)] text-center">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[var(--emerald-100)] mb-4">
             <Lock size={20} className="text-[var(--emerald-500)]" />
           </div>
@@ -68,7 +68,7 @@ export default function ProGatedPreview({ isLocked, toolId, previewLabel, childr
           </div>
           <button
             onClick={() => router.push('/pricing')}
-            className="w-full bg-[var(--emerald-500)] text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-[var(--emerald-500)] transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+            className="w-full bg-[var(--orange)] text-white px-6 py-3 rounded-lg font-bold text-sm hover:bg-[#d94f1e] transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
           >
             Upgrade to Pro
             <ArrowRight size={16} />

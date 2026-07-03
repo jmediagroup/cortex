@@ -4,7 +4,7 @@ import { getAllOutlooks } from '@/lib/outlook/content';
 
 export const revalidate = 1800;
 
-const BASE_URL = 'https://cortex.vip';
+const BASE_URL = 'https://moneyguymutants.com';
 
 function escapeXml(input: string): string {
   return input
@@ -40,7 +40,7 @@ export async function GET() {
       <guid isPermaLink="true">${url}</guid>
       <pubDate>${toRfc822(o.date)}</pubDate>
       <description>${escapeXml(o.summary)}</description>
-      <author>noreply@cortex.vip (Cortex Research)</author>
+      <author>noreply@cortex.vip (Money Guy Mutants Research)</author>
       ${categoryTags}
     </item>`;
     })
@@ -49,10 +49,10 @@ export async function GET() {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>Cortex — Thinking</title>
+    <title>Money Guy Mutants — Thinking</title>
     <link>${BASE_URL}/thinking</link>
     <atom:link href="${BASE_URL}/thinking/rss.xml" rel="self" type="application/rss+xml" />
-    <description>Daily and weekly investment outlooks from Cortex Research.</description>
+    <description>Daily and weekly investment outlooks from Money Guy Mutants Research.</description>
     <language>en-us</language>
     <copyright>© ${new Date().getFullYear()} J Media Group LLC</copyright>
     <lastBuildDate>${toRfc822(latestDate)}</lastBuildDate>

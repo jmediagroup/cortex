@@ -8,6 +8,7 @@ import { Article } from '@/lib/wordpress/types';
 import { ShareButtons } from './ShareButtons';
 import { RelatedArticles } from './RelatedArticles';
 import { MarketingIcon } from '@/components/marketing/Icons';
+import { Button } from '@/components/ui/Button';
 import './article-styles.css';
 
 type PageProps = { params: Promise<{ slug: string }> };
@@ -28,7 +29,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const description = seo?.description || article.excerpt;
   const ogImage = seo?.ogImage || article.featuredImage?.url || '/opengraph-image';
 
-  const articleUrl = `https://cortex.vip/articles/${slug}`;
+  const articleUrl = `https://moneyguymutants.com/articles/${slug}`;
   const tagNames = article.tags.map((t) => t.name);
   const fallbackKeywords =
     seo?.keywords?.split(',').map((k) => k.trim()).filter(Boolean) || tagNames;
@@ -46,7 +47,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description: seo?.ogDescription || description,
       type: 'article',
       url: articleUrl,
-      siteName: 'Cortex',
+      siteName: 'Money Guy Mutants',
       locale: 'en_US',
       images: [{ url: ogImage, width: 1200, height: 630, alt: article.title }],
       publishedTime: article.date,
@@ -64,7 +65,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     alternates: {
       canonical: seo?.canonical || articleUrl,
       types: {
-        'application/rss+xml': 'https://cortex.vip/articles/rss.xml',
+        'application/rss+xml': 'https://moneyguymutants.com/articles/rss.xml',
       },
     },
   };
@@ -80,7 +81,7 @@ export default async function ArticlePage({ params }: PageProps) {
   const faqSchema = article.faq.length > 0 ? generateFAQSchema(article.faq) : null;
   const breadcrumbSchema = generateBreadcrumbSchema(article);
 
-  const articleUrl = `https://cortex.vip/articles/${slug}`;
+  const articleUrl = `https://moneyguymutants.com/articles/${slug}`;
 
   return (
     <>
@@ -106,7 +107,7 @@ export default async function ArticlePage({ params }: PageProps) {
               position: 'relative',
               width: '100%',
               height: 'clamp(260px, 45vh, 500px)',
-              background: 'var(--bg-section)',
+              background: 'var(--navy)',
             }}
           >
             <Image
@@ -140,7 +141,7 @@ export default async function ArticlePage({ params }: PageProps) {
               maxWidth: 760,
               margin: '0 auto',
               background: article.featuredImage ? 'var(--bg-canvas)' : 'transparent',
-              borderRadius: article.featuredImage ? 'var(--radius-xl) var(--radius-xl) 0 0' : 0,
+              borderRadius: article.featuredImage ? 'var(--radius-md) var(--radius-md) 0 0' : 0,
               padding: article.featuredImage ? '32px 0 0' : 0,
             }}
           >
@@ -169,12 +170,11 @@ export default async function ArticlePage({ params }: PageProps) {
                     href={`/articles?category=${category.slug}`}
                     style={{
                       fontSize: 11,
-                      fontWeight: 600,
+                      fontWeight: 700,
                       letterSpacing: '0.08em',
                       textTransform: 'uppercase',
-                      color: 'var(--emerald-500)',
-                      background: 'var(--emerald-tint-soft)',
-                      border: '1px solid var(--emerald-border-soft)',
+                      color: '#fff',
+                      background: 'var(--sky-pill)',
                       padding: '5px 12px',
                       borderRadius: 9999,
                       textDecoration: 'none',
@@ -205,7 +205,7 @@ export default async function ArticlePage({ params }: PageProps) {
                 flexWrap: 'wrap',
                 alignItems: 'center',
                 gap: 16,
-                color: 'var(--text-tertiary)',
+                color: 'var(--text-muted)',
                 fontSize: 13,
                 paddingBottom: 24,
                 borderBottom: '1px solid var(--border-subtle)',
@@ -276,8 +276,8 @@ export default async function ArticlePage({ params }: PageProps) {
                   <details
                     key={index}
                     style={{
-                      background: 'var(--bg-glass)',
-                      border: '1px solid var(--glass-border)',
+                      background: 'var(--bg-card)',
+                      border: '1px solid var(--border-default)',
                       borderRadius: 'var(--radius-md)',
                       overflow: 'hidden',
                     }}
@@ -286,7 +286,7 @@ export default async function ArticlePage({ params }: PageProps) {
                       style={{
                         padding: '16px 20px',
                         cursor: 'pointer',
-                        fontWeight: 600,
+                        fontWeight: 700,
                         color: 'var(--text-primary)',
                         listStyle: 'none',
                       }}
@@ -310,63 +310,35 @@ export default async function ArticlePage({ params }: PageProps) {
 
           {article.relatedCalculator && (
             <div
+              className="mgm-band"
               style={{
                 margin: '40px 0',
                 padding: 32,
-                background: 'linear-gradient(135deg, #121620 0%, #0A0E14 100%)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                borderRadius: 'var(--radius-xl)',
-                color: '#F5F5F7',
                 position: 'relative',
                 overflow: 'hidden',
               }}
             >
-              <div
-                aria-hidden="true"
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  background:
-                    'radial-gradient(ellipse at top right, rgba(0,240,160,0.18), transparent 60%)',
-                  pointerEvents: 'none',
-                }}
-              />
               <div style={{ position: 'relative' }}>
-                <div className="eyebrow" style={{ color: '#00F0A0', marginBottom: 12 }}>
+                <div className="mgm-eyebrow" style={{ color: 'var(--sky)', marginBottom: 12 }}>
                   TRY IT YOURSELF
                 </div>
                 <h3
                   style={{
                     fontSize: 22,
                     fontWeight: 700,
+                    color: '#fff',
                     margin: '0 0 10px',
                     letterSpacing: '-0.015em',
                   }}
                 >
                   Put what you learned into practice.
                 </h3>
-                <p style={{ color: '#AEAEB2', margin: '0 0 20px', lineHeight: 1.55 }}>
+                <p style={{ color: 'rgba(255,255,255,0.82)', margin: '0 0 20px', lineHeight: 1.55 }}>
                   {article.cta?.text || 'Run the scenario in our free calculator.'}
                 </p>
-                <Link
-                  href={article.cta?.link || `/apps/${article.relatedCalculator}`}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    background: '#00F0A0',
-                    color: '#0A0E14',
-                    padding: '12px 22px',
-                    borderRadius: 12,
-                    fontWeight: 700,
-                    fontSize: 14,
-                    textDecoration: 'none',
-                    boxShadow:
-                      '0 0 0 1px rgba(0,240,160,0.4), 0 0 32px rgba(0,240,160,0.35)',
-                  }}
-                >
+                <Button variant="primary" href={article.cta?.link || `/apps/${article.relatedCalculator}`}>
                   Open calculator <MarketingIcon name="arrowRight" size={14} />
-                </Link>
+                </Button>
               </div>
             </div>
           )}
@@ -383,8 +355,8 @@ export default async function ArticlePage({ params }: PageProps) {
               }}
             >
               <span
-                className="eyebrow"
-                style={{ marginRight: 8, color: 'var(--text-muted)' }}
+                className="mgm-eyebrow"
+                style={{ marginRight: 8, color: 'var(--gray-500)' }}
               >
                 TAGS
               </span>
@@ -394,10 +366,10 @@ export default async function ArticlePage({ params }: PageProps) {
                   href={`/articles?tag=${tag.slug}`}
                   style={{
                     fontSize: 12,
-                    fontWeight: 500,
-                    color: 'var(--text-secondary)',
-                    background: 'var(--bg-glass-strong)',
-                    border: '1px solid var(--glass-border)',
+                    fontWeight: 600,
+                    color: 'var(--navy)',
+                    background: 'var(--off-white)',
+                    border: '1px solid var(--border-default)',
                     padding: '4px 10px',
                     borderRadius: 9999,
                     textDecoration: 'none',
@@ -433,7 +405,7 @@ export default async function ArticlePage({ params }: PageProps) {
                 letterSpacing: '-0.02em',
               }}
             >
-              Continue learning.
+              Keep reading, mutant.
             </h3>
             <p
               style={{
@@ -442,27 +414,11 @@ export default async function ArticlePage({ params }: PageProps) {
                 fontSize: 15,
               }}
             >
-              Explore more articles to deepen your financial knowledge.
+              More ways to shift into the fast-lane and build wealth on purpose.
             </p>
-            <Link
-              href="/articles"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 8,
-                background: 'var(--emerald-500)',
-                color: 'var(--text-inverse)',
-                padding: '13px 24px',
-                borderRadius: 12,
-                fontWeight: 700,
-                fontSize: 14,
-                textDecoration: 'none',
-                boxShadow:
-                  '0 0 0 1px var(--cta-glow-ring), 0 0 24px var(--cta-glow-soft)',
-              }}
-            >
+            <Button variant="primary" href="/articles">
               View all articles <MarketingIcon name="arrowRight" size={14} />
-            </Link>
+            </Button>
           </div>
         </div>
       </article>
@@ -493,19 +449,19 @@ function articleBodyText(html: string): string {
 function generateArticleSchema(article: Article) {
   const body = articleBodyText(article.content);
   const wordCount = body ? body.split(/\s+/).filter(Boolean).length : 0;
-  const articleUrl = `https://cortex.vip/articles/${article.slug}`;
+  const articleUrl = `https://moneyguymutants.com/articles/${article.slug}`;
 
   const author = article.author?.name
     ? {
         '@type': 'Person',
         name: article.author.name,
-        url: `https://cortex.vip/articles?author=${article.author.slug}`,
+        url: `https://moneyguymutants.com/articles?author=${article.author.slug}`,
         ...(article.author.bio ? { description: article.author.bio } : {}),
         ...(article.author.avatar ? { image: article.author.avatar } : {}),
       }
     : {
         '@type': 'Organization',
-        '@id': 'https://cortex.vip/#organization',
+        '@id': 'https://moneyguymutants.com/#organization',
         name: 'Cortex Technologies',
       };
 
@@ -524,15 +480,15 @@ function generateArticleSchema(article: Article) {
           width: article.featuredImage.width,
           height: article.featuredImage.height,
         }
-      : 'https://cortex.vip/opengraph-image',
+      : 'https://moneyguymutants.com/opengraph-image',
     datePublished: article.date,
     dateModified: article.modified,
     author,
     publisher: {
       '@type': 'Organization',
-      '@id': 'https://cortex.vip/#organization',
+      '@id': 'https://moneyguymutants.com/#organization',
       name: 'Cortex Technologies',
-      logo: { '@type': 'ImageObject', url: 'https://cortex.vip/icon' },
+      logo: { '@type': 'ImageObject', url: 'https://moneyguymutants.com/icon' },
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
@@ -567,13 +523,13 @@ function generateBreadcrumbSchema(article: Article) {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cortex.vip' },
-      { '@type': 'ListItem', position: 2, name: 'Articles', item: 'https://cortex.vip/articles' },
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://moneyguymutants.com' },
+      { '@type': 'ListItem', position: 2, name: 'Articles', item: 'https://moneyguymutants.com/articles' },
       {
         '@type': 'ListItem',
         position: 3,
         name: article.title,
-        item: `https://cortex.vip/articles/${article.slug}`,
+        item: `https://moneyguymutants.com/articles/${article.slug}`,
       },
     ],
   };

@@ -40,11 +40,11 @@ export default function OnboardingPage() {
         alignItems: 'center',
         justifyContent: 'center',
         padding: 24,
-        background: 'var(--bg-page)',
+        background: 'var(--off-white)',
       }}
     >
       {loading || !userId ? (
-        <Loader2 size={28} className="animate-spin" style={{ color: 'var(--text-tertiary)' }} />
+        <Loader2 size={28} className="animate-spin" style={{ color: 'var(--sky)' }} />
       ) : (
         <OnboardingQuiz userId={userId} onComplete={handleDone} onSkip={handleDone} />
       )}

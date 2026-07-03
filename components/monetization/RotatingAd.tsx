@@ -90,11 +90,11 @@ export default function RotatingAd({
   if (variant === 'banner') {
     return (
       <div className={`relative ${className}`}>
-        <div className="bg-gradient-to-r from-[var(--obsidian-800)]/80 to-[var(--obsidian-800)]/30 border border-[var(--border-strong)]/50 rounded-lg p-4">
+        <div className="bg-[var(--bg-card)] border border-[var(--border-default)] rounded-lg p-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex-1">
               <p className="text-xs text-[var(--text-tertiary)] uppercase tracking-wide mb-1">Recommended Tool</p>
-              <p className="text-white font-medium">{currentAffiliate.name}</p>
+              <p className="text-[var(--text-primary)] font-medium">{currentAffiliate.name}</p>
               {currentAffiliate.tagline && (
                 <p className="text-sm text-[var(--emerald-400)]">{currentAffiliate.tagline}</p>
               )}

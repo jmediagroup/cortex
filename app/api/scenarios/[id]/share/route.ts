@@ -43,6 +43,6 @@ export async function POST(
 
   return NextResponse.json({
     share_token: data.share_token,
-    share_url: `https://cortex.vip/s/${data.share_token}`,
+    share_url: `https://moneyguymutants.com/s/${data.share_token}`,
   });
 }

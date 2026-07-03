@@ -9,12 +9,12 @@ export const metadata: Metadata = {
     title: 'Debt Payoff Calculator - Avalanche vs Snowball Method',
     description: 'Compare debt paydown strategies with psychological weighting and opportunity cost analysis.',
     type: 'website',
-    url: 'https://cortex.vip/apps/debt-paydown',
+    url: 'https://moneyguymutants.com/apps/debt-paydown',
     images: [{
       url: '/og-debt.png',
       width: 1200,
       height: 630,
-      alt: 'Cortex Debt Payoff Calculator',
+      alt: 'Money Guy Mutants Debt Payoff Calculator',
     }],
   },
   twitter: {
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     images: ['/og-debt.png'],
   },
   alternates: {
-    canonical: 'https://cortex.vip/apps/debt-paydown',
+    canonical: 'https://moneyguymutants.com/apps/debt-paydown',
   },
 };
 

@@ -8,10 +8,10 @@ import { trackEvent } from '@/lib/analytics';
 import {
   AuthShell,
   AuthField,
-  authInputStyle,
+  authInputWithIcon,
   authErrorStyle,
-  authPrimaryBtn,
 } from '@/components/auth/AuthShell';
+import { Button } from '@/components/ui/Button';
 
 function ResetPasswordForm() {
   const [password, setPassword] = useState('');
@@ -71,29 +71,27 @@ function ResetPasswordForm() {
           <div
             style={{
               margin: '0 auto 20px',
-              width: 56,
-              height: 56,
-              borderRadius: 'var(--radius-md)',
+              width: 64,
+              height: 64,
+              borderRadius: '50%',
               background: 'var(--emerald-tint)',
-              border: '1px solid var(--emerald-border)',
-              color: 'var(--emerald-500)',
+              color: 'var(--teal-green)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 0 24px var(--cta-glow-soft)',
             }}
           >
-            <Check size={26} />
+            <Check size={28} />
           </div>
-          <div className="eyebrow" style={{ marginBottom: 10, color: 'var(--emerald-500)' }}>
-            DONE
+          <div className="mgm-eyebrow" style={{ marginBottom: 10 }}>
+            ALL SET
           </div>
           <h1
             style={{
-              fontSize: 22,
+              fontSize: 26,
               fontWeight: 700,
-              color: 'var(--text-primary)',
-              letterSpacing: '-0.02em',
+              color: 'var(--navy)',
+              letterSpacing: '-0.01em',
               margin: '0 0 12px',
             }}
           >
@@ -101,15 +99,15 @@ function ResetPasswordForm() {
           </h1>
           <p
             style={{
-              fontSize: 14,
+              fontSize: 15,
               color: 'var(--text-secondary)',
               lineHeight: 1.6,
               margin: '0 0 20px',
             }}
           >
-            Redirecting you to your dashboard...
+            Redirecting you to your dashboard…
           </p>
-          <Loader2 className="animate-spin" size={20} color="var(--emerald-500)" />
+          <Loader2 className="animate-spin" size={20} color="var(--sky)" />
         </div>
       </AuthShell>
     );
@@ -119,21 +117,21 @@ function ResetPasswordForm() {
     <AuthShell>
       <form onSubmit={handleResetPassword} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         <div>
-          <div className="eyebrow" style={{ marginBottom: 10, color: 'var(--text-tertiary)' }}>
-            RESET PASSWORD
+          <div className="mgm-eyebrow" style={{ marginBottom: 10 }}>
+            NEW PASSWORD
           </div>
           <h1
             style={{
-              fontSize: 24,
+              fontSize: 28,
               fontWeight: 700,
-              color: 'var(--text-primary)',
-              letterSpacing: '-0.02em',
+              color: 'var(--navy)',
+              letterSpacing: '-0.01em',
               margin: '0 0 8px',
             }}
           >
             Set a new password.
           </h1>
-          <p style={{ fontSize: 14, color: 'var(--text-tertiary)', margin: 0 }}>
+          <p style={{ fontSize: 15, color: 'var(--text-secondary)', margin: 0 }}>
             Enter your new password below.
           </p>
         </div>
@@ -151,7 +149,8 @@ function ResetPasswordForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
-            style={authInputStyle}
+            className="mgm-input"
+            style={authInputWithIcon}
             minLength={6}
             autoComplete="new-password"
           />
@@ -164,23 +163,24 @@ function ResetPasswordForm() {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder="••••••••"
-            style={authInputStyle}
+            className="mgm-input"
+            style={authInputWithIcon}
             minLength={6}
             autoComplete="new-password"
           />
         </AuthField>
 
-        <button type="submit" disabled={loading} style={{ ...authPrimaryBtn, opacity: loading ? 0.7 : 1 }}>
+        <Button variant="primary" type="submit" disabled={loading} style={{ width: '100%' }}>
           {loading ? (
             <>
-              <Loader2 size={16} className="animate-spin" /> Updating...
+              <Loader2 size={16} className="animate-spin" /> Updating…
             </>
           ) : (
             <>
               Reset password <ArrowRight size={16} />
             </>
           )}
-        </button>
+        </Button>
       </form>
     </AuthShell>
   );

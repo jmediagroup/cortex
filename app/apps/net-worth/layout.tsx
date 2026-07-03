@@ -9,12 +9,12 @@ export const metadata: Metadata = {
     title: 'Net Worth Calculator & Wealth Tracker - Free Financial Tool',
     description: 'Track your net worth, assets, and liabilities. Analyze liquidity and visualize your financial trajectory.',
     type: 'website',
-    url: 'https://cortex.vip/apps/net-worth',
+    url: 'https://moneyguymutants.com/apps/net-worth',
     images: [{
       url: '/og-net-worth.png',
       width: 1200,
       height: 630,
-      alt: 'Cortex Net Worth Calculator',
+      alt: 'Money Guy Mutants Net Worth Calculator',
     }],
   },
   twitter: {
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     images: ['/og-net-worth.png'],
   },
   alternates: {
-    canonical: 'https://cortex.vip/apps/net-worth',
+    canonical: 'https://moneyguymutants.com/apps/net-worth',
   },
 };
 

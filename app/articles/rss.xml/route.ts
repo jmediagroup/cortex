@@ -6,7 +6,7 @@ import { getArticles } from '@/lib/wordpress/client';
 
 export const revalidate = 1800; // 30 minutes
 
-const BASE_URL = 'https://cortex.vip';
+const BASE_URL = 'https://moneyguymutants.com';
 
 function escapeXml(input: string): string {
   return input
@@ -42,7 +42,7 @@ export async function GET() {
       <guid isPermaLink="true">${url}</guid>
       <pubDate>${toRfc822(a.date)}</pubDate>
       <description>${escapeXml(a.excerpt)}</description>
-      <author>noreply@cortex.vip (${escapeXml(a.author.name || 'Cortex Team')})</author>
+      <author>noreply@cortex.vip (${escapeXml(a.author.name || 'Money Guy Mutants Team')})</author>
       ${categoryTags}
     </item>`;
         })
@@ -55,10 +55,10 @@ export async function GET() {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>Cortex — Articles</title>
+    <title>Money Guy Mutants — Articles</title>
     <link>${BASE_URL}/articles</link>
     <atom:link href="${BASE_URL}/articles/rss.xml" rel="self" type="application/rss+xml" />
-    <description>Expert articles on personal finance, retirement planning, investing strategies, and money management from Cortex.</description>
+    <description>Expert articles on personal finance, retirement planning, investing strategies, and money management from Money Guy Mutants.</description>
     <language>en-us</language>
     <copyright>© ${new Date().getFullYear()} J Media Group LLC</copyright>
     <lastBuildDate>${toRfc822(latestDate)}</lastBuildDate>

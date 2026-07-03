@@ -9,12 +9,12 @@ export const metadata: Metadata = {
     title: 'Compound Interest Calculator - Free Investment Growth Tool',
     description: 'Calculate compound interest and visualize long-term wealth growth with custom contributions.',
     type: 'website',
-    url: 'https://cortex.vip/apps/compound-interest',
+    url: 'https://moneyguymutants.com/apps/compound-interest',
     images: [{
       url: '/og-compound-interest.png',
       width: 1200,
       height: 630,
-      alt: 'Cortex Compound Interest Calculator',
+      alt: 'Money Guy Mutants Compound Interest Calculator',
     }],
   },
   twitter: {
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     images: ['/og-compound-interest.png'],
   },
   alternates: {
-    canonical: 'https://cortex.vip/apps/compound-interest',
+    canonical: 'https://moneyguymutants.com/apps/compound-interest',
   },
 };
 

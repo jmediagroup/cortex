@@ -129,9 +129,9 @@ export default function ScenariosPage() {
             width: 44,
             height: 44,
             borderRadius: 12,
-            background: 'var(--emerald-tint)',
-            border: '1px solid var(--emerald-border)',
-            color: 'var(--emerald-500)',
+            background: 'var(--sky)',
+            border: '1px solid var(--sky)',
+            color: 'var(--navy)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -167,14 +167,12 @@ export default function ScenariosPage() {
       {scenarios.length === 0 ? (
         <div
           style={{
-            background: 'var(--bg-glass)',
-            backdropFilter: 'var(--glass-blur)',
-            WebkitBackdropFilter: 'var(--glass-blur)',
-            border: '1px solid var(--glass-border)',
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border-default)',
             borderRadius: 'var(--radius-xl)',
             padding: '48px 32px',
             textAlign: 'center',
-            boxShadow: 'var(--shadow-card), var(--shadow-inset-top)',
+            boxShadow: 'var(--shadow-card)',
           }}
         >
           <div
@@ -183,8 +181,8 @@ export default function ScenariosPage() {
               width: 56,
               height: 56,
               borderRadius: 'var(--radius-md)',
-              background: 'var(--bg-glass-strong)',
-              border: '1px solid var(--glass-border)',
+              background: 'var(--bg-section)',
+              border: '1px solid var(--border-default)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -220,14 +218,14 @@ export default function ScenariosPage() {
               display: 'inline-flex',
               alignItems: 'center',
               gap: 8,
-              background: 'var(--emerald-500)',
+              background: 'var(--orange)',
               color: 'var(--text-inverse)',
               padding: '11px 20px',
-              borderRadius: 12,
+              borderRadius: 'var(--radius-sm)',
               fontWeight: 700,
               fontSize: 13,
               textDecoration: 'none',
-              boxShadow: '0 0 0 1px var(--cta-glow-ring), 0 0 24px var(--cta-glow-soft)',
+              boxShadow: 'var(--shadow-card)',
             }}
           >
             <Wrench size={14} /> Browse tools
@@ -253,17 +251,15 @@ export default function ScenariosPage() {
                 <div
                   key={scenario.id}
                   style={{
-                    background: 'var(--bg-glass)',
-                    backdropFilter: 'var(--glass-blur)',
-                    WebkitBackdropFilter: 'var(--glass-blur)',
-                    border: '1px solid var(--glass-border)',
+                    background: 'var(--bg-card)',
+                    border: '1px solid var(--border-default)',
                     borderRadius: 'var(--radius-md)',
                     padding: '14px 18px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     gap: 16,
-                    boxShadow: 'var(--shadow-card), var(--shadow-inset-top)',
+                    boxShadow: 'var(--shadow-card)',
                   }}
                 >
                   <div style={{ minWidth: 0 }}>
@@ -306,16 +302,16 @@ export default function ScenariosPage() {
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: 6,
-                        background: 'var(--emerald-500)',
-                        color: 'var(--text-inverse)',
+                        background: 'var(--sky)',
+                        color: 'var(--navy)',
                         padding: '8px 14px',
-                        borderRadius: 10,
+                        borderRadius: 'var(--radius-sm)',
                         border: 0,
                         fontSize: 12,
                         fontWeight: 700,
                         cursor: 'pointer',
                         fontFamily: 'inherit',
-                        boxShadow: '0 0 16px var(--cta-glow-soft)',
+                        boxShadow: 'none',
                       }}
                     >
                       <Play size={12} /> Load
@@ -333,8 +329,8 @@ export default function ScenariosPage() {
                         height: 32,
                         background: 'transparent',
                         color: 'var(--text-tertiary)',
-                        border: '1px solid var(--glass-border)',
-                        borderRadius: 10,
+                        border: '1px solid var(--border-default)',
+                        borderRadius: 'var(--radius-sm)',
                         cursor: deletingId === scenario.id ? 'not-allowed' : 'pointer',
                         fontFamily: 'inherit',
                       }}

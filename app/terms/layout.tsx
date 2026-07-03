@@ -2,16 +2,16 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Terms of Service & Privacy Policy',
-  description: 'Terms of Service and Privacy Policy for Cortex and J Media Group LLC. Learn how we collect, use, and protect your information.',
-  keywords: ['terms of service', 'privacy policy', 'Cortex terms', 'J Media Group LLC', 'legal'],
+  description: 'Terms of Service and Privacy Policy for Money Guy Mutants and J Media Group LLC. Learn how we collect, use, and protect your information.',
+  keywords: ['terms of service', 'privacy policy', 'Money Guy Mutants terms', 'J Media Group LLC', 'legal'],
   openGraph: {
-    title: 'Terms of Service & Privacy Policy - Cortex',
-    description: 'Terms of Service and Privacy Policy for Cortex and J Media Group LLC.',
+    title: 'Terms of Service & Privacy Policy - Money Guy Mutants',
+    description: 'Terms of Service and Privacy Policy for Money Guy Mutants and J Media Group LLC.',
     type: 'website',
-    url: 'https://cortex.vip/terms',
+    url: 'https://moneyguymutants.com/terms',
   },
   alternates: {
-    canonical: 'https://cortex.vip/terms',
+    canonical: 'https://moneyguymutants.com/terms',
   },
 };
 

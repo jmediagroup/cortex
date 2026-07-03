@@ -2,8 +2,8 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import { Wordmark } from '@/components/brand/Wordmark';
 import {
-  Brain,
   Grid3X3,
   BookOpen,
   Bookmark,
@@ -76,20 +76,15 @@ export default function TopNav({
 
   const tierBadgeColor =
     userTier === 'finance_pro'
-      ? 'bg-[var(--color-accent)] text-white'
+      ? 'bg-[var(--sky)] text-[var(--navy-deep)]'
       : 'bg-[var(--surface-tertiary)] text-[var(--text-secondary)]';
 
   return (
     <nav className="hidden md:flex items-center justify-between border-b border-[var(--border-primary)] bg-[var(--surface-primary)] px-6 py-3 sticky top-0 z-50">
       {/* Left: Logo + Nav */}
       <div className="flex items-center gap-8">
-        <Link href="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
-          <div className="bg-[var(--color-accent)] p-1.5 rounded-lg text-white">
-            <Brain size={20} />
-          </div>
-          <span className="font-bold text-lg tracking-tight text-[var(--text-primary)]">
-            Cortex
-          </span>
+        <Link href="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity" aria-label="Money Guy Mutants home">
+          <Wordmark size="sm" />
         </Link>
 
         <div className="flex items-center gap-1">
@@ -101,7 +96,7 @@ export default function TopNav({
                 href={item.href}
                 className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200 ${
                   active
-                    ? 'bg-[var(--color-accent)] text-white shadow-sm'
+                    ? 'bg-[var(--sky)] text-[var(--navy-deep)] shadow-sm'
                     : 'text-[var(--text-secondary)] hover:bg-[var(--surface-tertiary)] hover:text-[var(--text-primary)]'
                 }`}
               >
@@ -132,7 +127,7 @@ export default function TopNav({
                 className="flex items-center gap-2.5 rounded-full border border-[var(--border-primary)] bg-[var(--surface-secondary)] px-3 py-1.5 transition-colors hover:bg-[var(--surface-tertiary)]"
               >
                 <div className="relative">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--color-accent)] text-xs font-bold text-white">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--navy)] text-xs font-bold text-white">
                     {(user.name || user.email).charAt(0).toUpperCase()}
                   </div>
                   <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--surface-secondary)] bg-[var(--color-positive)]" />
@@ -157,7 +152,7 @@ export default function TopNav({
                 >
                   <div className="border-b border-[var(--border-secondary)] bg-[var(--surface-secondary)] p-4">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--color-accent)] text-sm font-bold text-white">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--navy)] text-sm font-bold text-white">
                         {(user.name || user.email).charAt(0).toUpperCase()}
                       </div>
                       <div className="min-w-0 flex-1">
@@ -231,7 +226,7 @@ export default function TopNav({
             </Link>
             <Link
               href="/login"
-              className="rounded-full bg-[var(--color-accent)] px-4 py-2 text-sm font-bold text-white transition-all hover:opacity-90"
+              className="rounded-full bg-[var(--orange)] px-4 py-2 text-sm font-bold text-white transition-all hover:opacity-90"
             >
               Get Started
             </Link>

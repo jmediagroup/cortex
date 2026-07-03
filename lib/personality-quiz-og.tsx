@@ -1,17 +1,19 @@
 import { ARCHETYPES, type ArchetypeId } from './personality-quiz-data';
+import { MUTANT_MARK_DATA_URI, BRAND } from './brand-assets';
 
 /**
- * Per-archetype accent palette tuned for high-contrast, scroll-stopping
- * social cards. Each archetype gets a distinct hue while staying inside
- * the Cortex obsidian/emerald system.
+ * Per-archetype accent palette drawn from the Money Guy Mutants system
+ * (sky / teal-green / mint / orange / yellow). Each archetype gets a
+ * distinct on-brand hue that reads cleanly on the navy card. `onAccent`
+ * is the legible text color for the accent-filled CTA button.
  */
-const ARCHETYPE_ACCENT: Record<ArchetypeId, { glow: string; ring: string; tint: string }> = {
-  accumulator: { glow: '#00F0A0', ring: '#00C285', tint: 'rgba(0,240,160,0.18)' },
-  optimizer:   { glow: '#5AC8FA', ring: '#0A9DD9', tint: 'rgba(90,200,250,0.18)' },
-  fortress:    { glow: '#FFB800', ring: '#D99A00', tint: 'rgba(255,184,0,0.18)' },
-  tactician:   { glow: '#FF6B63', ring: '#E0382C', tint: 'rgba(255,107,99,0.18)' },
-  visionary:   { glow: '#BF5AF2', ring: '#8E3FB4', tint: 'rgba(191,90,242,0.20)' },
-  steward:     { glow: '#33F3B3', ring: '#00C285', tint: 'rgba(51,243,179,0.18)' },
+const ARCHETYPE_ACCENT: Record<ArchetypeId, { accent: string; tint: string; onAccent: string }> = {
+  accumulator: { accent: '#1D8072', tint: 'rgba(29,128,114,0.20)', onAccent: '#FFFFFF' },
+  optimizer:   { accent: '#4EC9F5', tint: 'rgba(78,201,245,0.20)', onAccent: '#153055' },
+  fortress:    { accent: '#FEBF14', tint: 'rgba(254,191,20,0.20)', onAccent: '#153055' },
+  tactician:   { accent: '#F26531', tint: 'rgba(242,101,49,0.20)', onAccent: '#FFFFFF' },
+  visionary:   { accent: '#8FD9CE', tint: 'rgba(143,217,206,0.22)', onAccent: '#153055' },
+  steward:     { accent: '#2E9E8D', tint: 'rgba(46,158,141,0.20)', onAccent: '#153055' },
 };
 
 interface ShareCardProps {
@@ -24,7 +26,8 @@ interface ShareCardProps {
  * Punchy, scroll-stopping share card used by the dynamic OG/Twitter
  * image routes and the portrait download endpoint. Pure JSX — rendered
  * to PNG by next/og's ImageResponse, so styles must use inline `style`
- * objects (no className, no CSS variables).
+ * objects (no className, no CSS variables). Money Guy Mutants navy field,
+ * sky glow, mascot mark, white archetype name.
  */
 export function ShareCard({ archetypeId, width, height }: ShareCardProps) {
   const archetype = ARCHETYPES[archetypeId];
@@ -37,6 +40,7 @@ export function ShareCard({ archetypeId, width, height }: ShareCardProps) {
   const taglineSize = isPortrait ? 40 : 36;
   const eyebrowSize = isPortrait ? 22 : 20;
   const padding = isPortrait ? 80 : 70;
+  const markSize = isPortrait ? 76 : 64;
 
   return (
     <div
@@ -45,27 +49,13 @@ export function ShareCard({ archetypeId, width, height }: ShareCardProps) {
         height,
         display: 'flex',
         flexDirection: 'column',
-        backgroundColor: '#05070A',
-        backgroundImage: `radial-gradient(ellipse at top right, ${accent.tint}, transparent 55%), radial-gradient(ellipse at bottom left, rgba(0,0,0,0.6), transparent 60%)`,
+        backgroundColor: BRAND.navy,
+        backgroundImage: `radial-gradient(ellipse 900px 620px at 85% -8%, ${accent.tint}, transparent 60%), radial-gradient(ellipse 700px 520px at 8% 108%, rgba(78,201,245,0.16), transparent 60%)`,
         padding,
         position: 'relative',
-        fontFamily: 'Inter, system-ui, sans-serif',
+        fontFamily: "'Hanken Grotesk', system-ui, sans-serif",
       }}
     >
-      {/* Aurora bloom */}
-      <div
-        style={{
-          position: 'absolute',
-          top: -200,
-          right: -200,
-          width: 700,
-          height: 700,
-          borderRadius: 9999,
-          background: `radial-gradient(circle, ${accent.tint}, transparent 70%)`,
-          display: 'flex',
-        }}
-      />
-
       {/* Eyebrow / wordmark */}
       <div
         style={{
@@ -75,29 +65,15 @@ export function ShareCard({ archetypeId, width, height }: ShareCardProps) {
           width: '100%',
         }}
       >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 14,
-          }}
-        >
-          <div
-            style={{
-              width: 14,
-              height: 14,
-              borderRadius: 9999,
-              background: accent.glow,
-              boxShadow: `0 0 24px ${accent.glow}`,
-              display: 'flex',
-            }}
-          />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={MUTANT_MARK_DATA_URI} width={markSize} height={markSize * (124 / 120)} alt="" />
           <div
             style={{
               fontSize: eyebrowSize,
               fontWeight: 700,
-              letterSpacing: '0.32em',
-              color: '#AEAEB2',
+              letterSpacing: '0.28em',
+              color: '#FFFFFF',
               textTransform: 'uppercase',
               display: 'flex',
             }}
@@ -111,11 +87,11 @@ export function ShareCard({ archetypeId, width, height }: ShareCardProps) {
             fontSize: eyebrowSize,
             fontWeight: 700,
             letterSpacing: '0.16em',
-            color: '#8E8E93',
+            color: BRAND.sky,
             display: 'flex',
           }}
         >
-          CORTEX.VIP
+          MONEYGUYMUTANTS.COM
         </div>
       </div>
 
@@ -134,7 +110,7 @@ export function ShareCard({ archetypeId, width, height }: ShareCardProps) {
         <div
           style={{
             fontSize: eyebrowSize - 2,
-            color: accent.glow,
+            color: accent.accent,
             fontWeight: 700,
             letterSpacing: '0.24em',
             textTransform: 'uppercase',
@@ -148,7 +124,7 @@ export function ShareCard({ archetypeId, width, height }: ShareCardProps) {
             fontSize: titleSize,
             fontWeight: 800,
             color: '#FFFFFF',
-            letterSpacing: '-0.04em',
+            letterSpacing: '-0.03em',
             lineHeight: 0.96,
             display: 'flex',
             flexWrap: 'wrap',
@@ -161,7 +137,7 @@ export function ShareCard({ archetypeId, width, height }: ShareCardProps) {
           style={{
             fontSize: taglineSize,
             fontStyle: 'italic',
-            color: '#E5E5EA',
+            color: 'rgba(255,255,255,0.86)',
             lineHeight: 1.25,
             letterSpacing: '-0.01em',
             maxWidth: width - padding * 2,
@@ -185,7 +161,7 @@ export function ShareCard({ archetypeId, width, height }: ShareCardProps) {
         <div
           style={{
             fontSize: eyebrowSize,
-            color: '#8E8E93',
+            color: 'rgba(255,255,255,0.72)',
             display: 'flex',
             letterSpacing: '0.04em',
           }}
@@ -198,12 +174,11 @@ export function ShareCard({ archetypeId, width, height }: ShareCardProps) {
             display: 'flex',
             padding: '14px 28px',
             borderRadius: 9999,
-            background: accent.glow,
-            color: '#0A0E14',
+            background: accent.accent,
+            color: accent.onAccent,
             fontSize: eyebrowSize + 2,
             fontWeight: 800,
             letterSpacing: '0.04em',
-            boxShadow: `0 0 0 4px ${accent.tint}`,
           }}
         >
           TAKE THE QUIZ

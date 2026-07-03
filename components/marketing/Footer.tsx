@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { LogoMark } from './Nav';
+import { Wordmark } from '@/components/brand/Wordmark';
 
 type LinkGroup = { heading: string; links: { label: string; href: string }[] };
 
@@ -56,8 +56,7 @@ export function MarketingFooter() {
         >
           <div style={{ maxWidth: 320 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-              <LogoMark size={28} iconSize={15} />
-              <span style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: 15 }}>Cortex</span>
+              <Wordmark size="sm" />
             </div>
             <p style={{ fontSize: 13, color: 'var(--text-tertiary)', lineHeight: 1.55, margin: 0 }}>
               Tools for long-term thinking. A decision-support platform that makes invisible consequences visible.

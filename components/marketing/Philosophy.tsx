@@ -9,17 +9,17 @@ type Beat = {
 const BEATS: Beat[] = [
   {
     stance: 'Most advice is static.',
-    pivot: 'Cortex is interactive, scenario-based, and personal.',
+    pivot: 'Money Guy Mutants is interactive, scenario-based, and personal.',
     icon: 'pulse',
   },
   {
     stance: 'Most tools give answers.',
-    pivot: 'Cortex gives context.',
+    pivot: 'Money Guy Mutants gives context.',
     icon: 'compass',
   },
   {
     stance: 'Most platforms optimize for engagement.',
-    pivot: 'Cortex optimizes for clarity.',
+    pivot: 'Money Guy Mutants optimizes for clarity.',
     icon: 'orbit',
   },
 ];
@@ -32,20 +32,20 @@ export function MarketingPhilosophy() {
         position: 'relative',
         padding: '120px 24px',
         background: 'var(--bg-section)',
-        borderTop: '1px solid var(--border-subtle)',
-        borderBottom: '1px solid var(--border-subtle)',
+        borderTop: '1px solid var(--border-default)',
+        borderBottom: '1px solid var(--border-default)',
         scrollMarginTop: 64,
       }}
     >
       <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-        <div className="eyebrow" style={{ marginBottom: 16, color: 'var(--text-tertiary)' }}>
+        <div className="mgm-eyebrow" style={{ marginBottom: 16 }}>
           HOW WE THINK
         </div>
         <h2
           style={{
             fontSize: 'clamp(32px,4.5vw,52px)',
             fontWeight: 700,
-            color: 'var(--text-primary)',
+            color: 'var(--navy)',
             letterSpacing: '-0.025em',
             margin: '0 0 64px',
             lineHeight: 1.1,
@@ -54,17 +54,8 @@ export function MarketingPhilosophy() {
         >
           The goal isn&apos;t prediction.
           <br />
-          <span style={{ color: 'var(--text-tertiary)' }}>The goal is </span>
-          <span
-            style={{
-              background: 'linear-gradient(135deg, var(--emerald-500), #5AC8FA)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}
-          >
-            better judgment.
-          </span>
+          <span style={{ color: 'var(--gray-500)' }}>The goal is </span>
+          <span style={{ color: 'var(--navy)' }}>better judgment.</span>
         </h2>
 
         <div
@@ -78,26 +69,24 @@ export function MarketingPhilosophy() {
             <div
               key={b.pivot}
               style={{
-                background: 'var(--bg-glass)',
-                backdropFilter: 'var(--glass-blur)',
-                WebkitBackdropFilter: 'var(--glass-blur)',
-                border: '1px solid var(--glass-border)',
-                borderRadius: 'var(--radius-xl)',
+                background: 'var(--white)',
+                border: '1px solid var(--border-default)',
+                borderRadius: 'var(--radius-md)',
+                boxShadow: 'var(--shadow-card)',
                 padding: 28,
                 position: 'relative',
               }}
             >
               <div
                 style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: 10,
-                  background: 'var(--bg-glass-strong)',
-                  border: '1px solid var(--glass-border)',
+                  width: 44,
+                  height: 44,
+                  borderRadius: 'var(--radius-circle)',
+                  background: 'var(--mint)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: 'var(--text-secondary)',
+                  color: 'var(--navy)',
                   marginBottom: 24,
                 }}
               >
@@ -118,8 +107,8 @@ export function MarketingPhilosophy() {
               <div
                 style={{
                   fontSize: 17,
-                  color: 'var(--text-primary)',
-                  fontWeight: 500,
+                  color: 'var(--navy)',
+                  fontWeight: 600,
                   lineHeight: 1.45,
                   letterSpacing: '-0.01em',
                 }}

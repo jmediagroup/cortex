@@ -11,8 +11,8 @@ export default function ArticlesLayout({ children }: { children: ReactNode }) {
       <link
         rel="alternate"
         type="application/rss+xml"
-        title="Cortex — Articles RSS"
-        href="https://cortex.vip/articles/rss.xml"
+        title="Money Guy Mutants — Articles RSS"
+        href="https://moneyguymutants.com/articles/rss.xml"
       />
       {children}
     </MarketingShell>

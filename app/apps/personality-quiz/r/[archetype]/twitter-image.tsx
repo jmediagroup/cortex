@@ -3,7 +3,7 @@ import { ARCHETYPES, type ArchetypeId } from '@/lib/personality-quiz-data';
 import { ShareCard, SHARE_SIZES } from '@/lib/personality-quiz-og';
 
 export const runtime = 'edge';
-export const alt = 'Cortex Financial Personality Quiz result';
+export const alt = 'Money Guy Mutants Financial Personality Quiz result';
 export const size = SHARE_SIZES.landscape;
 export const contentType = 'image/png';
 

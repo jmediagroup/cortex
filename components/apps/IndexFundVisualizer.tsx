@@ -46,7 +46,7 @@ const FUND_METADATA = {
     description: 'Top 500 U.S. companies. The gold standard for U.S. large-cap equity.',
     cagr: 10.5,
     volatility: 15.0,
-    color: '#00F0A0',
+    color: '#1D8072',
     icon: ShieldCheck,
     expenseRatio: '0.03%'
   },
@@ -55,7 +55,7 @@ const FUND_METADATA = {
     description: 'Includes large, mid, and small-cap U.S. stocks for maximum domestic diversity.',
     cagr: 10.2,
     volatility: 16.0,
-    color: '#00F0A0',
+    color: '#1D8072',
     icon: BarChart3,
     expenseRatio: '0.03%'
   },
@@ -64,7 +64,7 @@ const FUND_METADATA = {
     description: 'Invests in nearly every investable stock in the world across 40+ countries.',
     cagr: 8.5,
     volatility: 14.5,
-    color: '#00F0A0',
+    color: '#1D8072',
     icon: Globe,
     expenseRatio: '0.07%'
   },
@@ -311,7 +311,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Controls Sidebar */}
         <aside className="lg:col-span-4 space-y-6">
-          <div className="bg-[var(--bg-card)] p-8 rounded-[2.5rem] border border-[var(--border-default)] shadow-sm space-y-6">
+          <div className="bg-[var(--bg-card)] p-8 rounded-2xl border border-[var(--border-default)] shadow-sm space-y-6">
 
             {/* Fund Selector */}
             <div>
@@ -430,7 +430,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
             </div>
           </div>
 
-          <div data-theme="dark" className="bg-[var(--obsidian-800)] text-white p-8 rounded-[2.5rem] shadow-xl">
+          <div data-theme="dark" className="bg-[var(--obsidian-800)] text-white p-8 rounded-2xl shadow-xl">
             <h4 className="font-bold text-sm uppercase tracking-widest mb-4 flex items-center gap-2">
               <Info size={16} className="text-[var(--emerald-400)]" /> Key Insight
             </h4>
@@ -444,7 +444,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
 
         {/* Chart View */}
         <main className="lg:col-span-8 space-y-6">
-          <div className="bg-[var(--bg-card)] p-8 rounded-[3rem] border border-[var(--border-default)] shadow-sm overflow-hidden">
+          <div className="bg-[var(--bg-card)] p-8 rounded-2xl border border-[var(--border-default)] shadow-sm overflow-hidden">
             <div className="flex flex-wrap items-center justify-between mb-8 gap-4">
               <h3 className="text-xl font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <TrendingUp className="text-[var(--emerald-500)]" /> Growth Forecast
@@ -461,8 +461,8 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
                 <ComposedChart data={results} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorSteady" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#00F0A0" stopOpacity={0.1}/>
-                      <stop offset="95%" stopColor="#00F0A0" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#1D8072" stopOpacity={0.1}/>
+                      <stop offset="95%" stopColor="#1D8072" stopOpacity={0}/>
                     </linearGradient>
                     <linearGradient id="colorInvested" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#8E8E93" stopOpacity={0.1}/>
@@ -491,7 +491,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
                   <Area
                     type="monotone"
                     dataKey="steady"
-                    stroke="#00F0A0"
+                    stroke="#1D8072"
                     strokeWidth={3}
                     fillOpacity={1}
                     fill="url(#colorSteady)"
@@ -521,7 +521,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
           </div>
 
           {/* Insights Panel */}
-          <div data-theme="dark" className="bg-[var(--obsidian-800)] text-white p-8 rounded-[2.5rem] shadow-lg">
+          <div data-theme="dark" className="bg-[var(--obsidian-800)] text-white p-8 rounded-2xl shadow-lg">
             <div className="flex items-center gap-2 mb-6">
               <Info className="w-5 h-5 text-[var(--emerald-400)]" />
               <h3 className="font-bold text-lg">Investor Insights</h3>
@@ -559,7 +559,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
 
       {/* PRO FEATURES SECTION - Locked */}
       {!isPro && (
-        <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] rounded-[3rem] p-12 text-white relative overflow-hidden shadow-2xl">
+        <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] rounded-2xl p-12 text-white relative overflow-hidden shadow-2xl">
           <div className="absolute top-0 right-0 p-12 opacity-10 rotate-12">
             <Zap size={200} fill="currentColor" />
           </div>
@@ -614,7 +614,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
           </div>
 
           {/* Fund Comparison Table */}
-          <div className="bg-[var(--bg-card)] rounded-[3rem] p-10 border border-[var(--border-default)] shadow-sm">
+          <div className="bg-[var(--bg-card)] rounded-2xl p-10 border border-[var(--border-default)] shadow-sm">
             <div className="flex items-start gap-4 mb-6">
               <div className="bg-[var(--emerald-100)] text-[var(--emerald-500)] p-3 rounded-2xl">
                 <Target size={32} />
@@ -650,7 +650,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
 
           {/* Risk Analysis */}
           {riskAnalysis && (
-            <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] rounded-[3rem] p-10 text-white shadow-xl">
+            <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] rounded-2xl p-10 text-white shadow-xl">
               <div className="flex items-start gap-4 mb-6">
                 <div className="bg-[var(--bg-card)]/20 p-3 rounded-2xl backdrop-blur-sm">
                   <AlertTriangle size={32} />
@@ -698,11 +698,11 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
             </div>
           )}
 
-          {/* CORTEX Recommendation */}
-          <div className="bg-[var(--obsidian-900)] rounded-[2.5rem] p-8 text-white">
+          {/* MUTANT Recommendation */}
+          <div className="bg-[var(--obsidian-900)] rounded-2xl p-8 text-white">
             <div className="flex items-center gap-2 mb-4">
               <Sparkles className="w-5 h-5 text-[var(--color-warning)]" />
-              <h4 className="font-bold text-lg">CORTEX Recommendation</h4>
+              <h4 className="font-bold text-lg">MUTANT Recommendation</h4>
             </div>
             <p className="text-[var(--text-muted)] font-medium leading-relaxed">
               Based on your {duration}-year time horizon and {formatCurrency(contribution)}/{frequency === 'monthly' ? 'month' : 'year'} contribution capacity,

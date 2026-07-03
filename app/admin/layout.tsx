@@ -54,7 +54,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (loading || !authorized) {
     return (
       <div className="min-h-screen bg-[var(--surface-secondary)] flex items-center justify-center">
-        <Loader2 className="animate-spin text-[var(--color-accent)]" size={32} />
+        <Loader2 className="animate-spin text-navy" size={32} />
       </div>
     );
   }
@@ -76,7 +76,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </Link>
             <div className="h-5 w-px bg-[var(--border-primary)]" />
             <div className="flex items-center gap-2">
-              <div className="bg-[var(--color-accent)] p-1.5 rounded-lg text-white">
+              <div className="bg-navy p-1.5 rounded-lg text-white">
                 <Brain size={18} />
               </div>
               <span className="font-bold text-base tracking-tight text-[var(--text-primary)]">
@@ -106,7 +106,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   href={item.href}
                   className={`flex items-center gap-3 rounded-[var(--radius-lg)] px-4 py-2.5 text-sm font-semibold transition-all ${
                     active
-                      ? 'bg-[var(--color-accent)] text-white shadow-sm'
+                      ? 'bg-sky text-navy shadow-sm'
                       : 'text-[var(--text-secondary)] hover:bg-[var(--surface-primary)] hover:text-[var(--text-primary)]'
                   }`}
                 >
@@ -127,7 +127,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 key={item.href}
                 href={item.href}
                 className={`flex-1 flex flex-col items-center gap-1 py-3 text-[10px] font-bold transition-colors ${
-                  active ? 'text-[var(--color-accent)]' : 'text-[var(--text-tertiary)]'
+                  active ? 'text-navy' : 'text-[var(--text-tertiary)]'
                 }`}
               >
                 <item.icon size={18} />

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
 
 export const metadata: Metadata = {
-  title: 'Design tokens · Cortex',
+  title: 'Design tokens · Money Guy Mutants',
   robots: { index: false, follow: false },
 };
 
@@ -104,7 +104,7 @@ export default function DesignTokensPage() {
             Tokens, type, <span className="gradient-text">and theme.</span>
           </h1>
           <p className="body" style={{ maxWidth: 560 }}>
-            Internal preview of the Cortex token system. Every surface, color,
+            Internal preview of the Money Guy Mutants token system. Every surface, color,
             type scale, radius, and shadow rendered in the current theme.
             Toggle to verify light-mode parity.
           </p>

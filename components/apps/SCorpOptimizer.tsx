@@ -88,7 +88,7 @@ export default function SCorpOptimizer({ isPro = false, onUpgrade, isLoggedIn = 
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border-default)] shadow-sm">
+        <div className="bg-[var(--bg-card)] p-6 rounded-xl border border-[var(--border-default)] shadow-[var(--shadow-card)]">
           <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1">Est. Payroll Tax Savings</p>
           <h4 className={`text-3xl font-bold ${stats.savings >= 0 ? 'text-[var(--emerald-500)]' : 'text-[var(--crimson-500)]'}`}>
             {stats.savings < 0 ? '-' : ''}${Math.abs(Math.round(stats.savings)).toLocaleString()}
@@ -97,51 +97,51 @@ export default function SCorpOptimizer({ isPro = false, onUpgrade, isLoggedIn = 
             {stats.savings >= 0 ? 'vs. Sole Proprietorship' : 'S-Corp costs more at this salary'}
           </p>
         </div>
-        <div className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border-default)] shadow-sm">
+        <div className="bg-[var(--bg-card)] p-6 rounded-xl border border-[var(--border-default)] shadow-[var(--shadow-card)]">
           <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1">Max Distribution</p>
           <h4 className="text-3xl font-bold text-[var(--emerald-500)]">${Math.round(stats.distributions).toLocaleString()}</h4>
           <p className="text-xs font-bold text-[var(--text-tertiary)] mt-1">FICA-exempt income</p>
         </div>
-        <div className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] p-6 rounded-3xl shadow-lg text-white">
-          <p className="text-[10px] font-bold text-[var(--mist-200)] uppercase tracking-widest mb-1">Tax Efficiency</p>
+        <div className="mgm-band p-6 rounded-xl shadow-[var(--shadow-card)] text-white">
+          <p className="text-[10px] font-bold text-white/70 uppercase tracking-widest mb-1">Tax Efficiency</p>
           <h4 className="text-3xl font-bold text-white">{Math.round(stats.efficiency)}%</h4>
-          <p className="text-xs font-bold text-[var(--mist-100)] mt-1">Reduction in SE Taxes</p>
+          <p className="text-xs font-bold text-white/80 mt-1">Reduction in SE Taxes</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Sidebar */}
         <aside className="lg:col-span-4 space-y-6">
-          <div className="bg-[var(--bg-card)] p-8 rounded-[2.5rem] border border-[var(--border-default)] shadow-sm space-y-6">
+          <div className="bg-[var(--bg-card)] p-8 rounded-xl border border-[var(--border-default)] shadow-[var(--shadow-card)] space-y-6">
             <h3 className="text-sm font-bold text-[var(--text-primary)] uppercase tracking-widest mb-6 flex items-center gap-2">
-              <Scale size={16} className="text-[var(--color-warning)]" /> Business Data
+              <Scale size={16} className="text-[var(--navy)]" /> Business Data
             </h3>
 
             <div className="space-y-4">
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Annual Net Profit</label>
                 <div className="relative">
-                  <span className="absolute left-4 top-2.5 text-[var(--text-muted)] font-bold">$</span>
-                  <NumberInput value={profit} onValueChange={(n) => setProfit(n)} min={0} className="w-full pl-8 pr-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] font-bold z-10">$</span>
+                  <NumberInput value={profit} onValueChange={(n) => setProfit(n)} min={0} className="mgm-input pl-8 font-bold border border-[var(--border-default)]" />
                 </div>
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Proposed Reasonable Salary<Tooltip content="The IRS requires S-Corp owners to pay themselves a reasonable salary. This is typically 40-60% of net profit." /></label>
                 <div className="relative">
-                  <span className="absolute left-4 top-2.5 text-[var(--text-muted)] font-bold">$</span>
-                  <NumberInput value={salary} onValueChange={(n) => setSalary(n)} min={0} className="w-full pl-8 pr-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] font-bold z-10">$</span>
+                  <NumberInput value={salary} onValueChange={(n) => setSalary(n)} min={0} className="mgm-input pl-8 font-bold border border-[var(--border-default)]" />
                 </div>
               </div>
             </div>
 
-            <div className="p-4 bg-[var(--color-warning-soft)] rounded-2xl border border-[var(--glass-border)] flex items-start gap-3">
+            <div className="p-4 bg-[var(--color-warning-soft)] rounded-lg border border-[var(--border-default)] flex items-start gap-3">
               <Info className="text-[var(--color-warning)] shrink-0" size={16} />
               <p className="text-[10px] font-medium leading-relaxed text-[var(--color-warning)]">
                 IRS requires a "reasonable salary" based on your industry. Setting this too low may trigger an audit.
               </p>
             </div>
 
-            <div className="p-4 bg-[var(--bg-section)] rounded-2xl border border-[var(--border-default)] flex items-start gap-3">
+            <div className="p-4 bg-[var(--bg-section)] rounded-lg border border-[var(--border-default)] flex items-start gap-3">
               <Info className="text-[var(--text-muted)] shrink-0" size={16} />
               <p className="text-[10px] font-medium leading-relaxed text-[var(--text-secondary)]">
                 This compares payroll (FICA / self-employment) taxes only, for tax year 2026. A higher salary also shrinks the 20% qualified business income (§199A) deduction on pass-through profit, so your all-in tax savings can be smaller than shown — or negative. It also excludes state payroll taxes, unemployment tax, and payroll-service costs. Run the numbers with a CPA before electing.
@@ -151,22 +151,22 @@ export default function SCorpOptimizer({ isPro = false, onUpgrade, isLoggedIn = 
         </aside>
 
         {/* Comparison Chart */}
-        <main className="lg:col-span-8 bg-[var(--bg-card)] p-8 rounded-[3rem] border border-[var(--border-default)] shadow-sm">
+        <main className="lg:col-span-8 bg-[var(--bg-card)] p-8 rounded-xl border border-[var(--border-default)] shadow-[var(--shadow-card)]">
           <h3 className="text-xl font-bold text-[var(--text-primary)] mb-8 flex items-center gap-2">
-            <Zap className="text-[var(--color-warning)]" fill="currentColor" /> Tax Structure Comparison
+            <Zap className="text-[var(--navy)]" fill="currentColor" /> Tax Structure Comparison
           </h3>
           <div className="h-[400px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={[
-                { name: 'Sole Prop', tax: stats.solePropTax, color: '#8E8E93' },
-                { name: 'S-Corp (Target)', tax: stats.sCorpTax, color: '#00F0A0' }
+                { name: 'Sole Prop', tax: stats.solePropTax, color: '#767676' },
+                { name: 'S-Corp (Target)', tax: stats.sCorpTax, color: '#1D8072' }
               ]}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#2C2C2E" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#8E8E93', fontSize: 12, fontWeight: 'bold'}} />
-                <YAxis axisLine={false} tickLine={false} tick={{fill: '#8E8E93', fontSize: 12, fontWeight: 'bold'}} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
-                <ChartTooltip cursor={{fill: '#1C1C1E'}} formatter={(v) => `$${Math.round(Number(v) || 0).toLocaleString()}`} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E0DBDB" />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#767676', fontSize: 12, fontWeight: 'bold'}} />
+                <YAxis axisLine={false} tickLine={false} tick={{fill: '#767676', fontSize: 12, fontWeight: 'bold'}} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
+                <ChartTooltip cursor={{fill: 'rgba(5,76,125,0.06)'}} formatter={(v) => `$${Math.round(Number(v) || 0).toLocaleString()}`} />
                 <Bar dataKey="tax" radius={[12, 12, 0, 0]} barSize={80}>
-                  {[0, 1].map((entry, index) => <Cell key={`cell-${index}`} fill={index === 0 ? '#8E8E93' : '#00F0A0'} />)}
+                  {[0, 1].map((entry, index) => <Cell key={`cell-${index}`} fill={index === 0 ? '#767676' : '#1D8072'} />)}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>

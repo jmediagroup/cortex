@@ -24,12 +24,12 @@ export type ChartColors = {
 
 /** Dark defaults used as an SSR-safe fallback (matches tokens.css `:root`). */
 const DEFAULTS: ChartColors = {
-  emerald: '#00F0A0',
-  emeraldArea: 'rgba(0, 240, 160, 0.18)',
-  crimson: '#FF3B30',
-  crimsonArea: 'rgba(255, 59, 48, 0.15)',
-  info: '#5AC8FA',
-  purple: '#BF5AF2',
+  emerald: '#1D8072',
+  emeraldArea: 'rgba(29,128,114, 0.18)',
+  crimson: '#CD2026',
+  crimsonArea: 'rgba(205,32,38, 0.15)',
+  info: '#4EC9F5',
+  purple: '#8FD9CE',
   amber: '#FFB800',
   pink: '#FF66C4',
   textPrimary: '#F5F5F7',
@@ -38,8 +38,8 @@ const DEFAULTS: ChartColors = {
   textMuted: '#6D6D72',
   borderSubtle: 'rgba(255, 255, 255, 0.06)',
   borderDefault: 'rgba(255, 255, 255, 0.10)',
-  bgCard: '#1C1C1E',
-  bgSection: '#121620',
+  bgCard: '#08375A',
+  bgSection: '#0a4a73',
   bgGlassStrong: 'rgba(255, 255, 255, 0.10)',
 };
 

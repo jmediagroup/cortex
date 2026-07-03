@@ -1,8 +1,9 @@
 import { ImageResponse } from 'next/og';
+import { MUTANT_MARK_DATA_URI, BRAND } from '@/lib/brand-assets';
 
 export const runtime = 'edge';
 
-export const alt = 'Cortex Pricing - Simple, Honest Pricing';
+export const alt = 'Money Guy Mutants Pricing - Simple, Honest Pricing';
 export const size = {
   width: 1200,
   height: 630,
@@ -20,118 +21,46 @@ export default async function Image() {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#0f172a',
-          backgroundImage: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
+          backgroundColor: BRAND.navy,
+          backgroundImage:
+            'radial-gradient(ellipse 900px 520px at 85% -5%, rgba(78,201,245,0.30), transparent 60%), radial-gradient(ellipse 700px 500px at 8% 105%, rgba(143,217,206,0.16), transparent 60%)',
         }}
       >
-        {/* Decorative circles */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '-100px',
-            right: '-100px',
-            width: '400px',
-            height: '400px',
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
-            opacity: 0.15,
-          }}
-        />
-
-        {/* Logo */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: '40px',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '64px',
-              height: '64px',
-              borderRadius: '16px',
-              backgroundColor: '#4f46e5',
-              marginRight: '20px',
-            }}
-          >
-            <svg
-              width="38"
-              height="38"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="white"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M12 18V5" />
-              <path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4" />
-              <path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5" />
-            </svg>
+        {/* Wordmark */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '36px' }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={MUTANT_MARK_DATA_URI} width={70} height={72} alt="" style={{ marginRight: '20px' }} />
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span style={{ fontSize: '40px', fontWeight: 800, color: '#ffffff', letterSpacing: '1px', lineHeight: 1 }}>MONEYGUY</span>
+            <span style={{ fontSize: '19px', fontWeight: 400, color: '#ffffff', letterSpacing: '13px', marginTop: '5px' }}>MUTANTS</span>
           </div>
-          <span
-            style={{
-              fontSize: '48px',
-              fontWeight: 900,
-              color: 'white',
-              letterSpacing: '-1px',
-            }}
-          >
-            Cortex
-          </span>
         </div>
 
         {/* Title */}
-        <div
-          style={{
-            fontSize: '56px',
-            fontWeight: 900,
-            color: 'white',
-            textAlign: 'center',
-            marginBottom: '20px',
-          }}
-        >
+        <div style={{ fontSize: '56px', fontWeight: 800, color: '#ffffff', textAlign: 'center', letterSpacing: '-1px', marginBottom: '18px' }}>
           Simple, Honest Pricing
         </div>
 
         {/* Subtitle */}
-        <div
-          style={{
-            fontSize: '28px',
-            fontWeight: 500,
-            color: '#94a3b8',
-            textAlign: 'center',
-            marginBottom: '50px',
-          }}
-        >
+        <div style={{ fontSize: '28px', fontWeight: 500, color: 'rgba(255,255,255,0.85)', textAlign: 'center', marginBottom: '50px' }}>
           Start free, upgrade when the math matters
         </div>
 
         {/* Price cards */}
-        <div
-          style={{
-            display: 'flex',
-            gap: '24px',
-          }}
-        >
+        <div style={{ display: 'flex', gap: '24px' }}>
           <div
             style={{
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
               padding: '24px 40px',
-              borderRadius: '24px',
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '12px',
+              backgroundColor: 'rgba(255, 255, 255, 0.08)',
+              border: '1px solid rgba(255, 255, 255, 0.18)',
             }}
           >
-            <span style={{ fontSize: '20px', fontWeight: 600, color: '#94a3b8', marginBottom: '8px' }}>Free</span>
-            <span style={{ fontSize: '40px', fontWeight: 900, color: 'white' }}>$0</span>
+            <span style={{ fontSize: '20px', fontWeight: 600, color: 'rgba(255,255,255,0.8)', marginBottom: '8px' }}>Free</span>
+            <span style={{ fontSize: '40px', fontWeight: 800, color: '#ffffff' }}>$0</span>
           </div>
           <div
             style={{
@@ -139,13 +68,13 @@ export default async function Image() {
               flexDirection: 'column',
               alignItems: 'center',
               padding: '24px 40px',
-              borderRadius: '24px',
-              backgroundColor: '#4f46e5',
-              border: '2px solid #6366f1',
+              borderRadius: '12px',
+              backgroundColor: BRAND.sky,
+              border: `2px solid ${BRAND.sky}`,
             }}
           >
-            <span style={{ fontSize: '20px', fontWeight: 600, color: '#c7d2fe', marginBottom: '8px' }}>Finance Pro</span>
-            <span style={{ fontSize: '40px', fontWeight: 900, color: 'white' }}>$9/mo</span>
+            <span style={{ fontSize: '20px', fontWeight: 700, color: BRAND.navyDeep, marginBottom: '8px' }}>Finance Pro</span>
+            <span style={{ fontSize: '40px', fontWeight: 800, color: BRAND.navyDeep }}>$9/mo</span>
           </div>
           <div
             style={{
@@ -153,28 +82,19 @@ export default async function Image() {
               flexDirection: 'column',
               alignItems: 'center',
               padding: '24px 40px',
-              borderRadius: '24px',
-              background: 'linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)',
-              border: '2px solid #8b5cf6',
+              borderRadius: '12px',
+              backgroundColor: BRAND.navyDeep,
+              border: `2px solid ${BRAND.sky}`,
             }}
           >
-            <span style={{ fontSize: '20px', fontWeight: 600, color: '#ddd6fe', marginBottom: '8px' }}>Elite</span>
-            <span style={{ fontSize: '40px', fontWeight: 900, color: 'white' }}>$29/mo</span>
+            <span style={{ fontSize: '20px', fontWeight: 600, color: BRAND.sky, marginBottom: '8px' }}>Elite</span>
+            <span style={{ fontSize: '40px', fontWeight: 800, color: '#ffffff' }}>$29/mo</span>
           </div>
         </div>
 
         {/* URL */}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '40px',
-            fontSize: '20px',
-            fontWeight: 700,
-            color: '#64748b',
-            letterSpacing: '2px',
-          }}
-        >
-          CORTEX.VIP/PRICING
+        <div style={{ position: 'absolute', bottom: '40px', fontSize: '20px', fontWeight: 700, color: BRAND.sky, letterSpacing: '2px' }}>
+          MONEYGUYMUTANTS.COM/PRICING
         </div>
       </div>
     ),

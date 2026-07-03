@@ -7,8 +7,8 @@ export default function ThinkingLayout({ children }: { children: ReactNode }) {
       <link
         rel="alternate"
         type="application/rss+xml"
-        title="Cortex — Thinking RSS"
-        href="https://cortex.vip/thinking/rss.xml"
+        title="Money Guy Mutants — Thinking RSS"
+        href="https://moneyguymutants.com/thinking/rss.xml"
       />
       {children}
     </MarketingShell>

@@ -542,7 +542,7 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
         <main className="lg:col-span-8 space-y-6">
           {/* Conversion Action Plan */}
           {conversionYears.length > 0 && (
-            <div className="bg-gradient-to-br from-[var(--emerald-50)] to-[var(--emerald-50)] border-2 border-[var(--emerald-border)] rounded-[2.5rem] p-8">
+            <div className="bg-gradient-to-br from-[var(--emerald-50)] to-[var(--emerald-50)] border-2 border-[var(--emerald-border)] rounded-2xl p-8">
               <div className="flex items-center gap-3 mb-6">
                 <Calendar className="text-[var(--emerald-500)]" size={28} />
                 <div>
@@ -623,7 +623,7 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
           </div>
 
           {/* Balance Chart */}
-          <div className="bg-[var(--bg-card)] p-8 rounded-[2rem] border border-[var(--border-default)] shadow-sm">
+          <div className="bg-[var(--bg-card)] p-8 rounded-xl border border-[var(--border-default)] shadow-sm">
             <div className="flex items-center justify-between mb-8">
                 <h3 className="text-xl font-bold flex items-center gap-2">
                   <UserCheck className="text-[var(--emerald-500)]" />
@@ -645,16 +645,16 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
                       contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}}
                       formatter={(val) => [`$${Math.round(Number(val) || 0).toLocaleString()}`, 'Balance']}
                   />
-                  <Area type="monotone" dataKey="endBalances.taxable" stackId="1" stroke="#33F3B3" fill="#33F3B3" fillOpacity={0.6} />
+                  <Area type="monotone" dataKey="endBalances.taxable" stackId="1" stroke="#2E9E8D" fill="#2E9E8D" fillOpacity={0.6} />
                   <Area type="monotone" dataKey="endBalances.traditional" stackId="1" stroke="#FFB800" fill="#FFB800" fillOpacity={0.8} />
-                  <Area type="monotone" dataKey="endBalances.roth" stackId="1" stroke="#00F0A0" fill="#00F0A0" fillOpacity={0.9} />
+                  <Area type="monotone" dataKey="endBalances.roth" stackId="1" stroke="#1D8072" fill="#1D8072" fillOpacity={0.9} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
           </div>
 
           {/* Income Mix Bar Chart */}
-          <div className="bg-[var(--bg-card)] p-8 rounded-[2rem] border border-[var(--border-default)] shadow-sm">
+          <div className="bg-[var(--bg-card)] p-8 rounded-xl border border-[var(--border-default)] shadow-sm">
               <h3 className="text-xl font-bold mb-6">Annual Income Composition</h3>
               <div className="h-[300px]">
                   <ResponsiveContainer width="100%" height="100%">
@@ -664,9 +664,9 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
                           <Tooltip formatter={(v) => `$${Math.round(Number(v) || 0).toLocaleString()}`} />
                           <Legend verticalAlign="top" height={36} />
                           <Bar dataKey="ssIncome" stackId="a" fill="#E5E5EA" name="Social Security" />
-                          <Bar dataKey="withdrawn.taxable" stackId="a" fill="#33F3B3" name="Taxable Dist." />
+                          <Bar dataKey="withdrawn.taxable" stackId="a" fill="#2E9E8D" name="Taxable Dist." />
                           <Bar dataKey="withdrawn.traditional" stackId="a" fill="#FFB800" name="Trad. Dist." />
-                          <Bar dataKey="withdrawn.roth" stackId="a" fill="#00F0A0" name="Roth Dist." />
+                          <Bar dataKey="withdrawn.roth" stackId="a" fill="#1D8072" name="Roth Dist." />
                       </BarChart>
                   </ResponsiveContainer>
               </div>
@@ -680,7 +680,7 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
                       <ResponsiveContainer width="100%" height="100%">
                           <BarChart data={simulationResults}>
                               <XAxis dataKey="age" hide />
-                              <Bar dataKey="taxesPaid" fill="#FF3B30" radius={[4, 4, 0, 0]} name="Annual Tax" />
+                              <Bar dataKey="taxesPaid" fill="#CD2026" radius={[4, 4, 0, 0]} name="Annual Tax" />
                           </BarChart>
                       </ResponsiveContainer>
                   </div>
@@ -690,7 +690,7 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
                   <div className="h-[200px]">
                       <ResponsiveContainer width="100%" height="100%">
                           <AreaChart data={simulationResults}>
-                              <Area type="stepAfter" dataKey="conversions" stroke="#33F3B3" fill="#33F3B3" fillOpacity={0.4} />
+                              <Area type="stepAfter" dataKey="conversions" stroke="#2E9E8D" fill="#2E9E8D" fillOpacity={0.4} />
                           </AreaChart>
                       </ResponsiveContainer>
                   </div>

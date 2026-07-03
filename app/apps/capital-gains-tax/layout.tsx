@@ -10,12 +10,12 @@ export const metadata: Metadata = {
     title: 'Capital Gains Tax Calculator (2026) - 0%, 15%, 20% Brackets',
     description: 'See how much stock you can sell before each tax cliff. Models the 2026 0/15/20% brackets, NIIT, QBI, ACA, IRMAA, and Virginia tax.',
     type: 'website',
-    url: 'https://cortex.vip/apps/capital-gains-tax',
+    url: 'https://moneyguymutants.com/apps/capital-gains-tax',
     images: [{
       url: '/og-image.png',
       width: 1200,
       height: 630,
-      alt: 'Cortex Capital Gains Tax Calculator',
+      alt: 'Money Guy Mutants Capital Gains Tax Calculator',
     }],
   },
   twitter: {
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     images: ['/og-image.png'],
   },
   alternates: {
-    canonical: 'https://cortex.vip/apps/capital-gains-tax',
+    canonical: 'https://moneyguymutants.com/apps/capital-gains-tax',
   },
 };
 

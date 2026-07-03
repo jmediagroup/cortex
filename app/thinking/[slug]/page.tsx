@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const outlook = await getOutlookBySlug(slug);
   if (!outlook) return { title: 'Outlook Not Found' };
 
-  const url = `https://cortex.vip/thinking/${slug}`;
+  const url = `https://moneyguymutants.com/thinking/${slug}`;
   const description = outlook.metaDescription || outlook.summary;
   const ogImage = outlook.ogImage || `/thinking/${slug}/opengraph-image`;
 
@@ -31,13 +31,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       ...(outlook.sectors.length ? outlook.sectors : []),
       outlook.type === 'weekly' ? 'weekly investment outlook' : 'daily investment outlook',
     ],
-    authors: [{ name: 'Cortex Research' }],
+    authors: [{ name: 'Money Guy Mutants Research' }],
     openGraph: {
       title: outlook.title,
       description,
       type: 'article',
       url,
-      siteName: 'Cortex',
+      siteName: 'Money Guy Mutants',
       locale: 'en_US',
       images: [{ url: ogImage, width: 1200, height: 630, alt: outlook.title }],
       publishedTime: outlook.date,
@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     alternates: {
       canonical: url,
       types: {
-        'application/rss+xml': 'https://cortex.vip/thinking/rss.xml',
+        'application/rss+xml': 'https://moneyguymutants.com/thinking/rss.xml',
       },
     },
   };
@@ -64,7 +64,7 @@ export default async function OutlookDetailPage({ params }: PageProps) {
   const outlook = await getOutlookBySlug(slug);
   if (!outlook) notFound();
 
-  const url = `https://cortex.vip/thinking/${slug}`;
+  const url = `https://moneyguymutants.com/thinking/${slug}`;
   const formattedDate = formatOutlookDate(outlook.date);
 
   const articleSchema = generateArticleSchema(outlook, url);
@@ -161,7 +161,7 @@ export default async function OutlookDetailPage({ params }: PageProps) {
               }}
             >
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                By <span style={{ color: 'var(--text-secondary)' }}>Cortex Research</span>
+                By <span style={{ color: 'var(--text-secondary)' }}>Money Guy Mutants Research</span>
               </span>
               <span aria-hidden="true">·</span>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
@@ -233,13 +233,13 @@ export default async function OutlookDetailPage({ params }: PageProps) {
             style={{
               margin: '40px 0',
               padding: 32,
-              background: 'linear-gradient(135deg, #121620 0%, #0A0E14 100%)',
+              background: 'linear-gradient(135deg, #0a4a73 0%, #054C7D 100%)',
               border: '1px solid rgba(255,255,255,0.08)',
               borderRadius: 'var(--radius-xl)',
               color: '#F5F5F7',
             }}
           >
-            <div className="eyebrow" style={{ color: '#00F0A0', marginBottom: 12 }}>
+            <div className="eyebrow" style={{ color: '#1D8072', marginBottom: 12 }}>
               GET THIS BY EMAIL
             </div>
             <h3
@@ -276,7 +276,7 @@ export default async function OutlookDetailPage({ params }: PageProps) {
                   letterSpacing: '-0.01em',
                 }}
               >
-                More from Cortex Research
+                More from Money Guy Mutants Research
               </h2>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {related.map((r) => (
@@ -387,14 +387,14 @@ function generateArticleSchema(outlook: Outlook, url: string) {
     dateModified: outlook.date,
     author: {
       '@type': 'Organization',
-      name: 'Cortex Research',
-      '@id': 'https://cortex.vip/#organization',
+      name: 'Money Guy Mutants Research',
+      '@id': 'https://moneyguymutants.com/#organization',
     },
     publisher: {
       '@type': 'Organization',
-      '@id': 'https://cortex.vip/#organization',
+      '@id': 'https://moneyguymutants.com/#organization',
       name: 'Cortex Technologies',
-      logo: { '@type': 'ImageObject', url: 'https://cortex.vip/icon' },
+      logo: { '@type': 'ImageObject', url: 'https://moneyguymutants.com/icon' },
     },
     mainEntityOfPage: { '@type': 'WebPage', '@id': url },
     timeRequired: `PT${outlook.readingTime}M`,
@@ -404,7 +404,7 @@ function generateArticleSchema(outlook: Outlook, url: string) {
     isAccessibleForFree: true,
     image: outlook.ogImage
       ? { '@type': 'ImageObject', url: outlook.ogImage }
-      : `https://cortex.vip/thinking/${outlook.slug}/opengraph-image`,
+      : `https://moneyguymutants.com/thinking/${outlook.slug}/opengraph-image`,
   };
 }
 
@@ -413,13 +413,13 @@ function generateBreadcrumbSchema(outlook: Outlook) {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cortex.vip' },
-      { '@type': 'ListItem', position: 2, name: 'Thinking', item: 'https://cortex.vip/thinking' },
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://moneyguymutants.com' },
+      { '@type': 'ListItem', position: 2, name: 'Thinking', item: 'https://moneyguymutants.com/thinking' },
       {
         '@type': 'ListItem',
         position: 3,
         name: outlook.title,
-        item: `https://cortex.vip/thinking/${outlook.slug}`,
+        item: `https://moneyguymutants.com/thinking/${outlook.slug}`,
       },
     ],
   };

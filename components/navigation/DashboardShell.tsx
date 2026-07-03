@@ -4,6 +4,7 @@ import { type ReactNode } from 'react';
 import Link from 'next/link';
 import TopNav from './TopNav';
 import BottomTabBar from './BottomTabBar';
+import { Wordmark } from '@/components/brand/Wordmark';
 import { type Tier } from '@/lib/access-control';
 
 interface DashboardShellProps {
@@ -35,7 +36,7 @@ export default function DashboardShell({
 
       {/* Mobile header - hidden on desktop */}
       <header
-        className="sticky top-0 z-40 flex items-center justify-between border-b border-[var(--border-primary)] bg-[var(--surface-primary)]/95 backdrop-blur-lg md:hidden"
+        className="sticky top-0 z-40 flex items-center justify-between border-b border-[var(--border-primary)] bg-[var(--surface-primary)] md:hidden"
         style={{
           paddingTop: 'calc(0.75rem + var(--safe-top))',
           paddingBottom: '0.75rem',
@@ -43,22 +44,11 @@ export default function DashboardShell({
           paddingRight: 'calc(1rem + var(--safe-right))',
         }}
       >
-        <div className="flex items-center gap-2">
-          <div className="bg-[var(--color-accent)] p-1.5 rounded-lg text-white">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2a8 8 0 0 0-8 8v12h16V10a8 8 0 0 0-8-8Z" />
-              <path d="M9.5 14.5 12 12l2.5 2.5" />
-              <path d="M12 12v6" />
-            </svg>
-          </div>
-          <span className="font-bold text-base tracking-tight text-[var(--text-primary)]">
-            Cortex
-          </span>
-        </div>
+        <Wordmark size="sm" />
 
         {user ? (
           <div className="relative">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--surface-tertiary)] text-xs font-bold text-[var(--text-secondary)]">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--navy)] text-xs font-bold text-white">
               {displayName.charAt(0).toUpperCase()}
             </div>
             <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--surface-primary)] bg-[var(--color-positive)]" />
@@ -66,7 +56,7 @@ export default function DashboardShell({
         ) : (
           <Link
             href="/login"
-            className="rounded-full bg-[var(--color-accent)] px-3.5 py-1.5 text-xs font-bold text-white"
+            className="rounded-full bg-[var(--orange)] px-3.5 py-1.5 text-xs font-bold text-white"
           >
             Sign In
           </Link>

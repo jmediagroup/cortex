@@ -9,7 +9,7 @@ import { OutlookSubscribeForm } from './_components/OutlookSubscribeForm';
 export const metadata: Metadata = {
   title: 'Thinking — Daily & Weekly Investment Outlook',
   description:
-    'Cortex Research publishes a daily and weekly investment outlook covering markets, tickers, sectors, and the decisions worth making. Free to read; opt in for the daily email.',
+    'Money Guy Mutants Research publishes a daily and weekly investment outlook covering markets, tickers, sectors, and the decisions worth making. Free to read; opt in for the daily email.',
   keywords: [
     'investment outlook',
     'daily market outlook',
@@ -18,23 +18,23 @@ export const metadata: Metadata = {
     'cortex research',
   ],
   openGraph: {
-    title: 'Cortex Thinking — Daily & Weekly Investment Outlook',
+    title: 'Money Guy Mutants Thinking — Daily & Weekly Investment Outlook',
     description:
-      'Daily and weekly investment outlooks from Cortex Research. Free to read; opt in for the daily email.',
+      'Daily and weekly investment outlooks from Money Guy Mutants Research. Free to read; opt in for the daily email.',
     type: 'website',
-    url: 'https://cortex.vip/thinking',
-    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Cortex Thinking' }],
+    url: 'https://moneyguymutants.com/thinking',
+    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Money Guy Mutants Thinking' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Cortex Thinking — Daily & Weekly Investment Outlook',
-    description: 'Daily and weekly investment outlooks from Cortex Research.',
+    title: 'Money Guy Mutants Thinking — Daily & Weekly Investment Outlook',
+    description: 'Daily and weekly investment outlooks from Money Guy Mutants Research.',
     images: ['/opengraph-image'],
   },
   alternates: {
-    canonical: 'https://cortex.vip/thinking',
+    canonical: 'https://moneyguymutants.com/thinking',
     types: {
-      'application/rss+xml': 'https://cortex.vip/thinking/rss.xml',
+      'application/rss+xml': 'https://moneyguymutants.com/thinking/rss.xml',
     },
   },
 };
@@ -63,21 +63,21 @@ export default async function ThinkingPage({ searchParams }: PageProps) {
       ? {
           '@context': 'https://schema.org',
           '@type': 'CollectionPage',
-          '@id': 'https://cortex.vip/thinking#collection',
-          url: 'https://cortex.vip/thinking',
-          name: 'Cortex Thinking — Investment Outlook',
+          '@id': 'https://moneyguymutants.com/thinking#collection',
+          url: 'https://moneyguymutants.com/thinking',
+          name: 'Money Guy Mutants Thinking — Investment Outlook',
           description:
-            'Daily and weekly investment outlooks from Cortex Research.',
+            'Daily and weekly investment outlooks from Money Guy Mutants Research.',
           inLanguage: 'en-US',
-          isPartOf: { '@id': 'https://cortex.vip/#website' },
-          publisher: { '@id': 'https://cortex.vip/#organization' },
+          isPartOf: { '@id': 'https://moneyguymutants.com/#website' },
+          publisher: { '@id': 'https://moneyguymutants.com/#organization' },
           mainEntity: {
             '@type': 'ItemList',
             numberOfItems: outlooks.length,
             itemListElement: outlooks.map((o, idx) => ({
               '@type': 'ListItem',
               position: idx + 1,
-              url: `https://cortex.vip/thinking/${o.slug}`,
+              url: `https://moneyguymutants.com/thinking/${o.slug}`,
               name: o.title,
             })),
           },
@@ -88,8 +88,8 @@ export default async function ThinkingPage({ searchParams }: PageProps) {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cortex.vip' },
-      { '@type': 'ListItem', position: 2, name: 'Thinking', item: 'https://cortex.vip/thinking' },
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://moneyguymutants.com' },
+      { '@type': 'ListItem', position: 2, name: 'Thinking', item: 'https://moneyguymutants.com/thinking' },
     ],
   };
 
@@ -118,7 +118,7 @@ export default async function ThinkingPage({ searchParams }: PageProps) {
             THINKING
           </div>
           <h1 className="h-hero" style={{ margin: '0 0 16px', fontSize: 'clamp(40px,6vw,64px)' }}>
-            The Cortex Investment Outlook.
+            The Money Guy Mutants Investment Outlook.
           </h1>
           <p
             style={{

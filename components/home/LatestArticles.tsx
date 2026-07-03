@@ -49,7 +49,7 @@ export default async function LatestArticles() {
               lineHeight: 1.1,
             }}
           >
-            From the Cortex blog.
+            From the Money Guy Mutants blog.
           </h2>
           <p
             style={{

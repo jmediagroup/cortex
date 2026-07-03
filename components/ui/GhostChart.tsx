@@ -131,7 +131,6 @@ export function GhostChart({
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        style={{ filter: 'drop-shadow(0 0 6px var(--cta-glow-soft))' }}
       />
 
       {/* Predicted ghost */}
@@ -143,7 +142,6 @@ export function GhostChart({
           strokeWidth="1.75"
           strokeLinecap="round"
           strokeDasharray="3 4"
-          style={{ filter: 'drop-shadow(0 0 4px rgba(90,200,250,0.5))' }}
         />
       )}
 
@@ -153,7 +151,6 @@ export function GhostChart({
         cy={lastHist[1]}
         r="4"
         fill={emerald}
-        style={{ filter: 'drop-shadow(0 0 8px var(--cta-glow-strong))' }}
       />
       <circle
         cx={lastHist[0]}

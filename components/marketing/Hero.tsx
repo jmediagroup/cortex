@@ -1,9 +1,14 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/Button';
 import { MarketingIcon } from './Icons';
 
+/**
+ * Clean MGM hero — a full-bleed navy duotone band (navy base + faint diagonal
+ * texture screened with sky). White ink on top, orange primary CTA, white ghost
+ * secondary, and a floating white MGM preview card. No aurora / grid glow.
+ */
 function HeroBackground() {
   return (
     <div
@@ -14,45 +19,18 @@ function HeroBackground() {
         style={{
           position: 'absolute',
           inset: 0,
+          backgroundColor: 'var(--navy)',
           backgroundImage:
-            'linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px)',
-          backgroundSize: '56px 56px',
-          maskImage: 'radial-gradient(ellipse 70% 60% at 50% 40%, black 40%, transparent 100%)',
-          WebkitMaskImage: 'radial-gradient(ellipse 70% 60% at 50% 40%, black 40%, transparent 100%)',
+            'repeating-linear-gradient(135deg, rgba(255,255,255,0.05) 0 14px, rgba(255,255,255,0) 14px 28px)',
         }}
       />
       <div
         style={{
           position: 'absolute',
-          top: '-10%',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: 900,
-          height: 500,
-          background: 'radial-gradient(ellipse at center, var(--aurora-emerald), transparent 60%)',
-          filter: 'blur(40px)',
-        }}
-      />
-      <div
-        style={{
-          position: 'absolute',
-          bottom: '-20%',
-          right: '-10%',
-          width: 600,
-          height: 500,
-          background: 'radial-gradient(ellipse at center, var(--aurora-info), transparent 60%)',
-          filter: 'blur(40px)',
-        }}
-      />
-      <div
-        style={{
-          position: 'absolute',
-          top: '40%',
-          left: '-10%',
-          width: 400,
-          height: 400,
-          background: 'radial-gradient(ellipse at center, var(--aurora-crimson), transparent 60%)',
-          filter: 'blur(40px)',
+          inset: 0,
+          background: 'var(--sky)',
+          mixBlendMode: 'screen',
+          opacity: 0.12,
         }}
       />
     </div>
@@ -105,13 +83,11 @@ function PulsePreview() {
       onMouseLeave={() => setHover(false)}
       style={{
         position: 'relative',
-        background: 'var(--bg-glass-strong)',
-        backdropFilter: 'var(--glass-blur)',
-        WebkitBackdropFilter: 'var(--glass-blur)',
-        border: '1px solid var(--glass-border-strong)',
-        borderRadius: 'var(--radius-2xl)',
+        background: 'var(--white)',
+        border: '1px solid var(--border-default)',
+        borderRadius: 'var(--radius-md)',
         padding: 28,
-        boxShadow: 'var(--shadow-elevated), var(--shadow-inset-top)',
+        boxShadow: hover ? 'var(--shadow-card-hover)' : 'var(--shadow-card)',
         transform: hover ? 'translateY(-3px)' : 'translateY(0)',
         transition: 'transform 320ms var(--ease-out-expo), box-shadow 320ms',
       }}
@@ -131,8 +107,7 @@ function PulsePreview() {
               width: 8,
               height: 8,
               borderRadius: '50%',
-              background: 'var(--emerald-500)',
-              boxShadow: '0 0 10px var(--emerald-500)',
+              background: 'var(--teal-green)',
             }}
           />
           <span className="eyebrow" style={{ margin: 0 }}>
@@ -144,7 +119,7 @@ function PulsePreview() {
             display: 'flex',
             alignItems: 'center',
             gap: 6,
-            color: 'var(--emerald-500)',
+            color: 'var(--teal-green)',
             fontSize: 12,
             fontWeight: 600,
           }}
@@ -164,7 +139,7 @@ function PulsePreview() {
       <div
         style={{
           fontSize: 12,
-          color: 'var(--text-tertiary)',
+          color: 'var(--text-muted)',
           marginBottom: 24,
           fontFamily: 'var(--font-mono)',
         }}
@@ -186,16 +161,15 @@ function PulsePreview() {
             <div
               style={{
                 height: `${h * 0.55}%`,
-                background: 'linear-gradient(180deg, var(--emerald-500), var(--emerald-700))',
+                background: 'var(--teal-green)',
                 borderRadius: 3,
-                opacity: 0.9,
-                boxShadow: i === bars.length - 1 ? '0 0 12px var(--cta-glow-strong)' : 'none',
+                opacity: i === bars.length - 1 ? 1 : 0.85,
               }}
             />
             <div
               style={{
                 height: `${(100 - h) * 0.25}%`,
-                background: 'var(--crimson-border)',
+                background: 'var(--crimson-tint)',
                 borderRadius: 3,
               }}
             />
@@ -209,7 +183,7 @@ function PulsePreview() {
           gridTemplateColumns: '1fr 1fr 1fr',
           gap: 12,
           paddingTop: 16,
-          borderTop: '1px solid var(--border-subtle)',
+          borderTop: '1px solid var(--border-default)',
         }}
       >
         {[
@@ -234,7 +208,7 @@ function PulsePreview() {
             <div
               style={{
                 fontSize: 11,
-                color: 'var(--emerald-500)',
+                color: 'var(--teal-green)',
                 fontFamily: 'var(--font-mono)',
               }}
             >
@@ -261,7 +235,7 @@ export function MarketingHero({ stats = DEFAULT_STATS }: { stats?: HeroStat[] } 
       style={{
         position: 'relative',
         overflow: 'hidden',
-        background: 'var(--bg-canvas)',
+        background: 'var(--navy-deep)',
         paddingBottom: 80,
       }}
     >
@@ -290,11 +264,9 @@ export function MarketingHero({ stats = DEFAULT_STATS }: { stats?: HeroStat[] } 
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 8,
-                background: 'var(--bg-glass)',
-                backdropFilter: 'var(--glass-blur)',
-                WebkitBackdropFilter: 'var(--glass-blur)',
-                border: '1px solid var(--glass-border)',
-                color: 'var(--text-secondary)',
+                background: 'rgba(255,255,255,0.08)',
+                border: '1px solid rgba(255,255,255,0.16)',
+                color: 'rgba(255,255,255,0.9)',
                 padding: '6px 12px',
                 borderRadius: 9999,
                 marginBottom: 32,
@@ -306,95 +278,47 @@ export function MarketingHero({ stats = DEFAULT_STATS }: { stats?: HeroStat[] } 
                   width: 6,
                   height: 6,
                   borderRadius: '50%',
-                  background: 'var(--emerald-500)',
-                  boxShadow: '0 0 8px var(--emerald-500)',
+                  background: 'var(--mint)',
                 }}
               />
               <span
                 className="eyebrow"
-                style={{ margin: 0, fontSize: 11, color: 'var(--text-secondary)' }}
+                style={{ margin: 0, fontSize: 11, color: 'rgba(255,255,255,0.9)' }}
               >
-                DECISION-SUPPORT PLATFORM
+                DECISION SUPPORT, MUTANT-GRADE
               </span>
             </div>
 
-            <h1 className="h-hero" style={{ margin: '0 0 28px', maxWidth: 620 }}>
+            <h1 className="h-hero" style={{ margin: '0 0 28px', maxWidth: 620, color: '#fff' }}>
               Think clearly about
               <br />
               life&apos;s{' '}
-              <span
-                style={{
-                  background: 'linear-gradient(135deg, var(--emerald-500) 0%, #5AC8FA 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                }}
-              >
-                biggest decisions.
-              </span>
+              <span style={{ color: 'var(--sky)' }}>biggest decisions.</span>
             </h1>
 
             <p
               style={{
                 fontSize: 18,
-                color: 'var(--text-secondary)',
+                color: 'rgba(255,255,255,0.85)',
                 lineHeight: 1.55,
                 margin: '0 0 40px',
                 maxWidth: 520,
               }}
             >
               Interactive financial models that turn complexity into clarity — so you can{' '}
-              <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>
+              <span style={{ color: '#fff', fontWeight: 600 }}>
                 see outcomes before you live them
               </span>
               .
             </p>
 
             <div style={{ display: 'flex', gap: 12, marginBottom: 48, flexWrap: 'wrap' }}>
-              <Link
-                href="/#tools"
-                style={{
-                  background: 'var(--emerald-500)',
-                  color: 'var(--text-inverse)',
-                  padding: '14px 24px',
-                  borderRadius: 12,
-                  fontWeight: 700,
-                  fontSize: 14,
-                  textDecoration: 'none',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  whiteSpace: 'nowrap',
-                  boxShadow:
-                    '0 0 0 1px var(--cta-glow-ring), 0 0 32px var(--cta-glow-soft)',
-                  transition:
-                    'transform 160ms var(--ease-spring-soft), box-shadow 200ms',
-                }}
-              >
+              <Button variant="primary" size="lg" href="/#tools">
                 Explore the tools <MarketingIcon name="arrowRight" size={16} />
-              </Link>
-              <Link
-                href="/signup"
-                style={{
-                  background: 'var(--bg-glass)',
-                  backdropFilter: 'var(--glass-blur)',
-                  WebkitBackdropFilter: 'var(--glass-blur)',
-                  color: 'var(--text-primary)',
-                  border: '1px solid var(--glass-border-strong)',
-                  padding: '14px 24px',
-                  borderRadius: 12,
-                  fontWeight: 600,
-                  fontSize: 14,
-                  textDecoration: 'none',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  whiteSpace: 'nowrap',
-                  transition: 'background 160ms, border-color 160ms',
-                }}
-              >
+              </Button>
+              <Button variant="secondary" tone="white" size="lg" href="/signup">
                 Start free
-              </Link>
+              </Button>
             </div>
 
             <div
@@ -403,7 +327,7 @@ export function MarketingHero({ stats = DEFAULT_STATS }: { stats?: HeroStat[] } 
                 alignItems: 'center',
                 gap: 24,
                 paddingTop: 32,
-                borderTop: '1px solid var(--border-subtle)',
+                borderTop: '1px solid rgba(255,255,255,0.18)',
                 flexWrap: 'wrap',
               }}
             >
@@ -412,7 +336,7 @@ export function MarketingHero({ stats = DEFAULT_STATS }: { stats?: HeroStat[] } 
                   {i > 0 && (
                     <div
                       aria-hidden="true"
-                      style={{ width: 1, height: 32, background: 'var(--border-subtle)' }}
+                      style={{ width: 1, height: 32, background: 'rgba(255,255,255,0.18)' }}
                     />
                   )}
                   <div>
@@ -420,18 +344,18 @@ export function MarketingHero({ stats = DEFAULT_STATS }: { stats?: HeroStat[] } 
                       style={{
                         fontSize: 22,
                         fontWeight: 600,
-                        color: 'var(--text-primary)',
+                        color: '#fff',
                         fontFamily: 'var(--font-mono)',
                         letterSpacing: '-0.02em',
                       }}
                     >
                       {s.v}
-                      {s.plus && <span style={{ color: 'var(--emerald-500)' }}>+</span>}
+                      {s.plus && <span style={{ color: 'var(--mint)' }}>+</span>}
                     </div>
                     <div
                       style={{
                         fontSize: 11,
-                        color: 'var(--text-tertiary)',
+                        color: 'rgba(255,255,255,0.6)',
                         letterSpacing: '0.1em',
                         textTransform: 'uppercase',
                         marginTop: 2,
@@ -453,11 +377,9 @@ export function MarketingHero({ stats = DEFAULT_STATS }: { stats?: HeroStat[] } 
                 position: 'absolute',
                 top: -20,
                 right: -16,
-                background: 'var(--bg-glass-strong)',
-                backdropFilter: 'var(--glass-blur)',
-                WebkitBackdropFilter: 'var(--glass-blur)',
-                border: '1px solid var(--glass-border-strong)',
-                borderRadius: 'var(--radius-lg)',
+                background: 'var(--white)',
+                border: '1px solid var(--border-default)',
+                borderRadius: 'var(--radius-md)',
                 padding: '10px 14px',
                 display: 'flex',
                 alignItems: 'center',
@@ -469,13 +391,12 @@ export function MarketingHero({ stats = DEFAULT_STATS }: { stats?: HeroStat[] } 
                 style={{
                   width: 28,
                   height: 28,
-                  borderRadius: 8,
-                  background: 'var(--emerald-tint)',
-                  border: '1px solid var(--emerald-border)',
+                  borderRadius: '50%',
+                  background: 'var(--mint)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: 'var(--emerald-500)',
+                  color: 'var(--navy)',
                 }}
               >
                 <MarketingIcon name="trendUp" size={14} />
@@ -484,7 +405,7 @@ export function MarketingHero({ stats = DEFAULT_STATS }: { stats?: HeroStat[] } 
                 <div
                   style={{
                     fontSize: 10,
-                    color: 'var(--text-tertiary)',
+                    color: 'var(--text-muted)',
                     letterSpacing: '0.08em',
                     textTransform: 'uppercase',
                   }}
@@ -496,7 +417,7 @@ export function MarketingHero({ stats = DEFAULT_STATS }: { stats?: HeroStat[] } 
                     fontFamily: 'var(--font-mono)',
                     fontSize: 13,
                     fontWeight: 600,
-                    color: 'var(--emerald-500)',
+                    color: 'var(--teal-green)',
                   }}
                 >
                   $2,140
@@ -509,11 +430,9 @@ export function MarketingHero({ stats = DEFAULT_STATS }: { stats?: HeroStat[] } 
                 position: 'absolute',
                 bottom: -16,
                 left: -20,
-                background: 'var(--bg-glass-strong)',
-                backdropFilter: 'var(--glass-blur)',
-                WebkitBackdropFilter: 'var(--glass-blur)',
-                border: '1px solid var(--glass-border-strong)',
-                borderRadius: 'var(--radius-lg)',
+                background: 'var(--white)',
+                border: '1px solid var(--border-default)',
+                borderRadius: 'var(--radius-md)',
                 padding: '10px 14px',
                 display: 'flex',
                 alignItems: 'center',
@@ -525,9 +444,8 @@ export function MarketingHero({ stats = DEFAULT_STATS }: { stats?: HeroStat[] } 
                 style={{
                   width: 28,
                   height: 28,
-                  borderRadius: 8,
+                  borderRadius: '50%',
                   background: 'var(--crimson-tint)',
-                  border: '1px solid var(--crimson-border)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -540,7 +458,7 @@ export function MarketingHero({ stats = DEFAULT_STATS }: { stats?: HeroStat[] } 
                 <div
                   style={{
                     fontSize: 10,
-                    color: 'var(--text-tertiary)',
+                    color: 'var(--text-muted)',
                     letterSpacing: '0.08em',
                     textTransform: 'uppercase',
                   }}

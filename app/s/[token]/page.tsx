@@ -26,13 +26,13 @@ export async function generateMetadata({ params }: SharedScenarioPageProps): Pro
   const scenario = await getScenario(token);
 
   if (!scenario) {
-    return { title: 'Scenario Not Found — Cortex' };
+    return { title: 'Scenario Not Found — Money Guy Mutants' };
   }
 
-  const title = `${scenario.tool_name} Scenario — Cortex`;
+  const title = `${scenario.tool_name} Scenario — Money Guy Mutants`;
   const description = scenario.key_result
     ? `${scenario.tool_name}: ${scenario.key_result}`
-    : `Shared ${scenario.tool_name} scenario on Cortex`;
+    : `Shared ${scenario.tool_name} scenario on Money Guy Mutants`;
 
   return {
     title,
@@ -40,8 +40,8 @@ export async function generateMetadata({ params }: SharedScenarioPageProps): Pro
     openGraph: {
       title,
       description,
-      siteName: 'Cortex',
-      url: `https://cortex.vip/s/${token}`,
+      siteName: 'Money Guy Mutants',
+      url: `https://moneyguymutants.com/s/${token}`,
       type: 'website',
     },
     twitter: {
@@ -71,7 +71,7 @@ export default async function SharedScenarioPage({ params }: SharedScenarioPageP
             href="/"
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-[var(--emerald-500)] text-white rounded-xl font-bold text-sm hover:bg-[var(--emerald-500)] transition-colors"
           >
-            Go to Cortex
+            Go to Money Guy Mutants
           </Link>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import { ImageResponse } from 'next/og';
+import { MUTANT_MARK_DATA_URI, BRAND } from './brand-assets';
 
 export const ogImageSize = {
   width: 1200,
@@ -26,7 +27,12 @@ const iconPaths: Record<string, string> = {
   'dices': 'M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zM8 8a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm8 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-4 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-4 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm8 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2z',
 };
 
-export function createAppOgImage({ title, description, icon, accentColor = '#4f46e5' }: AppOgImageProps) {
+/**
+ * Money Guy Mutants per-tool social card (1200×630): navy field, sky glow,
+ * mint icon plate with navy line-icon, mascot + wordmark, white title/subtitle,
+ * and the sky domain footer. Matches lib/brand-og-card.tsx.
+ */
+export function createAppOgImage({ title, description, icon, accentColor = BRAND.mint }: AppOgImageProps) {
   return new ImageResponse(
     (
       <div
@@ -35,81 +41,29 @@ export function createAppOgImage({ title, description, icon, accentColor = '#4f4
           width: '100%',
           display: 'flex',
           flexDirection: 'column',
-          backgroundColor: '#0f172a',
-          backgroundImage: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
+          backgroundColor: BRAND.navy,
+          backgroundImage:
+            'radial-gradient(ellipse 900px 520px at 85% -5%, rgba(78,201,245,0.30), transparent 60%), radial-gradient(ellipse 700px 500px at 8% 105%, rgba(143,217,206,0.16), transparent 60%)',
           padding: '60px',
         }}
       >
-        {/* Decorative accent circle */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '-80px',
-            right: '-80px',
-            width: '350px',
-            height: '350px',
-            borderRadius: '50%',
-            background: `linear-gradient(135deg, ${accentColor} 0%, #7c3aed 100%)`,
-            opacity: 0.2,
-          }}
-        />
-
-        {/* Top bar with Cortex branding */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            marginBottom: '40px',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '48px',
-              height: '48px',
-              borderRadius: '12px',
-              backgroundColor: '#4f46e5',
-              marginRight: '16px',
-            }}
-          >
-            <svg
-              width="28"
-              height="28"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="white"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M12 18V5" />
-              <path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4" />
-              <path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5" />
-            </svg>
+        {/* Top bar: mascot + wordmark */}
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '40px' }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={MUTANT_MARK_DATA_URI} width={58} height={60} alt="" style={{ marginRight: '18px' }} />
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span style={{ fontSize: '30px', fontWeight: 800, color: '#ffffff', letterSpacing: '1px', lineHeight: 1 }}>
+              MONEYGUY
+            </span>
+            <span style={{ fontSize: '15px', fontWeight: 400, color: '#ffffff', letterSpacing: '11px', marginTop: '4px' }}>
+              MUTANTS
+            </span>
           </div>
-          <span
-            style={{
-              fontSize: '28px',
-              fontWeight: 800,
-              color: '#94a3b8',
-              letterSpacing: '-0.5px',
-            }}
-          >
-            Cortex
-          </span>
         </div>
 
         {/* Main content area */}
-        <div
-          style={{
-            display: 'flex',
-            flex: 1,
-            alignItems: 'center',
-          }}
-        >
-          {/* Left side: Icon */}
+        <div style={{ display: 'flex', flex: 1, alignItems: 'center' }}>
+          {/* Left side: mint icon plate, navy line-icon */}
           <div
             style={{
               display: 'flex',
@@ -117,10 +71,9 @@ export function createAppOgImage({ title, description, icon, accentColor = '#4f4
               justifyContent: 'center',
               width: '160px',
               height: '160px',
-              borderRadius: '40px',
+              borderRadius: '50%',
               backgroundColor: accentColor,
               marginRight: '50px',
-              boxShadow: `0 25px 50px -12px ${accentColor}40`,
             }}
           >
             <svg
@@ -128,7 +81,7 @@ export function createAppOgImage({ title, description, icon, accentColor = '#4f4
               height="80"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="white"
+              stroke={BRAND.navy}
               strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -137,20 +90,14 @@ export function createAppOgImage({ title, description, icon, accentColor = '#4f4
             </svg>
           </div>
 
-          {/* Right side: Text */}
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              flex: 1,
-            }}
-          >
+          {/* Right side: text */}
+          <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
             <h1
               style={{
                 fontSize: '56px',
-                fontWeight: 900,
-                color: 'white',
-                letterSpacing: '-2px',
+                fontWeight: 800,
+                color: '#ffffff',
+                letterSpacing: '-1px',
                 lineHeight: 1.1,
                 marginBottom: '20px',
               }}
@@ -161,7 +108,7 @@ export function createAppOgImage({ title, description, icon, accentColor = '#4f4
               style={{
                 fontSize: '24px',
                 fontWeight: 500,
-                color: '#94a3b8',
+                color: 'rgba(255,255,255,0.85)',
                 lineHeight: 1.5,
                 maxWidth: '600px',
               }}
@@ -172,53 +119,25 @@ export function createAppOgImage({ title, description, icon, accentColor = '#4f4
         </div>
 
         {/* Bottom bar */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
               padding: '10px 20px',
-              borderRadius: '100px',
-              backgroundColor: 'rgba(16, 185, 129, 0.15)',
-              border: '1px solid rgba(16, 185, 129, 0.3)',
+              borderRadius: '9999px',
+              backgroundColor: 'rgba(143,217,206,0.16)',
+              border: '1px solid rgba(143,217,206,0.45)',
             }}
           >
-            <div
-              style={{
-                width: '8px',
-                height: '8px',
-                borderRadius: '50%',
-                backgroundColor: '#10b981',
-              }}
-            />
-            <span
-              style={{
-                fontSize: '16px',
-                fontWeight: 700,
-                color: '#10b981',
-                textTransform: 'uppercase',
-                letterSpacing: '1px',
-              }}
-            >
+            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: BRAND.mint }} />
+            <span style={{ fontSize: '16px', fontWeight: 700, color: BRAND.mint, textTransform: 'uppercase', letterSpacing: '1px' }}>
               Free Tool
             </span>
           </div>
-          <span
-            style={{
-              fontSize: '18px',
-              fontWeight: 700,
-              color: '#64748b',
-              letterSpacing: '2px',
-            }}
-          >
-            CORTEX.VIP
+          <span style={{ fontSize: '18px', fontWeight: 700, color: BRAND.sky, letterSpacing: '2px' }}>
+            MONEYGUYMUTANTS.COM
           </span>
         </div>
       </div>

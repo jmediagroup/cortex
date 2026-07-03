@@ -518,8 +518,8 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                 <AreaChart data={projectionData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorTarget" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#00F0A0" stopOpacity={0.15}/>
-                      <stop offset="95%" stopColor="#00F0A0" stopOpacity={0.02}/>
+                      <stop offset="5%" stopColor="#1D8072" stopOpacity={0.15}/>
+                      <stop offset="95%" stopColor="#1D8072" stopOpacity={0.02}/>
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#2C2C2E" />
@@ -538,14 +538,14 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                     dx={-10}
                   />
                   <ChartTooltip
-                    cursor={{stroke: '#00F0A0', strokeWidth: 1, strokeDasharray: '3 3'}}
+                    cursor={{stroke: '#1D8072', strokeWidth: 1, strokeDasharray: '3 3'}}
                     contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)', padding: '12px'}}
                     formatter={(val: number) => [`$${val.toLocaleString()}`, '']}
                   />
                   <Area
                     type="monotone"
                     dataKey="target"
-                    stroke="#00F0A0"
+                    stroke="#1D8072"
                     strokeWidth={4}
                     fill="url(#colorTarget)"
                     animationDuration={isDragging ? 0 : 400}
@@ -686,7 +686,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                   <div className="flex items-start gap-3">
                     <Zap size={20} className="flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
+                      <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">MUTANT INSIGHT</p>
                       <p className="text-[var(--mist-100)] text-sm font-medium leading-relaxed">
                         The #1 destination delivers {fmtUSD(multiCityAnalysis.destinations[0].delta)} more in annual savings than your current location.
                         Your selected destination's savings advantage compounds to {fmtUSD(multiCityAnalysis.compoundedArbitrageWealth)} in extra wealth over {years} years.
@@ -725,7 +725,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                     <div className="flex items-start gap-3">
                       <Zap size={18} className="flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
+                        <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">MUTANT INSIGHT</p>
                         <p className="text-white/85 text-sm font-medium leading-relaxed">
                           {multiCityAnalysis.yearlyTaxWindfall > 0
                             ? `Moving from ${currentLoc} to ${targetLoc} saves ${fmtUSD(multiCityAnalysis.yearlyTaxWindfall)}/year in pure state tax arbitrage, before cost-of-living differences.`
@@ -760,7 +760,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                     <div className="flex items-start gap-3">
                       <Zap size={18} className="flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
+                        <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">MUTANT INSIGHT</p>
                         <p className="text-white/85 text-sm font-medium leading-relaxed">
                           {multiCityAnalysis.mobilityPremium >= 0
                             ? `Even accounting for career trajectory loss, arbitrage still nets you ${Math.abs(Math.round(multiCityAnalysis.mobilityPremium)).toLocaleString()} in extra wealth.`
@@ -807,7 +807,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                   <div className="flex items-start gap-3">
                     <Zap size={18} className="flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
+                      <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">MUTANT INSIGHT</p>
                       <p className="text-[var(--text-muted)] text-sm font-medium leading-relaxed">
                         {multiCityAnalysis.lifestyleScore >= 75
                           ? 'Your target location maintains a sustainable lifestyle while delivering arbitrage gains. Low risk of burnout or regret.'

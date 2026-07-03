@@ -53,7 +53,7 @@ interface SimulationResult {
   paidOff: boolean;
 }
 
-const COLORS = ['#00F0A0', '#00F0A0', '#FF66C4', '#FF3B30', '#FFB800', '#FFB800', '#00F0A0', '#5AC8FA'];
+const COLORS = ['#1D8072', '#1D8072', '#FF66C4', '#CD2026', '#FFB800', '#FFB800', '#1D8072', '#4EC9F5'];
 
 export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = false, initialValues }: DebtPaydownOptimizerProps) {
   const [debts, setDebts] = useState<Debt[]>([
@@ -572,7 +572,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                     type="monotone"
                     dataKey="totalBalance"
                     name="Remaining Debt"
-                    stroke="#00F0A0"
+                    stroke="#1D8072"
                     strokeWidth={3}
                     dot={false}
                   />
@@ -580,7 +580,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                     type="monotone"
                     dataKey="interestPaid"
                     name="Cumulative Interest"
-                    stroke="#FF3B30"
+                    stroke="#CD2026"
                     strokeWidth={2}
                     strokeDasharray="5 5"
                     dot={false}
@@ -653,7 +653,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
 
       {/* PRO FEATURES UPGRADE CARD */}
       {!isPro && (
-        <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-600)] to-[var(--color-info)] rounded-[3rem] p-12 text-white relative overflow-hidden shadow-2xl">
+        <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-600)] to-[var(--color-info)] rounded-2xl p-12 text-white relative overflow-hidden shadow-2xl">
           <div className="absolute top-0 right-0 p-12 opacity-10 rotate-12">
             <Zap size={200} fill="currentColor" />
           </div>
@@ -709,7 +709,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
 
           {/* Life-Stage Strategic Context */}
           {age !== null && age > 0 && debts.length > 0 && (
-            <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] rounded-[3rem] p-10 text-white shadow-xl">
+            <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] rounded-2xl p-10 text-white shadow-xl">
               <div className="flex items-start gap-4">
                 <div className="bg-[var(--bg-card)]/20 p-3 rounded-2xl backdrop-blur-sm">
                   <Brain size={32} />
@@ -775,7 +775,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
           )}
 
           {/* Investment vs Paydown Showdown */}
-          <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] rounded-[3rem] p-10 text-white shadow-xl">
+          <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] rounded-2xl p-10 text-white shadow-xl">
             <div className="flex items-start gap-4 mb-6">
               <div className="bg-[var(--bg-card)]/20 p-3 rounded-2xl backdrop-blur-sm">
                 <Target size={32} />
@@ -813,7 +813,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
               </div>
             </div>
             <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
+              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">MUTANT INSIGHT</p>
               <p className="font-medium text-white">
                 {(() => {
                   if (debts.length === 0) {
@@ -834,7 +834,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
           </div>
 
           {/* Tax-Adjusted Reality */}
-          <div className="bg-[var(--bg-card)] rounded-[3rem] p-10 border border-[var(--border-default)] shadow-sm">
+          <div className="bg-[var(--bg-card)] rounded-2xl p-10 border border-[var(--border-default)] shadow-sm">
             <div className="flex items-start gap-4 mb-6">
               <div className="bg-[var(--color-warning-soft)] text-[var(--color-warning)] p-3 rounded-2xl">
                 <Shield size={32} />
@@ -875,7 +875,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
           </div>
 
           {/* Hybrid Strategy Designer */}
-          <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] rounded-[3rem] p-10 text-white shadow-xl">
+          <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] rounded-2xl p-10 text-white shadow-xl">
             <div className="flex items-start gap-4 mb-6">
               <div className="bg-[var(--bg-card)]/20 p-3 rounded-2xl backdrop-blur-sm">
                 <Repeat size={32} />
@@ -969,7 +969,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
               </div>
             </div>
             <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
+              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">MUTANT INSIGHT</p>
               <p className="font-medium text-white">
                 {(() => {
                   const highRateDebt = debts.find(d => {
@@ -994,7 +994,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
           </div>
 
           {/* Debt-to-Income Tracker */}
-          <div className="bg-[var(--bg-card)] rounded-[3rem] p-10 border border-[var(--border-default)] shadow-sm">
+          <div className="bg-[var(--bg-card)] rounded-2xl p-10 border border-[var(--border-default)] shadow-sm">
             <div className="flex items-start gap-4 mb-6">
               <div className="bg-[var(--emerald-100)] text-[var(--emerald-500)] p-3 rounded-2xl">
                 <TrendingDown size={32} />

@@ -428,8 +428,8 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                 <AreaChart data={results} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorBuy" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#00F0A0" stopOpacity={0.1}/>
-                      <stop offset="95%" stopColor="#00F0A0" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#1D8072" stopOpacity={0.1}/>
+                      <stop offset="95%" stopColor="#1D8072" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#2C2C2E" />
@@ -450,8 +450,8 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
                     formatter={(val: number) => formatCurrency(val)}
                   />
-                  <ReferenceLine x={years} stroke="#00F0A0" strokeDasharray="3 3" />
-                  <Area type="monotone" dataKey="buyNetWorth" name="Buy Net Worth" stroke="#00F0A0" strokeWidth={3} fillOpacity={1} fill="url(#colorBuy)" />
+                  <ReferenceLine x={years} stroke="#1D8072" strokeDasharray="3 3" />
+                  <Area type="monotone" dataKey="buyNetWorth" name="Buy Net Worth" stroke="#1D8072" strokeWidth={3} fillOpacity={1} fill="url(#colorBuy)" />
                   <Area type="monotone" dataKey="rentNetWorth" name="Rent Portfolio" stroke="#8E8E93" strokeWidth={2} fill="transparent" strokeDasharray="5 5" />
                 </AreaChart>
               </ResponsiveContainer>
@@ -503,7 +503,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
 
       {/* PRO FEATURES UPGRADE CARD */}
       {!isPro && (
-        <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] rounded-[3rem] p-12 text-white relative overflow-hidden shadow-2xl">
+        <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] rounded-2xl p-12 text-white relative overflow-hidden shadow-2xl">
           <div className="absolute top-0 right-0 p-12 opacity-10 rotate-12">
             <Zap size={200} fill="currentColor" />
           </div>
@@ -558,7 +558,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
           </div>
 
           {/* Multi-Move Friction Analysis */}
-          <div data-theme="dark" className="bg-gradient-to-br from-[var(--crimson-500)] to-[var(--emerald-500)] rounded-[3rem] p-10 text-white shadow-xl">
+          <div data-theme="dark" className="bg-gradient-to-br from-[var(--crimson-500)] to-[var(--emerald-500)] rounded-2xl p-10 text-white shadow-xl">
             <div className="flex items-start gap-4 mb-6">
               <div className="bg-[var(--bg-card)]/20 p-3 rounded-2xl backdrop-blur-sm">
                 <Repeat size={32} />
@@ -610,7 +610,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
               </div>
             </div>
             <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
+              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">MUTANT INSIGHT</p>
               <p className="font-medium text-white">
                 {winner === 'Rent'
                   ? <>Over 3 expected moves, renting preserves {formatCurrency(lifecycleAnalysis.moves.extraFriction + nwDiff)} more wealth due to transaction costs and mobility value—even with "wasted" rent.</>
@@ -620,7 +620,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
           </div>
 
           {/* Hidden Drag Calculator */}
-          <div className="bg-[var(--bg-card)] rounded-[3rem] p-10 border border-[var(--border-default)] shadow-sm">
+          <div className="bg-[var(--bg-card)] rounded-2xl p-10 border border-[var(--border-default)] shadow-sm">
             <div className="flex items-start gap-4 mb-6">
               <div className="bg-[var(--color-warning-soft)] text-[var(--color-warning)] p-3 rounded-2xl">
                 <DollarSign size={32} />
@@ -668,7 +668,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
           </div>
 
           {/* Mobility Premium */}
-          <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--color-info)] rounded-[3rem] p-10 text-white shadow-xl">
+          <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--color-info)] rounded-2xl p-10 text-white shadow-xl">
             <div className="flex items-start gap-4 mb-6">
               <div className="bg-[var(--bg-card)]/20 p-3 rounded-2xl backdrop-blur-sm">
                 <MapPin size={32} />
@@ -711,7 +711,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
               </div>
             </div>
             <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
+              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">MUTANT INSIGHT</p>
               <p className="font-medium text-white">
                 Career mobility has quantifiable value. Being locked into a property when a life-changing opportunity appears has a real cost that traditional rent vs. buy calculators ignore.
               </p>
@@ -719,7 +719,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
           </div>
 
           {/* Market Timing Risk */}
-          <div className="bg-[var(--bg-card)] rounded-[3rem] p-10 border border-[var(--border-default)] shadow-sm">
+          <div className="bg-[var(--bg-card)] rounded-2xl p-10 border border-[var(--border-default)] shadow-sm">
             <div className="flex items-start gap-4 mb-6">
               <div className="bg-[var(--emerald-100)] text-[var(--emerald-500)] p-3 rounded-2xl">
                 <TrendingUp size={32} />
