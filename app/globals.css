@@ -129,6 +129,11 @@
 }
 
 html {
+  /* Global readability bump: 106.25% of the browser default (16px -> 17px)
+     scales all rem-based type + spacing up a gentle notch for easier reading.
+     A percentage (not px) is used deliberately so it still respects a reader's
+     own larger browser font-size preference. */
+  font-size: 106.25%;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
