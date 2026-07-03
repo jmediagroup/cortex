@@ -122,7 +122,6 @@ export function Sankey({
               rx="3"
               fill={color}
               opacity="0.9"
-              style={{ filter: `drop-shadow(0 0 6px ${color})` }}
             />
             <text
               x={rightX - 8}

@@ -32,7 +32,7 @@ export default function BottomTabBar() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-[60] border-t border-[var(--border-primary)] bg-[var(--surface-primary)]/95 backdrop-blur-lg md:hidden"
+      className="fixed bottom-0 left-0 right-0 z-[60] border-t border-[var(--border-primary)] bg-[var(--surface-primary)] md:hidden"
       style={{
         paddingBottom: 'var(--safe-bottom)',
         paddingLeft: 'var(--safe-left)',
@@ -54,12 +54,12 @@ export default function BottomTabBar() {
               <tab.icon
                 size={22}
                 className={`transition-colors duration-200 ${
-                  active ? 'text-[var(--color-accent)]' : 'text-[var(--text-tertiary)]'
+                  active ? 'text-[var(--navy)]' : 'text-[var(--text-tertiary)]'
                 }`}
               />
               <span
                 className={`text-xs font-semibold transition-colors duration-200 ${
-                  active ? 'text-[var(--color-accent)]' : 'text-[var(--text-tertiary)]'
+                  active ? 'text-[var(--navy)]' : 'text-[var(--text-tertiary)]'
                 }`}
               >
                 {tab.label}

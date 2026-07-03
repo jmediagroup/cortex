@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { SectionBadge } from '@/components/ui/SectionBadge';
 import { MarketingIcon, type MarketingIconName } from './Icons';
 
 export type MarketingTool = {
@@ -136,38 +137,15 @@ function ToolCard({ tool }: { tool: MarketingTool }) {
         position: 'relative',
         display: 'block',
         textDecoration: 'none',
-        background: hover ? 'var(--bg-glass-strong)' : 'var(--bg-glass)',
-        backdropFilter: 'var(--glass-blur)',
-        WebkitBackdropFilter: 'var(--glass-blur)',
-        border: `1px solid ${hover ? 'var(--glass-border-strong)' : 'var(--glass-border)'}`,
-        borderRadius: 'var(--radius-xl)',
+        background: 'var(--white)',
+        border: `1px solid ${tool.featured ? 'var(--sky)' : 'var(--border-default)'}`,
+        borderRadius: 'var(--radius-md)',
         padding: 24,
-        boxShadow: hover
-          ? 'var(--shadow-card-hover), var(--shadow-inset-top)'
-          : 'var(--shadow-card), var(--shadow-inset-top)',
+        boxShadow: hover ? 'var(--shadow-card-hover)' : 'var(--shadow-card)',
         transform: hover ? 'translateY(-3px)' : 'none',
-        transition:
-          'transform 320ms var(--ease-out-expo), background 160ms, border-color 160ms, box-shadow 320ms',
+        transition: 'transform 320ms var(--ease-out-expo), box-shadow 320ms',
       }}
     >
-      {tool.featured && (
-        <div
-          aria-hidden="true"
-          style={{
-            position: 'absolute',
-            inset: -1,
-            borderRadius: 'var(--radius-xl)',
-            background:
-              'linear-gradient(135deg, var(--emerald-border), transparent 40%)',
-            opacity: hover ? 0.6 : 0.3,
-            pointerEvents: 'none',
-            zIndex: -1,
-            filter: 'blur(8px)',
-            transition: 'opacity 200ms',
-          }}
-        />
-      )}
-
       {tool.tag && (
         <div
           style={{
@@ -175,14 +153,13 @@ function ToolCard({ tool }: { tool: MarketingTool }) {
             top: 16,
             right: 16,
             fontSize: 10,
-            fontWeight: 600,
-            letterSpacing: '0.1em',
+            fontWeight: 700,
+            letterSpacing: '0.08em',
             textTransform: 'uppercase',
-            color: isFree ? 'var(--emerald-500)' : 'var(--text-tertiary)',
+            color: '#fff',
             padding: '4px 10px',
-            borderRadius: 9999,
-            background: isFree ? 'var(--emerald-tint-soft)' : 'var(--bg-glass-strong)',
-            border: `1px solid ${isFree ? 'var(--emerald-border-soft)' : 'var(--glass-border)'}`,
+            borderRadius: 'var(--radius-full)',
+            background: isFree ? 'var(--teal-green)' : 'var(--sky-pill)',
           }}
         >
           {tool.tag}
@@ -193,18 +170,13 @@ function ToolCard({ tool }: { tool: MarketingTool }) {
         style={{
           width: 44,
           height: 44,
-          borderRadius: 'var(--radius-md)',
-          background: hover
-            ? 'linear-gradient(135deg, var(--emerald-tint), var(--emerald-tint-soft))'
-            : 'var(--bg-glass-strong)',
-          border: `1px solid ${hover ? 'var(--emerald-border)' : 'var(--glass-border)'}`,
+          borderRadius: 'var(--radius-circle)',
+          background: tool.featured ? 'var(--sky)' : 'var(--mint)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: hover ? 'var(--emerald-500)' : 'var(--text-secondary)',
+          color: 'var(--navy)',
           marginBottom: 20,
-          transition: 'all 200ms var(--ease-out-quart)',
-          boxShadow: hover ? '0 0 20px var(--cta-glow-soft)' : 'none',
         }}
       >
         <MarketingIcon name={tool.icon} size={20} />
@@ -213,10 +185,11 @@ function ToolCard({ tool }: { tool: MarketingTool }) {
       <h3
         style={{
           fontSize: 16,
-          fontWeight: 600,
-          color: 'var(--text-primary)',
+          fontWeight: 700,
+          color: 'var(--navy)',
           margin: '0 0 8px',
           letterSpacing: '-0.01em',
+          lineHeight: 1.2,
           paddingRight: isPro ? 56 : 0,
         }}
       >
@@ -224,7 +197,7 @@ function ToolCard({ tool }: { tool: MarketingTool }) {
       </h3>
       <p
         style={{
-          color: 'var(--text-tertiary)',
+          color: 'var(--text-secondary)',
           fontSize: 13,
           lineHeight: 1.55,
           margin: '0 0 20px',
@@ -235,13 +208,15 @@ function ToolCard({ tool }: { tool: MarketingTool }) {
 
       <span
         style={{
-          color: hover ? 'var(--emerald-500)' : 'var(--text-secondary)',
-          fontWeight: 600,
+          color: 'var(--orange)',
+          fontWeight: 700,
           fontSize: 12,
+          textTransform: 'uppercase',
+          letterSpacing: '0.04em',
           display: 'inline-flex',
           alignItems: 'center',
           gap: hover ? 8 : 6,
-          transition: 'all 160ms',
+          transition: 'gap 160ms',
         }}
       >
         Open tool <MarketingIcon name="arrowRight" size={12} />
@@ -258,46 +233,32 @@ export function MarketingToolGrid({ tools = DEFAULT_TOOLS }: { tools?: Marketing
         position: 'relative',
         padding: '120px 24px',
         background: 'var(--bg-page)',
-        borderTop: '1px solid var(--border-subtle)',
+        borderTop: '1px solid var(--border-default)',
         scrollMarginTop: 64,
       }}
     >
-      <div
-        aria-hidden="true"
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: 800,
-          height: 300,
-          background: 'radial-gradient(ellipse at top, var(--emerald-wash), transparent 70%)',
-          pointerEvents: 'none',
-        }}
-      />
-
       <div style={{ maxWidth: 1280, margin: '0 auto', position: 'relative' }}>
         <div style={{ maxWidth: 640, marginBottom: 64 }}>
-          <div
-            className="eyebrow"
-            style={{ marginBottom: 16, color: 'var(--emerald-500)' }}
-          >
-            ● CORTEX FINANCE — AVAILABLE NOW
+          <div className="mgm-eyebrow" style={{ marginBottom: 16 }}>
+            MUTANT FINANCE — AVAILABLE NOW
           </div>
-          <h2
-            style={{
-              fontSize: 'clamp(32px,4.5vw,52px)',
-              fontWeight: 700,
-              color: 'var(--text-primary)',
-              letterSpacing: '-0.025em',
-              margin: '0 0 20px',
-              lineHeight: 1.1,
-            }}
-          >
-            Fifteen tools.
-            <br />
-            One mental model.
-          </h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
+            <h2
+              style={{
+                fontSize: 'clamp(32px,4.5vw,52px)',
+                fontWeight: 700,
+                color: 'var(--navy)',
+                letterSpacing: '-0.025em',
+                margin: 0,
+                lineHeight: 1.1,
+              }}
+            >
+              Fifteen tools.
+              <br />
+              One mental model.
+            </h2>
+            <SectionBadge glyph="spark" tone="sky" />
+          </div>
           <p
             style={{
               fontSize: 17,

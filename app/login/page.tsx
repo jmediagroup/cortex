@@ -9,11 +9,11 @@ import { trackEvent } from '@/lib/analytics';
 import {
   AuthShell,
   AuthField,
-  authInputStyle,
+  authInputWithIcon,
   authErrorStyle,
-  authPrimaryBtn,
-  authSecondaryBtn,
+  authLinkStyle,
 } from '@/components/auth/AuthShell';
+import { Button } from '@/components/ui/Button';
 import { MarketingIcon } from '@/components/marketing/Icons';
 
 function AuthForm() {
@@ -128,29 +128,27 @@ function AuthForm() {
           <div
             style={{
               margin: '0 auto 20px',
-              width: 56,
-              height: 56,
-              borderRadius: 'var(--radius-md)',
-              background: 'var(--emerald-tint)',
-              border: '1px solid var(--emerald-border)',
-              color: 'var(--emerald-500)',
+              width: 64,
+              height: 64,
+              borderRadius: '50%',
+              background: 'rgba(78, 201, 245, 0.16)',
+              color: 'var(--sky)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 0 24px var(--cta-glow-soft)',
             }}
           >
-            <Mail size={26} />
+            <Mail size={28} />
           </div>
-          <div className="eyebrow" style={{ marginBottom: 10, color: 'var(--emerald-500)' }}>
+          <div className="mgm-eyebrow" style={{ marginBottom: 10 }}>
             CHECK YOUR EMAIL
           </div>
           <h1
             style={{
-              fontSize: 22,
+              fontSize: 26,
               fontWeight: 700,
-              color: 'var(--text-primary)',
-              letterSpacing: '-0.02em',
+              color: 'var(--navy)',
+              letterSpacing: '-0.01em',
               margin: '0 0 12px',
             }}
           >
@@ -158,34 +156,29 @@ function AuthForm() {
           </h1>
           <p
             style={{
-              fontSize: 14,
+              fontSize: 15,
               color: 'var(--text-secondary)',
               lineHeight: 1.6,
               margin: '0 0 16px',
             }}
           >
             We sent a password reset link to{' '}
-            <span
-              style={{
-                color: 'var(--emerald-500)',
-                fontWeight: 600,
-                fontFamily: 'var(--font-mono)',
-              }}
-            >
-              {email}
-            </span>
-            .
+            <span style={{ color: 'var(--navy)', fontWeight: 700 }}>{email}</span>.
           </p>
           <p
             style={{
-              fontSize: 12,
-              color: 'var(--text-muted)',
+              fontSize: 13,
+              color: 'var(--gray-500)',
               margin: '0 0 24px',
             }}
           >
             The link expires in 24 hours.
           </p>
-          <button type="button" onClick={handleBackToLogin} style={authSecondaryBtn}>
+          <button
+            type="button"
+            onClick={handleBackToLogin}
+            style={{ ...authLinkStyle, color: 'var(--navy)' }}
+          >
             <ArrowLeft size={14} /> Back to sign in
           </button>
         </div>
@@ -198,22 +191,22 @@ function AuthForm() {
       <AuthShell>
         <form onSubmit={handleForgotPassword} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           <div>
-            <div className="eyebrow" style={{ marginBottom: 10, color: 'var(--text-tertiary)' }}>
-              RESET PASSWORD
+            <div className="mgm-eyebrow" style={{ marginBottom: 10 }}>
+              NO WORRIES
             </div>
             <h1
               style={{
-                fontSize: 24,
+                fontSize: 28,
                 fontWeight: 700,
-                color: 'var(--text-primary)',
-                letterSpacing: '-0.02em',
+                color: 'var(--navy)',
+                letterSpacing: '-0.01em',
                 margin: '0 0 8px',
               }}
             >
-              Forgot your password?
+              Reset your password.
             </h1>
-            <p style={{ fontSize: 14, color: 'var(--text-tertiary)', margin: 0 }}>
-              Enter your email and we&apos;ll send a reset link.
+            <p style={{ fontSize: 15, color: 'var(--text-secondary)', margin: 0 }}>
+              Enter your email and we&apos;ll send a link to set a new one.
             </p>
           </div>
 
@@ -226,23 +219,28 @@ function AuthForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="name@example.com"
-              style={authInputStyle}
+              className="mgm-input"
+              style={authInputWithIcon}
             />
           </AuthField>
 
-          <button type="submit" disabled={loading} style={{ ...authPrimaryBtn, opacity: loading ? 0.7 : 1 }}>
+          <Button variant="primary" type="submit" disabled={loading} style={{ width: '100%' }}>
             {loading ? (
               <>
-                <Loader2 size={16} className="animate-spin" /> Sending...
+                <Loader2 size={16} className="animate-spin" /> Sending…
               </>
             ) : (
               <>
                 Send reset link <MarketingIcon name="arrowRight" size={14} />
               </>
             )}
-          </button>
+          </Button>
 
-          <button type="button" onClick={handleBackToLogin} style={{ ...authSecondaryBtn, alignSelf: 'center' }}>
+          <button
+            type="button"
+            onClick={handleBackToLogin}
+            style={{ ...authLinkStyle, color: 'var(--navy)', alignSelf: 'center' }}
+          >
             <ArrowLeft size={14} /> Back to sign in
           </button>
         </form>
@@ -254,22 +252,22 @@ function AuthForm() {
     <AuthShell>
       <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         <div>
-          <div className="eyebrow" style={{ marginBottom: 10, color: 'var(--text-tertiary)' }}>
+          <div className="mgm-eyebrow" style={{ marginBottom: 10 }}>
             WELCOME BACK
           </div>
           <h1
             style={{
-              fontSize: 24,
+              fontSize: 28,
               fontWeight: 700,
-              color: 'var(--text-primary)',
-              letterSpacing: '-0.02em',
+              color: 'var(--navy)',
+              letterSpacing: '-0.01em',
               margin: '0 0 8px',
             }}
           >
-            Sign in to Money Guy Mutants.
+            Log in to Money Guy Mutants.
           </h1>
-          <p style={{ fontSize: 14, color: 'var(--text-tertiary)', margin: 0 }}>
-            Pick up where you left off.
+          <p style={{ fontSize: 15, color: 'var(--text-secondary)', margin: 0 }}>
+            Pick up right where you left off.
           </p>
         </div>
 
@@ -282,7 +280,8 @@ function AuthForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="name@example.com"
-            style={authInputStyle}
+            className="mgm-input"
+            style={authInputWithIcon}
             autoComplete="email"
           />
         </AuthField>
@@ -294,7 +293,8 @@ function AuthForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
-            style={authInputStyle}
+            className="mgm-input"
+            style={authInputWithIcon}
             minLength={6}
             autoComplete="current-password"
           />
@@ -304,36 +304,36 @@ function AuthForm() {
           <button
             type="button"
             onClick={() => setIsForgotPassword(true)}
-            style={{ ...authSecondaryBtn, fontSize: 12 }}
+            style={{ ...authLinkStyle, fontSize: 12 }}
           >
             Forgot password?
           </button>
         </div>
 
-        <button type="submit" disabled={loading} style={{ ...authPrimaryBtn, opacity: loading ? 0.7 : 1 }}>
+        <Button variant="primary" type="submit" disabled={loading} style={{ width: '100%' }}>
           {loading ? (
             <>
-              <Loader2 size={16} className="animate-spin" /> Signing in...
+              <Loader2 size={16} className="animate-spin" /> Signing in…
             </>
           ) : (
             <>
-              Sign in <ArrowRight size={16} />
+              Log in <ArrowRight size={16} />
             </>
           )}
-        </button>
+        </Button>
 
         <div
           style={{
             textAlign: 'center',
-            fontSize: 13,
-            color: 'var(--text-tertiary)',
+            fontSize: 14,
+            color: 'var(--text-secondary)',
             paddingTop: 8,
           }}
         >
-          New to Money Guy Mutants?{' '}
+          New here?{' '}
           <Link
             href={signupHref}
-            style={{ color: 'var(--emerald-500)', fontWeight: 600, textDecoration: 'none' }}
+            style={{ color: 'var(--orange)', fontWeight: 700, textDecoration: 'none' }}
           >
             Create an account
           </Link>

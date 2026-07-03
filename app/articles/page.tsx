@@ -152,19 +152,13 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
-      <section
-        className="hero-gradient"
-        style={{ padding: '96px 24px 48px', textAlign: 'center' }}
-      >
+      <section style={{ padding: '96px 24px 48px', textAlign: 'center' }}>
         <div style={{ maxWidth: 760, margin: '0 auto', position: 'relative' }}>
-          <div
-            className="eyebrow"
-            style={{ marginBottom: 16, color: 'var(--text-tertiary)' }}
-          >
+          <div className="mgm-eyebrow" style={{ marginBottom: 16, color: 'var(--gray-500)' }}>
             INSIGHTS
           </div>
           <h1 className="h-hero" style={{ margin: '0 0 16px', fontSize: 'clamp(40px,6vw,64px)' }}>
-            Articles for clearer thinking.
+            Money content for mutants.
           </h1>
           <p
             style={{
@@ -174,7 +168,7 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
               margin: 0,
             }}
           >
-            Expert guides, strategies, and deep dives into making smarter financial decisions.
+            Plain-talk guides, strategies, and deep dives to check for blindspots and shift into the fast-lane.
           </p>
         </div>
       </section>
@@ -194,20 +188,15 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
               style={{
                 position: 'sticky',
                 top: 88,
-                background: 'var(--bg-glass)',
-                backdropFilter: 'var(--glass-blur)',
-                WebkitBackdropFilter: 'var(--glass-blur)',
-                border: '1px solid var(--glass-border)',
-                borderRadius: 'var(--radius-xl)',
+                background: 'var(--bg-card)',
+                border: '1px solid var(--border-default)',
+                borderRadius: 'var(--radius-md)',
                 padding: 20,
-                boxShadow: 'var(--shadow-card), var(--shadow-inset-top)',
+                boxShadow: 'var(--shadow-card)',
               }}
             >
               <div style={{ marginBottom: 24 }}>
-                <div
-                  className="eyebrow"
-                  style={{ marginBottom: 10, color: 'var(--text-tertiary)' }}
-                >
+                <div className="mgm-eyebrow" style={{ marginBottom: 10, color: 'var(--gray-500)' }}>
                   SEARCH
                 </div>
                 <form action="/articles" method="GET">
@@ -220,9 +209,9 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
                       style={{
                         width: '100%',
                         padding: '10px 36px 10px 12px',
-                        border: '1px solid var(--border-default)',
-                        borderRadius: 10,
-                        background: 'var(--bg-glass-strong)',
+                        border: '1px solid var(--gray-300)',
+                        borderRadius: 'var(--radius-sm)',
+                        background: 'var(--white)',
                         color: 'var(--text-primary)',
                         fontSize: 13,
                         fontFamily: 'inherit',
@@ -239,7 +228,7 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
                         transform: 'translateY(-50%)',
                         background: 'transparent',
                         border: 0,
-                        color: 'var(--text-tertiary)',
+                        color: 'var(--gray-500)',
                         cursor: 'pointer',
                         padding: 4,
                         display: 'flex',
@@ -252,10 +241,7 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
               </div>
 
               <div style={{ marginBottom: 24 }}>
-                <div
-                  className="eyebrow"
-                  style={{ marginBottom: 10, color: 'var(--text-tertiary)' }}
-                >
+                <div className="mgm-eyebrow" style={{ marginBottom: 10, color: 'var(--gray-500)' }}>
                   CATEGORIES
                 </div>
                 <ul
@@ -289,10 +275,7 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
 
               {tags.length > 0 && (
                 <div>
-                  <div
-                    className="eyebrow"
-                    style={{ marginBottom: 10, color: 'var(--text-tertiary)' }}
-                  >
+                  <div className="mgm-eyebrow" style={{ marginBottom: 10, color: 'var(--gray-500)' }}>
                     TAGS
                   </div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
@@ -309,11 +292,11 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
                             padding: '4px 10px',
                             borderRadius: 9999,
                             fontSize: 11,
-                            fontWeight: 500,
+                            fontWeight: 600,
                             textDecoration: 'none',
-                            background: active ? 'var(--emerald-500)' : 'var(--bg-glass-strong)',
-                            border: `1px solid ${active ? 'var(--emerald-border)' : 'var(--glass-border)'}`,
-                            color: active ? 'var(--text-inverse)' : 'var(--text-secondary)',
+                            background: active ? 'var(--sky-pill)' : 'var(--off-white)',
+                            border: `1px solid ${active ? 'var(--sky-pill)' : 'var(--border-default)'}`,
+                            color: active ? '#fff' : 'var(--navy)',
                           }}
                         >
                           <Tag size={10} />
@@ -338,7 +321,7 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
                   marginBottom: 24,
                 }}
               >
-                <span style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>Showing:</span>
+                <span style={{ fontSize: 12, color: 'var(--gray-500)' }}>Showing:</span>
                 {searchQuery && (
                   <FilterChip
                     label={`"${searchQuery}"`}
@@ -379,8 +362,8 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
                 <Link
                   href="/articles"
                   style={{
-                    color: 'var(--emerald-500)',
-                    fontWeight: 600,
+                    color: 'var(--orange)',
+                    fontWeight: 700,
                     textDecoration: 'none',
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -398,9 +381,9 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
                 style={{
                   textAlign: 'center',
                   padding: '64px 24px',
-                  background: 'var(--bg-glass)',
-                  border: '1px solid var(--glass-border)',
-                  borderRadius: 'var(--radius-xl)',
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border-default)',
+                  borderRadius: 'var(--radius-md)',
                   color: 'var(--text-secondary)',
                 }}
               >
@@ -413,7 +396,7 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
                         ? 'No articles with this tag yet'
                         : 'No articles published yet.'}
                 </p>
-                <p style={{ color: 'var(--text-tertiary)', fontSize: 13 }}>
+                <p style={{ color: 'var(--gray-500)', fontSize: 13 }}>
                   {hasFilter ? 'Try adjusting your filters or browse all articles.' : 'Check back soon for new content.'}
                 </p>
                 {hasFilter && (
@@ -423,8 +406,8 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: 6,
-                      color: 'var(--emerald-500)',
-                      fontWeight: 600,
+                      color: 'var(--orange)',
+                      fontWeight: 700,
                       textDecoration: 'none',
                       marginTop: 16,
                     }}
@@ -467,7 +450,7 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
                     <ChevronLeft size={16} /> Previous
                   </Link>
                 )}
-                <span style={{ fontSize: 13, color: 'var(--text-tertiary)' }}>
+                <span style={{ fontSize: 13, color: 'var(--gray-500)' }}>
                   Page {currentPage}
                 </span>
                 {hasNextPage && (
@@ -509,13 +492,13 @@ function SidebarLink({
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '8px 10px',
-          borderRadius: 10,
+          borderRadius: 'var(--radius-sm)',
           fontSize: 13,
-          fontWeight: 500,
+          fontWeight: active ? 700 : 500,
           textDecoration: 'none',
-          color: active ? 'var(--emerald-500)' : 'var(--text-secondary)',
-          background: active ? 'var(--emerald-tint-soft)' : 'transparent',
-          border: `1px solid ${active ? 'var(--emerald-border-soft)' : 'transparent'}`,
+          color: active ? 'var(--navy)' : 'var(--text-secondary)',
+          background: active ? 'var(--off-white)' : 'transparent',
+          border: `1px solid ${active ? 'var(--border-default)' : 'transparent'}`,
         }}
       >
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
@@ -527,7 +510,7 @@ function SidebarLink({
             style={{
               fontSize: 10,
               fontWeight: 600,
-              color: active ? 'var(--emerald-500)' : 'var(--text-muted)',
+              color: active ? 'var(--navy)' : 'var(--text-muted)',
             }}
           >
             {count}
@@ -548,12 +531,12 @@ function FilterChip({ label, href, strong }: { label: string; href: string; stro
         gap: 6,
         padding: '6px 12px',
         fontSize: 12,
-        fontWeight: 500,
+        fontWeight: 600,
         borderRadius: 9999,
         textDecoration: 'none',
-        background: strong ? 'var(--emerald-500)' : 'var(--emerald-tint-soft)',
-        color: strong ? 'var(--text-inverse)' : 'var(--emerald-500)',
-        border: `1px solid ${strong ? 'var(--emerald-border)' : 'var(--emerald-border-soft)'}`,
+        background: strong ? 'var(--sky-pill)' : 'var(--off-white)',
+        color: strong ? '#fff' : 'var(--navy)',
+        border: `1px solid ${strong ? 'var(--sky-pill)' : 'var(--border-default)'}`,
       }}
     >
       {label}
@@ -570,14 +553,12 @@ function ArticleCard({ article }: { article: ArticleListItem }) {
       style={{
         display: 'flex',
         flexDirection: 'column',
-        background: 'var(--bg-glass)',
-        backdropFilter: 'var(--glass-blur)',
-        WebkitBackdropFilter: 'var(--glass-blur)',
-        border: '1px solid var(--glass-border)',
-        borderRadius: 'var(--radius-xl)',
+        background: 'var(--bg-card)',
+        border: '1px solid var(--border-default)',
+        borderRadius: 'var(--radius-md)',
         overflow: 'hidden',
         textDecoration: 'none',
-        boxShadow: 'var(--shadow-card), var(--shadow-inset-top)',
+        boxShadow: 'var(--shadow-card)',
       }}
     >
       {article.featuredImage ? (
@@ -585,7 +566,7 @@ function ArticleCard({ article }: { article: ArticleListItem }) {
           style={{
             position: 'relative',
             height: 168,
-            background: 'var(--bg-section)',
+            background: 'var(--off-white)',
             overflow: 'hidden',
           }}
         >
@@ -600,12 +581,11 @@ function ArticleCard({ article }: { article: ArticleListItem }) {
         <div
           style={{
             height: 168,
-            background:
-              'linear-gradient(135deg, var(--emerald-tint) 0%, var(--bg-glass-strong) 100%)',
+            background: 'var(--off-white)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: 'var(--emerald-500)',
+            color: 'var(--navy)',
           }}
         >
           <MarketingIcon name="brain" size={40} />
@@ -620,13 +600,12 @@ function ArticleCard({ article }: { article: ArticleListItem }) {
                 key={category.slug}
                 style={{
                   fontSize: 10,
-                  fontWeight: 600,
+                  fontWeight: 700,
                   letterSpacing: '0.08em',
                   textTransform: 'uppercase',
-                  color: 'var(--emerald-500)',
-                  background: 'var(--emerald-tint-soft)',
-                  border: '1px solid var(--emerald-border-soft)',
-                  padding: '4px 8px',
+                  color: '#fff',
+                  background: 'var(--sky-pill)',
+                  padding: '4px 10px',
                   borderRadius: 9999,
                 }}
               >
@@ -639,7 +618,7 @@ function ArticleCard({ article }: { article: ArticleListItem }) {
         <h2
           style={{
             fontSize: 17,
-            fontWeight: 600,
+            fontWeight: 700,
             color: 'var(--text-primary)',
             lineHeight: 1.3,
             letterSpacing: '-0.01em',
@@ -651,7 +630,7 @@ function ArticleCard({ article }: { article: ArticleListItem }) {
 
         <p
           style={{
-            color: 'var(--text-tertiary)',
+            color: 'var(--text-secondary)',
             fontSize: 13,
             lineHeight: 1.55,
             margin: 0,
@@ -694,13 +673,12 @@ function paginationBtn({ primary = false }: { primary?: boolean } = {}): React.C
     gap: 6,
     padding: '10px 18px',
     fontSize: 13,
-    fontWeight: 600,
-    borderRadius: 12,
+    fontWeight: 700,
+    borderRadius: 'var(--radius-sm)',
     textDecoration: 'none',
-    background: primary ? 'var(--emerald-500)' : 'var(--bg-glass-strong)',
-    color: primary ? 'var(--text-inverse)' : 'var(--text-primary)',
-    border: primary ? 'none' : '1px solid var(--glass-border-strong)',
-    boxShadow: primary ? '0 0 20px var(--cta-glow-soft)' : 'none',
+    background: primary ? 'var(--navy)' : 'var(--white)',
+    color: primary ? 'var(--text-inverse)' : 'var(--navy)',
+    border: primary ? '1px solid var(--navy)' : '1px solid var(--border-default)',
   };
 }
 

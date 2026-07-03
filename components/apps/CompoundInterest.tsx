@@ -177,18 +177,18 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
 
       {/* Metrics Header */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border-default)] shadow-sm">
+        <div className="bg-[var(--bg-card)] p-6 rounded-lg border border-[var(--border-default)] shadow-[var(--shadow-card)]">
           <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1">Total Future Value</p>
           <h4 className="text-2xl font-bold text-[var(--text-primary)]">${finalStats.balance.toLocaleString()}</h4>
-          <p className="text-xs font-bold text-[var(--emerald-500)] mt-1 flex items-center gap-1">
+          <p className="text-xs font-bold text-[var(--teal-green)] mt-1 flex items-center gap-1">
             <ArrowUpRight size={12} /> After {finalStats.year} years
           </p>
         </div>
-        <div className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border-default)] shadow-sm">
+        <div className="bg-[var(--bg-card)] p-6 rounded-lg border border-[var(--border-default)] shadow-[var(--shadow-card)]">
           <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1">Total Contributions</p>
           <h4 className="text-2xl font-bold text-[var(--text-primary)]">${finalStats.contributions.toLocaleString()}</h4>
         </div>
-        <div className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] p-6 rounded-3xl shadow-lg text-white">
+        <div className="bg-[var(--teal-green)] p-6 rounded-xl shadow-[var(--shadow-card)] text-white">
           <p className="text-[10px] font-bold text-white/75 uppercase tracking-widest mb-1">Total Interest Earned</p>
           <h4 className="text-2xl font-bold text-white">${finalStats.interest.toLocaleString()}</h4>
         </div>
@@ -197,9 +197,9 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Input Sidebar */}
         <aside className="lg:col-span-4 space-y-6">
-          <div className="bg-[var(--bg-card)] p-8 rounded-[2.5rem] border border-[var(--border-default)] shadow-sm space-y-6">
+          <div className="bg-[var(--bg-card)] p-8 rounded-lg border border-[var(--border-default)] shadow-[var(--shadow-card)] space-y-6">
             <h3 className="text-sm font-bold text-[var(--text-primary)] uppercase tracking-widest mb-6 flex items-center gap-2">
-              <Calculator size={16} className="text-[var(--emerald-500)]" /> Variables
+              <Calculator size={16} className="text-[var(--navy)]" /> Variables
             </h3>
 
             <div className="space-y-4">
@@ -207,27 +207,27 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Initial Principal</label>
                 <div className="relative">
                   <span className="absolute left-4 top-2.5 text-[var(--text-muted)] font-bold">$</span>
-                  <NumberInput value={inputs.principal} onValueChange={setField('principal')} min={0} className="w-full pl-8 pr-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
+                  <NumberInput value={inputs.principal} onValueChange={setField('principal')} min={0} className="mgm-input pl-8 font-bold" />
                 </div>
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Monthly Contribution</label>
                 <div className="relative">
                   <span className="absolute left-4 top-2.5 text-[var(--text-muted)] font-bold">$</span>
-                  <NumberInput value={inputs.monthlyContribution} onValueChange={setField('monthlyContribution')} min={0} className="w-full pl-8 pr-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
+                  <NumberInput value={inputs.monthlyContribution} onValueChange={setField('monthlyContribution')} min={0} className="mgm-input pl-8 font-bold" />
                 </div>
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Avg. Return Rate (%)</label>
-                <NumberInput value={inputs.annualReturn} onValueChange={setField('annualReturn')} step={0.1} className="w-full px-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
+                <NumberInput value={inputs.annualReturn} onValueChange={setField('annualReturn')} step={0.1} className="mgm-input font-bold" />
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Investment Horizon (Years)</label>
-                <NumberInput value={inputs.years} onValueChange={setField('years')} min={0} max={80} className="w-full px-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
+                <NumberInput value={inputs.years} onValueChange={setField('years')} min={0} max={80} className="mgm-input font-bold" />
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Current Age</label>
-                <NumberInput value={inputs.currentAge} onValueChange={setField('currentAge')} min={0} max={100} className="w-full px-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
+                <NumberInput value={inputs.currentAge} onValueChange={setField('currentAge')} min={0} max={100} className="mgm-input font-bold" />
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">
@@ -237,7 +237,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
                 <select
                   value={inputs.compoundingFrequency}
                   onChange={(e) => setInputs({ ...inputs, compoundingFrequency: Number(e.target.value) })}
-                  className="w-full px-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
+                  className="mgm-input font-bold"
                 >
                   <option value={1}>Annually</option>
                   <option value={4}>Quarterly</option>
@@ -248,9 +248,9 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
             </div>
           </div>
 
-          <div data-theme="dark" className="bg-[var(--obsidian-800)] text-white p-8 rounded-[2.5rem] shadow-xl">
+          <div className="mgm-band p-8 shadow-[var(--shadow-card-hover)]">
             <h4 className="font-bold text-sm uppercase tracking-widest mb-4 flex items-center gap-2 text-white">
-              <Info size={16} className="text-[var(--emerald-400)]" /> The Rule of 72
+              <Info size={16} className="text-[var(--sky)]" /> The Rule of 72
             </h4>
             <p className="text-xs font-medium leading-relaxed text-white/80">
               {inputs.annualReturn > 0
@@ -261,32 +261,32 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
         </aside>
 
         {/* Chart View */}
-        <main className="lg:col-span-8 bg-[var(--bg-card)] p-8 rounded-[3rem] border border-[var(--border-default)] shadow-sm overflow-hidden">
+        <main className="lg:col-span-8 bg-[var(--bg-card)] p-8 rounded-lg border border-[var(--border-default)] shadow-[var(--shadow-card)] overflow-hidden">
           <div className="flex items-center justify-between mb-8">
             <h3 className="text-xl font-bold text-[var(--text-primary)] flex items-center gap-2">
-              <TrendingUp className="text-[var(--emerald-500)]" /> Growth Trajectory
+              <TrendingUp className="text-[var(--teal-green)]" /> Growth Trajectory
             </h3>
             <div className="flex gap-4">
               <div className="flex items-center gap-2 text-[10px] font-bold text-[var(--text-muted)] uppercase">
-                <div className="w-3 h-3 rounded-full bg-[var(--emerald-500)]" /> Total Balance
+                <div className="w-3 h-3 rounded-full bg-[var(--teal-green)]" /> Total Balance
               </div>
               <div className="flex items-center gap-2 text-[10px] font-bold text-[var(--text-muted)] uppercase">
-                <div className="w-3 h-3 rounded-full bg-[var(--bg-glass-strong)]" /> Basis
+                <div className="w-3 h-3 rounded-full bg-[var(--navy)]" /> Basis
               </div>
             </div>
           </div>
           <div className="h-[400px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={simulationData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#2C2C2E" />
-                <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{fill: '#8E8E93', fontSize: 11, fontWeight: 'bold'}} />
-                <YAxis axisLine={false} tickLine={false} tick={{fill: '#8E8E93', fontSize: 11, fontWeight: 'bold'}} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-default)" />
+                <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{fill: 'var(--text-muted)', fontSize: 11, fontWeight: 'bold'}} />
+                <YAxis axisLine={false} tickLine={false} tick={{fill: 'var(--text-muted)', fontSize: 11, fontWeight: 'bold'}} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
                 <ChartTooltip
-                  contentStyle={{ borderRadius: '24px', border: 'none', boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.1)' }}
+                  contentStyle={{ borderRadius: '8px', border: '1px solid var(--border-default)', boxShadow: 'var(--shadow-card-hover)' }}
                   formatter={(v) => `$${(v || 0).toLocaleString()}`}
                 />
-                <Area type="monotone" dataKey="balance" stroke="#00F0A0" strokeWidth={4} fill="#33F3B3" fillOpacity={0.1} />
-                <Area type="monotone" dataKey="contributions" stroke="#6D6D72" strokeWidth={2} fill="#2C2C2E" fillOpacity={0.2} />
+                <Area type="monotone" dataKey="balance" stroke="var(--chart-emerald)" strokeWidth={3} fill="var(--chart-emerald)" fillOpacity={0.12} />
+                <Area type="monotone" dataKey="contributions" stroke="var(--navy)" strokeWidth={2} fill="var(--navy)" fillOpacity={0.12} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -295,7 +295,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
 
       {/* PRO FEATURES SECTION */}
       {!isPro && (
-        <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] rounded-[3rem] p-12 text-white relative overflow-hidden shadow-2xl">
+        <div className="mgm-band p-12 text-white relative overflow-hidden shadow-[var(--shadow-card-hover)]">
           <div className="absolute top-0 right-0 p-12 opacity-10 rotate-12">
             <Zap size={200} fill="currentColor" />
           </div>
@@ -308,17 +308,17 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
               Unlock advanced insights that reveal the invisible consequences of your decisions. See what delaying costs you, what optimization gains you, and how to align your savings with life goals.
             </p>
             <div className="grid md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+              <div className="bg-white/10 rounded-lg p-6 border border-white/20">
                 <AlertTriangle size={24} className="mb-3" />
                 <h4 className="font-bold text-sm mb-2">Delay Cost Analysis</h4>
                 <p className="text-white/85 text-xs font-medium">See exactly how much waiting 5 years costs in real dollars and required contribution increases</p>
               </div>
-              <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+              <div className="bg-white/10 rounded-lg p-6 border border-white/20">
                 <Target size={24} className="mb-3" />
                 <h4 className="font-bold text-sm mb-2">Withdrawal Strategy</h4>
                 <p className="text-white/85 text-xs font-medium">Calculate sustainable income from your future portfolio using proven withdrawal rates</p>
               </div>
-              <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+              <div className="bg-white/10 rounded-lg p-6 border border-white/20">
                 <Clock size={24} className="mb-3" />
                 <h4 className="font-bold text-sm mb-2">Critical Milestones</h4>
                 <p className="text-white/85 text-xs font-medium">Identify key ages where momentum matters most for reaching your wealth targets</p>
@@ -326,7 +326,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
             </div>
             <button
               onClick={onUpgrade}
-              className="bg-white text-[var(--emerald-700)] px-8 py-4 rounded-2xl font-bold hover:bg-[var(--emerald-50)] transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
+              className="mgm-btn mgm-btn--primary mgm-btn--lg"
             >
               <Zap size={20} fill="currentColor" />
               Upgrade to Pro - $9/month
@@ -340,7 +340,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
         <ProGatedPreview isLocked={!isPro} toolId="compound-interest">
         <div className="space-y-8">
           <div className="flex items-center gap-3 mb-6">
-            <div className="bg-[var(--emerald-500)] text-white p-3 rounded-2xl">
+            <div className="bg-[var(--navy)] text-white p-3 rounded-lg">
               <Zap size={24} />
             </div>
             <div>
@@ -350,9 +350,9 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
           </div>
 
           {/* Delay Cost Warning */}
-          <div data-theme="dark" className="bg-gradient-to-br from-[var(--crimson-600)] to-[var(--crimson-500)] rounded-[3rem] p-10 text-white shadow-xl">
+          <div className="mgm-band p-10 text-white shadow-[var(--shadow-card-hover)]">
             <div className="flex items-start gap-4 mb-6">
-              <div className="bg-[var(--bg-card)]/20 p-3 rounded-2xl backdrop-blur-sm">
+              <div className="bg-white/15 p-3 rounded-lg">
                 <AlertTriangle size={32} />
               </div>
               <div className="flex-1">
@@ -361,14 +361,14 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
                   If you delay starting this investment strategy by 5 years, here's what happens:
                 </p>
                 <div className="grid md:grid-cols-2 gap-6">
-                  <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                  <div className="bg-white/10 rounded-lg p-6 border border-white/20">
                     <p className="text-white/85 text-sm font-bold mb-2">Wealth Lost</p>
                     <p className="text-4xl font-bold">${Math.round(lifeImpactAnalysis.delayCost).toLocaleString()}</p>
                     <p className="text-white/85 text-xs font-medium mt-2">
                       That's {lifeImpactAnalysis.delayPercentageLoss.toFixed(1)}% of your potential outcome
                     </p>
                   </div>
-                  <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                  <div className="bg-white/10 rounded-lg p-6 border border-white/20">
                     <p className="text-white/85 text-sm font-bold mb-2">Required Contribution Increase</p>
                     {lifeImpactAnalysis.requiredMonthly !== null ? (
                       <>
@@ -393,8 +393,8 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
                 </div>
               </div>
             </div>
-            <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
+            <div className="bg-white/10 rounded-lg p-6 border border-white/20">
+              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">MUTANT INSIGHT</p>
               <p className="font-medium text-white">
                 Time is more valuable than amount. Starting today with ${inputs.monthlyContribution}/mo beats waiting 5 years{lifeImpactAnalysis.requiredIncreasePct !== null ? ` and saving ${lifeImpactAnalysis.requiredIncreasePct.toFixed(0)}% more per month` : ''}.
               </p>
@@ -402,9 +402,9 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
           </div>
 
           {/* Optimization Opportunity */}
-          <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--color-info)] rounded-[3rem] p-10 text-white shadow-xl">
+          <div className="mgm-band p-10 text-white shadow-[var(--shadow-card-hover)]">
             <div className="flex items-start gap-4 mb-6">
-              <div className="bg-[var(--bg-card)]/20 p-3 rounded-2xl backdrop-blur-sm">
+              <div className="bg-white/15 p-3 rounded-lg">
                 <TrendingUp size={32} />
               </div>
               <div className="flex-1">
@@ -412,7 +412,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
                 <p className="text-white/85 font-medium text-lg leading-relaxed mb-6">
                   What if you could increase your monthly contribution by just 20%?
                 </p>
-                <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                <div className="bg-white/10 rounded-lg p-6 border border-white/20">
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <p className="text-white/85 text-sm font-bold mb-1">Current Strategy</p>
@@ -437,9 +437,9 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
           </div>
 
           {/* Withdrawal Strategy */}
-          <div className="bg-[var(--bg-card)] rounded-[3rem] p-10 border border-[var(--border-default)] shadow-sm">
+          <div className="bg-[var(--bg-card)] rounded-lg p-10 border border-[var(--border-default)] shadow-[var(--shadow-card)]">
             <div className="flex items-start gap-4 mb-6">
-              <div className="bg-[var(--emerald-100)] text-[var(--emerald-500)] p-3 rounded-2xl">
+              <div className="bg-[var(--emerald-100)] text-[var(--teal-green)] p-3 rounded-lg">
                 <Target size={32} />
               </div>
               <div className="flex-1">
@@ -448,21 +448,21 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
                   Your future portfolio of <span className="font-bold text-[var(--text-primary)]">${finalStats.balance.toLocaleString()}</span> can sustainably support:
                 </p>
                 <div className="grid md:grid-cols-2 gap-6">
-                  <div className="bg-[var(--emerald-50)] rounded-2xl p-6 border border-[var(--emerald-border-soft)]">
-                    <p className="text-[var(--emerald-500)] text-sm font-bold mb-2">Annual Income (4% Rule)</p>
+                  <div className="bg-[var(--emerald-50)] rounded-lg p-6 border border-[var(--emerald-border-soft)]">
+                    <p className="text-[var(--teal-green)] text-sm font-bold mb-2">Annual Income (4% Rule)</p>
                     <p className="text-4xl font-bold text-[var(--text-primary)]">${Math.round(lifeImpactAnalysis.annualIncome).toLocaleString()}</p>
                     <p className="text-[var(--text-tertiary)] text-xs font-medium mt-2">In future dollars — not adjusted for inflation</p>
                   </div>
-                  <div className="bg-[var(--emerald-50)] rounded-2xl p-6 border border-[var(--emerald-border-soft)]">
-                    <p className="text-[var(--emerald-500)] text-sm font-bold mb-2">Monthly Income</p>
+                  <div className="bg-[var(--emerald-50)] rounded-lg p-6 border border-[var(--emerald-border-soft)]">
+                    <p className="text-[var(--teal-green)] text-sm font-bold mb-2">Monthly Income</p>
                     <p className="text-4xl font-bold text-[var(--text-primary)]">${Math.round(lifeImpactAnalysis.monthlyIncome).toLocaleString()}</p>
                     <p className="text-[var(--text-tertiary)] text-xs font-medium mt-2">Sustainable for 30+ years</p>
                   </div>
                 </div>
               </div>
             </div>
-            <div data-theme="dark" className="bg-[var(--obsidian-800)] text-white rounded-2xl p-6">
-              <p className="text-xs font-bold text-[var(--emerald-400)] uppercase tracking-widest mb-1">THE 4% RULE</p>
+            <div className="mgm-band rounded-lg p-6">
+              <p className="text-xs font-bold text-[var(--sky)] uppercase tracking-widest mb-1">THE 4% RULE</p>
               <p className="text-sm font-medium text-[var(--mist-50)]">
                 Research shows withdrawing 4% annually from a balanced portfolio historically sustains wealth for 30+ years through market cycles. This is your "work optional" number.
               </p>
@@ -471,9 +471,9 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
 
           {/* Critical Milestones */}
           {lifeImpactAnalysis.criticalAges.length > 0 && (
-            <div className="bg-[var(--bg-card)] rounded-[3rem] p-10 border border-[var(--border-default)] shadow-sm">
+            <div className="bg-[var(--bg-card)] rounded-lg p-10 border border-[var(--border-default)] shadow-[var(--shadow-card)]">
               <div className="flex items-start gap-4 mb-6">
-                <div className="bg-[var(--emerald-100)] text-[var(--emerald-500)] p-3 rounded-2xl">
+                <div className="bg-[var(--emerald-100)] text-[var(--teal-green)] p-3 rounded-lg">
                   <Clock size={32} />
                 </div>
                 <div className="flex-1">
@@ -483,8 +483,8 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
                   </p>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {lifeImpactAnalysis.criticalAges.map((m) => (
-                      <div key={m.year} className="bg-[var(--emerald-50)] rounded-2xl p-5 border border-[var(--emerald-border-soft)]">
-                        <p className="text-[var(--emerald-500)] text-sm font-bold mb-1">Age {m.age}</p>
+                      <div key={m.year} className="bg-[var(--emerald-50)] rounded-lg p-5 border border-[var(--emerald-border-soft)]">
+                        <p className="text-[var(--teal-green)] text-sm font-bold mb-1">Age {m.age}</p>
                         <p className="text-2xl font-bold text-[var(--text-primary)]">${m.balance.toLocaleString()}</p>
                         <p className="text-[var(--text-tertiary)] text-xs font-medium mt-1">Year {m.year}</p>
                       </div>
@@ -496,9 +496,9 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
           )}
 
           {/* Multi-Goal Allocation */}
-          <div className="bg-[var(--bg-card)] rounded-[3rem] p-10 border border-[var(--border-default)] shadow-sm">
+          <div className="bg-[var(--bg-card)] rounded-lg p-10 border border-[var(--border-default)] shadow-[var(--shadow-card)]">
             <div className="flex items-start gap-4 mb-6">
-              <div className="bg-[var(--emerald-100)] text-[var(--emerald-500)] p-3 rounded-2xl">
+              <div className="bg-[var(--emerald-100)] text-[var(--teal-green)] p-3 rounded-lg">
                 <Calculator size={32} />
               </div>
               <div className="flex-1">
@@ -513,8 +513,8 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
                         <span className="text-sm font-bold text-[var(--text-secondary)]">Retirement (60%)</span>
                         <span className="text-lg font-bold text-[var(--text-primary)]">${Math.round(lifeImpactAnalysis.goalSplit.retirement).toLocaleString()}</span>
                       </div>
-                      <div className="h-3 bg-[var(--bg-glass)] rounded-full overflow-hidden">
-                        <div className="h-full bg-gradient-to-r from-[var(--emerald-700)] to-[var(--emerald-500)] w-[60%]"></div>
+                      <div className="h-3 bg-[var(--off-white)] rounded-full overflow-hidden">
+                        <div className="h-full bg-[var(--teal-green)] w-[60%]"></div>
                       </div>
                     </div>
                   </div>
@@ -524,8 +524,8 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
                         <span className="text-sm font-bold text-[var(--text-secondary)]">Home Purchase (25%)</span>
                         <span className="text-lg font-bold text-[var(--text-primary)]">${Math.round(lifeImpactAnalysis.goalSplit.house).toLocaleString()}</span>
                       </div>
-                      <div className="h-3 bg-[var(--bg-glass)] rounded-full overflow-hidden">
-                        <div className="h-full bg-gradient-to-r from-[var(--emerald-700)] to-[var(--color-info)] w-[25%]"></div>
+                      <div className="h-3 bg-[var(--off-white)] rounded-full overflow-hidden">
+                        <div className="h-full bg-[var(--navy)] w-[25%]"></div>
                       </div>
                     </div>
                   </div>
@@ -535,8 +535,8 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
                         <span className="text-sm font-bold text-[var(--text-secondary)]">Other Goals (15%)</span>
                         <span className="text-lg font-bold text-[var(--text-primary)]">${Math.round(lifeImpactAnalysis.goalSplit.other).toLocaleString()}</span>
                       </div>
-                      <div className="h-3 bg-[var(--bg-glass)] rounded-full overflow-hidden">
-                        <div className="h-full bg-[var(--color-info)] w-[15%]"></div>
+                      <div className="h-3 bg-[var(--off-white)] rounded-full overflow-hidden">
+                        <div className="h-full bg-[var(--sky)] w-[15%]"></div>
                       </div>
                     </div>
                   </div>

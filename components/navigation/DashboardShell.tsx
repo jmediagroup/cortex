@@ -36,7 +36,7 @@ export default function DashboardShell({
 
       {/* Mobile header - hidden on desktop */}
       <header
-        className="sticky top-0 z-40 flex items-center justify-between border-b border-[var(--border-primary)] bg-[var(--surface-primary)]/95 backdrop-blur-lg md:hidden"
+        className="sticky top-0 z-40 flex items-center justify-between border-b border-[var(--border-primary)] bg-[var(--surface-primary)] md:hidden"
         style={{
           paddingTop: 'calc(0.75rem + var(--safe-top))',
           paddingBottom: '0.75rem',
@@ -48,7 +48,7 @@ export default function DashboardShell({
 
         {user ? (
           <div className="relative">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--surface-tertiary)] text-xs font-bold text-[var(--text-secondary)]">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--navy)] text-xs font-bold text-white">
               {displayName.charAt(0).toUpperCase()}
             </div>
             <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--surface-primary)] bg-[var(--color-positive)]" />
@@ -56,7 +56,7 @@ export default function DashboardShell({
         ) : (
           <Link
             href="/login"
-            className="rounded-full bg-[var(--color-accent)] px-3.5 py-1.5 text-xs font-bold text-white"
+            className="rounded-full bg-[var(--orange)] px-3.5 py-1.5 text-xs font-bold text-white"
           >
             Sign In
           </Link>

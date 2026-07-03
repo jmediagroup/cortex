@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { Loader2, ShieldCheck } from 'lucide-react';
 import { type Tier } from '@/lib/access-control';
 import { trackEvent } from '@/lib/analytics';
 import { MarketingShell } from '@/components/marketing/MarketingShell';
 import { MarketingIcon } from '@/components/marketing/Icons';
+import { Button } from '@/components/ui/Button';
+import { Tag } from '@/components/ui/Tag';
 
 type Plan = {
   name: string;
@@ -156,10 +157,7 @@ export default function PricingPage() {
         className="hero-gradient"
       >
         <div style={{ maxWidth: 760, margin: '0 auto', position: 'relative' }}>
-          <div
-            className="eyebrow"
-            style={{ marginBottom: 16, color: 'var(--text-tertiary)' }}
-          >
+          <div className="mgm-eyebrow" style={{ marginBottom: 14 }}>
             PRICING
           </div>
           <h1
@@ -171,12 +169,12 @@ export default function PricingPage() {
           <p
             style={{
               fontSize: 18,
-              color: 'var(--text-secondary)',
+              color: 'var(--gray-600)',
               lineHeight: 1.55,
               margin: '0 0 32px',
             }}
           >
-            Choose the plan that matches where you are today. Start free, upgrade to Pro when precision matters.
+            Pick the plan that matches where you are today. Start free, upgrade to Pro when precision matters. No countdowns, no dark patterns.
           </p>
 
           <div
@@ -186,41 +184,40 @@ export default function PricingPage() {
               display: 'inline-flex',
               alignItems: 'center',
               gap: 4,
-              background: 'var(--bg-glass)',
-              backdropFilter: 'var(--glass-blur)',
-              WebkitBackdropFilter: 'var(--glass-blur)',
-              border: '1px solid var(--glass-border-strong)',
+              background: 'var(--off-white)',
+              border: '1px solid var(--border-default)',
               padding: 4,
-              borderRadius: 9999,
+              borderRadius: 'var(--radius-pill)',
             }}
           >
-            {(['monthly', 'annual'] as const).map((period) => (
-              <button
-                key={period}
-                type="button"
-                role="tab"
-                aria-selected={billingPeriod === period}
-                onClick={() => setBillingPeriod(period)}
-                style={{
-                  padding: '8px 20px',
-                  borderRadius: 9999,
-                  fontWeight: 600,
-                  fontSize: 13,
-                  border: 0,
-                  cursor: 'pointer',
-                  background: billingPeriod === period ? 'var(--emerald-500)' : 'transparent',
-                  color:
-                    billingPeriod === period
-                      ? 'var(--text-inverse)'
-                      : 'var(--text-secondary)',
-                  transition: 'all 160ms var(--ease-out-expo)',
-                  boxShadow:
-                    billingPeriod === period ? '0 0 20px var(--cta-glow-soft)' : 'none',
-                }}
-              >
-                {period === 'monthly' ? 'Monthly' : 'Annual'}
-              </button>
-            ))}
+            {(['monthly', 'annual'] as const).map((period) => {
+              const on = billingPeriod === period;
+              return (
+                <button
+                  key={period}
+                  type="button"
+                  role="tab"
+                  aria-selected={on}
+                  onClick={() => setBillingPeriod(period)}
+                  style={{
+                    padding: '9px 22px',
+                    borderRadius: 'var(--radius-pill)',
+                    fontWeight: 700,
+                    fontSize: 13,
+                    letterSpacing: '0.02em',
+                    textTransform: 'uppercase',
+                    border: 0,
+                    cursor: 'pointer',
+                    fontFamily: 'var(--font-sans)',
+                    background: on ? 'var(--navy)' : 'transparent',
+                    color: on ? 'var(--white)' : 'var(--navy)',
+                    transition: 'background .18s ease, color .18s ease',
+                  }}
+                >
+                  {period === 'monthly' ? 'Monthly' : 'Annual'}
+                </button>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -255,17 +252,15 @@ export default function PricingPage() {
                 key={plan.tier}
                 style={{
                   position: 'relative',
-                  background: plan.highlighted
-                    ? 'var(--bg-glass-strong)'
-                    : 'var(--bg-glass)',
-                  backdropFilter: 'var(--glass-blur)',
-                  WebkitBackdropFilter: 'var(--glass-blur)',
-                  border: `1px solid ${plan.highlighted ? 'var(--emerald-border)' : 'var(--glass-border)'}`,
-                  borderRadius: 'var(--radius-2xl)',
-                  padding: 32,
+                  background: 'var(--bg-card)',
+                  border: plan.highlighted
+                    ? '2px solid var(--sky)'
+                    : '1px solid var(--off-white)',
+                  borderRadius: 'var(--radius-md)',
+                  padding: 30,
                   boxShadow: plan.highlighted
-                    ? '0 0 0 1px var(--featured-halo), 0 20px 60px var(--featured-halo), var(--shadow-inset-top)'
-                    : 'var(--shadow-card), var(--shadow-inset-top)',
+                    ? '0 14px 30px rgba(78, 201, 245, 0.18)'
+                    : 'var(--shadow-card)',
                   display: 'flex',
                   flexDirection: 'column',
                 }}
@@ -274,39 +269,35 @@ export default function PricingPage() {
                   <div
                     style={{
                       position: 'absolute',
-                      top: -12,
-                      left: 24,
-                      background: 'var(--emerald-500)',
-                      color: 'var(--text-inverse)',
-                      padding: '5px 12px',
-                      borderRadius: 9999,
-                      fontSize: 10,
-                      fontWeight: 700,
-                      letterSpacing: '0.1em',
-                      textTransform: 'uppercase',
-                      boxShadow: '0 0 20px var(--cta-glow-ring)',
+                      top: -13,
+                      left: '50%',
+                      transform: 'translateX(-50%)',
                     }}
                   >
-                    {plan.badge}
+                    <Tag tone="sky" style={{ textTransform: 'uppercase', letterSpacing: '0.06em', fontSize: 11 }}>
+                      {plan.badge}
+                    </Tag>
                   </div>
                 )}
 
                 <h2
                   style={{
-                    fontSize: 20,
-                    fontWeight: 600,
-                    color: 'var(--text-primary)',
+                    fontSize: 14,
+                    fontWeight: 700,
+                    color: 'var(--sky)',
                     margin: 0,
-                    letterSpacing: '-0.01em',
+                    letterSpacing: '0.06em',
+                    textTransform: 'uppercase',
                   }}
                 >
                   {plan.name}
                 </h2>
                 <p
                   style={{
-                    color: 'var(--text-tertiary)',
-                    fontSize: 13,
-                    margin: '6px 0 24px',
+                    color: 'var(--gray-500)',
+                    fontSize: 14,
+                    margin: '8px 0 22px',
+                    lineHeight: 1.45,
                   }}
                 >
                   {plan.description}
@@ -324,15 +315,16 @@ export default function PricingPage() {
                     style={{
                       fontSize: 52,
                       fontWeight: 700,
-                      color: 'var(--text-primary)',
-                      letterSpacing: '-0.035em',
+                      color: 'var(--navy)',
+                      letterSpacing: '-0.02em',
+                      lineHeight: 1,
                     }}
                   >
                     {displayPrice}
                   </span>
                   <span
                     style={{
-                      color: 'var(--text-tertiary)',
+                      color: 'var(--gray-500)',
                       fontSize: 14,
                       fontFamily: 'var(--font-mono)',
                     }}
@@ -343,10 +335,10 @@ export default function PricingPage() {
                 {billingPeriod === 'annual' && plan.annualSavings && (
                   <p
                     style={{
-                      fontSize: 12,
-                      color: 'var(--emerald-500)',
-                      fontWeight: 600,
-                      margin: '0 0 24px',
+                      fontSize: 13,
+                      color: 'var(--teal-green)',
+                      fontWeight: 700,
+                      margin: '10px 0 0',
                     }}
                   >
                     {plan.annualSavings}
@@ -357,7 +349,7 @@ export default function PricingPage() {
                   style={{
                     listStyle: 'none',
                     padding: 0,
-                    margin: billingPeriod === 'annual' && plan.annualSavings ? '8px 0 32px' : '24px 0 32px',
+                    margin: '22px 0 26px',
                     flex: 1,
                     display: 'flex',
                     flexDirection: 'column',
@@ -371,66 +363,33 @@ export default function PricingPage() {
                         display: 'flex',
                         alignItems: 'flex-start',
                         gap: 10,
-                        fontSize: 14,
-                        color: 'var(--text-secondary)',
+                        fontSize: 15,
+                        color: 'var(--gray-700)',
+                        lineHeight: 1.4,
                       }}
                     >
                       <span
                         aria-hidden="true"
                         style={{
                           flexShrink: 0,
-                          width: 18,
-                          height: 18,
-                          borderRadius: '50%',
-                          background: plan.highlighted
-                            ? 'var(--emerald-tint)'
-                            : 'var(--bg-glass-strong)',
-                          border: `1px solid ${plan.highlighted ? 'var(--emerald-border)' : 'var(--glass-border)'}`,
-                          color: plan.highlighted
-                            ? 'var(--emerald-500)'
-                            : 'var(--text-tertiary)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          marginTop: 1,
+                          marginTop: 2,
+                          color: 'var(--teal-green)',
+                          display: 'inline-flex',
                         }}
                       >
-                        <MarketingIcon name="check" size={10} stroke={2.5} />
+                        <MarketingIcon name="check" size={18} stroke={2.6} />
                       </span>
                       {feature}
                     </li>
                   ))}
                 </ul>
 
-                <button
-                  type="button"
+                <Button
+                  variant={plan.highlighted ? 'primary' : 'secondary'}
+                  tone="navy"
                   onClick={() => handleUpgrade(selectedPriceId, plan.tier)}
                   disabled={isCurrent || loading === plan.tier}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 8,
-                    background: isCurrent
-                      ? 'var(--bg-glass-strong)'
-                      : plan.highlighted
-                        ? 'var(--emerald-500)'
-                        : 'var(--bg-glass-strong)',
-                    color: isCurrent
-                      ? 'var(--text-tertiary)'
-                      : plan.highlighted
-                        ? 'var(--text-inverse)'
-                        : 'var(--text-primary)',
-                    border: plan.highlighted ? 'none' : '1px solid var(--glass-border-strong)',
-                    padding: '14px 24px',
-                    borderRadius: 12,
-                    fontWeight: 600,
-                    fontSize: 14,
-                    cursor: isCurrent || loading === plan.tier ? 'not-allowed' : 'pointer',
-                    boxShadow: plan.highlighted && !isCurrent ? '0 0 24px var(--cta-glow-soft)' : 'none',
-                    transition: 'all 160ms',
-                    fontFamily: 'inherit',
-                  }}
+                  style={{ width: '100%', marginTop: 'auto' }}
                 >
                   {loading === plan.tier ? (
                     <>
@@ -446,7 +405,7 @@ export default function PricingPage() {
                       {plan.cta} <MarketingIcon name="arrowRight" size={14} />
                     </>
                   )}
-                </button>
+                </Button>
               </div>
             );
           })}
@@ -454,73 +413,40 @@ export default function PricingPage() {
 
         <div style={{ maxWidth: 960, margin: '64px auto 0' }}>
           <div
+            className="mgm-band"
             style={{
-              background:
-                'linear-gradient(135deg, #121620 0%, #0A0E14 100%)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: 'var(--radius-2xl)',
               padding: '48px 32px',
-              color: '#F5F5F7',
               textAlign: 'center',
-              position: 'relative',
-              overflow: 'hidden',
             }}
           >
-            <div
-              aria-hidden="true"
-              style={{
-                position: 'absolute',
-                inset: 0,
-                background:
-                  'radial-gradient(ellipse at center top, rgba(0,240,160,0.18), transparent 60%)',
-                pointerEvents: 'none',
-              }}
-            />
-            <div style={{ position: 'relative' }}>
-              <div className="eyebrow" style={{ color: '#00F0A0', marginBottom: 16 }}>
-                ENTERPRISE
-              </div>
-              <h2
-                style={{
-                  fontSize: 28,
-                  fontWeight: 700,
-                  margin: '0 0 12px',
-                  letterSpacing: '-0.02em',
-                }}
-              >
-                Need a custom solution?
-              </h2>
-              <p
-                style={{
-                  fontSize: 16,
-                  color: '#AEAEB2',
-                  lineHeight: 1.55,
-                  margin: '0 auto 28px',
-                  maxWidth: 520,
-                }}
-              >
-                Contact us for team seats, custom integrations, or white-label deployments.
-              </p>
-              <Link
-                href="/enterprise"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  background: '#00F0A0',
-                  color: '#0A0E14',
-                  padding: '14px 24px',
-                  borderRadius: 12,
-                  fontWeight: 700,
-                  fontSize: 14,
-                  textDecoration: 'none',
-                  boxShadow:
-                    '0 0 0 1px rgba(0,240,160,0.4), 0 0 32px rgba(0,240,160,0.35)',
-                }}
-              >
-                Contact sales <MarketingIcon name="arrowRight" size={14} />
-              </Link>
+            <div className="mgm-eyebrow" style={{ color: 'var(--sky)', marginBottom: 16 }}>
+              ENTERPRISE
             </div>
+            <h2
+              style={{
+                fontSize: 28,
+                fontWeight: 700,
+                color: 'var(--white)',
+                margin: '0 0 12px',
+                letterSpacing: '-0.01em',
+              }}
+            >
+              Building something bigger?
+            </h2>
+            <p
+              style={{
+                fontSize: 16,
+                color: 'rgba(255,255,255,0.85)',
+                lineHeight: 1.55,
+                margin: '0 auto 28px',
+                maxWidth: 520,
+              }}
+            >
+              Talk to us about team seats, custom integrations, or white-label deployments.
+            </p>
+            <Button href="/enterprise" variant="primary">
+              Contact sales <MarketingIcon name="arrowRight" size={14} />
+            </Button>
           </div>
         </div>
       </section>

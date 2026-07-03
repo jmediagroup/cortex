@@ -59,7 +59,7 @@ export async function RelatedArticles({ currentSlug, categorySlug, limit = 3 }: 
           letterSpacing: '-0.02em',
         }}
       >
-        Related reading.
+        Keep reading, mutant.
       </h2>
       <div
         style={{
@@ -76,9 +76,9 @@ export async function RelatedArticles({ currentSlug, categorySlug, limit = 3 }: 
             style={{
               display: 'flex',
               flexDirection: 'column',
-              background: 'var(--bg-glass)',
-              border: '1px solid var(--glass-border)',
-              borderRadius: 'var(--radius-lg)',
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border-default)',
+              borderRadius: 'var(--radius-md)',
               overflow: 'hidden',
               textDecoration: 'none',
               boxShadow: 'var(--shadow-card)',
@@ -89,7 +89,7 @@ export async function RelatedArticles({ currentSlug, categorySlug, limit = 3 }: 
                 style={{
                   position: 'relative',
                   height: 140,
-                  background: 'var(--bg-section)',
+                  background: 'var(--off-white)',
                   overflow: 'hidden',
                 }}
               >
@@ -105,12 +105,11 @@ export async function RelatedArticles({ currentSlug, categorySlug, limit = 3 }: 
               <div
                 style={{
                   height: 140,
-                  background:
-                    'linear-gradient(135deg, var(--emerald-tint) 0%, var(--bg-glass-strong) 100%)',
+                  background: 'var(--off-white)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: 'var(--emerald-500)',
+                  color: 'var(--navy)',
                 }}
               >
                 <MarketingIcon name="brain" size={32} />

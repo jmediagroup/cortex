@@ -53,7 +53,7 @@ export default function AffiliateLink({
         target="_blank"
         rel="noopener noreferrer sponsored"
         onClick={handleClick}
-        className={`inline-flex items-center gap-2 px-4 py-2 bg-[var(--emerald-500)] hover:bg-[var(--emerald-400)] text-white font-medium rounded-lg transition-colors ${className}`}
+        className={`inline-flex items-center gap-2 px-4 py-2 bg-[var(--orange)] hover:bg-[#d94f1e] text-white font-medium rounded-lg transition-colors ${className}`}
       >
         {children || affiliate.cta || `Try ${affiliate.name}`}
         <svg
@@ -80,14 +80,14 @@ export default function AffiliateLink({
       target="_blank"
       rel="noopener noreferrer sponsored"
       onClick={handleClick}
-      className={`block p-4 bg-[var(--obsidian-800)]/50 border border-[var(--border-strong)] rounded-xl hover:border-[var(--emerald-border)]/50 hover:bg-[var(--obsidian-800)] transition-all group ${className}`}
+      className={`block p-4 bg-[var(--bg-card)] border border-[var(--border-default)] rounded-xl hover:border-[var(--emerald-border)] hover:shadow-[var(--shadow-card-hover)] transition-all group ${className}`}
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
             <span className="text-xs text-[var(--text-tertiary)] uppercase tracking-wide">Recommended</span>
           </div>
-          <h4 className="text-lg font-semibold text-white group-hover:text-[var(--emerald-400)] transition-colors">
+          <h4 className="text-lg font-semibold text-[var(--text-primary)] group-hover:text-[var(--emerald-400)] transition-colors">
             {affiliate.name}
           </h4>
           {affiliate.tagline && (

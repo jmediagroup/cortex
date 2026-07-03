@@ -6,6 +6,7 @@ import { getAllGuideSlugs, getAllGuides, getGuideBySlug } from '@/lib/guides/con
 import type { Guide } from '@/lib/guides/types';
 import { CALCULATOR_CONTENT } from '@/lib/calculator-content';
 import { MarketingIcon } from '@/components/marketing/Icons';
+import { Button } from '@/components/ui/Button';
 import '@/app/articles/[slug]/article-styles.css';
 
 type PageProps = { params: Promise<{ slug: string }> };
@@ -110,9 +111,8 @@ export default async function GuideDetailPage({ params }: PageProps) {
                   fontWeight: 700,
                   letterSpacing: '0.08em',
                   textTransform: 'uppercase',
-                  color: 'var(--emerald-500)',
-                  background: 'var(--emerald-tint-soft)',
-                  border: '1px solid var(--emerald-border-soft)',
+                  color: '#fff',
+                  background: 'var(--sky-pill)',
                   padding: '5px 12px',
                   borderRadius: 9999,
                 }}
@@ -144,7 +144,7 @@ export default async function GuideDetailPage({ params }: PageProps) {
                 flexWrap: 'wrap',
                 alignItems: 'center',
                 gap: 16,
-                color: 'var(--text-tertiary)',
+                color: 'var(--text-muted)',
                 fontSize: 13,
                 paddingBottom: 24,
                 borderBottom: '1px solid var(--border-subtle)',
@@ -172,10 +172,10 @@ export default async function GuideDetailPage({ params }: PageProps) {
                     key={t}
                     style={{
                       fontSize: 11,
-                      fontWeight: 500,
-                      color: 'var(--text-secondary)',
-                      background: 'var(--bg-glass-strong)',
-                      border: '1px solid var(--glass-border)',
+                      fontWeight: 600,
+                      color: 'var(--navy)',
+                      background: 'var(--off-white)',
+                      border: '1px solid var(--border-default)',
                       padding: '4px 10px',
                       borderRadius: 9999,
                     }}
@@ -200,12 +200,12 @@ export default async function GuideDetailPage({ params }: PageProps) {
               style={{
                 margin: '8px 0 40px',
                 padding: 28,
-                background: 'var(--bg-glass)',
-                border: '1px solid var(--glass-border)',
-                borderRadius: 'var(--radius-xl)',
+                background: 'var(--bg-section)',
+                border: '1px solid var(--border-default)',
+                borderRadius: 'var(--radius-md)',
               }}
             >
-              <div className="eyebrow" style={{ marginBottom: 12, color: 'var(--text-tertiary)' }}>
+              <div className="mgm-eyebrow" style={{ marginBottom: 12, color: 'var(--gray-500)' }}>
                 PUT IT INTO PRACTICE
               </div>
               <div
@@ -225,13 +225,13 @@ export default async function GuideDetailPage({ params }: PageProps) {
                       flexDirection: 'column',
                       gap: 6,
                       padding: '16px 18px',
-                      background: 'var(--bg-glass-strong)',
-                      border: '1px solid var(--glass-border)',
-                      borderRadius: 'var(--radius-lg)',
+                      background: 'var(--bg-card)',
+                      border: '1px solid var(--border-default)',
+                      borderRadius: 'var(--radius-md)',
                       textDecoration: 'none',
                     }}
                   >
-                    <span style={{ fontWeight: 600, fontSize: 14, color: 'var(--text-primary)' }}>
+                    <span style={{ fontWeight: 700, fontSize: 14, color: 'var(--text-primary)' }}>
                       {tool.name}
                     </span>
                     <span
@@ -240,7 +240,8 @@ export default async function GuideDetailPage({ params }: PageProps) {
                         alignItems: 'center',
                         gap: 4,
                         fontSize: 12,
-                        color: 'var(--emerald-500)',
+                        fontWeight: 700,
+                        color: 'var(--orange)',
                       }}
                     >
                       Try it free <MarketingIcon name="arrowRight" size={11} />
@@ -274,9 +275,9 @@ export default async function GuideDetailPage({ params }: PageProps) {
                         justifyContent: 'space-between',
                         alignItems: 'center',
                         padding: '12px 14px',
-                        background: 'var(--bg-glass)',
-                        border: '1px solid var(--glass-border)',
-                        borderRadius: 12,
+                        background: 'var(--bg-card)',
+                        border: '1px solid var(--border-default)',
+                        borderRadius: 'var(--radius-md)',
                         color: 'var(--text-primary)',
                         textDecoration: 'none',
                         fontSize: 14,
@@ -317,25 +318,11 @@ export default async function GuideDetailPage({ params }: PageProps) {
             >
               Browse all guides.
             </h3>
-            <Link
-              href="/guides"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 8,
-                background: 'var(--emerald-500)',
-                color: 'var(--text-inverse)',
-                padding: '13px 24px',
-                borderRadius: 12,
-                fontWeight: 700,
-                fontSize: 14,
-                textDecoration: 'none',
-                boxShadow: '0 0 0 1px var(--cta-glow-ring), 0 0 24px var(--cta-glow-soft)',
-                marginTop: 16,
-              }}
-            >
-              View all guides <MarketingIcon name="arrowRight" size={14} />
-            </Link>
+            <div style={{ marginTop: 16 }}>
+              <Button variant="primary" href="/guides">
+                View all guides <MarketingIcon name="arrowRight" size={14} />
+              </Button>
+            </div>
           </div>
         </div>
       </article>

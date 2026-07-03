@@ -31,8 +31,7 @@ export default function ProUpsellCard({ toolId, isLoggedIn }: ProUpsellCardProps
 
   return (
     <div
-      data-theme="dark"
-      className="bg-gradient-to-br from-[var(--obsidian-900)] via-[var(--emerald-700)] to-[var(--emerald-500)] rounded-3xl p-8 md:p-10 text-white relative overflow-hidden shadow-xl"
+      className="bg-[var(--obsidian-800)] rounded-xl p-8 md:p-10 text-white relative overflow-hidden shadow-[var(--shadow-card)]"
     >
       <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12">
         <Sparkles size={160} fill="currentColor" />
@@ -58,7 +57,7 @@ export default function ProUpsellCard({ toolId, isLoggedIn }: ProUpsellCardProps
         </div>
         <button
           onClick={() => router.push('/pricing')}
-          className="bg-white text-[var(--emerald-700)] px-6 py-3 rounded-xl font-bold text-sm hover:bg-[var(--emerald-50)] transition-all shadow-md hover:scale-105 active:scale-95"
+          className="bg-white text-[var(--navy)] px-6 py-3 rounded-lg font-bold text-sm hover:bg-[var(--bg-card-hover)] transition-all shadow-md hover:scale-105 active:scale-95"
         >
           Upgrade to Pro
         </button>

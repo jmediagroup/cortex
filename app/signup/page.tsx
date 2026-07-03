@@ -8,12 +8,12 @@ import { createBrowserClient } from '@/lib/supabase/client';
 import {
   AuthShell,
   AuthField,
-  authInputStyle,
+  authInputWithIcon,
   authErrorStyle,
   authSuccessStyle,
-  authPrimaryBtn,
-  authSecondaryBtn,
+  authLinkStyle,
 } from '@/components/auth/AuthShell';
+import { Button } from '@/components/ui/Button';
 
 function SignupForm() {
   const [firstName, setFirstName] = useState('');
@@ -148,64 +148,53 @@ function SignupForm() {
           <div
             style={{
               margin: '0 auto 20px',
-              width: 56,
-              height: 56,
-              borderRadius: 'var(--radius-md)',
-              background: 'var(--emerald-tint)',
-              border: '1px solid var(--emerald-border)',
-              color: 'var(--emerald-500)',
+              width: 64,
+              height: 64,
+              borderRadius: '50%',
+              background: 'rgba(78, 201, 245, 0.16)',
+              color: 'var(--sky)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 0 24px var(--cta-glow-soft)',
             }}
           >
-            <Mail size={26} />
+            <Mail size={28} />
           </div>
-          <div className="eyebrow" style={{ marginBottom: 10, color: 'var(--emerald-500)' }}>
-            CHECK YOUR EMAIL
+          <div className="mgm-eyebrow" style={{ marginBottom: 10 }}>
+            ALMOST THERE
           </div>
           <h1
             style={{
-              fontSize: 22,
+              fontSize: 26,
               fontWeight: 700,
-              color: 'var(--text-primary)',
-              letterSpacing: '-0.02em',
+              color: 'var(--navy)',
+              letterSpacing: '-0.01em',
               margin: '0 0 12px',
             }}
           >
-            Verify your account.
+            Check your email.
           </h1>
           <p
             style={{
-              fontSize: 14,
+              fontSize: 15,
               color: 'var(--text-secondary)',
               lineHeight: 1.6,
               margin: '0 0 16px',
             }}
           >
             We sent a verification link to{' '}
-            <span
-              style={{
-                color: 'var(--emerald-500)',
-                fontWeight: 600,
-                fontFamily: 'var(--font-mono)',
-              }}
-            >
-              {userEmail}
-            </span>
-            .
+            <span style={{ color: 'var(--navy)', fontWeight: 700 }}>{userEmail}</span>.
           </p>
           {hasProIntent ? (
-            <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: '0 0 12px' }}>
+            <p style={{ fontSize: 14, color: 'var(--text-secondary)', margin: '0 0 12px' }}>
               Once verified, we&apos;ll take you straight to checkout for{' '}
-              <strong style={{ color: 'var(--text-primary)' }}>
+              <strong style={{ color: 'var(--navy)' }}>
                 Finance Pro · {billing === 'annual' ? 'Annual' : 'Monthly'}
               </strong>
               .
             </p>
           ) : null}
-          <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '0 0 20px' }}>
+          <p style={{ fontSize: 13, color: 'var(--gray-500)', margin: '0 0 20px' }}>
             The link expires in 24 hours.
           </p>
 
@@ -221,7 +210,7 @@ function SignupForm() {
           )}
 
           <div style={{ marginBottom: 16 }}>
-            <p style={{ fontSize: 13, color: 'var(--text-tertiary)', margin: '0 0 6px' }}>
+            <p style={{ fontSize: 14, color: 'var(--text-secondary)', margin: '0 0 6px' }}>
               Didn&apos;t receive the email?
             </p>
             <button
@@ -229,14 +218,14 @@ function SignupForm() {
               onClick={handleResend}
               disabled={resendCooldown > 0 || resendLoading}
               style={{
-                ...authSecondaryBtn,
+                ...authLinkStyle,
                 opacity: resendCooldown > 0 || resendLoading ? 0.5 : 1,
                 cursor: resendCooldown > 0 || resendLoading ? 'not-allowed' : 'pointer',
               }}
             >
               {resendLoading ? (
                 <>
-                  <Loader2 size={12} className="animate-spin" /> Sending...
+                  <Loader2 size={12} className="animate-spin" /> Sending…
                 </>
               ) : resendCooldown > 0 ? (
                 `Resend in ${resendCooldown}s`
@@ -251,8 +240,8 @@ function SignupForm() {
               type="button"
               onClick={handleStartOver}
               style={{
-                ...authSecondaryBtn,
-                color: 'var(--text-tertiary)',
+                ...authLinkStyle,
+                color: 'var(--gray-500)',
                 fontSize: 12,
               }}
             >
@@ -268,24 +257,24 @@ function SignupForm() {
     <AuthShell>
       <form onSubmit={handleSignup} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         <div>
-          <div className="eyebrow" style={{ marginBottom: 10, color: 'var(--emerald-500)' }}>
-            ● GET STARTED
+          <div className="mgm-eyebrow" style={{ marginBottom: 10 }}>
+            GET STARTED FREE
           </div>
           <h1
             style={{
-              fontSize: 24,
+              fontSize: 28,
               fontWeight: 700,
-              color: 'var(--text-primary)',
-              letterSpacing: '-0.02em',
+              color: 'var(--navy)',
+              letterSpacing: '-0.01em',
               margin: '0 0 8px',
             }}
           >
-            {hasProIntent ? 'Create your account to continue.' : 'Create your Money Guy Mutants account.'}
+            {hasProIntent ? 'Create your account to continue.' : 'Join the Mutants.'}
           </h1>
-          <p style={{ fontSize: 14, color: 'var(--text-tertiary)', margin: 0 }}>
+          <p style={{ fontSize: 15, color: 'var(--text-secondary)', margin: 0 }}>
             {hasProIntent
               ? `Verify your email, then checkout for Finance Pro · ${billing === 'annual' ? 'Annual' : 'Monthly'}.`
-              : 'Free forever. No credit card required.'}
+              : 'Thousands of Mutants are building wealth on purpose. Yes, it’s free.'}
           </p>
         </div>
 
@@ -298,7 +287,8 @@ function SignupForm() {
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
             placeholder="Alex"
-            style={authInputStyle}
+            className="mgm-input"
+            style={authInputWithIcon}
             autoComplete="given-name"
             maxLength={60}
           />
@@ -311,7 +301,8 @@ function SignupForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="name@example.com"
-            style={authInputStyle}
+            className="mgm-input"
+            style={authInputWithIcon}
             autoComplete="email"
           />
         </AuthField>
@@ -327,28 +318,29 @@ function SignupForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
-            style={authInputStyle}
+            className="mgm-input"
+            style={authInputWithIcon}
             minLength={6}
             autoComplete="new-password"
           />
         </AuthField>
 
-        <button type="submit" disabled={loading} style={{ ...authPrimaryBtn, opacity: loading ? 0.7 : 1 }}>
+        <Button variant="primary" type="submit" disabled={loading} style={{ width: '100%' }}>
           {loading ? (
             <>
-              <Loader2 size={16} className="animate-spin" /> Creating account...
+              <Loader2 size={16} className="animate-spin" /> Creating account…
             </>
           ) : (
             <>
               Create account <ArrowRight size={16} />
             </>
           )}
-        </button>
+        </Button>
 
         <p
           style={{
-            fontSize: 11,
-            color: 'var(--text-muted)',
+            fontSize: 12,
+            color: 'var(--gray-500)',
             textAlign: 'center',
             margin: 0,
           }}
@@ -356,7 +348,7 @@ function SignupForm() {
           By creating an account you agree to our{' '}
           <Link
             href="/terms"
-            style={{ color: 'var(--emerald-500)', textDecoration: 'underline' }}
+            style={{ color: 'var(--orange)', fontWeight: 700, textDecoration: 'underline' }}
           >
             terms
           </Link>
@@ -366,18 +358,18 @@ function SignupForm() {
         <div
           style={{
             textAlign: 'center',
-            fontSize: 13,
-            color: 'var(--text-tertiary)',
+            fontSize: 14,
+            color: 'var(--text-secondary)',
             paddingTop: 8,
             borderTop: '1px solid var(--border-subtle)',
           }}
         >
-          Already have an account?{' '}
+          Already a member?{' '}
           <Link
             href={signInHref}
-            style={{ color: 'var(--emerald-500)', fontWeight: 600, textDecoration: 'none' }}
+            style={{ color: 'var(--orange)', fontWeight: 700, textDecoration: 'none' }}
           >
-            Sign in
+            Log in
           </Link>
         </div>
       </form>

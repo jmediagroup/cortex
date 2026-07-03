@@ -12,12 +12,12 @@ const chipStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  width: 40,
-  height: 40,
-  borderRadius: 9999,
-  background: 'var(--bg-glass)',
-  border: '1px solid var(--glass-border-strong)',
-  color: 'var(--text-secondary)',
+  width: 44,
+  height: 44,
+  borderRadius: '50%',
+  background: 'var(--white)',
+  border: '1px solid var(--border-default)',
+  color: 'var(--navy)',
   textDecoration: 'none',
   transition: 'all 160ms var(--ease-out-expo)',
 };
@@ -65,13 +65,13 @@ export function ShareButtons({ url, title }: ShareButtonsProps) {
             display: 'flex',
             alignItems: 'center',
             gap: 8,
-            color: 'var(--text-secondary)',
+            color: 'var(--navy)',
           }}
         >
           <Share2 size={16} />
           <span
-            className="eyebrow"
-            style={{ margin: 0, color: 'var(--text-tertiary)' }}
+            className="mgm-eyebrow"
+            style={{ margin: 0, color: 'var(--gray-500)' }}
           >
             SHARE THIS ARTICLE
           </span>
@@ -135,12 +135,11 @@ export function ShareButtons({ url, title }: ShareButtonsProps) {
             aria-label={copied ? 'Link copied' : 'Copy link'}
             style={{
               ...chipStyle,
-              border: 0,
-              background: copied ? 'var(--emerald-500)' : chipStyle.background,
+              background: copied ? 'var(--teal-green)' : chipStyle.background,
               color: copied ? 'var(--text-inverse)' : chipStyle.color,
+              borderColor: copied ? 'var(--teal-green)' : 'var(--border-default)',
               cursor: 'pointer',
               fontFamily: 'inherit',
-              boxShadow: copied ? '0 0 20px var(--cta-glow-soft)' : 'none',
             }}
           >
             {copied ? (

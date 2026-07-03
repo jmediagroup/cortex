@@ -119,9 +119,9 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
       </div>
 
       {/* RULE EXPLANATION BANNER */}
-      <div className="bg-[var(--color-info-soft)] border-2 border-[var(--color-info-soft)] rounded-[2.5rem] p-8">
+      <div className="bg-[var(--color-info-soft)] border border-[var(--color-info-soft)] rounded-xl p-8">
         <div className="flex items-start gap-4">
-          <div className="p-3 bg-[var(--color-info-soft)] rounded-2xl">
+          <div className="p-3 bg-[var(--color-info-soft)] rounded-lg">
             <AlertCircle className="text-[var(--color-info)]" size={28} />
           </div>
           <div>
@@ -156,9 +156,9 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* LEFT COLUMN - INPUTS */}
         <div className="space-y-6">
-          <div className="bg-[var(--bg-card)] rounded-[2.5rem] p-8 border-2 border-[var(--border-default)] shadow-sm">
+          <div className="bg-[var(--bg-card)] rounded-xl p-8 border border-[var(--border-default)] shadow-[var(--shadow-card)]">
             <h3 className="text-2xl font-bold text-[var(--text-primary)] mb-6 flex items-center gap-3">
-              <DollarSign className="text-[var(--emerald-500)]" size={28} />
+              <DollarSign className="text-[var(--navy)]" size={28} />
               Your Financial Info
             </h3>
 
@@ -173,7 +173,7 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
                     value={inputs.annualIncome}
                     onValueChange={(n) => setInputs(prev => ({ ...prev, annualIncome: n }))}
                     min={0}
-                    className="w-full pl-8 pr-4 py-3 border-2 border-[var(--border-default)] rounded-2xl font-bold text-[var(--text-primary)] focus:border-[var(--emerald-border)] focus:outline-none transition-colors"
+                    className="w-full pl-8 pr-4 py-3 border border-[var(--border-default)] rounded-sm font-bold text-[var(--text-primary)] focus:border-[var(--sky)] focus:ring-2 focus:ring-[var(--sky)] focus:outline-none transition-colors"
                   />
                 </div>
                 <p className="text-xs text-[var(--text-tertiary)] mt-1 font-medium">Your total annual income before taxes</p>
@@ -188,7 +188,7 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
                     value={inputs.interestRate}
                     onValueChange={(n) => setInputs(prev => ({ ...prev, interestRate: n }))}
                     step="0.1"
-                    className="w-full pr-8 pl-4 py-3 border-2 border-[var(--border-default)] rounded-2xl font-bold text-[var(--text-primary)] focus:border-[var(--emerald-border)] focus:outline-none transition-colors"
+                    className="w-full pr-8 pl-4 py-3 border border-[var(--border-default)] rounded-sm font-bold text-[var(--text-primary)] focus:border-[var(--sky)] focus:ring-2 focus:ring-[var(--sky)] focus:outline-none transition-colors"
                   />
                   <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] font-bold">%</span>
                 </div>
@@ -205,7 +205,7 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
                     value={inputs.currentMonthlyPayment}
                     onValueChange={(n) => setInputs(prev => ({ ...prev, currentMonthlyPayment: n }))}
                     min={0}
-                    className="w-full pl-8 pr-4 py-3 border-2 border-[var(--border-default)] rounded-2xl font-bold text-[var(--text-primary)] focus:border-[var(--emerald-border)] focus:outline-none transition-colors"
+                    className="w-full pl-8 pr-4 py-3 border border-[var(--border-default)] rounded-sm font-bold text-[var(--text-primary)] focus:border-[var(--sky)] focus:ring-2 focus:ring-[var(--sky)] focus:outline-none transition-colors"
                   />
                 </div>
                 <p className="text-xs text-[var(--text-tertiary)] mt-1 font-medium">Any existing car loan payments (optional)</p>
@@ -214,7 +214,7 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
               {/* Down Payment Percentage Slider */}
               <div>
                 <label className="block text-sm font-bold text-[var(--text-secondary)] mb-2">
-                  Down Payment: <span className="text-[var(--emerald-500)]">{calculations.downPaymentPercent}%</span>
+                  Down Payment: <span className="text-[var(--navy)]">{calculations.downPaymentPercent}%</span>
                 </label>
                 <input
                   type="range"
@@ -224,9 +224,9 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
                   step="1"
                   value={calculations.downPaymentPercent}
                   onChange={handleInputChange}
-                  className="w-full h-3 bg-[var(--bg-glass-strong)] rounded-full appearance-none cursor-pointer accent-indigo-600"
+                  className="mgm-range"
                   style={{
-                    background: `linear-gradient(to right, #00F0A0 0%, #00F0A0 ${(calculations.downPaymentPercent / 80) * 100}%, #48484A ${(calculations.downPaymentPercent / 80) * 100}%, #48484A 100%)`
+                    background: `linear-gradient(to right, var(--navy) 0%, var(--navy) ${(calculations.downPaymentPercent / 80) * 100}%, var(--off-white) ${(calculations.downPaymentPercent / 80) * 100}%, var(--off-white) 100%)`
                   }}
                 />
                 <div className="flex justify-between text-xs text-[var(--text-tertiary)] mt-1 font-medium">
@@ -244,7 +244,7 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
         {/* RIGHT COLUMN - RESULTS */}
         <div className="space-y-6">
           {/* Main Result - Affordable Car Price */}
-          <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] rounded-[3rem] p-10 text-white shadow-2xl border-2 border-[var(--emerald-border)]">
+          <div className="mgm-band rounded-xl p-10 text-white shadow-[var(--shadow-elevated)]">
             <div className="flex items-center gap-3 mb-4">
               <Car className="text-[var(--mist-200)]" size={32} />
               <h3 className="text-xl font-bold tracking-tight">Maximum Car Price</h3>
@@ -262,21 +262,21 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
 
           {/* Breakdown Cards */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-[var(--bg-card)] rounded-2xl p-6 border-2 border-[var(--border-default)]">
+            <div className="bg-[var(--bg-card)] rounded-lg p-6 border border-[var(--border-default)]">
               <div className="text-xs font-bold text-[var(--text-tertiary)] uppercase tracking-wider mb-1">Down Payment ({calculations.downPaymentPercent}%)</div>
               <div className="text-2xl font-bold text-[var(--text-primary)]">
                 ${calculations.userDownPaymentAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </div>
             </div>
 
-            <div className="bg-[var(--bg-card)] rounded-2xl p-6 border-2 border-[var(--border-default)]">
+            <div className="bg-[var(--bg-card)] rounded-lg p-6 border border-[var(--border-default)]">
               <div className="text-xs font-bold text-[var(--text-tertiary)] uppercase tracking-wider mb-1">Loan Amount</div>
               <div className="text-2xl font-bold text-[var(--text-primary)]">
                 ${calculations.userLoanAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </div>
             </div>
 
-            <div className="bg-[var(--bg-card)] rounded-2xl p-6 border-2 border-[var(--border-default)]">
+            <div className="bg-[var(--bg-card)] rounded-lg p-6 border border-[var(--border-default)]">
               <div className="text-xs font-bold text-[var(--text-tertiary)] uppercase tracking-wider mb-1">Monthly Payment</div>
               <div className="text-2xl font-bold text-[var(--text-primary)]">
                 ${calculations.userMonthlyPayment.toLocaleString(undefined, { maximumFractionDigits: 0 })}
@@ -286,7 +286,7 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
               </div>
             </div>
 
-            <div className="bg-[var(--bg-card)] rounded-2xl p-6 border-2 border-[var(--border-default)]">
+            <div className="bg-[var(--bg-card)] rounded-lg p-6 border border-[var(--border-default)]">
               <div className="text-xs font-bold text-[var(--text-tertiary)] uppercase tracking-wider mb-1">Total Interest</div>
               <div className="text-2xl font-bold text-[var(--text-primary)]">
                 ${calculations.totalInterest.toLocaleString(undefined, { maximumFractionDigits: 0 })}
@@ -298,7 +298,7 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
           {/* How the price was sized against the 20/3/8 rule. The loan term and
               payment cap are baked into the calculation itself, so they are stated
               as facts rather than "tested" — only the down payment is a real choice. */}
-          <div className={`rounded-2xl p-6 border-2 ${
+          <div className={`rounded-lg p-6 border ${
             calculations.meetsDownPaymentRule
               ? 'bg-[var(--emerald-50)] border-[var(--emerald-border)]'
               : 'bg-[var(--color-warning-soft)] border-[var(--glass-border-strong)]'
@@ -340,7 +340,7 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
       </div>
 
       {/* Additional Details */}
-      <div className="bg-[var(--bg-section)] rounded-[2.5rem] p-8 border-2 border-[var(--border-default)]">
+      <div className="bg-[var(--bg-section)] rounded-xl p-8 border border-[var(--border-default)]">
         <h3 className="text-xl font-bold text-[var(--text-primary)] mb-4 flex items-center gap-3">
           <Calendar className="text-[var(--text-secondary)]" size={24} />
           Loan Summary (3-Year Term)

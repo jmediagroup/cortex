@@ -90,10 +90,10 @@ export default function GuidesPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
 
-      <section className="hero-gradient" style={{ padding: '96px 24px 48px', textAlign: 'center' }}>
+      <section style={{ padding: '96px 24px 48px', textAlign: 'center' }}>
         <div style={{ maxWidth: 760, margin: '0 auto', position: 'relative' }}>
-          <div className="eyebrow" style={{ marginBottom: 16, color: 'var(--text-tertiary)' }}>
-            GUIDES
+          <div className="mgm-eyebrow" style={{ marginBottom: 16, color: 'var(--gray-500)' }}>
+            ULTIMATE GUIDES
           </div>
           <h1 className="h-hero" style={{ margin: '0 0 16px', fontSize: 'clamp(40px,6vw,64px)' }}>
             Personal finance, explained.
@@ -111,9 +111,9 @@ export default function GuidesPage() {
             style={{
               textAlign: 'center',
               padding: '64px 24px',
-              background: 'var(--bg-glass)',
-              border: '1px solid var(--glass-border)',
-              borderRadius: 'var(--radius-xl)',
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border-default)',
+              borderRadius: 'var(--radius-md)',
               color: 'var(--text-secondary)',
             }}
           >
@@ -150,14 +150,12 @@ function GuideCard({ guide }: { guide: GuideListItem }) {
       style={{
         display: 'flex',
         flexDirection: 'column',
-        background: 'var(--bg-glass)',
-        backdropFilter: 'var(--glass-blur)',
-        WebkitBackdropFilter: 'var(--glass-blur)',
-        border: '1px solid var(--glass-border)',
-        borderRadius: 'var(--radius-xl)',
+        background: 'var(--bg-card)',
+        border: '1px solid var(--border-default)',
+        borderRadius: 'var(--radius-md)',
         overflow: 'hidden',
         textDecoration: 'none',
-        boxShadow: 'var(--shadow-card), var(--shadow-inset-top)',
+        boxShadow: 'var(--shadow-card)',
         padding: 20,
         gap: 12,
       }}
@@ -170,10 +168,9 @@ function GuideCard({ guide }: { guide: GuideListItem }) {
               fontWeight: 700,
               letterSpacing: '0.08em',
               textTransform: 'uppercase',
-              color: 'var(--emerald-500)',
-              background: 'var(--emerald-tint-soft)',
-              border: '1px solid var(--emerald-border-soft)',
-              padding: '4px 8px',
+              color: '#fff',
+              background: 'var(--sky-pill)',
+              padding: '4px 10px',
               borderRadius: 9999,
             }}
           >
@@ -198,7 +195,7 @@ function GuideCard({ guide }: { guide: GuideListItem }) {
       <h2
         style={{
           fontSize: 17,
-          fontWeight: 600,
+          fontWeight: 700,
           color: 'var(--text-primary)',
           lineHeight: 1.3,
           letterSpacing: '-0.01em',
@@ -210,7 +207,7 @@ function GuideCard({ guide }: { guide: GuideListItem }) {
 
       <p
         style={{
-          color: 'var(--text-tertiary)',
+          color: 'var(--text-secondary)',
           fontSize: 13,
           lineHeight: 1.55,
           margin: 0,
@@ -239,7 +236,7 @@ function GuideCard({ guide }: { guide: GuideListItem }) {
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
           <Clock size={11} /> {guide.readingTime} min
         </span>
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--emerald-500)' }}>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--orange)', fontWeight: 700 }}>
           Read <MarketingIcon name="arrowRight" size={12} />
         </span>
       </div>

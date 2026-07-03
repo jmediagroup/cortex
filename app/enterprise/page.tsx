@@ -20,6 +20,7 @@ import { trackEvent } from '@/lib/analytics';
 import { COMPANY_SIZES } from '@/lib/validation';
 import { MarketingShell } from '@/components/marketing/MarketingShell';
 import { MarketingIcon } from '@/components/marketing/Icons';
+import { Button } from '@/components/ui/Button';
 
 export default function EnterprisePage() {
   const router = useRouter();
@@ -90,13 +91,11 @@ export default function EnterprisePage() {
             style={{
               maxWidth: 560,
               width: '100%',
-              background: 'var(--bg-glass)',
-              backdropFilter: 'var(--glass-blur)',
-              WebkitBackdropFilter: 'var(--glass-blur)',
-              border: '1px solid var(--glass-border)',
-              borderRadius: 'var(--radius-2xl)',
+              background: 'var(--bg-card)',
+              border: '1px solid var(--off-white)',
+              borderRadius: 'var(--radius-md)',
               padding: '48px 40px',
-              boxShadow: 'var(--shadow-elevated), var(--shadow-inset-top)',
+              boxShadow: 'var(--shadow-card)',
               textAlign: 'center',
             }}
           >
@@ -105,14 +104,13 @@ export default function EnterprisePage() {
                 margin: '0 auto 24px',
                 width: 72,
                 height: 72,
-                borderRadius: 18,
-                background: 'var(--emerald-tint)',
-                border: '1px solid var(--emerald-border)',
+                borderRadius: 'var(--radius-md)',
+                background: 'rgba(29, 128, 114, 0.12)',
+                border: '1px solid rgba(29, 128, 114, 0.28)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: 'var(--emerald-500)',
-                boxShadow: '0 0 32px var(--cta-glow-soft)',
+                color: 'var(--teal-green)',
               }}
             >
               <MarketingIcon name="check" size={32} stroke={2.5} />
@@ -121,7 +119,7 @@ export default function EnterprisePage() {
               className="h-hero"
               style={{ fontSize: 32, margin: '0 0 12px' }}
             >
-              Thank you.
+              You&apos;re in. Thank you.
             </h1>
             <p
               style={{
@@ -134,18 +132,15 @@ export default function EnterprisePage() {
             </p>
             <div
               style={{
-                background: 'var(--bg-glass-strong)',
-                border: '1px solid var(--glass-border-strong)',
-                borderRadius: 'var(--radius-lg)',
+                background: 'var(--off-white)',
+                border: '1px solid var(--border-default)',
+                borderRadius: 'var(--radius-md)',
                 padding: 20,
                 textAlign: 'left',
                 marginBottom: 28,
               }}
             >
-              <div
-                className="eyebrow"
-                style={{ marginBottom: 12, color: 'var(--text-tertiary)' }}
-              >
+              <div className="mgm-eyebrow" style={{ marginBottom: 12 }}>
                 WHAT HAPPENS NEXT
               </div>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -170,42 +165,20 @@ export default function EnterprisePage() {
                       style={{
                         flexShrink: 0,
                         marginTop: 2,
-                        width: 16,
-                        height: 16,
-                        borderRadius: '50%',
-                        background: 'var(--emerald-tint)',
-                        border: '1px solid var(--emerald-border)',
-                        color: 'var(--emerald-500)',
+                        color: 'var(--teal-green)',
                         display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
                       }}
                     >
-                      <MarketingIcon name="check" size={9} stroke={2.5} />
+                      <MarketingIcon name="check" size={14} stroke={2.6} />
                     </span>
                     {item}
                   </li>
                 ))}
               </ul>
             </div>
-            <button
-              type="button"
-              onClick={() => router.push('/')}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 8,
-                background: 'transparent',
-                border: 0,
-                color: 'var(--emerald-500)',
-                fontWeight: 600,
-                fontSize: 14,
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-              }}
-            >
+            <Button variant="secondary" tone="navy" onClick={() => router.push('/')}>
               Back to home <MarketingIcon name="arrowRight" size={14} />
-            </button>
+            </Button>
           </div>
         </section>
       </MarketingShell>
@@ -230,22 +203,19 @@ export default function EnterprisePage() {
           className="marketing-enterprise-grid"
         >
           <div>
-            <div
-              className="eyebrow"
-              style={{ marginBottom: 16, color: 'var(--emerald-500)' }}
-            >
-              ● ENTERPRISE
+            <div className="mgm-eyebrow" style={{ marginBottom: 16 }}>
+              ENTERPRISE
             </div>
             <h1
               className="h-hero"
               style={{ margin: '0 0 20px', fontSize: 'clamp(36px,5vw,52px)' }}
             >
-              Enterprise solutions for your organization.
+              Precision finance tools, built around your org.
             </h1>
             <p
               style={{
                 fontSize: 17,
-                color: 'var(--text-secondary)',
+                color: 'var(--gray-600)',
                 lineHeight: 1.6,
                 margin: '0 0 32px',
               }}
@@ -283,9 +253,10 @@ export default function EnterprisePage() {
                     alignItems: 'flex-start',
                     gap: 14,
                     padding: 16,
-                    background: 'var(--bg-glass)',
-                    border: '1px solid var(--glass-border)',
-                    borderRadius: 'var(--radius-lg)',
+                    background: 'var(--bg-card)',
+                    border: '1px solid var(--off-white)',
+                    borderRadius: 'var(--radius-md)',
+                    boxShadow: 'var(--shadow-card)',
                   }}
                 >
                   <div
@@ -293,10 +264,9 @@ export default function EnterprisePage() {
                       flexShrink: 0,
                       width: 34,
                       height: 34,
-                      borderRadius: 10,
-                      background: 'var(--emerald-tint)',
-                      border: '1px solid var(--emerald-border)',
-                      color: 'var(--emerald-500)',
+                      borderRadius: 'var(--radius-circle)',
+                      background: 'var(--mint)',
+                      color: 'var(--navy)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -308,8 +278,8 @@ export default function EnterprisePage() {
                     <h3
                       style={{
                         fontSize: 14,
-                        fontWeight: 600,
-                        color: 'var(--text-primary)',
+                        fontWeight: 700,
+                        color: 'var(--navy)',
                         margin: '0 0 4px',
                       }}
                     >
@@ -318,7 +288,7 @@ export default function EnterprisePage() {
                     <p
                       style={{
                         fontSize: 13,
-                        color: 'var(--text-tertiary)',
+                        color: 'var(--gray-600)',
                         margin: 0,
                         lineHeight: 1.5,
                       }}
@@ -347,13 +317,11 @@ export default function EnterprisePage() {
           <form
             onSubmit={handleSubmit}
             style={{
-              background: 'var(--bg-glass-strong)',
-              backdropFilter: 'var(--glass-blur)',
-              WebkitBackdropFilter: 'var(--glass-blur)',
-              border: '1px solid var(--glass-border-strong)',
-              borderRadius: 'var(--radius-2xl)',
+              background: 'var(--bg-card)',
+              border: '1px solid var(--off-white)',
+              borderRadius: 'var(--radius-md)',
               padding: 32,
-              boxShadow: 'var(--shadow-elevated), var(--shadow-inset-top)',
+              boxShadow: 'var(--shadow-card)',
               display: 'flex',
               flexDirection: 'column',
               gap: 18,
@@ -364,8 +332,8 @@ export default function EnterprisePage() {
                 style={{
                   fontSize: 24,
                   fontWeight: 700,
-                  color: 'var(--text-primary)',
-                  letterSpacing: '-0.02em',
+                  color: 'var(--navy)',
+                  letterSpacing: '-0.01em',
                   margin: '0 0 6px',
                 }}
               >
@@ -374,7 +342,7 @@ export default function EnterprisePage() {
               <p
                 style={{
                   fontSize: 13,
-                  color: 'var(--text-tertiary)',
+                  color: 'var(--gray-600)',
                   margin: 0,
                 }}
               >
@@ -484,28 +452,7 @@ export default function EnterprisePage() {
               />
             </FormField>
 
-            <button
-              type="submit"
-              disabled={loading}
-              style={{
-                background: 'var(--emerald-500)',
-                color: 'var(--text-inverse)',
-                border: 0,
-                padding: '14px 20px',
-                borderRadius: 12,
-                fontWeight: 700,
-                fontSize: 14,
-                cursor: loading ? 'not-allowed' : 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8,
-                boxShadow: '0 0 0 1px var(--cta-glow-ring), 0 0 32px var(--cta-glow-soft)',
-                transition: 'all 160ms',
-                fontFamily: 'inherit',
-                opacity: loading ? 0.7 : 1,
-              }}
-            >
+            <Button type="submit" variant="primary" disabled={loading} style={{ width: '100%' }}>
               {loading ? (
                 <>
                   <Loader2 className="animate-spin" size={16} />
@@ -516,7 +463,7 @@ export default function EnterprisePage() {
                   Submit request <MarketingIcon name="arrowRight" size={14} />
                 </>
               )}
-            </button>
+            </Button>
 
             <p
               style={{
@@ -541,7 +488,7 @@ export default function EnterprisePage() {
               Not ready for enterprise?{' '}
               <Link
                 href="/pricing"
-                style={{ color: 'var(--emerald-500)', fontWeight: 600, textDecoration: 'none' }}
+                style={{ color: 'var(--navy)', fontWeight: 700, textDecoration: 'underline' }}
               >
                 View our plans
               </Link>
@@ -574,14 +521,14 @@ export default function EnterprisePage() {
 const inputStyle: React.CSSProperties = {
   width: '100%',
   padding: '12px 14px 12px 40px',
-  background: 'var(--bg-glass)',
-  border: '1px solid var(--border-default)',
-  borderRadius: 12,
-  color: 'var(--text-primary)',
+  background: 'var(--white)',
+  border: '1px solid var(--gray-300)',
+  borderRadius: 'var(--radius-sm)',
+  color: 'var(--navy)',
   fontSize: 14,
   fontFamily: 'inherit',
   outline: 'none',
-  transition: 'all 160ms',
+  transition: 'border-color 150ms ease',
 };
 
 function FormField({

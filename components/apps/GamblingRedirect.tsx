@@ -137,7 +137,7 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
     <div className="space-y-8 animate-in fade-in duration-500">
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border-default)] shadow-sm relative overflow-hidden">
+        <div className="bg-[var(--bg-card)] p-6 rounded-xl border border-[var(--border-default)] shadow-[var(--shadow-card)] relative overflow-hidden">
           <div className="absolute top-0 right-0 p-4 opacity-10">
             <TrendingDown className="w-12 h-12 text-[var(--crimson-500)]" />
           </div>
@@ -146,7 +146,7 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
           <p className="text-xs font-bold text-[var(--text-muted)] mt-2">Pure out-of-pocket expenditure over {inputs.years} years</p>
         </div>
 
-        <div className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border-default)] shadow-sm relative overflow-hidden">
+        <div className="bg-[var(--bg-card)] p-6 rounded-xl border border-[var(--border-default)] shadow-[var(--shadow-card)] relative overflow-hidden">
           <div className="absolute top-0 right-0 p-4 opacity-10">
             <TrendingUp className="w-12 h-12 text-[var(--emerald-500)]" />
           </div>
@@ -157,7 +157,7 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
       </div>
 
       {/* Opportunity Cost Highlight */}
-      <div className="bg-[var(--bg-card)] rounded-3xl border border-[var(--border-default)] shadow-sm p-8 text-center">
+      <div className="bg-[var(--bg-card)] rounded-xl border border-[var(--border-default)] shadow-[var(--shadow-card)] p-8 text-center">
         <div className="bg-[var(--color-warning-soft)] text-[var(--color-warning)] px-4 py-1.5 rounded-full text-[10px] font-bold tracking-widest uppercase inline-block mb-4">
           The Opportunity Cost
         </div>

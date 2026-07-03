@@ -27,8 +27,8 @@ type Props = {
 };
 
 /**
- * Shared tool page scaffolding. Lives inside the force-dark AppShell,
- * so every tool inherits the obsidian palette automatically.
+ * Shared tool page scaffolding. Lives inside the light MGM AppShell,
+ * so every tool inherits the navy-on-white palette automatically.
  */
 export function ToolLayout({
   eyebrow,
@@ -92,17 +92,15 @@ export function ToolLayout({
           style={{
             marginTop: 40,
             padding: '24px 28px',
-            background: 'var(--bg-glass)',
-            border: '1px solid var(--glass-border)',
-            borderLeft: '3px solid var(--emerald-500)',
+            background: 'var(--bg-section)',
+            border: '1px solid var(--border-default)',
+            borderLeft: '3px solid var(--navy)',
             borderRadius: 'var(--radius-md)',
-            backdropFilter: 'var(--glass-blur)',
-            WebkitBackdropFilter: 'var(--glass-blur)',
           }}
         >
           <div
             className="eyebrow"
-            style={{ color: 'var(--emerald-500)', marginBottom: 8 }}
+            style={{ color: 'var(--navy)', marginBottom: 8 }}
           >
             THE READ
           </div>
@@ -163,7 +161,7 @@ type CtaProps = {
 
 /**
  * Opinionated upsell banner used by tool pages for unauthenticated visitors.
- * Replaces the old indigo-gradient banner pattern with an obsidian island.
+ * An MGM navy band (white text) for emphasis against the light page.
  */
 export function ToolUpsellCta({
   headline,

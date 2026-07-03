@@ -1,7 +1,8 @@
 'use client';
 
-import Link from 'next/link';
 import { useState } from 'react';
+import { Button } from '@/components/ui/Button';
+import { Tag } from '@/components/ui/Tag';
 import { MarketingIcon } from './Icons';
 
 type Tier = {
@@ -54,17 +55,14 @@ export function MarketingPricingPreview() {
     >
       <div style={{ maxWidth: 1100, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', maxWidth: 560, margin: '0 auto 64px' }}>
-          <div
-            className="eyebrow"
-            style={{ marginBottom: 16, color: 'var(--text-tertiary)' }}
-          >
+          <div className="mgm-eyebrow" style={{ marginBottom: 16 }}>
             PRICING
           </div>
           <h2
             style={{
               fontSize: 'clamp(32px,4.5vw,52px)',
               fontWeight: 700,
-              color: 'var(--text-primary)',
+              color: 'var(--navy)',
               letterSpacing: '-0.025em',
               margin: '0 0 16px',
               lineHeight: 1.1,
@@ -73,7 +71,7 @@ export function MarketingPricingPreview() {
             Simple, honest pricing.
           </h2>
           <p style={{ fontSize: 17, color: 'var(--text-secondary)', margin: 0 }}>
-            Choose the plan that matches where you are today.
+            Pick the plan that matches where you are today. No countdowns, no traps.
           </p>
         </div>
 
@@ -91,21 +89,10 @@ export function MarketingPricingPreview() {
           ))}
         </div>
 
-        <div style={{ textAlign: 'center', marginTop: 32 }}>
-          <Link
-            href="/pricing"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8,
-              color: 'var(--emerald-500)',
-              fontWeight: 600,
-              fontSize: 14,
-              textDecoration: 'none',
-            }}
-          >
-            View full pricing details <MarketingIcon name="arrowRight" size={14} />
-          </Link>
+        <div style={{ textAlign: 'center', marginTop: 40 }}>
+          <Button variant="secondary" tone="orange" size="sm" href="/pricing">
+            View full pricing <MarketingIcon name="arrowRight" size={14} />
+          </Button>
         </div>
       </div>
     </section>
@@ -120,54 +107,41 @@ function PricingCard({ tier }: { tier: Tier }) {
       onMouseLeave={() => setHover(false)}
       style={{
         position: 'relative',
-        background: tier.featured ? 'var(--bg-glass-strong)' : 'var(--bg-glass)',
-        backdropFilter: 'var(--glass-blur)',
-        WebkitBackdropFilter: 'var(--glass-blur)',
-        border: `1px solid ${tier.featured ? 'var(--emerald-border)' : 'var(--glass-border)'}`,
-        borderRadius: 'var(--radius-2xl)',
+        background: 'var(--white)',
+        border: tier.featured ? '2px solid var(--sky)' : '1px solid var(--border-default)',
+        borderRadius: 'var(--radius-md)',
         padding: 32,
         boxShadow: tier.featured
-          ? '0 0 0 1px var(--featured-halo), 0 20px 60px var(--featured-halo), var(--shadow-inset-top)'
-          : 'var(--shadow-card), var(--shadow-inset-top)',
+          ? '0 14px 30px rgba(78,201,245,0.18)'
+          : hover
+            ? 'var(--shadow-card-hover)'
+            : 'var(--shadow-card)',
         display: 'flex',
         flexDirection: 'column',
         transform: hover ? 'translateY(-3px)' : 'none',
-        transition: 'transform 320ms var(--ease-out-expo)',
+        transition: 'transform 320ms var(--ease-out-expo), box-shadow 320ms',
       }}
     >
       {tier.featured && (
-        <div
-          style={{
-            position: 'absolute',
-            top: -12,
-            left: 24,
-            background: 'var(--emerald-500)',
-            color: 'var(--text-inverse)',
-            padding: '5px 12px',
-            borderRadius: 9999,
-            fontSize: 10,
-            fontWeight: 700,
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-            boxShadow: '0 0 20px var(--cta-glow-ring)',
-          }}
-        >
-          Most popular
+        <div style={{ position: 'absolute', top: -14, left: 24 }}>
+          <Tag tone="sky" style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '5px 12px' }}>
+            Most popular
+          </Tag>
         </div>
       )}
 
       <h3
         style={{
           fontSize: 18,
-          fontWeight: 600,
-          color: 'var(--text-primary)',
+          fontWeight: 700,
+          color: 'var(--navy)',
           margin: 0,
           letterSpacing: '-0.01em',
         }}
       >
         {tier.name}
       </h3>
-      <p style={{ color: 'var(--text-tertiary)', fontSize: 13, margin: '6px 0 28px' }}>
+      <p style={{ color: 'var(--text-muted)', fontSize: 13, margin: '6px 0 28px' }}>
         {tier.sub}
       </p>
 
@@ -176,7 +150,7 @@ function PricingCard({ tier }: { tier: Tier }) {
           style={{
             fontSize: 48,
             fontWeight: 700,
-            color: 'var(--text-primary)',
+            color: 'var(--navy)',
             letterSpacing: '-0.035em',
             fontFamily: 'var(--font-sans)',
           }}
@@ -185,7 +159,7 @@ function PricingCard({ tier }: { tier: Tier }) {
         </span>
         <span
           style={{
-            color: 'var(--text-tertiary)',
+            color: 'var(--text-muted)',
             fontSize: 14,
             fontFamily: 'var(--font-mono)',
           }}
@@ -214,9 +188,8 @@ function PricingCard({ tier }: { tier: Tier }) {
                 width: 18,
                 height: 18,
                 borderRadius: '50%',
-                background: tier.featured ? 'var(--emerald-tint)' : 'var(--bg-glass-strong)',
-                border: `1px solid ${tier.featured ? 'var(--emerald-border)' : 'var(--glass-border)'}`,
-                color: tier.featured ? 'var(--emerald-500)' : 'var(--text-tertiary)',
+                background: 'var(--emerald-tint)',
+                color: 'var(--teal-green)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -230,27 +203,14 @@ function PricingCard({ tier }: { tier: Tier }) {
         ))}
       </ul>
 
-      <Link
+      <Button
+        variant={tier.featured ? 'primary' : 'secondary'}
+        tone="navy"
         href={tier.href}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 8,
-          background: tier.featured ? 'var(--emerald-500)' : 'var(--bg-glass-strong)',
-          color: tier.featured ? 'var(--text-inverse)' : 'var(--text-primary)',
-          border: tier.featured ? 'none' : '1px solid var(--glass-border-strong)',
-          padding: '14px 24px',
-          borderRadius: 12,
-          fontWeight: 600,
-          fontSize: 14,
-          textDecoration: 'none',
-          boxShadow: tier.featured ? '0 0 24px var(--cta-glow-soft)' : 'none',
-          transition: 'all 160ms',
-        }}
+        style={{ width: '100%' }}
       >
         {tier.cta} <MarketingIcon name="arrowRight" size={14} />
-      </Link>
+      </Button>
     </div>
   );
 }

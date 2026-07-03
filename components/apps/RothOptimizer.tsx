@@ -228,19 +228,19 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
     <div className="space-y-8">
       {/* Header Metrics */}
       <div className="flex flex-wrap gap-3">
-        <div className="bg-[var(--bg-card)] border border-[var(--border-default)] p-4 rounded-3xl shadow-sm flex items-center gap-4">
+        <div className="bg-[var(--bg-card)] border border-[var(--border-default)] p-4 rounded-lg shadow-[var(--shadow-card)] flex items-center gap-4">
           <div className="text-right">
             <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest flex items-center justify-end gap-1">
-              Tax Savings <TrendingDown size={10} className="text-[var(--emerald-500)]"/>
+              Tax Savings <TrendingDown size={10} className="text-[var(--teal-green)]"/>
             </p>
-            <p className="text-xl font-bold text-[var(--emerald-500)]">${Math.round(stats.taxDelta).toLocaleString()}</p>
+            <p className="text-xl font-bold text-[var(--teal-green)]">${Math.round(stats.taxDelta).toLocaleString()}</p>
           </div>
-          <div className="w-px h-8 bg-[var(--bg-glass-strong)]" />
+          <div className="w-px h-8 bg-[var(--border-default)]" />
           <div className="text-right">
             <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest flex items-center justify-end gap-1">
-              Legacy Gain <TrendingUp size={10} className="text-[var(--emerald-400)]"/>
+              Legacy Gain <TrendingUp size={10} className="text-[var(--teal-green)]"/>
             </p>
-            <p className="text-xl font-bold text-[var(--emerald-500)]">${Math.round(stats.legacyDelta).toLocaleString()}</p>
+            <p className="text-xl font-bold text-[var(--teal-green)]">${Math.round(stats.legacyDelta).toLocaleString()}</p>
           </div>
         </div>
       </div>
@@ -249,7 +249,7 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
         {/* Controls - Left Column */}
         <aside className="lg:col-span-4 space-y-6">
           {/* Optimization Engine */}
-          <div data-theme="dark" className="bg-[var(--obsidian-800)] text-white p-6 rounded-[2rem] shadow-xl relative overflow-hidden">
+          <div className="mgm-band p-6 text-white shadow-[var(--shadow-card-hover)] relative overflow-hidden">
             <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12">
               <RefreshCw size={120} />
             </div>
@@ -259,26 +259,26 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
             </h3>
 
             <div className="space-y-6 relative z-10">
-              <div className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${!isPro ? 'bg-[var(--emerald-600)]/30 border-[var(--emerald-border)] opacity-80' : 'bg-[var(--emerald-600)]/50 border-[var(--emerald-border)]'}`}>
+              <div className={`flex items-center justify-between p-4 rounded-lg border transition-all ${!isPro ? 'bg-white/5 border-white/15 opacity-80' : 'bg-white/10 border-white/20'}`}>
                 <div>
                   <p className="font-bold flex items-center gap-2">
                     Auto-Optimize Ladder
-                    {!isPro && <Lock size={12} className="text-[var(--color-warning)]" />}
+                    {!isPro && <Lock size={12} className="text-[var(--yellow)]" />}
                   </p>
-                  <p className="text-[10px] text-[var(--mist-200)] uppercase font-semibold">Maximize tax brackets</p>
+                  <p className="text-[10px] text-white/70 uppercase font-semibold">Maximize tax brackets</p>
                 </div>
                 <input
                   type="checkbox" name="isAutoOptimize"
                   checked={inputs.isAutoOptimize} onChange={handleInputChange}
                   disabled={!isPro}
-                  className="w-6 h-6 rounded-lg accent-indigo-400 disabled:cursor-not-allowed"
+                  className="w-6 h-6 rounded accent-[var(--sky)] disabled:cursor-not-allowed"
                 />
               </div>
 
               {!isPro && (
                 <button
                   onClick={onUpgrade}
-                  className="w-full bg-[var(--color-warning)] hover:bg-[var(--color-warning)] text-[var(--text-primary)] text-xs font-bold py-2 rounded-xl flex items-center justify-center gap-2 transition-transform active:scale-95"
+                  className="w-full mgm-btn mgm-btn--primary mgm-btn--sm"
                 >
                   <Zap size={14} fill="currentColor" /> Upgrade to Pro for Auto-Optimization
                 </button>
@@ -286,13 +286,13 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
 
               {(inputs.isAutoOptimize && isPro) ? (
                 <div className="space-y-3">
-                  <label className="text-xs font-bold text-[var(--mist-200)] uppercase tracking-widest">Target Bracket</label>
+                  <label className="text-xs font-bold text-white/70 uppercase tracking-widest">Target Bracket</label>
                   <div className="grid grid-cols-3 gap-2">
                     {[0, 1, 2].map(idx => (
                       <button
                         key={idx}
                         onClick={() => setInputs(p => ({...p, targetBracketIndex: idx}))}
-                        className={`py-2 px-1 rounded-xl text-xs font-bold transition-all ${inputs.targetBracketIndex === idx ? 'bg-[var(--bg-card)] text-[var(--text-primary)] shadow-lg' : 'bg-[var(--emerald-600)] text-white hover:bg-[var(--emerald-500)]'}`}
+                        className={`py-2 px-1 rounded text-xs font-bold transition-all ${inputs.targetBracketIndex === idx ? 'bg-white text-[var(--navy)] shadow-[var(--shadow-card)]' : 'bg-white/10 text-white hover:bg-white/20'}`}
                       >
                         {TAX_BRACKETS[idx].label}
                       </button>
@@ -301,10 +301,10 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
                 </div>
               ) : (
                 <div>
-                  <label className="text-xs font-bold text-[var(--mist-200)] uppercase mb-2 block">Manual Annual Conversion</label>
+                  <label className="text-xs font-bold text-white/70 uppercase mb-2 block">Manual Annual Conversion</label>
                   <NumberInput
                     min={0} value={inputs.manualConvAmount} onValueChange={setField('manualConvAmount')}
-                    className="w-full px-4 py-2.5 bg-[var(--emerald-600)] border-none rounded-2xl text-white font-bold"
+                    className="w-full px-4 py-2.5 bg-white/10 border border-white/20 rounded text-white font-bold outline-none focus:border-[var(--sky)]"
                   />
                 </div>
               )}
@@ -312,39 +312,39 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
           </div>
 
           {/* Basic Settings */}
-          <div className="bg-[var(--bg-card)] p-7 rounded-[2rem] border border-[var(--border-default)] shadow-sm space-y-6">
+          <div className="bg-[var(--bg-card)] p-7 rounded-lg border border-[var(--border-default)] shadow-[var(--shadow-card)] space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Current Age</label>
-                <NumberInput min={18} max={100} value={inputs.currentAge} onValueChange={setField('currentAge')} className="w-full px-4 py-2 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold" />
+                <NumberInput min={18} max={100} value={inputs.currentAge} onValueChange={setField('currentAge')} className="mgm-input font-bold" />
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Retire Age</label>
-                <NumberInput min={18} max={100} value={inputs.retirementAge} onValueChange={setField('retirementAge')} className="w-full px-4 py-2 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold" />
+                <NumberInput min={18} max={100} value={inputs.retirementAge} onValueChange={setField('retirementAge')} className="mgm-input font-bold" />
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Plan To Age</label>
-                <NumberInput min={60} max={110} value={inputs.endAge} onValueChange={setField('endAge')} className="w-full px-4 py-2 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold" />
+                <NumberInput min={60} max={110} value={inputs.endAge} onValueChange={setField('endAge')} className="mgm-input font-bold" />
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Annual Spend</label>
-                <NumberInput min={0} value={inputs.annualSpending} onValueChange={setField('annualSpending')} className="w-full px-4 py-2 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold" />
+                <NumberInput min={0} value={inputs.annualSpending} onValueChange={setField('annualSpending')} className="mgm-input font-bold" />
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Avg Return %</label>
-                <NumberInput step={0.1} value={inputs.avgReturn} onValueChange={setField('avgReturn')} className="w-full px-4 py-2 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold" />
+                <NumberInput step={0.1} value={inputs.avgReturn} onValueChange={setField('avgReturn')} className="mgm-input font-bold" />
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Inflation %</label>
-                <NumberInput step={0.1} value={inputs.inflationRate} onValueChange={setField('inflationRate')} className="w-full px-4 py-2 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold" />
+                <NumberInput step={0.1} value={inputs.inflationRate} onValueChange={setField('inflationRate')} className="mgm-input font-bold" />
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Annual Soc. Sec.</label>
-                <NumberInput min={0} value={inputs.ssAmount} onValueChange={setField('ssAmount')} className="w-full px-4 py-2 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold" />
+                <NumberInput min={0} value={inputs.ssAmount} onValueChange={setField('ssAmount')} className="mgm-input font-bold" />
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">SS Start Age</label>
-                <NumberInput min={62} max={70} value={inputs.ssStartAge} onValueChange={setField('ssStartAge')} className="w-full px-4 py-2 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold" />
+                <NumberInput min={62} max={70} value={inputs.ssStartAge} onValueChange={setField('ssStartAge')} className="mgm-input font-bold" />
               </div>
             </div>
 
@@ -353,7 +353,7 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
               {['taxable', 'traditional', 'roth'].map(t => (
                 <div key={t} className="flex items-center justify-between mb-2">
                   <span className="text-[10px] font-semibold uppercase text-[var(--text-muted)]">{t}</span>
-                  <NumberInput min={0} value={inputs.balances[t as keyof typeof inputs.balances]} onValueChange={(n) => setInputs(prev => ({ ...prev, balances: { ...prev.balances, [t]: n } }))} className="bg-[var(--bg-section)] border-none text-right font-bold w-32 px-3 py-1 rounded-lg" />
+                  <NumberInput min={0} value={inputs.balances[t as keyof typeof inputs.balances]} onValueChange={(n) => setInputs(prev => ({ ...prev, balances: { ...prev.balances, [t]: n } }))} className="mgm-input text-right font-bold w-32" />
                 </div>
               ))}
             </div>
@@ -368,7 +368,7 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
                   name="sequenceRisk"
                   checked={inputs.sequenceRisk}
                   onChange={handleInputChange}
-                  className="w-5 h-5 accent-indigo-600"
+                  className="w-5 h-5 accent-[var(--navy)]"
                 />
               </div>
               <p className="text-[10px] font-medium text-[var(--text-muted)] mt-2">Models a −12% market in the first 3 years of retirement.</p>
@@ -386,7 +386,7 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
                   checked={inputs.showComparison}
                   onChange={handleInputChange}
                   disabled={!isPro}
-                  className="w-5 h-5 accent-indigo-600 disabled:cursor-not-allowed"
+                  className="w-5 h-5 accent-[var(--navy)] disabled:cursor-not-allowed"
                 />
               </div>
               {!isPro && (
@@ -401,14 +401,14 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
           {/* Comparison Metrics */}
           {inputs.showComparison && isPro && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in slide-in-from-bottom-2">
-              <div className="bg-[var(--emerald-50)] border border-[var(--emerald-border-soft)] p-6 rounded-[2rem] flex items-center justify-between">
+              <div className="bg-[var(--emerald-50)] border border-[var(--emerald-border-soft)] p-6 rounded-lg flex items-center justify-between">
                 <div>
                   <p className="text-[var(--emerald-500)] font-bold text-lg">Total Tax Savings</p>
                   <p className="text-[var(--emerald-500)] text-xs font-bold uppercase">Optimized vs. Baseline</p>
                 </div>
                 <p className="text-3xl font-bold text-[var(--emerald-500)] tracking-tighter">${Math.round(stats.taxDelta).toLocaleString()}</p>
               </div>
-              <div className="bg-[var(--emerald-50)] border border-[var(--emerald-border-soft)] p-6 rounded-[2rem] flex items-center justify-between">
+              <div className="bg-[var(--emerald-50)] border border-[var(--emerald-border-soft)] p-6 rounded-lg flex items-center justify-between">
                 <div>
                   <p className="text-[var(--text-primary)] font-bold text-lg">Added Estate Legacy</p>
                   <p className="text-[var(--emerald-500)] text-xs font-bold uppercase">Optimized vs. Baseline</p>
@@ -419,9 +419,9 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
           )}
 
           {/* Performance Over Time */}
-          <div className="bg-[var(--bg-card)] p-8 rounded-[3rem] border border-[var(--border-default)] shadow-sm relative overflow-hidden">
+          <div className="bg-[var(--bg-card)] p-8 rounded-lg border border-[var(--border-default)] shadow-[var(--shadow-card)] relative overflow-hidden">
             <h3 className="text-xl font-bold text-[var(--text-primary)] mb-8 flex items-center gap-2">
-              <History className="text-[var(--emerald-400)]" /> Portfolio Value Comparison
+              <History className="text-[var(--navy)]" /> Portfolio Value Comparison
             </h3>
             <div className="h-[400px]">
               <ResponsiveContainer width="100%" height="100%">
@@ -430,28 +430,28 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
                   optimized: d.totalBalance,
                   baseline: baselineSim[i].totalBalance
                 }))}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#2C2C2E" />
-                  <XAxis dataKey="age" axisLine={false} tickLine={false} tick={{fill: '#8E8E93', fontSize: 11, fontWeight: 'bold'}} />
-                  <YAxis axisLine={false} tickLine={false} tick={{fill: '#8E8E93', fontSize: 11, fontWeight: 'bold'}} tickFormatter={v => `$${(v/1000000).toFixed(1)}M`} />
-                  <Tooltip contentStyle={{borderRadius: '24px', border: 'none', boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.25)'}} formatter={(v) => `$${Math.round(Number(v) || 0).toLocaleString()}`}/>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-default)" />
+                  <XAxis dataKey="age" axisLine={false} tickLine={false} tick={{fill: 'var(--text-muted)', fontSize: 11, fontWeight: 'bold'}} />
+                  <YAxis axisLine={false} tickLine={false} tick={{fill: 'var(--text-muted)', fontSize: 11, fontWeight: 'bold'}} tickFormatter={v => `$${(v/1000000).toFixed(1)}M`} />
+                  <Tooltip contentStyle={{borderRadius: '8px', border: '1px solid var(--border-default)', boxShadow: 'var(--shadow-card-hover)'}} formatter={(v) => `$${Math.round(Number(v) || 0).toLocaleString()}`}/>
                   <Legend />
-                  <Line type="monotone" dataKey="optimized" stroke="#00F0A0" strokeWidth={4} dot={false} name="Current Strategy" />
-                  {isPro && <Line type="monotone" dataKey="baseline" stroke="#8E8E93" strokeWidth={2} strokeDasharray="5 5" dot={false} name="Standard (No Ladder)" />}
+                  <Line type="monotone" dataKey="optimized" stroke="var(--chart-emerald)" strokeWidth={3} dot={false} name="Current Strategy" />
+                  {isPro && <Line type="monotone" dataKey="baseline" stroke="var(--navy)" strokeWidth={2} strokeDasharray="5 5" dot={false} name="Standard (No Ladder)" />}
                 </LineChart>
               </ResponsiveContainer>
             </div>
 
             {!isPro && (
-              <div className="absolute inset-0 bg-[var(--bg-card)]/40 backdrop-blur-[2px] flex items-center justify-center">
-                <div className="bg-[var(--bg-card)] p-6 rounded-3xl shadow-2xl border border-[var(--border-default)] text-center max-w-xs relative z-20">
-                  <div className="w-12 h-12 bg-[var(--color-warning-soft)] text-[var(--color-warning)] rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <div className="absolute inset-0 bg-[var(--bg-card)]/70 flex items-center justify-center">
+                <div className="bg-[var(--bg-card)] p-6 rounded-lg shadow-[var(--shadow-card-hover)] border border-[var(--border-default)] text-center max-w-xs relative z-20">
+                  <div className="w-12 h-12 bg-[var(--color-warning-soft)] text-[var(--color-warning)] rounded-lg flex items-center justify-center mx-auto mb-4">
                     <Lock size={24} />
                   </div>
                   <h4 className="font-bold text-[var(--text-primary)] mb-2">Comparison Locked</h4>
                   <p className="text-xs text-[var(--text-tertiary)] font-medium mb-6">Upgrade to Pro to see how your strategy compares to doing nothing.</p>
                   <button
                     onClick={onUpgrade}
-                    className="w-full bg-[var(--emerald-500)] text-white font-bold py-3 rounded-xl hover:bg-[var(--emerald-500)] transition-colors shadow-lg"
+                    className="w-full mgm-btn mgm-btn--primary mgm-btn--md"
                   >
                     Unlock Comparison
                   </button>
@@ -461,49 +461,49 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
           </div>
 
           {/* Strategic Comparison Verdict */}
-          <div className="bg-[var(--obsidian-800)] p-10 rounded-[4rem] text-white shadow-2xl relative overflow-hidden">
+          <div className="mgm-band p-10 text-white shadow-[var(--shadow-card-hover)] relative overflow-hidden">
             <div className="absolute top-0 right-0 p-8 opacity-10">
               <ArrowLeftRight size={120} />
             </div>
             <h3 className="text-2xl font-bold mb-8 relative z-10">Strategic Insights</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10">
               <div>
-                <p className="text-[var(--mist-200)] font-bold text-xs uppercase tracking-widest mb-4">Standard Logic</p>
+                <p className="text-white/70 font-bold text-xs uppercase tracking-widest mb-4">Standard Logic</p>
                 <ul className="space-y-3">
                   <li className="flex gap-3 text-sm font-medium opacity-80">
-                    <div className="bg-[var(--emerald-600)] p-1 rounded h-fit mt-1 text-[var(--crimson-400)]"><TrendingUp size={12}/></div>
+                    <div className="bg-white/10 p-1 rounded h-fit mt-1 text-[var(--crimson-400)]"><TrendingUp size={12}/></div>
                     RMDs are projected to force you into a {TAX_BRACKETS[2].label} or higher bracket later.
                   </li>
                 </ul>
               </div>
               <div>
-                <p className="text-[var(--emerald-400)] font-bold text-xs uppercase tracking-widest mb-4">Active Strategy</p>
+                <p className="text-[var(--sky)] font-bold text-xs uppercase tracking-widest mb-4">Active Strategy</p>
                 <ul className="space-y-3">
                   <li className="flex gap-3 text-sm font-medium">
-                    <div className="bg-[var(--obsidian-700)] p-1 rounded h-fit mt-1 text-[var(--emerald-400)]"><TrendingDown size={12}/></div>
+                    <div className="bg-white/10 p-1 rounded h-fit mt-1 text-[var(--mint)]"><TrendingDown size={12}/></div>
                     You are {inputs.manualConvAmount > 0 ? "partially" : "not"} currently optimizing for bracket efficiency.
                   </li>
                 </ul>
               </div>
             </div>
-            <div className="mt-12 pt-8 border-t border-[var(--emerald-border)] flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="mt-12 pt-8 border-t border-white/20 flex flex-col md:flex-row justify-between items-center gap-4">
               <div className="text-center md:text-left">
-                <p className="text-[var(--emerald-400)] font-bold text-xs uppercase mb-1 tracking-widest">Net Result</p>
+                <p className="text-[var(--sky)] font-bold text-xs uppercase mb-1 tracking-widest">Net Result</p>
                 <p className="text-3xl font-bold">
                   {isPro ? (
                     stats.legacyDelta > 0 ? (
-                      <><span className="text-[var(--emerald-400)]">+${Math.round(stats.legacyDelta/1000).toLocaleString()}k</span> Efficiency Gain</>
+                      <><span className="text-[var(--mint)]">+${Math.round(stats.legacyDelta/1000).toLocaleString()}k</span> Efficiency Gain</>
                     ) : (
-                      <><span className="text-[var(--crimson-400)]">Neutral</span> Result</>
+                      <><span className="text-white/60">Neutral</span> Result</>
                     )
                   ) : (
-                    <span className="text-[var(--mist-200)] opacity-50">Pro Logic Needed</span>
+                    <span className="text-white/50">Pro Logic Needed</span>
                   )}
                 </p>
               </div>
               <button
                 onClick={() => !isPro ? onUpgrade?.() : setInputs(p => ({...p, targetBracketIndex: p.targetBracketIndex === 1 ? 2 : 1}))}
-                className="bg-[var(--emerald-500)] hover:bg-[var(--emerald-400)] text-white font-bold px-8 py-4 rounded-3xl transition-all shadow-lg text-sm uppercase tracking-widest"
+                className="mgm-btn mgm-btn--secondary mgm-btn--white mgm-btn--md"
               >
                 {!isPro ? "Upgrade to Unlock" : "Switch Target Bracket"}
               </button>

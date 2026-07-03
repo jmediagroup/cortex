@@ -32,7 +32,7 @@ export default function UserProfileBar({
             className="h-11 w-11 rounded-full object-cover"
           />
         ) : (
-          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--surface-tertiary)] text-base font-bold text-[var(--text-secondary)]">
+          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--navy)] text-base font-bold text-white">
             {name.charAt(0).toUpperCase()}
           </div>
         )}

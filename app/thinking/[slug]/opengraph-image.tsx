@@ -1,5 +1,6 @@
 import { ImageResponse } from 'next/og';
 import { getOutlookBySlug } from '@/lib/outlook/content';
+import { MUTANT_MARK_DATA_URI, BRAND } from '@/lib/brand-assets';
 
 // Per-post social card for outlook posts. Static params come from the page's
 // generateStaticParams, so every slug gets a real branded image at build time
@@ -40,56 +41,17 @@ export default async function Image({ params }: { params: Promise<{ slug: string
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          backgroundColor: '#05070A',
+          backgroundColor: BRAND.navy,
           backgroundImage:
-            'radial-gradient(ellipse 900px 500px at 50% -10%, rgba(0,240,160,0.22), transparent 60%), radial-gradient(ellipse 600px 500px at 90% 90%, rgba(90,200,250,0.12), transparent 60%)',
+            'radial-gradient(ellipse 900px 520px at 85% -5%, rgba(78,201,245,0.30), transparent 60%), radial-gradient(ellipse 700px 500px at 8% 105%, rgba(143,217,206,0.16), transparent 60%)',
           padding: '64px 72px',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '56px',
-                height: '56px',
-                borderRadius: '14px',
-                backgroundColor: '#0A0E14',
-                border: '1px solid rgba(0,240,160,0.28)',
-                marginRight: '18px',
-                boxShadow: '0 0 24px rgba(0,240,160,0.25)',
-              }}
-            >
-              <svg
-                width="32"
-                height="32"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#00F0A0"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M12 18V5" />
-                <path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4" />
-                <path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5" />
-                <path d="M17.997 5.125a4 4 0 0 1 2.526 5.77" />
-                <path d="M18 18a4 4 0 0 0 2-7.464" />
-                <path d="M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517" />
-                <path d="M6 18a4 4 0 0 1-2-7.464" />
-                <path d="M6.003 5.125a4 4 0 0 0-2.526 5.77" />
-              </svg>
-            </div>
-            <span
-              style={{
-                fontSize: '34px',
-                fontWeight: 900,
-                color: '#F5F5F7',
-                letterSpacing: '-1px',
-              }}
-            >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={MUTANT_MARK_DATA_URI} width={56} height={58} alt="" style={{ marginRight: '18px' }} />
+            <span style={{ fontSize: '34px', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.5px' }}>
               Money Guy Mutants Research
             </span>
           </div>
@@ -97,10 +59,10 @@ export default async function Image({ params }: { params: Promise<{ slug: string
             style={{
               display: 'flex',
               padding: '10px 22px',
-              borderRadius: '100px',
-              backgroundColor: 'rgba(0,240,160,0.10)',
-              border: '1px solid rgba(0,240,160,0.28)',
-              color: '#00F0A0',
+              borderRadius: '9999px',
+              backgroundColor: 'rgba(78,201,245,0.12)',
+              border: `1px solid ${BRAND.sky}`,
+              color: BRAND.sky,
               fontSize: '18px',
               fontWeight: 700,
               letterSpacing: '2px',
@@ -115,8 +77,8 @@ export default async function Image({ params }: { params: Promise<{ slug: string
             style={{
               fontSize: title.length > 70 ? '44px' : '54px',
               fontWeight: 800,
-              color: '#F5F5F7',
-              letterSpacing: '-1.5px',
+              color: '#ffffff',
+              letterSpacing: '-1px',
               lineHeight: 1.15,
               maxWidth: '1000px',
             }}
@@ -131,10 +93,10 @@ export default async function Image({ params }: { params: Promise<{ slug: string
                   style={{
                     display: 'flex',
                     padding: '8px 18px',
-                    borderRadius: '100px',
-                    backgroundColor: 'rgba(255,255,255,0.06)',
-                    border: '1px solid rgba(255,255,255,0.14)',
-                    color: '#AEAEB2',
+                    borderRadius: '9999px',
+                    backgroundColor: 'rgba(255,255,255,0.08)',
+                    border: '1px solid rgba(255,255,255,0.22)',
+                    color: '#ffffff',
                     fontSize: '20px',
                     fontWeight: 600,
                   }}
@@ -151,13 +113,13 @@ export default async function Image({ params }: { params: Promise<{ slug: string
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            color: '#8E8E93',
+            color: 'rgba(255,255,255,0.75)',
             fontSize: '20px',
             fontWeight: 600,
           }}
         >
           <span>{date}</span>
-          <span style={{ letterSpacing: '2px', fontWeight: 700 }}>CORTEX.VIP/THINKING</span>
+          <span style={{ letterSpacing: '2px', fontWeight: 700, color: BRAND.sky }}>MONEYGUYMUTANTS.COM/THINKING</span>
         </div>
       </div>
     ),

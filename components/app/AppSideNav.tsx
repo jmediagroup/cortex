@@ -87,13 +87,13 @@ export function AppSideNav() {
                 alignItems: 'center',
                 gap: 10,
                 padding: '10px 12px',
-                borderRadius: 10,
+                borderRadius: 8,
                 fontSize: 13,
-                fontWeight: 500,
+                fontWeight: active ? 700 : 500,
                 textDecoration: 'none',
-                color: active ? 'var(--emerald-500)' : 'var(--text-secondary)',
-                background: active ? 'var(--emerald-tint-soft)' : 'transparent',
-                border: `1px solid ${active ? 'var(--emerald-border-soft)' : 'transparent'}`,
+                color: active ? 'var(--navy)' : 'var(--text-secondary)',
+                background: active ? 'rgba(78, 201, 245, 0.14)' : 'transparent',
+                border: `1px solid ${active ? 'rgba(78, 201, 245, 0.35)' : 'transparent'}`,
                 position: 'relative',
               }}
             >
@@ -108,8 +108,7 @@ export function AppSideNav() {
                     width: 3,
                     height: 20,
                     borderRadius: 2,
-                    background: 'var(--emerald-500)',
-                    boxShadow: '0 0 10px var(--cta-glow-soft)',
+                    background: 'var(--sky)',
                   }}
                 />
               )}
@@ -127,22 +126,22 @@ export function AppSideNav() {
             display: 'block',
             padding: '16px',
             borderRadius: 'var(--radius-md)',
-            background: 'linear-gradient(135deg, var(--emerald-tint), transparent 80%)',
-            border: '1px solid var(--emerald-border-soft)',
+            background: 'linear-gradient(135deg, #0a4a73 0%, var(--navy) 100%)',
+            border: '1px solid var(--navy)',
             textDecoration: 'none',
           }}
         >
           <div
             className="eyebrow"
-            style={{ color: 'var(--emerald-500)', marginBottom: 6, fontSize: 10 }}
+            style={{ color: 'var(--sky)', marginBottom: 6, fontSize: 10 }}
           >
-            ● UPGRADE
+            UPGRADE
           </div>
           <div
             style={{
               fontSize: 13,
-              fontWeight: 600,
-              color: 'var(--text-primary)',
+              fontWeight: 700,
+              color: '#ffffff',
               lineHeight: 1.4,
               marginBottom: 4,
             }}
@@ -152,7 +151,7 @@ export function AppSideNav() {
           <div
             style={{
               fontSize: 11,
-              color: 'var(--text-tertiary)',
+              color: 'rgba(255, 255, 255, 0.72)',
               lineHeight: 1.5,
             }}
           >

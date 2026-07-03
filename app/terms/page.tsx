@@ -35,8 +35,8 @@ const pStyle: React.CSSProperties = {
 };
 
 const calloutStyle: React.CSSProperties = {
-  background: 'var(--bg-glass)',
-  border: '1px solid var(--glass-border)',
+  background: 'var(--off-white)',
+  border: '1px solid var(--border-default)',
   borderRadius: 'var(--radius-md)',
   padding: '16px 20px',
   margin: '16px 0',
@@ -50,10 +50,7 @@ export default function TermsPage() {
         style={{ padding: '96px 24px 48px', textAlign: 'center' }}
       >
         <div style={{ maxWidth: 760, margin: '0 auto', position: 'relative' }}>
-          <div
-            className="eyebrow"
-            style={{ marginBottom: 16, color: 'var(--text-tertiary)' }}
-          >
+          <div className="mgm-eyebrow" style={{ marginBottom: 16 }}>
             LEGAL
           </div>
           <h1
@@ -65,7 +62,7 @@ export default function TermsPage() {
           <p
             style={{
               fontSize: 15,
-              color: 'var(--text-tertiary)',
+              color: 'var(--gray-500)',
               margin: 0,
               fontFamily: 'var(--font-mono)',
             }}
@@ -157,7 +154,7 @@ export default function TermsPage() {
           <h3 style={h3Style}>C. Sharing &amp; disclosure</h3>
           <div style={calloutStyle}>
             <p style={{ ...pStyle, margin: 0 }}>
-              <strong style={{ color: 'var(--emerald-500)' }}>We do not sell your personal data.</strong>{' '}
+              <strong style={{ color: 'var(--teal-green)' }}>We do not sell your personal data.</strong>{' '}
               We share information only with essential service providers (such as hosting platforms and email service providers) or if required by law to comply with a judicial proceeding.
             </p>
           </div>
@@ -186,21 +183,18 @@ export default function TermsPage() {
           <h2 style={h2Style}>4. Contact.</h2>
           <p style={pStyle}>For questions regarding these policies, please contact:</p>
           <div
+            className="mgm-band"
             style={{
-              background: 'linear-gradient(135deg, #121620 0%, #0A0E14 100%)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: 'var(--radius-xl)',
               padding: '28px 32px',
-              color: '#F5F5F7',
             }}
           >
-            <p style={{ fontWeight: 700, fontSize: 17, margin: '0 0 8px' }}>
+            <p style={{ fontWeight: 700, fontSize: 17, margin: '0 0 8px', color: 'var(--white)' }}>
               J Media Group LLC
             </p>
             <a
               href="mailto:support@jmediagroup.net"
               style={{
-                color: '#00F0A0',
+                color: 'var(--sky)',
                 textDecoration: 'none',
                 fontSize: 14,
                 fontFamily: 'var(--font-mono)',

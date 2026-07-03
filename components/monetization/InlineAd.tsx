@@ -110,7 +110,7 @@ export default function InlineAd({
               onClick={() => setCurrentIndex(index)}
               className={`w-2 h-2 rounded-full transition-all ${
                 index === currentIndex
-                  ? 'bg-[#2563EB] w-4'
+                  ? 'bg-[var(--sky)] w-4'
                   : 'bg-[#E2E8F0] hover:bg-[#CBD5E1]'
               }`}
               aria-label={`Show affiliate ${index + 1}`}

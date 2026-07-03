@@ -59,7 +59,6 @@ export function Sparkline({
         strokeWidth="1.75"
         strokeLinecap="round"
         strokeLinejoin="round"
-        style={{ filter: `drop-shadow(0 0 4px ${color}88)` }}
       />
     </svg>
   );

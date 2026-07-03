@@ -55,15 +55,15 @@ export default function DashboardHome({ userName, userTier = 'free', appOrder }:
         <div style={{ marginBottom: 16 }}>
           <div
             className="eyebrow"
-            style={{ color: 'var(--text-tertiary)', marginBottom: 6 }}
+            style={{ color: 'var(--gray-500)', marginBottom: 6 }}
           >
-            CORTEX FINANCE
+            MUTANT TOOLKIT
           </div>
           <h2
             style={{
               fontSize: 18,
-              fontWeight: 600,
-              color: 'var(--text-primary)',
+              fontWeight: 700,
+              color: 'var(--navy)',
               margin: 0,
               letterSpacing: '-0.01em',
             }}

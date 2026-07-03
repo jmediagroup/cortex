@@ -120,7 +120,7 @@ export default function IABAd({
           {/* Content area - F-pattern: headline top-left, body below */}
           <div className="flex-1 flex flex-col justify-center mt-2">
             <h3
-              className="text-lg font-semibold text-[#0F172A] leading-tight tracking-tight mb-3"
+              className="text-lg font-semibold text-[var(--navy)] leading-tight tracking-tight mb-3"
               style={{ letterSpacing: '-0.02em' }}
               dangerouslySetInnerHTML={{ __html: highlightNumbers(adCopy.headline) }}
             />
@@ -138,7 +138,7 @@ export default function IABAd({
           {/* CTA Button - bottom right aligned */}
           <div className="flex justify-end mt-4">
             <span
-              className="inline-block px-6 py-3 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-semibold rounded-md transition-colors group-hover:bg-[#1D4ED8]"
+              className="inline-block px-6 py-3 bg-[var(--orange)] hover:bg-[#d94f1e] text-white text-sm font-semibold rounded-md transition-colors group-hover:bg-[#d94f1e]"
               style={{
                 boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
                 borderRadius: '6px'
@@ -169,13 +169,13 @@ export default function IABAd({
               Ad
             </span>
             <p
-              className="text-[#0F172A] font-medium text-sm lg:text-base truncate"
+              className="text-[var(--navy)] font-medium text-sm lg:text-base truncate"
               style={{ letterSpacing: '-0.02em' }}
               dangerouslySetInnerHTML={{ __html: highlightNumbers(adCopy.headline) }}
             />
           </div>
           <span
-            className="shrink-0 px-6 py-3 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-semibold rounded-md transition-colors group-hover:bg-[#1D4ED8]"
+            className="shrink-0 px-6 py-3 bg-[var(--orange)] hover:bg-[#d94f1e] text-white text-sm font-semibold rounded-md transition-colors group-hover:bg-[#d94f1e]"
             style={{
               boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
               borderRadius: '6px'
@@ -204,12 +204,12 @@ export default function IABAd({
             Sponsored
           </span>
           <h3
-            className="text-[15px] font-semibold text-[#0F172A] mb-2 leading-tight"
+            className="text-[15px] font-semibold text-[var(--navy)] mb-2 leading-tight"
             style={{ letterSpacing: '-0.02em' }}
             dangerouslySetInnerHTML={{ __html: highlightNumbers(adCopy.headline) }}
           />
           <span
-            className="px-5 py-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-[13px] font-semibold rounded-md transition-colors group-hover:bg-[#1D4ED8]"
+            className="px-5 py-2 bg-[var(--orange)] hover:bg-[#d94f1e] text-white text-[13px] font-semibold rounded-md transition-colors group-hover:bg-[#d94f1e]"
             style={{
               boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
               borderRadius: '6px'
@@ -242,7 +242,7 @@ export default function IABAd({
           {/* Content area - F-pattern */}
           <div className="flex-1 flex flex-col justify-center mt-2">
             <h3
-              className="text-xl font-semibold text-[#0F172A] leading-tight tracking-tight mb-3"
+              className="text-xl font-semibold text-[var(--navy)] leading-tight tracking-tight mb-3"
               style={{ letterSpacing: '-0.02em' }}
               dangerouslySetInnerHTML={{ __html: highlightNumbers(adCopy.headline) }}
             />
@@ -260,7 +260,7 @@ export default function IABAd({
           {/* CTA Button - bottom right aligned */}
           <div className="flex justify-end mt-4">
             <span
-              className="inline-block px-6 py-3 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold rounded-md transition-colors group-hover:bg-[#1D4ED8]"
+              className="inline-block px-6 py-3 bg-[var(--orange)] hover:bg-[#d94f1e] text-white font-semibold rounded-md transition-colors group-hover:bg-[#d94f1e]"
               style={{
                 boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
                 borderRadius: '6px'

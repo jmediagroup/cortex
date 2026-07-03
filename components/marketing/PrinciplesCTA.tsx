@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Button } from '@/components/ui/Button';
 import { MarketingIcon, type MarketingIconName } from './Icons';
 
 type Principle = { icon: MarketingIconName; title: string; desc: string };
@@ -14,15 +14,15 @@ const PRINCIPLES: Principle[] = [
 ];
 
 /**
- * Dark feature island — stays obsidian in BOTH themes.
- * Uses fixed hex for white/mist text so it doesn't flip with the page theme.
+ * MGM navy-band CTA island — a full navy duotone panel with white ink and an
+ * orange primary button. Renders light-on-navy in the single MGM theme.
  */
 export function MarketingPrinciplesCTA() {
-  const cardBg = 'rgba(255, 255, 255, 0.04)';
-  const cardBorder = 'rgba(255, 255, 255, 0.08)';
-  const textWhite = '#F5F5F7';
-  const textMist = '#AEAEB2';
-  const textMuted = '#8E8E93';
+  const textWhite = '#FFFFFF';
+  const textMist = 'rgba(255,255,255,0.82)';
+  const textMuted = 'rgba(255,255,255,0.6)';
+  const cardBg = 'rgba(255,255,255,0.06)';
+  const cardBorder = 'rgba(255,255,255,0.14)';
 
   return (
     <section
@@ -38,9 +38,8 @@ export function MarketingPrinciplesCTA() {
           maxWidth: 1200,
           margin: '0 auto',
           position: 'relative',
-          background: 'linear-gradient(135deg, #121620 0%, #0A0E14 100%)',
-          border: '1px solid rgba(255,255,255,0.08)',
-          borderRadius: 'var(--radius-3xl)',
+          background: 'linear-gradient(135deg, #0a4a73 0%, var(--navy) 100%)',
+          borderRadius: 'var(--radius-2xl)',
           padding: '80px 48px',
           overflow: 'hidden',
         }}
@@ -49,26 +48,9 @@ export function MarketingPrinciplesCTA() {
           aria-hidden="true"
           style={{
             position: 'absolute',
-            top: '-20%',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: 800,
-            height: 400,
-            background: 'radial-gradient(ellipse at center, rgba(0,240,160,0.18), transparent 60%)',
-            filter: 'blur(40px)',
-            pointerEvents: 'none',
-          }}
-        />
-        <div
-          aria-hidden="true"
-          style={{
-            position: 'absolute',
             inset: 0,
             backgroundImage:
-              'linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)',
-            backgroundSize: '48px 48px',
-            maskImage: 'radial-gradient(ellipse at center, black 30%, transparent 80%)',
-            WebkitMaskImage: 'radial-gradient(ellipse at center, black 30%, transparent 80%)',
+              'repeating-linear-gradient(135deg, rgba(255,255,255,0.05) 0 14px, rgba(255,255,255,0) 14px 28px)',
             pointerEvents: 'none',
           }}
         />
@@ -81,8 +63,8 @@ export function MarketingPrinciplesCTA() {
             textAlign: 'center',
           }}
         >
-          <div className="eyebrow" style={{ marginBottom: 20, color: '#00F0A0' }}>
-            ● OUR PRINCIPLES
+          <div className="eyebrow" style={{ marginBottom: 20, color: 'var(--sky)' }}>
+            OUR PRINCIPLES
           </div>
 
           <h2
@@ -125,24 +107,21 @@ export function MarketingPrinciplesCTA() {
                 key={p.title}
                 style={{
                   background: cardBg,
-                  backdropFilter: 'blur(20px) saturate(180%)',
-                  WebkitBackdropFilter: 'blur(20px) saturate(180%)',
                   border: `1px solid ${cardBorder}`,
-                  borderRadius: 'var(--radius-lg)',
+                  borderRadius: 'var(--radius-md)',
                   padding: 20,
                 }}
               >
                 <div
                   style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: 8,
-                    background: 'rgba(0,240,160,0.1)',
-                    border: '1px solid rgba(0,240,160,0.2)',
+                    width: 40,
+                    height: 40,
+                    borderRadius: 'var(--radius-circle)',
+                    background: 'var(--mint)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: '#00F0A0',
+                    color: 'var(--navy)',
                     marginBottom: 14,
                   }}
                 >
@@ -151,7 +130,7 @@ export function MarketingPrinciplesCTA() {
                 <div
                   style={{
                     fontSize: 14,
-                    fontWeight: 600,
+                    fontWeight: 700,
                     color: textWhite,
                     marginBottom: 6,
                   }}
@@ -180,24 +159,9 @@ export function MarketingPrinciplesCTA() {
             Just clearer thinking — one decision at a time.
           </p>
 
-          <Link
-            href="/signup"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8,
-              background: '#00F0A0',
-              color: '#0A0E14',
-              padding: '16px 28px',
-              borderRadius: 12,
-              fontWeight: 700,
-              fontSize: 15,
-              textDecoration: 'none',
-              boxShadow: '0 0 0 1px rgba(0,240,160,0.4), 0 0 40px rgba(0,240,160,0.4)',
-            }}
-          >
+          <Button variant="primary" size="lg" href="/signup">
             Start thinking clearly <MarketingIcon name="arrowRight" size={16} />
-          </Link>
+          </Button>
         </div>
       </div>
     </section>
