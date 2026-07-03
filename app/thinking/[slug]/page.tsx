@@ -233,13 +233,13 @@ export default async function OutlookDetailPage({ params }: PageProps) {
             style={{
               margin: '40px 0',
               padding: 32,
-              background: 'linear-gradient(135deg, #121620 0%, #0A0E14 100%)',
+              background: 'linear-gradient(135deg, #0a4a73 0%, #054C7D 100%)',
               border: '1px solid rgba(255,255,255,0.08)',
               borderRadius: 'var(--radius-xl)',
               color: '#F5F5F7',
             }}
           >
-            <div className="eyebrow" style={{ color: '#00F0A0', marginBottom: 12 }}>
+            <div className="eyebrow" style={{ color: '#1D8072', marginBottom: 12 }}>
               GET THIS BY EMAIL
             </div>
             <h3

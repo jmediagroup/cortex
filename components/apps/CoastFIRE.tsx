@@ -438,7 +438,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
       </div>
 
       {/* Primary Status Card */}
-      <div className={`rounded-[3rem] p-8 md:p-10 border-2 transition-all shadow-lg ${
+      <div className={`rounded-2xl p-8 md:p-10 border-2 transition-all shadow-lg ${
         calculations.hasReachedCoast
           ? 'bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] border-[var(--emerald-border)] text-white'
           : 'bg-[var(--bg-card)] border-[var(--border-default)] text-[var(--text-primary)]'
@@ -547,7 +547,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Input Sidebar */}
         <aside className="lg:col-span-4 space-y-6">
-          <div className="bg-[var(--bg-card)] p-8 rounded-[2.5rem] border border-[var(--border-default)] shadow-sm space-y-6">
+          <div className="bg-[var(--bg-card)] p-8 rounded-2xl border border-[var(--border-default)] shadow-sm space-y-6">
             <h3 className="text-sm font-bold text-[var(--text-primary)] uppercase tracking-widest flex items-center gap-2">
               <Calculator size={16} className="text-[var(--emerald-500)]" /> Your Numbers
             </h3>
@@ -667,7 +667,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
           </div>
 
           {/* Educational Snippet */}
-          <div data-theme="dark" className="bg-[var(--obsidian-800)] text-white p-8 rounded-[2.5rem] shadow-xl">
+          <div data-theme="dark" className="bg-[var(--obsidian-800)] text-white p-8 rounded-2xl shadow-xl">
             <h4 className="font-bold text-sm uppercase tracking-widest mb-4 flex items-center gap-2">
               <Info size={16} className="text-[var(--emerald-400)]" /> What is Coast FIRE?
             </h4>
@@ -684,7 +684,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
         </aside>
 
         {/* Chart Area */}
-        <main className="lg:col-span-8 bg-[var(--bg-card)] p-8 rounded-[3rem] border border-[var(--border-default)] shadow-sm overflow-hidden">
+        <main className="lg:col-span-8 bg-[var(--bg-card)] p-8 rounded-2xl border border-[var(--border-default)] shadow-sm overflow-hidden">
           <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
             <div>
               <h3 className="text-xl font-bold text-[var(--text-primary)] flex items-center gap-2">
@@ -705,12 +705,12 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
               <ComposedChart data={calculations.projectionData}>
                 <defs>
                   <linearGradient id="colorWithCoast" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#00F0A0" stopOpacity={0.15}/>
-                    <stop offset="95%" stopColor="#00F0A0" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#1D8072" stopOpacity={0.15}/>
+                    <stop offset="95%" stopColor="#1D8072" stopOpacity={0}/>
                   </linearGradient>
                   <linearGradient id="colorCoastOnly" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#5AC8FA" stopOpacity={0.15}/>
-                    <stop offset="95%" stopColor="#5AC8FA" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#4EC9F5" stopOpacity={0.15}/>
+                    <stop offset="95%" stopColor="#4EC9F5" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#2C2C2E" />
@@ -751,7 +751,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                 <Area
                   type="monotone"
                   dataKey="withContributions"
-                  stroke="#00F0A0"
+                  stroke="#1D8072"
                   strokeWidth={3}
                   fillOpacity={1}
                   fill="url(#colorWithCoast)"
@@ -760,7 +760,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                 <Area
                   type="monotone"
                   dataKey="coastingOnly"
-                  stroke="#5AC8FA"
+                  stroke="#4EC9F5"
                   strokeWidth={3}
                   fillOpacity={1}
                   fill="url(#colorCoastOnly)"
@@ -800,7 +800,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
 
       {/* PRO FEATURES SECTION - Locked State */}
       {!isPro && (
-        <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] rounded-[3rem] p-12 text-white relative overflow-hidden shadow-2xl">
+        <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] rounded-2xl p-12 text-white relative overflow-hidden shadow-2xl">
           <div className="absolute top-0 right-0 p-12 opacity-10 rotate-12">
             <Zap size={200} fill="currentColor" />
           </div>
@@ -860,7 +860,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
           </div>
 
           {/* Pro Input Section */}
-          <div className="bg-gradient-to-br from-[var(--obsidian-900)] to-[var(--obsidian-800)] rounded-[3rem] p-8 text-white">
+          <div className="bg-gradient-to-br from-[var(--obsidian-900)] to-[var(--obsidian-800)] rounded-2xl p-8 text-white">
             <h4 className="font-bold text-sm uppercase tracking-widest mb-6 flex items-center gap-2">
               <Sparkles size={16} className="text-[var(--emerald-400)]" /> Pro Inputs
             </h4>
@@ -902,7 +902,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
           </div>
 
           {/* Flexibility Score Card */}
-          <div className="bg-[var(--bg-card)] rounded-[3rem] p-10 border border-[var(--border-default)] shadow-sm">
+          <div className="bg-[var(--bg-card)] rounded-2xl p-10 border border-[var(--border-default)] shadow-sm">
             <div className="flex items-start gap-4 mb-6">
               <div className={`p-4 rounded-2xl ${
                 proAnalytics.flexibilityScore >= 75 ? 'bg-[var(--emerald-100)] text-[var(--emerald-500)]' :
@@ -953,7 +953,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
             </div>
 
             <div className="mt-6 p-4 bg-[var(--obsidian-800)] text-white rounded-2xl">
-              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
+              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">MUTANT INSIGHT</p>
               <p className="text-sm font-medium">
                 {proAnalytics.flexibilityScore >= 75
                   ? "Your coast position is highly resilient. You're protected against most adverse scenarios."
@@ -965,7 +965,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
           </div>
 
           {/* Barista FIRE Analysis */}
-          <div data-theme="dark" className="bg-gradient-to-br from-[var(--obsidian-900)] to-[var(--emerald-700)] rounded-[3rem] p-10 text-white shadow-xl">
+          <div data-theme="dark" className="bg-gradient-to-br from-[var(--obsidian-900)] to-[var(--emerald-700)] rounded-2xl p-10 text-white shadow-xl">
             <div className="flex items-start gap-4 mb-8">
               <div className="bg-white/10 p-3 rounded-2xl backdrop-blur-sm">
                 <Coffee size={32} />
@@ -1011,7 +1011,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
             </div>
 
             <div className="mt-6 p-4 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20">
-              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
+              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">MUTANT INSIGHT</p>
               <p className="text-sm font-medium text-white/90">
                 {proAnalytics.baristaScenarios.some(s => s.canCoastNow && s.hoursPerWeek > 0)
                   ? `You could switch to part-time work today! Consider the "${proAnalytics.baristaScenarios.find(s => s.canCoastNow && s.hoursPerWeek > 0)?.name}" option for immediate freedom with some income.`
@@ -1021,7 +1021,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
           </div>
 
           {/* Coast Date Optimizer */}
-          <div className="bg-[var(--bg-card)] rounded-[3rem] p-10 border border-[var(--border-default)] shadow-sm">
+          <div className="bg-[var(--bg-card)] rounded-2xl p-10 border border-[var(--border-default)] shadow-sm">
             <div className="flex items-start gap-4 mb-8">
               <div className="bg-[var(--emerald-100)] text-[var(--emerald-500)] p-3 rounded-2xl">
                 <Clock size={32} />
@@ -1086,7 +1086,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
             </div>
 
             <div className="mt-6 p-4 bg-[var(--obsidian-800)] text-white rounded-2xl">
-              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
+              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">MUTANT INSIGHT</p>
               <p className="text-sm font-medium">
                 {calculations.hasReachedCoast
                   ? "You've already reached Coast FIRE! Every dollar you save now accelerates your timeline or increases your retirement income."
@@ -1098,7 +1098,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
           </div>
 
           {/* Lifestyle Scenarios */}
-          <div className="bg-[var(--bg-card)] rounded-[3rem] p-10 border border-[var(--border-default)] shadow-sm">
+          <div className="bg-[var(--bg-card)] rounded-2xl p-10 border border-[var(--border-default)] shadow-sm">
             <div className="flex items-start gap-4 mb-8">
               <div className="bg-[var(--emerald-100)] text-[var(--emerald-500)] p-3 rounded-2xl">
                 <Flame size={32} />
@@ -1157,7 +1157,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
           </div>
 
           {/* Social Security Integration */}
-          <div data-theme="dark" className="bg-gradient-to-br from-[var(--obsidian-900)] to-[var(--emerald-700)] rounded-[3rem] p-10 text-white shadow-xl">
+          <div data-theme="dark" className="bg-gradient-to-br from-[var(--obsidian-900)] to-[var(--emerald-700)] rounded-2xl p-10 text-white shadow-xl">
             <div className="flex items-start gap-4 mb-8">
               <div className="bg-white/10 p-3 rounded-2xl backdrop-blur-sm">
                 <ShieldCheck size={32} />
@@ -1193,7 +1193,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
             </div>
 
             <div className="mt-6 p-4 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20">
-              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
+              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">MUTANT INSIGHT</p>
               <p className="text-sm font-medium text-white/90">
                 {proAnalytics.ssIntegration.ssAdjustedCoastReached
                   ? "When factoring in Social Security, you've already hit your adjusted Coast number! SS will cover part of your expenses, reducing what you need from investments."
@@ -1203,7 +1203,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
           </div>
 
           {/* Work Optional Timeline */}
-          <div className="bg-[var(--bg-card)] rounded-[3rem] p-10 border border-[var(--border-default)] shadow-sm">
+          <div className="bg-[var(--bg-card)] rounded-2xl p-10 border border-[var(--border-default)] shadow-sm">
             <div className="flex items-start gap-4 mb-8">
               <div className="bg-[var(--emerald-100)] text-[var(--emerald-500)] p-3 rounded-2xl">
                 <Briefcase size={32} />
@@ -1221,8 +1221,8 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                 <ComposedChart data={proAnalytics.workOptionalTimeline}>
                   <defs>
                     <linearGradient id="colorTimeline" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#00F0A0" stopOpacity={0.2}/>
-                      <stop offset="95%" stopColor="#00F0A0" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#1D8072" stopOpacity={0.2}/>
+                      <stop offset="95%" stopColor="#1D8072" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#2C2C2E" />
@@ -1258,7 +1258,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                   <Area
                     type="monotone"
                     dataKey="balance"
-                    stroke="#00F0A0"
+                    stroke="#1D8072"
                     strokeWidth={3}
                     fillOpacity={1}
                     fill="url(#colorTimeline)"

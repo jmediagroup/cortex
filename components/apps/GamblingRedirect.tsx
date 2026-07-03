@@ -178,7 +178,7 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Input Sidebar */}
         <aside className="lg:col-span-4 space-y-6">
-          <div className="bg-[var(--bg-card)] p-8 rounded-[2.5rem] border border-[var(--border-default)] shadow-sm space-y-6">
+          <div className="bg-[var(--bg-card)] p-8 rounded-2xl border border-[var(--border-default)] shadow-sm space-y-6">
             <h3 className="text-sm font-bold text-[var(--text-primary)] uppercase tracking-widest mb-6 flex items-center gap-2">
               <Target size={16} className="text-[var(--emerald-500)]" /> Your Habits
             </h3>
@@ -252,7 +252,7 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
           </div>
 
           {/* Reality Check Card */}
-          <div data-theme="dark" className="bg-[var(--obsidian-800)] text-white p-8 rounded-[2.5rem] shadow-xl">
+          <div data-theme="dark" className="bg-[var(--obsidian-800)] text-white p-8 rounded-2xl shadow-xl">
             <h4 className="font-bold text-sm uppercase tracking-widest mb-4 flex items-center gap-2">
               <AlertTriangle size={16} className="text-[var(--emerald-400)]" /> The Reality Check
             </h4>
@@ -274,7 +274,7 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
         </aside>
 
         {/* Chart View */}
-        <main className="lg:col-span-8 bg-[var(--bg-card)] p-8 rounded-[3rem] border border-[var(--border-default)] shadow-sm overflow-hidden">
+        <main className="lg:col-span-8 bg-[var(--bg-card)] p-8 rounded-2xl border border-[var(--border-default)] shadow-sm overflow-hidden">
           <div className="flex items-center justify-between mb-8">
             <h3 className="text-xl font-bold text-[var(--text-primary)] flex items-center gap-2">
               <Calendar className="text-[var(--emerald-500)]" /> Growth Comparison Over Time
@@ -285,12 +285,12 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
               <AreaChart data={simulationData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorInvested" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#00C285" stopOpacity={0.1}/>
-                    <stop offset="95%" stopColor="#00C285" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#17685E" stopOpacity={0.1}/>
+                    <stop offset="95%" stopColor="#17685E" stopOpacity={0}/>
                   </linearGradient>
                   <linearGradient id="colorBurned" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#FF3B30" stopOpacity={0.1}/>
-                    <stop offset="95%" stopColor="#FF3B30" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#CD2026" stopOpacity={0.1}/>
+                    <stop offset="95%" stopColor="#CD2026" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#2C2C2E" />
@@ -317,7 +317,7 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
                   type="monotone"
                   dataKey="invested"
                   name="Potential S&P 500 Wealth"
-                  stroke="#00C285"
+                  stroke="#17685E"
                   strokeWidth={3}
                   fillOpacity={1}
                   fill="url(#colorInvested)"
@@ -326,7 +326,7 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
                   type="monotone"
                   dataKey="burned"
                   name="Total Money Burned"
-                  stroke="#FF3B30"
+                  stroke="#CD2026"
                   strokeWidth={3}
                   fillOpacity={1}
                   fill="url(#colorBurned)"
@@ -357,7 +357,7 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
 
       {/* PRO FEATURES SECTION */}
       {!isPro && (
-        <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] rounded-[3rem] p-12 text-white relative overflow-hidden shadow-2xl">
+        <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--emerald-500)] rounded-2xl p-12 text-white relative overflow-hidden shadow-2xl">
           <div className="absolute top-0 right-0 p-12 opacity-10 rotate-12">
             <Zap size={200} fill="currentColor" />
           </div>
@@ -412,7 +412,7 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
           </div>
 
           {/* True Cost Warning */}
-          <div data-theme="dark" className="bg-gradient-to-br from-[var(--crimson-600)] to-[var(--crimson-500)] rounded-[3rem] p-10 text-white shadow-xl">
+          <div data-theme="dark" className="bg-gradient-to-br from-[var(--crimson-600)] to-[var(--crimson-500)] rounded-2xl p-10 text-white shadow-xl">
             <div className="flex items-start gap-4 mb-6">
               <div className="bg-[var(--bg-card)]/20 p-3 rounded-2xl backdrop-blur-sm">
                 <AlertTriangle size={32} />
@@ -444,7 +444,7 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
               </div>
             </div>
             <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
+              <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">MUTANT INSIGHT</p>
               <p className="font-medium text-white">
                 If your real spend were 3.5x what you entered—common with escalating play—that's {formatCurrency(proAnalysis.realCostEstimate)} over {inputs.years} years. An illustrative estimate, not a measured figure.
               </p>
@@ -453,7 +453,7 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
 
           {/* Milestone Achievements */}
           {proAnalysis.milestones.length > 0 && (
-            <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--color-info)] rounded-[3rem] p-10 text-white shadow-xl">
+            <div data-theme="dark" className="bg-gradient-to-br from-[var(--emerald-700)] to-[var(--color-info)] rounded-2xl p-10 text-white shadow-xl">
               <div className="flex items-start gap-4 mb-6">
                 <div className="bg-[var(--bg-card)]/20 p-3 rounded-2xl backdrop-blur-sm">
                   <Target size={32} />
@@ -483,7 +483,7 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
           )}
 
           {/* Retirement Income */}
-          <div className="bg-[var(--bg-card)] rounded-[3rem] p-10 border border-[var(--border-default)] shadow-sm">
+          <div className="bg-[var(--bg-card)] rounded-2xl p-10 border border-[var(--border-default)] shadow-sm">
             <div className="flex items-start gap-4 mb-6">
               <div className="bg-[var(--emerald-100)] text-[var(--emerald-500)] p-3 rounded-2xl">
                 <TrendingUp size={32} />
@@ -519,7 +519,7 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
       )}
 
       {/* Call to Action */}
-      <div className="bg-[var(--bg-card)] p-10 rounded-[3rem] border-2 border-dashed border-[var(--border-default)] text-center">
+      <div className="bg-[var(--bg-card)] p-10 rounded-2xl border-2 border-dashed border-[var(--border-default)] text-center">
         <h4 className="text-2xl font-bold text-[var(--text-primary)] mb-3">Change the Play</h4>
         <p className="text-[var(--text-tertiary)] font-medium mb-6 max-w-lg mx-auto">
           Instead of checking the spread, consider checking your portfolio.

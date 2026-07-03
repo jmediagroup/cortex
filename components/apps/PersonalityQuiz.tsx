@@ -366,7 +366,7 @@ function ResultPanel({
 
       <div className="pq-tools">
         <div className="eyebrow" style={{ color: 'var(--text-tertiary)', marginBottom: 10 }}>
-          NEXT FROM CORTEX
+          NEXT FROM MUTANTS
         </div>
         <div className="pq-tools__row">
           {archetype.tools.map((tool) => (

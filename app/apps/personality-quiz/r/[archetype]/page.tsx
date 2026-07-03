@@ -350,7 +350,7 @@ export default async function SharedResultPage({
             className="eyebrow"
             style={{ color: 'var(--text-tertiary)', marginBottom: 10 }}
           >
-            EXPLORE WITH CORTEX
+            EXPLORE WITH MUTANTS
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
             {primary.tools.map((tool) => (

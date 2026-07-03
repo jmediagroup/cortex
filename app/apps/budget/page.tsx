@@ -482,7 +482,7 @@ const App = () => {
               <div className="w-8 h-8 bg-[var(--emerald-500)] rounded flex items-center justify-center">
                 <BrainCircuit className="text-white" size={20} />
               </div>
-              <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)] uppercase">Cortex</h1>
+              <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)] uppercase">Money Guy Mutants</h1>
             </div>
             <p className="text-sm text-[var(--text-tertiary)] italic">Resource allocation under constraints.</p>
           </header>
@@ -623,7 +623,7 @@ const App = () => {
                 )}
               </div>
               <h3 className={`text-lg font-bold mb-2 ${hasProFeatures ? 'text-white' : 'text-[var(--text-secondary)]'}`}>
-                Auto-Optimize (Cortex Mode)
+                Auto-Optimize (Mutant Mode)
               </h3>
               <p className={`text-xs mb-4 leading-relaxed ${hasProFeatures ? 'text-[var(--mist-100)] opacity-80' : 'text-[var(--text-secondary)]'}`}>
                 A constraint-aware engine that rebalances your system based on human priorities.
@@ -756,7 +756,7 @@ const App = () => {
               <div className="w-12 h-12 bg-[var(--emerald-100)] text-[var(--emerald-500)] rounded-2xl flex items-center justify-center mb-6">
                 <BrainCircuit size={28} />
               </div>
-              <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2">Configure Cortex Mode</h2>
+              <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2">Configure Mutant Mode</h2>
               <p className="text-sm text-[var(--text-tertiary)] mb-8">Select a priority goal. The engine will respect your fixed costs and suggest the most stable system.</p>
 
               <div className="space-y-3">
@@ -795,7 +795,7 @@ const App = () => {
                   <Zap className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[var(--emerald-400)]" size={16} />
                 </div>
                 <p className="mt-4 text-sm font-bold text-[var(--text-secondary)]">Rebalancing System...</p>
-                <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-widest mt-1">Cortex Engine v2.5</p>
+                <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-widest mt-1">Mutant Engine v2.5</p>
               </div>
             )}
           </div>

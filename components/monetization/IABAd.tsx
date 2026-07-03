@@ -20,10 +20,10 @@ interface IABAdProps {
  *
  * Design System:
  * - Background: #FFFFFF (clean, trustworthy)
- * - Headline: #0F172A (Deep Navy - Slate 900)
- * - Body: #475569 (Mid-Slate)
+ * - Headline: #054C7D (Deep Navy - Slate 900)
+ * - Body: #3D5666 (Mid-Slate)
  * - CTA: #2563EB (Trust Blue)
- * - Border: #E2E8F0 (Light Gray)
+ * - Border: #E0DBDB (Light Gray)
  * - Success/Bonus: #16A34A (Growth Green)
  *
  * Supports standard IAB ad sizes:
@@ -108,12 +108,12 @@ export default function IABAd({
         target="_blank"
         rel="noopener noreferrer sponsored"
         onClick={handleClick}
-        className={`block w-[300px] h-[250px] bg-[var(--bg-card)] border border-[#E2E8F0] rounded-md overflow-hidden hover:shadow-lg transition-shadow group ${className}`}
+        className={`block w-[300px] h-[250px] bg-[var(--bg-card)] border border-[#E0DBDB] rounded-md overflow-hidden hover:shadow-lg transition-shadow group ${className}`}
         style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
       >
         <div className="h-full flex flex-col p-5">
           {/* Sponsored label - top left */}
-          <span className="text-[10px] text-[#64748B] uppercase tracking-wide font-normal">
+          <span className="text-[10px] text-[#48494A] uppercase tracking-wide font-normal">
             Sponsored
           </span>
 
@@ -124,7 +124,7 @@ export default function IABAd({
               style={{ letterSpacing: '-0.02em' }}
               dangerouslySetInnerHTML={{ __html: highlightNumbers(adCopy.headline) }}
             />
-            <p className="text-sm text-[#475569] leading-relaxed">
+            <p className="text-sm text-[#3D5666] leading-relaxed">
               <span dangerouslySetInnerHTML={{ __html: highlightNumbers(adCopy.body || '') }} />
               {adCopy.bodyLine2 && (
                 <>
@@ -160,12 +160,12 @@ export default function IABAd({
         target="_blank"
         rel="noopener noreferrer sponsored"
         onClick={handleClick}
-        className={`block w-full max-w-[728px] h-[90px] bg-[var(--bg-card)] border border-[#E2E8F0] rounded-md overflow-hidden hover:shadow-lg transition-shadow group ${className}`}
+        className={`block w-full max-w-[728px] h-[90px] bg-[var(--bg-card)] border border-[#E0DBDB] rounded-md overflow-hidden hover:shadow-lg transition-shadow group ${className}`}
         style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
       >
         <div className="h-full flex items-center justify-between px-6 gap-6">
           <div className="flex items-center gap-4 flex-1 min-w-0">
-            <span className="text-[10px] text-[#64748B] uppercase tracking-wide font-normal shrink-0">
+            <span className="text-[10px] text-[#48494A] uppercase tracking-wide font-normal shrink-0">
               Ad
             </span>
             <p
@@ -196,11 +196,11 @@ export default function IABAd({
         target="_blank"
         rel="noopener noreferrer sponsored"
         onClick={handleClick}
-        className={`block w-full max-w-[320px] h-[100px] bg-[var(--bg-card)] border border-[#E2E8F0] rounded-md overflow-hidden hover:shadow-lg transition-shadow group mx-auto ${className}`}
+        className={`block w-full max-w-[320px] h-[100px] bg-[var(--bg-card)] border border-[#E0DBDB] rounded-md overflow-hidden hover:shadow-lg transition-shadow group mx-auto ${className}`}
         style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
       >
         <div className="h-full flex flex-col items-center justify-center p-4 text-center">
-          <span className="text-[9px] text-[#64748B] uppercase tracking-wide font-normal mb-1">
+          <span className="text-[9px] text-[#48494A] uppercase tracking-wide font-normal mb-1">
             Sponsored
           </span>
           <h3
@@ -230,12 +230,12 @@ export default function IABAd({
         target="_blank"
         rel="noopener noreferrer sponsored"
         onClick={handleClick}
-        className={`block w-full max-w-[336px] h-[280px] bg-[var(--bg-card)] border border-[#E2E8F0] rounded-md overflow-hidden hover:shadow-lg transition-shadow group ${className}`}
+        className={`block w-full max-w-[336px] h-[280px] bg-[var(--bg-card)] border border-[#E0DBDB] rounded-md overflow-hidden hover:shadow-lg transition-shadow group ${className}`}
         style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
       >
         <div className="h-full flex flex-col p-6">
           {/* Sponsored label - top left */}
-          <span className="text-[10px] text-[#64748B] uppercase tracking-wide font-normal">
+          <span className="text-[10px] text-[#48494A] uppercase tracking-wide font-normal">
             Sponsored
           </span>
 
@@ -246,7 +246,7 @@ export default function IABAd({
               style={{ letterSpacing: '-0.02em' }}
               dangerouslySetInnerHTML={{ __html: highlightNumbers(adCopy.headline) }}
             />
-            <p className="text-sm text-[#475569] leading-relaxed">
+            <p className="text-sm text-[#3D5666] leading-relaxed">
               <span dangerouslySetInnerHTML={{ __html: highlightNumbers(adCopy.body || '') }} />
               {adCopy.bodyLine2 && (
                 <>
