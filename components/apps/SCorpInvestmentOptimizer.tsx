@@ -63,46 +63,74 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
     const maxIraMonthly = iraLimit / 12;
     const maxHsaMonthly = hsaLimit / 12;
 
+    // §415(c) combined limit on employee + employer 401(k) additions:
+    // $72,000 for 2026 (capped at 100% of compensation); catch-up
+    // deferrals sit on top of that limit.
+    let catchupAllowance = 0;
+    if (isSuperCatchup) catchupAllowance = 11250;
+    else if (isCatchup) catchupAllowance = 8000;
+    const combined401kLimit = Math.min(72000, inputs.annualSalary) + catchupAllowance;
+
     return {
       emp401k: { annual: emp401kLimit, monthly: maxEmpMonthly },
       co401k: { annual: inputs.annualSalary * 0.25, monthly: maxCoMonthly },
       ira: { annual: iraLimit, monthly: maxIraMonthly },
-      hsa: { annual: hsaLimit, monthly: maxHsaMonthly }
+      hsa: { annual: hsaLimit, monthly: maxHsaMonthly },
+      combined401k: { annual: combined401kLimit }
     };
   }, [inputs.age, inputs.annualSalary]);
 
   // Calculate allocations and projections
   const calculations = useMemo(() => {
+    // §219(g): the traditional IRA deduction phases out for active
+    // employer-plan participants — 2026 single filer: $81k–$91k MAGI
+    // (W-2 salary is used as the MAGI proxy here).
+    const activeParticipant = inputs.monthlyEmp401k > 0 || inputs.monthlyCo401k > 0;
+    let iraDeductibleFraction = 1;
+    if (activeParticipant) {
+      const PHASE_START = 81000;
+      const PHASE_END = 91000;
+      if (inputs.annualSalary >= PHASE_END) iraDeductibleFraction = 0;
+      else if (inputs.annualSalary > PHASE_START) {
+        iraDeductibleFraction = (PHASE_END - inputs.annualSalary) / (PHASE_END - PHASE_START);
+      }
+    }
+
     const allocations = [
       {
         name: 'HSA',
         monthly: inputs.monthlyHsa,
         color: '#5AC8FA',
-        isTaxDeductible: true
+        isTaxDeductible: true,
+        deductibleFraction: 1
       },
       {
         name: `401(k) Employee (${inputs.taxStrategy === 'roth' ? 'Roth' : 'Traditional'})`,
         monthly: inputs.monthlyEmp401k,
         color: inputs.taxStrategy === 'roth' ? '#BF5AF2' : '#00F0A0',
-        isTaxDeductible: inputs.taxStrategy === 'traditional'
+        isTaxDeductible: inputs.taxStrategy === 'traditional',
+        deductibleFraction: 1
       },
       {
         name: '401(k) Company Match',
         monthly: inputs.monthlyCo401k,
         color: '#006945',
-        isTaxDeductible: true
+        isTaxDeductible: true,
+        deductibleFraction: 1
       },
       {
         name: `IRA (${inputs.taxStrategy === 'roth' ? 'Roth' : 'Traditional'})`,
         monthly: inputs.monthlyIra,
         color: inputs.taxStrategy === 'roth' ? '#00F0A0' : '#009466',
-        isTaxDeductible: inputs.taxStrategy === 'traditional'
+        isTaxDeductible: inputs.taxStrategy === 'traditional' && iraDeductibleFraction > 0,
+        deductibleFraction: iraDeductibleFraction
       },
       {
         name: 'Brokerage',
         monthly: inputs.monthlyBrokerage,
         color: '#8E8E93',
-        isTaxDeductible: false
+        isTaxDeductible: false,
+        deductibleFraction: 0
       }
     ];
 
@@ -110,7 +138,7 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
     const taxRate = inputs.estTaxRate / 100;
     const monthlyTaxDeduction = allocations
       .filter(a => a.isTaxDeductible)
-      .reduce((sum, a) => sum + a.monthly, 0);
+      .reduce((sum, a) => sum + a.monthly * a.deductibleFraction, 0);
     const monthlyTaxSavings = monthlyTaxDeduction * taxRate;
     const netMonthlyCost = totalMonthly - monthlyTaxSavings;
 
@@ -157,7 +185,8 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
       netMonthlyCost,
       totalBalance,
       projectionData,
-      taxRate
+      taxRate,
+      iraDeductibleFraction
     };
   }, [inputs]);
 
@@ -317,6 +346,11 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
                     inputs.monthlyCo401k > LIMITS.co401k.monthly ? 'border-[var(--crimson-border)] bg-[var(--crimson-50)]' : 'border-[var(--border-default)] focus:border-[var(--color-info)]'
                   }`}
                 />
+                {(inputs.monthlyEmp401k + inputs.monthlyCo401k) * 12 > LIMITS.combined401k.annual && (
+                  <p className="mt-2 text-[10px] font-bold text-[var(--crimson-500)]">
+                    Employee + company contributions of ${((inputs.monthlyEmp401k + inputs.monthlyCo401k) * 12).toLocaleString()}/yr exceed the ${LIMITS.combined401k.annual.toLocaleString()} combined §415(c) limit for your age and salary.
+                  </p>
+                )}
               </div>
 
               <div>
@@ -334,6 +368,18 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
                     inputs.monthlyIra > LIMITS.ira.monthly ? 'border-[var(--crimson-border)] bg-[var(--crimson-50)]' : 'border-[var(--border-default)] focus:border-[var(--color-info)]'
                   }`}
                 />
+                {inputs.taxStrategy === 'traditional' && inputs.monthlyIra > 0 && calculations.iraDeductibleFraction < 1 && (
+                  <p className="mt-2 text-[10px] font-bold text-[var(--color-warning)]">
+                    {calculations.iraDeductibleFraction === 0
+                      ? 'As an active 401(k) participant with salary above $91k, your traditional IRA contribution is not deductible (2026, single filer) — no immediate tax savings are counted for it.'
+                      : 'Your traditional IRA deduction is partially phased out ($81k–$91k salary, active 401(k) participant, 2026 single filer) — only the deductible portion is counted in tax savings.'}
+                  </p>
+                )}
+                {inputs.taxStrategy === 'roth' && inputs.monthlyIra > 0 && inputs.annualSalary > 153000 && (
+                  <p className="mt-2 text-[10px] font-bold text-[var(--color-warning)]">
+                    Roth IRA eligibility phases out between roughly $153k and $168k MAGI (2026, single filer) — direct contributions may be limited or unavailable at this income.
+                  </p>
+                )}
               </div>
 
               <div>
@@ -427,7 +473,7 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
             <div className="bg-[var(--emerald-50)] rounded-[2.5rem] p-8 border-2 border-[var(--emerald-border)] shadow-md">
               <p className="text-xs font-bold uppercase text-[var(--emerald-400)] mb-2">30-Year Wealth</p>
               <div className="text-4xl font-bold text-[var(--emerald-500)] mb-1">${Math.round(calculations.totalBalance).toLocaleString()}</div>
-              <p className="text-xs text-[var(--emerald-400)]">Estimated balance</p>
+              <p className="text-xs text-[var(--emerald-400)]">Estimated balance — pre-tax dollars are still taxed at withdrawal</p>
             </div>
           </div>
 
@@ -500,7 +546,7 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
                 {calculations.allocations.map((allocation, idx) => {
                   if (allocation.monthly <= 0) return null;
                   const annualAmount = allocation.monthly * 12;
-                  const annualSavings = allocation.isTaxDeductible ? annualAmount * calculations.taxRate : 0;
+                  const annualSavings = allocation.isTaxDeductible ? annualAmount * allocation.deductibleFraction * calculations.taxRate : 0;
 
                   return (
                     <div key={idx} className="p-4 border-2 border-[var(--border-subtle)] rounded-2xl bg-[var(--bg-card)] flex justify-between items-center hover:border-[var(--emerald-border)] transition-colors">
@@ -535,8 +581,10 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
         <div className="flex items-start gap-3">
           <AlertCircle className="text-[var(--text-muted)] mt-0.5" size={20} />
           <p className="text-xs text-[var(--text-secondary)] font-medium">
-            Calculations use projected 2026 IRS limits. Total Solo 401(k) limit: $72,000 + catch-up contributions.
-            Tax savings are estimates based on your provided tax rate. Consult a tax professional for personalized advice.
+            Calculations use 2026 IRS limits and assume a single filer. Total Solo 401(k) limit: $72,000 + catch-up contributions.
+            Tax savings are estimates based on your provided tax rate. The 30-year wealth figure combines pre-tax, Roth, and taxable
+            balances without modeling withdrawal taxes, so it does not by itself favor Roth vs. Traditional — that choice depends on
+            your tax rate now vs. in retirement. Consult a tax professional for personalized advice.
           </p>
         </div>
       </div>

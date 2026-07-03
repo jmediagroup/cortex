@@ -17,33 +17,34 @@ import {
   Lock
 } from 'lucide-react';
 import NumberInput from '@/components/ui/NumberInput';
+import { C, bracketTax, ssTaxable } from '@/lib/tax/taxEngine2026';
 
-// 2024 Federal Brackets for Single Filer (Simplified)
-const TAX_BRACKETS = [
-  { label: '10%', cap: 11600, rate: 0.10 },
-  { label: '12%', cap: 47150, rate: 0.12 },
-  { label: '22%', cap: 100525, rate: 0.22 },
-  { label: '24%', cap: 191950, rate: 0.24 },
-  { label: '32%', cap: 243725, rate: 0.32 },
-  { label: '35%', cap: 609350, rate: 0.35 },
-  { label: '37%', cap: Infinity, rate: 0.37 },
-];
+// 2026 single-filer brackets from the shared tax engine, reshaped to the
+// { label, cap, rate } form the bracket-target UI expects.
+const TAX_BRACKETS = C.ordinary.single.map(([start, rate], i, arr) => ({
+  label: `${Math.round(rate * 100)}%`,
+  cap: i + 1 < arr.length ? arr[i + 1][0] : Infinity,
+  rate,
+}));
 
-const STANDARD_DEDUCTION = 14600;
+const STANDARD_DEDUCTION = C.stdDed.single;
 
-const calculateTaxes = (taxableIncome: number) => {
+// IRS Uniform Lifetime Table (simplified for RMD age 73+)
+const RMD_TABLE: Record<number, number> = {
+  73: 26.5, 74: 25.5, 75: 24.6, 76: 23.7, 77: 22.9, 78: 22.0, 79: 21.1, 80: 20.2,
+  81: 19.4, 82: 18.5, 83: 17.7, 84: 16.8, 85: 16.0, 86: 15.2, 87: 14.4, 88: 13.7,
+  89: 12.9, 90: 12.2, 91: 11.5, 92: 10.8, 93: 10.1, 94: 9.5, 95: 8.9, 96: 8.4,
+  97: 7.8, 98: 7.3, 99: 6.8, 100: 6.4
+};
+
+// Brackets and the standard deduction are inflation-indexed in real life.
+// Deflating income to base-year dollars, taxing it, and re-inflating is
+// equivalent to scaling every bracket threshold (and the deduction) by the
+// same inflation factor the sim applies to spending and Social Security.
+const calculateTaxes = (taxableIncome: number, inflationFactor: number) => {
   if (taxableIncome <= 0) return 0;
-  let income = Math.max(0, taxableIncome - STANDARD_DEDUCTION);
-  let tax = 0;
-  let prevCap = 0;
-  for (const b of TAX_BRACKETS) {
-    const chunk = Math.min(income, b.cap - prevCap);
-    tax += chunk * b.rate;
-    income -= chunk;
-    prevCap = b.cap;
-    if (income <= 0) break;
-  }
-  return tax;
+  const realIncome = Math.max(0, taxableIncome / inflationFactor - STANDARD_DEDUCTION);
+  return bracketTax(realIncome, C.ordinary.single) * inflationFactor;
 };
 
 interface RothOptimizerProps {
@@ -91,6 +92,11 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
   const runSimulation = (simInputs: typeof inputs, useLadder: boolean) => {
     const data = [];
     let balances = { ...simInputs.balances };
+    // SECURE 2.0: RMDs start at 75 for anyone born 1960 or later.
+    const birthYear = new Date().getFullYear() - simInputs.currentAge;
+    const rmdStartAge = birthYear >= 1960 ? 75 : 73;
+    // Tax that no account could cover — carried forward, never forgiven.
+    let unpaidTax = 0;
 
     for (let year = 0; year <= (simInputs.endAge - simInputs.currentAge); year++) {
       const age = simInputs.currentAge + year;
@@ -106,33 +112,42 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
         withdrawals: { taxable: 0, traditional: 0, roth: 0 },
         taxes: 0,
         rmd: 0,
+        unpaidTax: 0,
       };
 
-      let taxableIncome = yr.ssIncome * 0.85;
+      let otherIncome = 0; // ordinary income other than Social Security
       let cashGap = Math.max(0, yr.spending - yr.ssIncome);
 
-      if (age >= 73) {
-        const divisor = 26.5 - (age - 73);
-        yr.rmd = Math.max(0, balances.traditional / Math.max(divisor, 6));
+      if (age >= rmdStartAge) {
+        const divisor = RMD_TABLE[Math.min(age, 100)] || 6.4;
+        yr.rmd = Math.max(0, balances.traditional / divisor);
         const takeRmd = Math.min(balances.traditional, yr.rmd);
         balances.traditional -= takeRmd;
         yr.withdrawals.traditional += takeRmd;
-        taxableIncome += takeRmd;
+        otherIncome += takeRmd;
+        // RMD cash beyond this year's spending gap doesn't evaporate — it
+        // lands in the taxable account. The tax on it is settled from the
+        // taxable account in the tax step below, so the redeposit ends up
+        // net of the tax charged on it.
+        const excessRmd = Math.max(0, takeRmd - cashGap);
+        balances.taxable += excessRmd;
         cashGap = Math.max(0, cashGap - takeRmd);
       }
 
       // Conversions only start at retirement: the model has no wage income,
       // so converting during working years would be taxed from the bottom
       // brackets up — far below the real marginal cost on top of a salary.
-      if (useLadder && isRetired && age < 73 && balances.traditional > 0) {
+      if (useLadder && isRetired && age < rmdStartAge && balances.traditional > 0) {
         let amountToConvert = 0;
         if (simInputs.isAutoOptimize && isPro) {
-          const targetCap = TAX_BRACKETS[simInputs.targetBracketIndex].cap + STANDARD_DEDUCTION;
+          // Bracket caps are indexed with inflation like the engine brackets.
+          const targetCap = (TAX_BRACKETS[simInputs.targetBracketIndex].cap + STANDARD_DEDUCTION) * inflationFactor;
           // Spending pulled from the traditional account later this year is
           // also taxable — reserve that headroom or the conversion busts the
           // target bracket once the taxable account runs dry.
           const estTradWithdrawal = Math.max(0, cashGap - balances.taxable);
-          amountToConvert = Math.max(0, targetCap - taxableIncome - estTradWithdrawal);
+          const estTaxableSS = ssTaxable(yr.ssIncome, otherIncome + estTradWithdrawal, 0, 'single');
+          amountToConvert = Math.max(0, targetCap - otherIncome - estTaxableSS - estTradWithdrawal);
           amountToConvert = Math.min(balances.traditional, amountToConvert);
         } else {
           amountToConvert = Math.min(balances.traditional, Math.max(0, simInputs.manualConvAmount));
@@ -141,7 +156,7 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
         balances.traditional -= amountToConvert;
         balances.roth += amountToConvert;
         yr.conversion = amountToConvert;
-        taxableIncome += amountToConvert;
+        otherIncome += amountToConvert;
       }
 
       ['taxable', 'traditional', 'roth'].forEach(type => {
@@ -150,18 +165,25 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
           balances[type as keyof typeof balances] -= take;
           yr.withdrawals[type] += take;
           cashGap -= take;
-          if (type === 'traditional') taxableIncome += take;
+          if (type === 'traditional') otherIncome += take;
         }
       });
 
-      yr.taxes = calculateTaxes(taxableIncome);
-      if (balances.taxable >= yr.taxes) {
-        balances.taxable -= yr.taxes;
-      } else {
-        const diff = yr.taxes - balances.taxable;
-        balances.taxable = 0;
-        balances.roth = Math.max(0, balances.roth - diff);
-      }
+      // Taxable Social Security per the IRC §86 worksheet, not a flat 85%.
+      const taxableSS = ssTaxable(yr.ssIncome, otherIncome, 0, 'single');
+      yr.taxes = calculateTaxes(otherIncome + taxableSS, inflationFactor);
+
+      // Pay taxes (this year's plus any carried shortfall) from taxable,
+      // then Roth, then traditional. Whatever no account can cover is
+      // carried forward as an unpaid shortfall — never silently forgiven.
+      let taxDue = yr.taxes + unpaidTax;
+      (['taxable', 'roth', 'traditional'] as const).forEach(type => {
+        const pay = Math.min(balances[type], taxDue);
+        balances[type] -= pay;
+        taxDue -= pay;
+      });
+      unpaidTax = taxDue;
+      yr.unpaidTax = unpaidTax;
 
       let mktReturn = simInputs.avgReturn / 100;
       if (simInputs.sequenceRisk && age >= simInputs.retirementAge && age < simInputs.retirementAge + 3) {
@@ -169,7 +191,7 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
       }
 
       Object.keys(balances).forEach(k => balances[k as keyof typeof balances] *= (1 + mktReturn));
-      yr.totalBalance = Math.max(0, balances.taxable + balances.traditional + balances.roth);
+      yr.totalBalance = Math.max(0, balances.taxable + balances.traditional + balances.roth - unpaidTax);
       yr.balances = { ...balances };
       data.push(yr);
     }

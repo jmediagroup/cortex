@@ -10,7 +10,8 @@ import {
 
 type ShareBarProps = {
   primary: ArchetypeId;
-  secondary: ArchetypeId;
+  /** Omitted when unknown (e.g. shared page without a valid `?s=`). */
+  secondary?: ArchetypeId;
   /** Optional retake action — only rendered when provided. */
   onRetake?: () => void;
 };

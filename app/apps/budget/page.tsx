@@ -50,6 +50,11 @@ const TAX_MODES = {
   optimistic: { label: 'Optimistic', rate: 0.22 }
 };
 
+// Display formatter — rounds to cents so unit conversions (annual entry / 12,
+// optimizer output * 12) never leak long float tails into the input fields.
+// Stored values keep full precision; only the rendered string is rounded.
+const formatInputValue = (value: number) => String(Math.round(value * 100) / 100);
+
 // Category Group Component (moved outside to prevent recreation on each render)
 const CategoryGroup = ({
   title,
@@ -87,7 +92,7 @@ const CategoryGroup = ({
           displayValue = currentValue;
         } else {
           // Stored number - convert monthly to annual if needed for display
-          displayValue = isAnnual ? String(currentValue * 12) : String(currentValue);
+          displayValue = isAnnual ? formatInputValue(currentValue * 12) : formatInputValue(currentValue);
         }
 
         return (
@@ -267,14 +272,31 @@ const App = () => {
       const getCurrentValue = (id: string) => toMonthly(allocations[id]);
 
       if (goal === 'Maximize Monthly Slack') {
-        // Strategy: Minimize flexible spending, maximize unallocated funds
-        // Reduce dining, personal, and sinking funds
-        newAllocations.dining = Math.max(150, getCurrentValue('dining') * 0.6);
-        newAllocations.personal = Math.max(100, getCurrentValue('personal') * 0.6);
-        newAllocations.sinking = Math.max(100, getCurrentValue('sinking') * 0.5);
-        newAllocations.groceries = Math.max(400, getCurrentValue('groceries') * 0.85);
+        // Strategy: Minimize flexible spending, maximize unallocated funds.
+        // Reduce dining, personal, and sinking funds — but never raise a
+        // category above its current level: a floor should stop a cut,
+        // not add spending.
+        const reduceToFloor = (current: number, floor: number, factor: number) =>
+          Math.min(current, Math.max(floor, current * factor));
 
-        reasoning = "Reduced discretionary spending (dining, personal) by 40% and sinking funds by 50% to maximize available monthly cash flow. This creates breathing room for unexpected expenses.";
+        newAllocations.dining = reduceToFloor(getCurrentValue('dining'), 150, 0.6);
+        newAllocations.personal = reduceToFloor(getCurrentValue('personal'), 100, 0.6);
+        newAllocations.sinking = reduceToFloor(getCurrentValue('sinking'), 100, 0.5);
+        newAllocations.groceries = reduceToFloor(getCurrentValue('groceries'), 400, 0.85);
+
+        // Only claim reductions that actually happened — categories already
+        // at or below their floors are left untouched
+        const reducedLabels = [
+          ['dining', 'dining'],
+          ['personal', 'personal spending'],
+          ['sinking', 'sinking funds'],
+          ['groceries', 'groceries']
+        ].filter(([id]) => (newAllocations[id] as number) < getCurrentValue(id))
+          .map(([, label]) => label);
+
+        reasoning = reducedLabels.length > 0
+          ? `Reduced ${reducedLabels.join(', ')} to maximize available monthly cash flow. This creates breathing room for unexpected expenses.`
+          : "All flexible categories are already at or below their recommended floors, so no reductions were available. Monthly cash flow is unchanged.";
       }
       else if (goal === 'Maximize Future Savings') {
         // Strategy: Aggressive future allocation — redirect exactly what the
@@ -301,9 +323,9 @@ const App = () => {
       }
       else if (goal === 'Minimize Fragility') {
         // Strategy: Balance across all categories, boost emergency fund
-        const targetEmergency = takeHomePay * 0.15; // 15% to emergency
-        const targetInvesting = takeHomePay * 0.12; // 12% to investing
-        const targetSinking = takeHomePay * 0.08; // 8% to sinking
+        let targetEmergency = takeHomePay * 0.15; // 15% to emergency
+        let targetInvesting = takeHomePay * 0.12; // 12% to investing
+        let targetSinking = takeHomePay * 0.08; // 8% to sinking
 
         // Calculate total fixed (don't change these)
         const totalFixed = fixedTotal;
@@ -315,16 +337,49 @@ const App = () => {
         // flexible budget — 0/0 would write NaN into every category)
         const flexibleRatio = flexibleTotal > 0 ? Math.max(0, remainingForFlexible / flexibleTotal) : 0;
 
-        newAllocations.groceries = Math.max(400, getCurrentValue('groceries') * flexibleRatio);
-        newAllocations.dining = Math.max(150, getCurrentValue('dining') * flexibleRatio);
-        newAllocations.transport = Math.max(150, getCurrentValue('transport') * flexibleRatio);
-        newAllocations.personal = Math.max(100, getCurrentValue('personal') * flexibleRatio);
+        let newGroceries = Math.max(400, getCurrentValue('groceries') * flexibleRatio);
+        let newDining = Math.max(150, getCurrentValue('dining') * flexibleRatio);
+        let newTransport = Math.max(150, getCurrentValue('transport') * flexibleRatio);
+        let newPersonal = Math.max(100, getCurrentValue('personal') * flexibleRatio);
+
+        const flexibleWithFloors = newGroceries + newDining + newTransport + newPersonal;
+        const totalPlanned = totalFixed + flexibleWithFloors + targetEmergency + targetInvesting + targetSinking;
+
+        if (totalPlanned <= takeHomePay) {
+          reasoning = "Rebalanced to achieve systemic stability: 15% to emergency buffer, 12% to investing, 8% to sinking funds. Flexible spending proportionally adjusted to maintain livability while building resilience across all categories.";
+        } else if (totalFixed >= takeHomePay) {
+          // No amount of flexible reduction can rescue this system — say so
+          // instead of claiming stability was achieved
+          reasoning = "Budget is over-constrained by fixed costs: fixed commitments alone exceed take-home income, so no reduction in flexible spending can balance the system. Reduce fixed costs or increase income to restore stability.";
+        } else {
+          // The flexible floors pushed the plan past income — scale the
+          // flexible categories below their floors to fit. If fixed costs
+          // plus the future targets already exceed income on their own,
+          // shrink the future targets to the remaining room as well.
+          const flexibleScale = Math.max(0, remainingForFlexible) / flexibleWithFloors;
+          newGroceries *= flexibleScale;
+          newDining *= flexibleScale;
+          newTransport *= flexibleScale;
+          newPersonal *= flexibleScale;
+
+          if (remainingForFlexible < 0) {
+            const futureScale = (takeHomePay - totalFixed) / (targetEmergency + targetInvesting + targetSinking);
+            targetEmergency *= futureScale;
+            targetInvesting *= futureScale;
+            targetSinking *= futureScale;
+          }
+
+          reasoning = "Income can't cover the recommended stability floors, so flexible spending was scaled below its usual floors (and future contributions trimmed where needed) to keep the budget within take-home pay. Reducing fixed costs would restore the full resilience targets.";
+        }
+
+        newAllocations.groceries = newGroceries;
+        newAllocations.dining = newDining;
+        newAllocations.transport = newTransport;
+        newAllocations.personal = newPersonal;
 
         newAllocations.emergency = targetEmergency;
         newAllocations.investing = targetInvesting;
         newAllocations.sinking = targetSinking;
-
-        reasoning = "Rebalanced to achieve systemic stability: 15% to emergency buffer, 12% to investing, 8% to sinking funds. Flexible spending proportionally adjusted to maintain livability while building resilience across all categories.";
       }
 
       // Round all values to 2 decimal places (cleared fields may still hold
@@ -532,12 +587,12 @@ const App = () => {
                     <h4 className="text-xs font-bold text-[var(--text-secondary)] mb-1">Tradeoff Lens</h4>
                     {remaining < 0 ? (
                       <p className="text-[11px] text-[var(--color-warning)] leading-relaxed">
-                        System is over-constrained by <span className="font-bold">${Math.round(Math.abs(remaining)).toLocaleString()}</span>.
+                        System is over-constrained by <span className="font-bold">${Math.round(Math.abs(remaining) * multiplier).toLocaleString()}{viewMode === 'annual' ? '/yr' : '/mo'}</span>.
                         Decrease flexible spending or sinking funds to restore slack.
                       </p>
                     ) : remaining > 0 ? (
                       <p className="text-[11px] text-[var(--text-tertiary)] leading-relaxed">
-                        You have <span className="font-bold">${Math.round(remaining)}</span> of unassigned slack.
+                        You have <span className="font-bold">${Math.round(remaining * multiplier).toLocaleString()}{viewMode === 'annual' ? '/yr' : '/mo'}</span> of unassigned slack.
                         Assign this to &quot;Future You&quot; to decrease long-term fragility.
                       </p>
                     ) : (
@@ -680,7 +735,7 @@ const App = () => {
                     </div>
                     <div className="pt-2 border-t border-[var(--border-default)] flex justify-between items-center">
                       <span className="text-xs font-bold uppercase text-[var(--text-secondary)]">Unallocated Slack</span>
-                      <span className={`font-mono font-bold text-lg ${remaining < 0 ? 'text-[var(--text-muted)]' : 'text-[var(--emerald-500)]'}`}>
+                      <span className={`font-mono font-bold text-lg ${remaining < 0 ? 'text-[var(--color-warning)]' : 'text-[var(--emerald-500)]'}`}>
                         ${Math.round(remaining * multiplier).toLocaleString()}
                       </span>
                     </div>

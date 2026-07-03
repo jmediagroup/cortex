@@ -104,7 +104,9 @@ export const C = {
     brackets: [[0,.02],[3000,.03],[5000,.05],[17000,.0575]] as Bracket[],
     stdDed:   { single:8750, mfj:17500, hoh:8750, mfs:8750 } as Record<FilingStatus, number>,
     exemption: 930,
-    ageDed:   { amount:12000, floor:{ single:50000, mfj:75000, hoh:50000, mfs:50000 } as Record<FilingStatus, number> },
+    // Married filers (joint OR separate) measure combined AFAGI against the
+    // $75,000 married threshold; single/hoh use $50,000.
+    ageDed:   { amount:12000, floor:{ single:50000, mfj:75000, hoh:50000, mfs:75000 } as Record<FilingStatus, number> },
   },
   fpl1: 15650, fplStep: 5500,                    // 2025 HHS poverty guideline (used for 2026 coverage)
   irmaaPartB: 202.90,
@@ -156,7 +158,17 @@ export function qbiDeduction({ qbi, taxableBeforeQBI, netCapGains, w2wages = 0, 
   else if (over >= phase) ded = isSSTB ? 0 : Math.min(tentative, wageLimit);
   else {
     const pct = over / phase;
-    ded = isSSTB ? tentative * (1 - pct) : tentative - (tentative - Math.min(tentative, wageLimit)) * pct;
+    if (isSSTB) {
+      // §199A(d)(3): in the SSTB phase-in, QBI/W-2 wages/UBIA are first
+      // scaled by the applicable percentage, then the ordinary wage-limit
+      // phase-in applies to the reduced amounts.
+      const applicable = 1 - pct;
+      const aTent = 0.20 * (qbi * applicable);
+      const aWageLimit = Math.max(0.50 * w2wages * applicable, 0.25 * w2wages * applicable + 0.025 * ubia * applicable);
+      ded = aTent - (aTent - Math.min(aTent, aWageLimit)) * pct;
+    } else {
+      ded = tentative - (tentative - Math.min(tentative, wageLimit)) * pct;
+    }
   }
   const cap = 0.20 * Math.max(0, taxableBeforeQBI - netCapGains); // overall limit
   return Math.max(0, Math.min(ded, cap));
@@ -193,8 +205,20 @@ export function vaAgeDeduction(numSeniors: number, afagi: number, status: Filing
   return Math.max(0, C.va.ageDed.amount - Math.max(0, afagi - floor)) * numSeniors;
 }
 
-/** IRMAA tier + ANNUAL surcharge. MAGI = AGI + tax-exempt interest. (hoh/mfs approximated as single.) */
+/** IRMAA tier + ANNUAL surcharge. MAGI = AGI + tax-exempt interest. (hoh uses single tiers, per CMS.) */
 export function irmaa(magi: number, status: FilingStatus, enrollees = 1): IrmaaResult {
+  // MFS has its own two-tier rule: above the first threshold it jumps
+  // straight to the second-highest tier, then to the top tier above
+  // (top single bound − first bound), i.e. $391,000 for 2026.
+  if (status === "mfs") {
+    const first = C.irmaa.single[0];
+    const upper = C.irmaa.single[4] - first;
+    let tier = 0;
+    if (magi > upper) tier = 5; else if (magi > first) tier = 4;
+    if (tier === 0) return { tier: 0, annual: 0, partB: C.irmaaPartB, nextBound: first };
+    const surB = C.irmaa.partB[tier - 1], surD = C.irmaa.partD[tier - 1];
+    return { tier, surB, surD, annual: (surB + surD) * 12 * enrollees, partB: C.irmaaPartB + surB, nextBound: tier < 5 ? upper : null };
+  }
   const key: "single" | "mfj" = status === "mfj" ? "mfj" : "single";
   const bounds = C.irmaa[key];
   let tier = 0;
@@ -208,7 +232,7 @@ export function irmaa(magi: number, status: FilingStatus, enrollees = 1): IrmaaR
 export function acaApplicablePct(fplPct: number): number {
   if (fplPct < 133) return 2.10;
   const bands: [number, number, number, number][] = [
-    [133,150,2.10,4.19],[150,200,4.19,6.60],[200,250,6.60,8.44],[250,300,8.44,9.96],[300,400,9.96,9.96],
+    [133,150,3.14,4.19],[150,200,4.19,6.60],[200,250,6.60,8.44],[250,300,8.44,9.96],[300,400,9.96,9.96],
   ];
   for (const [lo, hi, a, b] of bands) if (fplPct >= lo && fplPct < hi) { const t = (fplPct - lo) / (hi - lo); return a + (b - a) * t; }
   return 9.96;
@@ -239,21 +263,35 @@ export function compute(inp: TaxInput): TaxResult {
   const otherOrd = num(inp.otherOrdinary), adj = num(inp.adjustments);
   const ss = num(inp.socialSecurity), exempt = num(inp.taxExemptInterest);
 
-  const ordinaryNonSS = wages + k1 + interest + (ordDiv - qDiv) + stcg + otherOrd - adj;
-  const taxableSS = ssTaxable(ss, ordinaryNonSS + ltcg + qDiv, exempt, s);
-  const agi = ordinaryNonSS + ltcg + qDiv + taxableSS;
+  // §1211/§1212: net short-term against long-term; a remaining net loss is
+  // deductible against ordinary income only up to $3,000 ($1,500 MFS).
+  // The excess would carry forward — outside this single-year engine's scope.
+  let netST = stcg, netLT = ltcg;
+  if (netST < 0 && netLT > 0) { const off = Math.min(-netST, netLT); netST += off; netLT -= off; }
+  else if (netLT < 0 && netST > 0) { const off = Math.min(-netLT, netST); netLT += off; netST -= off; }
+  let capLossDed = 0;
+  if (netST + netLT < 0) {
+    capLossDed = Math.max(netST + netLT, s === "mfs" ? -1500 : -3000);
+    netST = 0; netLT = 0;
+  }
+  const netCapGain = Math.max(0, netST + netLT); // for NIIT (§1411 nets gains/losses)
+
+  const ordinaryNonSS = wages + k1 + interest + (ordDiv - qDiv) + netST + capLossDed + otherOrd - adj;
+  const taxableSS = ssTaxable(ss, ordinaryNonSS + netLT + qDiv, exempt, s);
+  const agi = ordinaryNonSS + netLT + qDiv + taxableSS;
 
   const baseStd = C.stdDed[s] + num(inp.seniors) * C.addlStd[s] + num(inp.blind) * C.addlStd[s];
   const useStandard = inp.useStandard !== false;
   const deduction = useStandard ? baseStd : num(inp.itemized);
 
+  // OBBBA senior deduction — married taxpayers must file jointly to claim it.
   let seniorDed = 0;
-  if (inp.seniors) {
+  if (inp.seniors && s !== "mfs") {
     const over = Math.max(0, agi - C.senior.floor[s]);
     seniorDed = Math.max(0, C.senior.amount * num(inp.seniors) - C.senior.rate * over);
   }
 
-  const pref = ltcg + qDiv;
+  const pref = netLT + qDiv;
   const taxableBeforeQBI = Math.max(0, agi - deduction - seniorDed);
   const qbiDed = inp.includeQBI
     ? qbiDeduction({ qbi: Math.max(0, k1), taxableBeforeQBI, netCapGains: pref, w2wages: num(inp.qbiWages), ubia: num(inp.qbiUBIA), isSSTB: !!inp.isSSTB, status: s })
@@ -266,13 +304,17 @@ export function compute(inp: TaxInput): TaxResult {
   const cg = capGainsTax(ordinaryTaxable, prefInTaxable, s);
   const fedIncomeTax = ordTax + cg.tax;
 
-  const nii = interest + ordDiv + Math.max(0, stcg) + Math.max(0, ltcg) + num(inp.otherNII);
+  const nii = interest + ordDiv + netCapGain + num(inp.otherNII);
   const magi = agi + exempt;
   const niitAmt = inp.includeNIIT ? niitTax(nii, magi, s) : 0;
-  const addlMed = inp.includeNIIT ? addlMedicare(wages + num(inp.seIncome), s) : 0;
+  // The 0.9% Additional Medicare Tax is mandatory payroll tax — it does not
+  // hinge on the NIIT module toggle.
+  const addlMed = addlMedicare(wages + num(inp.seIncome), s);
 
-  const ageDed = vaAgeDeduction(num(inp.seniors), agi, s);
   const vagi = agi - taxableSS; // VA fully exempts Social Security
+  // Va. Code §58.1-322.03(5): the age-deduction phase-out runs on AFAGI
+  // (federal AGI minus taxable Social Security), not federal AGI.
+  const ageDed = vaAgeDeduction(num(inp.seniors), vagi, s);
   const vaDed = useStandard ? C.va.stdDed[s] : (num(inp.vaItemized) || num(inp.itemized));
   const vaTaxable = Math.max(0, vagi - vaDed - (num(inp.vaExemptions) || 1) * C.va.exemption - ageDed);
   const vaTax = bracketTax(vaTaxable, C.va.brackets);

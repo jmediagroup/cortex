@@ -204,7 +204,7 @@ export const QUESTIONS: QuizQuestion[] = [
       {
         id: 'q1-c',
         label: '"Is my emergency fund still intact? That’s what matters."',
-        points: { fortress: 2 },
+        points: { fortress: 2, steward: 1 },
       },
       {
         id: 'q1-d',
@@ -226,7 +226,7 @@ export const QUESTIONS: QuizQuestion[] = [
       {
         id: 'q2-b',
         label: 'Pay off any remaining debt first, then rebuild cash reserves.',
-        points: { fortress: 2 },
+        points: { fortress: 2, steward: 1 },
       },
       {
         id: 'q2-c',
@@ -258,7 +258,7 @@ export const QUESTIONS: QuizQuestion[] = [
       {
         id: 'q3-c',
         label: '"I want to know I can weather any storm without selling."',
-        points: { fortress: 2 },
+        points: { fortress: 2, steward: 1 },
       },
       {
         id: 'q3-d',
@@ -302,7 +302,7 @@ export const QUESTIONS: QuizQuestion[] = [
       {
         id: 'q5-a',
         label: 'Permanent loss of capital — everything else is just volatility.',
-        points: { accumulator: 2 },
+        points: { accumulator: 2, steward: 1 },
       },
       {
         id: 'q5-b',
@@ -366,7 +366,7 @@ export const QUESTIONS: QuizQuestion[] = [
       {
         id: 'q7-c',
         label: 'Debt elimination and a 12-month emergency fund.',
-        points: { fortress: 2 },
+        points: { fortress: 2, steward: 1 },
       },
       {
         id: 'q7-d',
@@ -524,24 +524,22 @@ export function resolveResult(
 }
 
 /**
- * Highest score any single archetype can earn across all questions.
- * Summing each option's points across archetypes would overshoot (a single
- * archetype can never collect another archetype's points), which made the
- * result meters top out below 100% even on a perfect run.
+ * Highest score a given archetype can earn across all questions — the
+ * sum, per question, of the largest award any single option gives it.
+ * Result meters normalize each dimension against its own ceiling: the
+ * ceilings differ per archetype, so dividing by a single global max
+ * would make a maxed-out run on a lower-ceiling archetype read as a
+ * half-full bar.
  */
-export function maxPossibleScore(): number {
-  let best = 0;
-  for (const archetype of ARCHETYPE_ORDER) {
-    let total = 0;
-    for (const q of QUESTIONS) {
-      let bestForQuestion = 0;
-      for (const opt of q.options) {
-        const pts = opt.points[archetype] ?? 0;
-        if (pts > bestForQuestion) bestForQuestion = pts;
-      }
-      total += bestForQuestion;
+export function maxPossibleScoreFor(id: ArchetypeId): number {
+  let total = 0;
+  for (const q of QUESTIONS) {
+    let bestForQuestion = 0;
+    for (const opt of q.options) {
+      const pts = opt.points[id] ?? 0;
+      if (pts > bestForQuestion) bestForQuestion = pts;
     }
-    if (total > best) best = total;
+    total += bestForQuestion;
   }
-  return best;
+  return total;
 }

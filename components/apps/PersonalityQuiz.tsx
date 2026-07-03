@@ -13,7 +13,7 @@ import {
   ARCHETYPE_ORDER,
   QUESTIONS,
   emptyScoreMap,
-  maxPossibleScore,
+  maxPossibleScoreFor,
   resolveResult,
   type ArchetypeId,
   type ScoreMap,
@@ -264,7 +264,13 @@ function ResultPanel({
 }) {
   const archetype = ARCHETYPES[primary];
   const secondaryArchetype = ARCHETYPES[secondary];
-  const maxScore = useMemo(() => maxPossibleScore(), []);
+  const maxScores = useMemo(
+    () =>
+      Object.fromEntries(
+        ARCHETYPE_ORDER.map((id) => [id, maxPossibleScoreFor(id)]),
+      ) as Record<ArchetypeId, number>,
+    [],
+  );
   const [typed, setTyped] = useState('');
 
   useEffect(() => {
@@ -308,7 +314,7 @@ function ResultPanel({
         {ARCHETYPE_ORDER.map((id, i) => {
           const a = ARCHETYPES[id];
           const value = scores[id];
-          const pct = Math.max(4, Math.round((value / maxScore) * 100));
+          const pct = Math.max(4, Math.round((value / maxScores[id]) * 100));
           const isPrimary = id === primary;
           const isSecondary = id === secondary;
           return (

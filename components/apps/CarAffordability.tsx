@@ -57,12 +57,15 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
 
     // Total car price the budget supports at the user's actual down payment %
     // (a bigger down payment supports a more expensive car for the same loan).
-    const downPaymentFraction = Math.min(99, inputs.downPaymentPercent) / 100;
+    // Capped at 80% down — beyond that the price is dominated by cash on hand,
+    // not the payment budget, and the formula diverges.
+    const downPaymentPercent = Math.min(80, Math.max(0, inputs.downPaymentPercent));
+    const downPaymentFraction = downPaymentPercent / 100;
     const maxCarPrice = maxLoanAmount / (1 - downPaymentFraction);
     const recommendedDownPayment = maxCarPrice * 0.20;
 
     // Calculate user's actual down payment amount
-    const userDownPaymentAmount = maxCarPrice * (inputs.downPaymentPercent / 100);
+    const userDownPaymentAmount = maxCarPrice * downPaymentFraction;
     const userLoanAmount = maxCarPrice - userDownPaymentAmount;
 
     // Calculate user's monthly payment with their down payment percentage
@@ -77,10 +80,14 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
     const totalPaid = userMonthlyPayment * numPayments;
     const totalInterest = totalPaid - userLoanAmount;
 
-    // Check compliance with 20/3/8 rule
-    const meetsDownPaymentRule = inputs.downPaymentPercent >= 20;
-    const meetsPaymentRule = userMonthlyPayment <= maxMonthlyPayment;
-    const meetsAllRules = meetsDownPaymentRule && meetsPaymentRule;
+    // The down payment is the only rule input the user can bend; the price is
+    // sized so the payment lands exactly on the 8% budget over a 3-year term,
+    // so there is nothing to "test" on those two dimensions.
+    const meetsDownPaymentRule = downPaymentPercent >= 20;
+
+    // Payment as a share of gross monthly income (equals the 8% cap when there
+    // are no existing car payments; lower when part of the budget is used up).
+    const paymentPercentOfIncome = monthlyIncome > 0 ? (userMonthlyPayment / monthlyIncome) * 100 : 0;
 
     return {
       maxCarPrice,
@@ -91,9 +98,9 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
       userMonthlyPayment,
       totalInterest,
       totalPaid,
+      downPaymentPercent,
       meetsDownPaymentRule,
-      meetsPaymentRule,
-      meetsAllRules
+      paymentPercentOfIncome
     };
   }, [inputs]);
 
@@ -207,27 +214,27 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
               {/* Down Payment Percentage Slider */}
               <div>
                 <label className="block text-sm font-bold text-[var(--text-secondary)] mb-2">
-                  Down Payment: <span className="text-[var(--emerald-500)]">{inputs.downPaymentPercent}%</span>
+                  Down Payment: <span className="text-[var(--emerald-500)]">{calculations.downPaymentPercent}%</span>
                 </label>
                 <input
                   type="range"
                   name="downPaymentPercent"
                   min="0"
-                  max="100"
+                  max="80"
                   step="1"
-                  value={inputs.downPaymentPercent}
+                  value={calculations.downPaymentPercent}
                   onChange={handleInputChange}
                   className="w-full h-3 bg-[var(--bg-glass-strong)] rounded-full appearance-none cursor-pointer accent-indigo-600"
                   style={{
-                    background: `linear-gradient(to right, #00F0A0 0%, #00F0A0 ${inputs.downPaymentPercent}%, #48484A ${inputs.downPaymentPercent}%, #48484A 100%)`
+                    background: `linear-gradient(to right, #00F0A0 0%, #00F0A0 ${(calculations.downPaymentPercent / 80) * 100}%, #48484A ${(calculations.downPaymentPercent / 80) * 100}%, #48484A 100%)`
                   }}
                 />
                 <div className="flex justify-between text-xs text-[var(--text-tertiary)] mt-1 font-medium">
                   <span>0%</span>
-                  <span className={inputs.downPaymentPercent >= 20 ? 'text-[var(--emerald-500)] font-bold' : 'text-[var(--color-warning)] font-bold'}>
-                    {inputs.downPaymentPercent >= 20 ? '✓ Meets 20% rule' : '⚠ Below 20% recommended'}
+                  <span className={calculations.meetsDownPaymentRule ? 'text-[var(--emerald-500)] font-bold' : 'text-[var(--color-warning)] font-bold'}>
+                    {calculations.meetsDownPaymentRule ? '✓ Meets 20% rule' : '⚠ Below 20% recommended'}
                   </span>
-                  <span>100%</span>
+                  <span>80%</span>
                 </div>
               </div>
             </div>
@@ -245,15 +252,18 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
             <div className="text-6xl font-bold mb-2 tracking-tight">
               ${calculations.maxCarPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}
             </div>
-            <p className="text-[var(--mist-100)] font-medium text-sm">
-              This is how much car you can afford without going broke!
+            <p className="text-[var(--mist-100)] font-medium text-sm mb-2">
+              Assumes ${calculations.userDownPaymentAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })} in cash down ({calculations.downPaymentPercent}%) plus a ${calculations.userLoanAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })} loan over 3 years.
+            </p>
+            <p className="text-[var(--mist-100)] font-medium text-xs opacity-80">
+              Price is before sales tax, title, and fees, and excludes insurance and operating costs.
             </p>
           </div>
 
           {/* Breakdown Cards */}
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-[var(--bg-card)] rounded-2xl p-6 border-2 border-[var(--border-default)]">
-              <div className="text-xs font-bold text-[var(--text-tertiary)] uppercase tracking-wider mb-1">Down Payment ({inputs.downPaymentPercent}%)</div>
+              <div className="text-xs font-bold text-[var(--text-tertiary)] uppercase tracking-wider mb-1">Down Payment ({calculations.downPaymentPercent}%)</div>
               <div className="text-2xl font-bold text-[var(--text-primary)]">
                 ${calculations.userDownPaymentAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </div>
@@ -285,42 +295,41 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
             </div>
           </div>
 
-          {/* Rule Compliance Status */}
+          {/* How the price was sized against the 20/3/8 rule. The loan term and
+              payment cap are baked into the calculation itself, so they are stated
+              as facts rather than "tested" — only the down payment is a real choice. */}
           <div className={`rounded-2xl p-6 border-2 ${
-            calculations.meetsAllRules
+            calculations.meetsDownPaymentRule
               ? 'bg-[var(--emerald-50)] border-[var(--emerald-border)]'
               : 'bg-[var(--color-warning-soft)] border-[var(--glass-border-strong)]'
           }`}>
             <div className="flex items-start gap-3 mb-4">
-              {calculations.meetsAllRules ? (
+              {calculations.meetsDownPaymentRule ? (
                 <CheckCircle className="text-[var(--emerald-500)]" size={24} />
               ) : (
                 <AlertCircle className="text-[var(--color-warning)]" size={24} />
               )}
               <div>
                 <h4 className={`font-bold text-lg mb-2 ${
-                  calculations.meetsAllRules ? 'text-[var(--emerald-500)]' : 'text-[var(--color-warning)]'
+                  calculations.meetsDownPaymentRule ? 'text-[var(--emerald-500)]' : 'text-[var(--color-warning)]'
                 }`}>
-                  {calculations.meetsAllRules ? '20/3/8 Rule Status: PASS' : '20/3/8 Rule Status: WARNING'}
+                  How this price is sized to the 20/3/8 rule
                 </h4>
                 <div className="space-y-2 text-sm font-medium">
                   <div className={`flex items-center gap-2 ${
                     calculations.meetsDownPaymentRule ? 'text-[var(--emerald-500)]' : 'text-[var(--color-warning)]'
                   }`}>
                     <span>{calculations.meetsDownPaymentRule ? '✓' : '⚠'}</span>
-                    <span>Down payment: {inputs.downPaymentPercent}% {calculations.meetsDownPaymentRule ? '(meets 20% minimum)' : '(below 20% recommended)'}</span>
+                    <span>Down payment: {calculations.downPaymentPercent}% {calculations.meetsDownPaymentRule ? '(meets 20% minimum)' : '(below 20% recommended)'}</span>
                   </div>
                   <div className="flex items-center gap-2 text-[var(--emerald-500)]">
-                    <span>✓</span>
-                    <span>Loan term: 3 years (36 months)</span>
+                    <span>•</span>
+                    <span>Loan term: fixed at the rule&apos;s 3 years (36 months)</span>
                   </div>
-                  <div className={`flex items-center gap-2 ${
-                    calculations.meetsPaymentRule ? 'text-[var(--emerald-500)]' : 'text-[var(--color-warning)]'
-                  }`}>
-                    <span>{calculations.meetsPaymentRule ? '✓' : '⚠'}</span>
+                  <div className="flex items-center gap-2 text-[var(--emerald-500)]">
+                    <span>•</span>
                     <span>
-                      Monthly payment: {inputs.annualIncome > 0 ? ((calculations.userMonthlyPayment / (inputs.annualIncome / 12)) * 100).toFixed(1) : '0.0'}% of income
-                      {calculations.meetsPaymentRule ? ' (under 8%)' : ' (exceeds 8%)'}
+                      Monthly payment: {calculations.paymentPercentOfIncome.toFixed(1)}% of gross income — the price above is sized so the payment lands exactly on your 8% budget{inputs.currentMonthlyPayment > 0 ? ' after existing car payments' : ''}
                     </span>
                   </div>
                 </div>

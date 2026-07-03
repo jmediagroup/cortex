@@ -12,13 +12,16 @@ export const QUIZ_URL = `${QUIZ_ORIGIN}${QUIZ_PATH}`;
  * Build the canonical, public, shareable result URL. Path carries the
  * primary archetype (so the `/r/[archetype]` opengraph-image can render
  * dynamically), while `?s=` carries the secondary trait for the page
- * itself.
+ * itself. When the secondary is unknown (e.g. a shared page visited
+ * without a valid `?s=`), the URL simply omits it — we never fabricate
+ * a secondary trait the quiz didn't produce.
  */
 export function buildResultUrl(
   primary: ArchetypeId,
-  secondary: ArchetypeId,
+  secondary?: ArchetypeId,
 ): string {
-  return `${QUIZ_ORIGIN}${QUIZ_PATH}/r/${primary}?s=${secondary}`;
+  const base = `${QUIZ_ORIGIN}${QUIZ_PATH}/r/${primary}`;
+  return secondary ? `${base}?s=${secondary}` : base;
 }
 
 export interface ShareCopy {
@@ -34,7 +37,7 @@ export interface ShareCopy {
  */
 export function buildShareCopy(
   primary: ArchetypeId,
-  secondary: ArchetypeId,
+  secondary?: ArchetypeId,
 ): {
   url: string;
   generic: string;
@@ -80,12 +83,12 @@ What's yours? Take the quiz at cortex.vip/apps/personality-quiz`,
  */
 export function buildShareImageUrl(
   primary: ArchetypeId,
-  secondary: ArchetypeId,
+  secondary?: ArchetypeId,
   format: 'portrait' | 'landscape' = 'portrait',
 ): string {
   const params = new URLSearchParams({
     a: primary,
-    s: secondary,
+    ...(secondary ? { s: secondary } : {}),
     f: format,
   });
   return `${QUIZ_ORIGIN}/api/personality-quiz/share-image?${params.toString()}`;
@@ -97,7 +100,7 @@ export function buildShareImageUrl(
  */
 export function buildIntentUrls(
   primary: ArchetypeId,
-  secondary: ArchetypeId,
+  secondary?: ArchetypeId,
 ) {
   const copy = buildShareCopy(primary, secondary);
   const u = encodeURIComponent(copy.url);

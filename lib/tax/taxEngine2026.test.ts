@@ -1,11 +1,11 @@
 /* =====================================================================
-   Known-answer tests for taxEngine2026.ts (25 cases).
+   Known-answer tests for taxEngine2026.ts (40 cases).
    Run standalone:  npx tsx lib/tax/taxEngine2026.test.ts
    Or adapt to Vitest: replace `check(...)` with expect(got).toBeCloseTo(want).
    Keep these GREEN after any change to the engine.
    ===================================================================== */
 import {
-  C, bracketTax, ssTaxable, qbiDeduction, capGainsTax, niitTax, irmaa, acaPTC, compute,
+  C, bracketTax, ssTaxable, qbiDeduction, capGainsTax, niitTax, irmaa, acaPTC, acaApplicablePct, compute,
 } from "./taxEngine2026";
 
 let pass = 0, fail = 0;
@@ -79,6 +79,53 @@ check("IRMAA mfj 220k tier", irmaa(220000, "mfj", 1).tier, 1, 0);
   check("E2E NIIT", r.niit, 1520);
   check("E2E NIIT off", compute({ status:"single", wages:180000, longTermGains:60000, useStandard:true, includeNIIT:false }).niit, 0);
 }
+
+// 27-28 §1211 capital-loss limit ($3,000 / $1,500 MFS)
+check("cap loss limit single AGI", compute({ status:"single", wages:100000, longTermGains:-20000, useStandard:true }).agi, 97000);
+check("cap loss limit mfs AGI", compute({ status:"mfs", wages:100000, longTermGains:-20000, useStandard:true }).agi, 98500);
+
+// 29-30 negative LTCG must not inflate ordinaryTaxable past taxableIncome
+{
+  const r = compute({ status:"single", wages:100000, longTermGains:-20000, useStandard:true });
+  check("cap loss ordinaryTaxable == taxable", r.ordinaryTaxable, r.taxableIncome);
+  check("cap loss ordTax", r.ordTax, bracketTax(97000 - 16100, C.ordinary.single));
+}
+
+// 31-32 ST/LT netting flows into pref + NIIT (§1411 nets gains)
+{
+  const r = compute({ status:"single", wages:240000, shortTermGains:-30000, longTermGains:50000, useStandard:true, includeNIIT:true });
+  check("netting pref", r.pref, 20000);
+  check("netting NIIT", r.niit, 760);
+}
+
+// 33 SSTB phase-in applies the wage limit to reduced amounts (§199A(d)(3))
+check("QBI SSTB phase-in wage limit",
+  qbiDeduction({ qbi:100000, taxableBeforeQBI:239275, netCapGains:0, w2wages:0, isSSTB:true, status:"single" }), 5000);
+
+// 34 OBBBA senior deduction — MFS ineligible
+check("senior deduction mfs = 0", compute({ status:"mfs", wages:50000, seniors:1, useStandard:true }).seniorDed, 0);
+
+// 35 VA age deduction phases out on AFAGI (AGI minus taxable SS), not AGI
+check("VA age ded AFAGI mfj",
+  compute({ status:"mfj", interest:70000, socialSecurity:40000, seniors:2, vaExemptions:2, useStandard:true }).vaTax, 1274.30);
+
+// 36-37 ACA 133-150% FPL band starts at 3.14% (Rev. Proc. 2025-25)
+check("ACA 140% FPL applicable%", acaApplicablePct(140), 3.14 + (4.19 - 3.14) * (7 / 17), 0.005);
+{
+  const a = acaPTC({ acaMAGI:21910, householdSize:1, benchmarkAnnual:7200, status:"single" });
+  check("ACA 140% FPL ptc", a.ptc, 7200 - 21910 * (acaApplicablePct(140) / 100), 1);
+}
+
+// 38 MFS IRMAA jumps to the second-highest tier above the first threshold
+{
+  const r = irmaa(150000, "mfs", 1);
+  check("IRMAA mfs 150k tier", r.tier, 4, 0);
+  check("IRMAA mfs 150k annual", r.annual, (446.30 + 83.30) * 12);
+}
+
+// 40 Additional Medicare is mandatory — not gated by the NIIT toggle
+check("addl Medicare with NIIT off",
+  compute({ status:"single", wages:300000, useStandard:true, includeNIIT:false }).addlMedicare, 900);
 
 console.log(`\n${pass} passed, ${fail} failed`);
 const g = globalThis as unknown as { process?: { exit: (n: number) => void } };

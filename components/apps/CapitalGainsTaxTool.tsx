@@ -190,12 +190,17 @@ export default function CapitalGainsTaxTool({ isPro = false, onUpgrade, initialV
 
   // Advanced modules are Finance Pro. For free users, force them off so the
   // engine never computes (or reveals) gated layers — applied to every compute().
-  const effInp = useMemo<Form>(() => (
-    isPro ? inp : { ...inp, includeNIIT: false, includeQBI: false, includeACA: false, includeIRMAA: false }
-  ), [inp, isPro]);
+  // Virginia personal exemptions follow filing status ($930 per person).
+  const effInp = useMemo<Form>(() => {
+    const withVa = { ...inp, vaExemptions: inp.status === "mfj" ? 2 : 1 };
+    return isPro ? withVa : { ...withVa, includeNIIT: false, includeQBI: false, includeACA: false, includeIRMAA: false };
+  }, [inp, isPro]);
 
   const cur = useMemo(() => compute(effInp as TaxInput), [effInp]);
-  const base = useMemo(() => compute({ ...effInp, longTermGains: 0, shortTermGains: 0 } as TaxInput), [effInp]);
+  // Baseline zeroes ONLY the long-term-gains lever. Short-term gains are part
+  // of the user's standing income — zeroing them too would misattribute their
+  // ordinary tax to the LT slider and corrupt the 0%-bracket headroom.
+  const base = useMemo(() => compute({ ...effInp, longTermGains: 0 } as TaxInput), [effInp]);
   const plus = useMemo(() => compute({ ...effInp, longTermGains: (+(effInp.longTermGains as number) || 0) + 1000 } as TaxInput), [effInp]);
 
   const marginalNext = (plus.totalIncomeTax - cur.totalIncomeTax) / 1000;
@@ -209,8 +214,11 @@ export default function CapitalGainsTaxTool({ isPro = false, onUpgrade, initialV
   const roomNIIT = Math.max(0, niitThresh - base.magi);
   let roomIRMAA: number | null = null, irmaaLabel = "";
   if (effInp.includeIRMAA) {
-    const key = status === "mfj" ? "mfj" : "single";
-    const bounds = C.irmaa[key]; const m = base.magi; let nb: number | null = null;
+    // MFS has its own two-tier IRMAA schedule (mirrors the engine).
+    const bounds = status === "mfs"
+      ? [C.irmaa.single[0], C.irmaa.single[4] - C.irmaa.single[0]]
+      : C.irmaa[status === "mfj" ? "mfj" : "single"];
+    const m = base.magi; let nb: number | null = null;
     for (const b of bounds) { if (m <= b) { nb = b; break; } }
     if (nb != null) { roomIRMAA = Math.max(0, nb - m); irmaaLabel = `Until next IRMAA tier (${$1(nb)} MAGI)`; }
   }
@@ -325,6 +333,7 @@ export default function CapitalGainsTaxTool({ isPro = false, onUpgrade, initialV
                 <b style={{ fontFamily: mono }}>{$1(room0)}</b> of long-term gains is taxed at <b>0% federally</b>.
                 {room0 > 0 && <> Virginia still taxes it at up to 5.75% (~{$1(room0 * 0.0575)}).</>}
                 {room0 === 0 && <> Your other income already fills the 0% bracket, so additional gains start at 15%.</>}
+                {(+(inp.socialSecurity as number) || 0) > 0 && <> Realizing gains can also make more of your Social Security taxable, which shrinks this headroom — treat it as an upper bound.</>}
               </div>
             </div>
 

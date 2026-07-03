@@ -72,6 +72,18 @@ interface Liability {
   submitted?: boolean;
 }
 
+// Estimated monthly payment via standard amortization.
+// 0%-rate loans amortize linearly; the annuity formula is 0/0 there.
+const estimateMonthlyPayment = (balance: number, annualRatePct: number, termYears: number) => {
+  const rate = annualRatePct / 100 / 12;
+  const term = termYears * 12;
+  if (!(balance > 0) || !(term > 0)) return 0;
+  const payment = rate === 0
+    ? balance / term
+    : (balance * rate * Math.pow(1 + rate, term)) / (Math.pow(1 + rate, term) - 1);
+  return isFinite(payment) ? payment : 0;
+};
+
 // --- Components ---
 
 const Tooltip = ({ content, children }: { content: string; children: React.ReactNode }) => {
@@ -319,14 +331,20 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
 
     const annualAssetGrowth = totalAssets * (growthRate / 100);
     const annualSavings = monthlySavings * 12;
-    const momentumScore = totalAssets > 0 ? (annualAssetGrowth + annualSavings) / totalAssets : 0;
+    const annualChange = annualAssetGrowth + annualSavings;
+    // With no assets yet, positive savings still means the system is building
+    // from zero — treat that as full-velocity momentum, not a reversal.
+    const momentumScore = totalAssets > 0 ? annualChange / totalAssets : monthlySavings > 0 ? 1 : 0;
 
     let momentumStatus = 'Stable';
     if (momentumScore > 0.15) momentumStatus = 'Improving';
     if (momentumScore < 0.05 && momentumScore > 0) momentumStatus = 'Fragile';
-    if (momentumScore <= 0 && (totalAssets > 0 || totalLiabilities > 0)) momentumStatus = 'Reversing';
+    if (annualChange < 0) momentumStatus = 'Reversing';
 
-    const monthsOfRunway = totalLiabilities > 0 ? liquidAssets / (totalLiabilities * 0.05) : 100;
+    // Runway = how many months of estimated debt payments liquid assets cover.
+    const monthlyDebtService = submittedLiabilities.reduce((sum, l) =>
+      sum + estimateMonthlyPayment(Number(l.value), Number(l.rate), Number(l.term)), 0);
+    const monthsOfRunway = monthlyDebtService > 0 ? liquidAssets / monthlyDebtService : 100;
     let optionality = 'Moderate';
     if (monthsOfRunway > 24) optionality = 'High';
     if (monthsOfRunway < 6) optionality = 'Low';
@@ -348,6 +366,7 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
       momentumScore,
       highInterestDebts,
       shortTermDebts,
+      accountCount: submittedAssets.length + submittedLiabilities.length,
       complexity: (submittedAssets.length + submittedLiabilities.length) > 12 ? 'High' : (submittedAssets.length + submittedLiabilities.length) > 6 ? 'Moderate' : 'Low'
     };
   }, [assets, liabilities, monthlySavings, growthRate]);
@@ -369,6 +388,7 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
         debtDragPercentage: 34.3,
         tippingPointNetWorth: 342857,
         yearsToTippingPoint: 6.2,
+        tenYearAnnuityFactor: 12.58,
         liquidityGap: 0.08,
         liquidityRisk: 'Moderate',
         _isPreview: true
@@ -391,17 +411,8 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
     const accelerationGain = acceleratedMomentum - totalMomentum;
 
     // 3. Debt Drag Analysis - How much is debt slowing you down?
-    const debtPayments = submittedLiabilities.reduce((sum, l) => {
-      // Rough monthly payment estimation
-      const rate = Number(l.rate) / 100 / 12;
-      const term = Number(l.term) * 12;
-      const balance = Number(l.value);
-      // 0%-rate loans amortize linearly; the annuity formula is 0/0 there.
-      const payment = balance > 0 && term > 0
-        ? (rate === 0 ? balance / term : (balance * rate * Math.pow(1 + rate, term)) / (Math.pow(1 + rate, term) - 1))
-        : 0;
-      return sum + (isFinite(payment) ? payment : 0);
-    }, 0);
+    const debtPayments = submittedLiabilities.reduce((sum, l) =>
+      sum + estimateMonthlyPayment(Number(l.value), Number(l.rate), Number(l.term)), 0);
     const annualDebtDrag = debtPayments * 12;
     const momentumWithoutDebt = totalMomentum + annualDebtDrag;
     const debtDragPercentage = momentumWithoutDebt > 0 ? (annualDebtDrag / momentumWithoutDebt) * 100 : 0;
@@ -413,16 +424,30 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
     const tippingPointNetWorth = hasTippingPoint
       ? (monthlySavings * 12) / (growthRate / 100)
       : Infinity;
-    const yearsToTippingPoint = !hasTippingPoint
-      ? Infinity
-      : metrics.totalAssets > 0
-        ? Math.max(0, (tippingPointNetWorth - metrics.totalAssets) / (monthlySavings * 12))
-        : tippingPointNetWorth / (monthlySavings * 12);
+    // Years to reach it: iterate the same annual compounding model used for
+    // the trajectory (balance grows at the chosen rate plus annual savings),
+    // rather than dividing linearly. Capped at 100 years.
+    const yearsToTippingPoint = (() => {
+      if (!hasTippingPoint) return Infinity;
+      const annualSavings = monthlySavings * 12;
+      let balance = metrics.totalAssets;
+      let years = 0;
+      while (balance < tippingPointNetWorth && years < 100) {
+        balance = balance * (1 + growthRate / 100) + annualSavings;
+        years++;
+      }
+      return balance < tippingPointNetWorth ? Infinity : years;
+    })();
 
     // 5. Liquid vs Illiquid Allocation Risk
     const idealLiquidRatio = 0.25; // 25% liquid is generally safe
     const liquidityGap = idealLiquidRatio - metrics.liquidityRatio;
     const liquidityRisk = Math.abs(liquidityGap) > 0.1 ? 'High' : Math.abs(liquidityGap) > 0.05 ? 'Moderate' : 'Low';
+
+    // 10-year future-value annuity factor at the chosen growth rate: an extra
+    // dollar saved each year compounds to this over 10 years (10 when r = 0).
+    const r = growthRate / 100;
+    const tenYearAnnuityFactor = r === 0 ? 10 : (Math.pow(1 + r, 10) - 1) / r;
 
     return {
       assetGrowthContribution,
@@ -437,6 +462,7 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
       debtDragPercentage,
       tippingPointNetWorth,
       yearsToTippingPoint,
+      tenYearAnnuityFactor,
       liquidityGap,
       liquidityRisk
     };
@@ -472,8 +498,9 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
           toolName="Net Worth Engine"
           getInputs={() => ({ assets, liabilities, monthlySavings, growthRate })}
           getKeyResult={() => {
-            const totalAssets = assets.reduce((s: number, a: any) => s + (typeof a.value === 'number' ? a.value : parseFloat(a.value) || 0), 0);
-            const totalLiabilities = liabilities.reduce((s: number, l: any) => s + (typeof l.value === 'number' ? l.value : parseFloat(l.value) || 0), 0);
+            // Match the on-screen totals: only submitted rows count.
+            const totalAssets = assets.filter(a => a.submitted).reduce((s: number, a: any) => s + (typeof a.value === 'number' ? a.value : parseFloat(a.value) || 0), 0);
+            const totalLiabilities = liabilities.filter(l => l.submitted).reduce((s: number, l: any) => s + (typeof l.value === 'number' ? l.value : parseFloat(l.value) || 0), 0);
             return `Net worth: $${Math.round(totalAssets - totalLiabilities).toLocaleString()}`;
           }}
           isLoggedIn={isLoggedIn}
@@ -532,7 +559,7 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
         <div className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border-default)] shadow-sm hover:shadow-md transition-all">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-[var(--text-muted)] text-[10px] font-semibold uppercase tracking-widest">Optionality</span>
-            <Tooltip content="Optionality measures your financial flexibility and ability to handle emergencies. It's based on how much liquid cash you have relative to your debts. High = strong safety net, Moderate = decent buffer, Low = vulnerable to shocks.">
+            <Tooltip content="Optionality measures your financial flexibility and ability to handle emergencies. It's based on how many months of estimated debt payments your liquid assets could cover. High = strong safety net, Moderate = decent buffer, Low = vulnerable to shocks.">
               <Info size={14} className="text-[var(--text-muted)] hover:text-[var(--emerald-500)] transition-colors" />
             </Tooltip>
           </div>
@@ -923,7 +950,7 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
                         </div>
                         <div className="space-y-1">
                           <p className="text-sm font-bold text-[var(--text-primary)] uppercase tracking-tight">Complexity Index: {metrics.complexity}</p>
-                          <p className="text-xs text-[var(--text-tertiary)] font-medium">Managing {assets.length + liabilities.length} accounts adds cognitive drag. System consolidation improves focus.</p>
+                          <p className="text-xs text-[var(--text-tertiary)] font-medium">Managing {metrics.accountCount} accounts adds cognitive drag. System consolidation improves focus.</p>
                         </div>
                       </div>
                     </div>
@@ -942,9 +969,9 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
                 <div className="h-72 w-full relative mb-16 flex items-end justify-between border-b border-l border-[var(--border-subtle)] px-8">
                   {trajectory.current.map((val, i) => (
                     <div key={i} className="flex flex-col items-center w-full group">
-                      <div className="flex flex-col-reverse w-16 gap-2 items-center h-60" title={`Year ${i + 1}: $${Math.round(val).toLocaleString()}`}>
+                      <div className="flex w-16 gap-2 items-end justify-center h-60" title={`Year ${i + 1}: $${Math.round(val).toLocaleString()} current / $${Math.round(trajectory.conservative[i]).toLocaleString()} conservative`}>
                         <div className="w-3 bg-[var(--emerald-400)] rounded-t transition-all group-hover:bg-[var(--emerald-500)] group-hover:w-4" style={{ height: `${Math.max(0, (val / trajectory.maxValue) * 90)}%` }} />
-                        <div className="w-3 bg-[var(--emerald-100)] rounded-t" style={{ height: `${Math.max(0, (trajectory.conservative[i] / trajectory.maxValue) * 40)}%` }} />
+                        <div className="w-3 bg-[var(--emerald-100)] rounded-t" style={{ height: `${Math.max(0, (trajectory.conservative[i] / trajectory.maxValue) * 90)}%` }} />
                       </div>
                       <span className="text-[10px] text-[var(--text-muted)] mt-5 font-semibold uppercase tracking-widest">Y{i+1}</span>
                     </div>
@@ -1152,7 +1179,7 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
                   <div>
                     <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
                     <p className="text-white/85 text-sm font-medium leading-relaxed">
-                      Over 10 years, this acceleration compounds to approximately ${Math.round(momentumIntelligence.accelerationGain * 12.5).toLocaleString()} in extra wealth.
+                      Over 10 years, this acceleration compounds to approximately ${Math.round(momentumIntelligence.accelerationGain * momentumIntelligence.tenYearAnnuityFactor).toLocaleString()} in extra wealth.
                     </p>
                   </div>
                 </div>
@@ -1219,8 +1246,8 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
               <div className="bg-[var(--bg-card)] rounded-2xl p-6 border border-[var(--emerald-border-soft)]">
                 <p className="text-xs text-[var(--text-tertiary)] font-semibold uppercase tracking-wider mb-2">Years to Tipping Point</p>
                 <p className="text-4xl font-bold text-[var(--emerald-500)] mb-2">
-                  {momentumIntelligence.yearsToTippingPoint < 100
-                    ? `${momentumIntelligence.yearsToTippingPoint.toFixed(1)} years`
+                  {momentumIntelligence.yearsToTippingPoint <= 100
+                    ? `${momentumIntelligence.yearsToTippingPoint.toFixed(0)} years`
                     : '—'}
                 </p>
                 <p className="text-sm text-[var(--text-secondary)] font-medium">
@@ -1238,7 +1265,9 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
                       ? `Set a positive growth rate and monthly savings to see your tipping point — the net worth where asset growth outpaces what you save.`
                       : metrics.totalAssets >= momentumIntelligence.tippingPointNetWorth
                       ? `Congratulations: You've crossed the tipping point. Asset growth now exceeds your annual savings. Your wealth compounds faster than you can manually add to it.`
-                      : `You need ${((momentumIntelligence.tippingPointNetWorth - metrics.totalAssets) / (monthlySavings * 12)).toFixed(1)} more years of disciplined saving to reach the tipping point. After that, compound growth takes over.`}
+                      : isFinite(momentumIntelligence.yearsToTippingPoint)
+                      ? `You need ${momentumIntelligence.yearsToTippingPoint.toFixed(0)} more years of disciplined saving to reach the tipping point. After that, compound growth takes over.`
+                      : `At the current savings rate the tipping point is more than 100 years away. Increasing savings or growth rate brings it closer.`}
                   </p>
                 </div>
               </div>
