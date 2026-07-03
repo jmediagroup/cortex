@@ -77,18 +77,22 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
     let currentHomeValue = purchasePrice;
     let currentMortgageBalance = loanAmount;
     let currentRent = monthlyRent;
-    let investedCapital = downPayment + totalSunkBuying; // Opportunity cost tracking
-    let totalPaidInRent = 0;
+    // Two explicit portfolios (opportunity cost tracking):
+    // The renter invests the down payment + closing costs they never spent,
+    // plus any monthly savings vs. owning. The buyer invests any monthly
+    // savings vs. renting. Neither portfolio can go negative.
+    let renterPortfolio = downPayment + totalSunkBuying;
+    let buyerPortfolio = 0;
 
     for (let yr = 0; yr <= 30; yr++) {
       // Net Worth: Buy Side
-      // (Home Value - Mortgage Balance - Selling Costs)
+      // (Home Value - Mortgage Balance - Selling Costs + invested surplus)
       const sellingFees = currentHomeValue * (sellingCosts / 100);
-      const buyNetWorth = currentHomeValue - currentMortgageBalance - sellingFees;
+      const buyNetWorth = currentHomeValue - currentMortgageBalance - sellingFees + buyerPortfolio;
 
       // Net Worth: Rent Side
-      // (Invested initial capital + invested monthly difference)
-      const rentNetWorth = investedCapital;
+      // (Invested initial capital + invested monthly savings)
+      const rentNetWorth = renterPortfolio;
 
       data.push({
         year: yr,
@@ -106,14 +110,16 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
       const totalAnnualBuyCosts = (monthlyPI * 12) + annualPropertyTax + annualMaintenance + annualInsurance;
       const totalAnnualRentCosts = currentRent * 12;
 
-      // Calculate Difference (What is "saved" by renting/buying?)
-      // If renting is cheaper, the surplus is invested. If buying is cheaper, the difference adds to buy side?
+      // Whoever pays less each month invests the surplus in their own portfolio.
+      // If renting is cheaper, the renter invests the savings; if buying is
+      // cheaper, the buyer invests the savings instead.
       // Reality: Most often, renting is cheaper monthly in early years.
-      const monthlyDiff = (totalAnnualBuyCosts - totalAnnualRentCosts) / 12;
+      const renterSurplus = Math.max(0, totalAnnualBuyCosts - totalAnnualRentCosts);
+      const buyerSurplus = Math.max(0, totalAnnualRentCosts - totalAnnualBuyCosts);
 
-      // Update Investment Capital (The "Renters" portfolio)
-      // They invested the initial downpayment + closing costs, plus the monthly savings.
-      investedCapital = (investedCapital * (1 + stockReturn/100)) + (monthlyDiff * 12);
+      // Update Investment Capital (same growth-then-contribute timing on both sides)
+      renterPortfolio = (renterPortfolio * (1 + stockReturn/100)) + renterSurplus;
+      buyerPortfolio = (buyerPortfolio * (1 + stockReturn/100)) + buyerSurplus;
 
       // Update House Value & Balance
       currentHomeValue *= (1 + appreciationRate / 100);
@@ -167,13 +173,13 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
         marketTimingRisk: 225000,
         bestCase: 562500,
         worstCase: 337500,
-        totalHiddenCosts: 185000,
-        monthlyHiddenDrag: 1028,
+        maintenanceTotal: 90000,
+        propertyTaxTotal: 72000,
+        insuranceTotal: 30000,
+        totalHiddenCosts: 246500,
+        monthlyHiddenDrag: 2054,
         mobilityPremium: 50000,
         mobilityAdjustedRentNW: 480000,
-        geoArbitrageGain: 108000,
-        hcolRent: 3750,
-        lcolHomePrice: 270000,
         _isPreview: true
       };
     }
@@ -203,46 +209,48 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
 
     const moves = threeMoveSim();
 
-    // Scenario 2: Market Timing Risk
+    // Scenario 2: Market Timing (illustrative ±25% swing, not a historical guarantee)
     const bestCase = currentYearData.buyNetWorth * 1.25; // +25% if bought at bottom
     const worstCase = currentYearData.buyNetWorth * 0.75; // -25% if bought at peak
     const marketTimingRisk = bestCase - worstCase;
 
     // Scenario 3: Hidden Drag Calculator
-    const annualMaintenance = purchasePrice * (maintenanceRate / 100);
-    const annualPropertyTax = purchasePrice * (propertyTax / 100);
-    const annualInsurance = purchasePrice * 0.005;
-    const annualHOA = 3600; // $300/mo estimate
+    // Costs scale with the appreciating home value, matching the main simulation.
+    let hiddenHomeValue = purchasePrice;
+    let maintenanceTotal = 0;
+    let propertyTaxTotal = 0;
+    let insuranceTotal = 0;
+    for (let yr = 0; yr < years; yr++) {
+      maintenanceTotal += hiddenHomeValue * (maintenanceRate / 100);
+      propertyTaxTotal += hiddenHomeValue * (propertyTax / 100);
+      insuranceTotal += hiddenHomeValue * 0.005;
+      hiddenHomeValue *= (1 + appreciationRate / 100);
+    }
     const closingCost = purchasePrice * (buyingCosts / 100);
     const futureSellingCost = currentYearData.homeValue * (sellingCosts / 100);
 
-    const totalHiddenCosts = (annualMaintenance + annualPropertyTax + annualInsurance + annualHOA) * years + closingCost + futureSellingCost;
+    const totalHiddenCosts = maintenanceTotal + propertyTaxTotal + insuranceTotal + closingCost + futureSellingCost;
     const monthlyHiddenDrag = totalHiddenCosts / years / 12;
 
     // Scenario 4: Career Mobility Premium
     // Renting allows instant relocation = career optionality
-    const mobilityPremium = 50000; // Conservative: ability to take 10% raise in another city
+    const mobilityPremium = 50000; // Illustrative rule of thumb — the option value of relocating for a better offer
     const mobilityAdjustedRentNW = currentYearData.rentNetWorth + (years > 5 ? mobilityPremium : 0);
-
-    // Scenario 5: Geographic Arbitrage Analysis
-    const hcolRent = monthlyRent * 1.5; // High cost of living area
-    const lcolHomePrice = purchasePrice * 0.6; // Low cost of living area
-    const geoArbitrageGain = (monthlyRent * 1.5 - monthlyRent) * 12 * years;
 
     return {
       moves,
       marketTimingRisk,
       bestCase,
       worstCase,
+      maintenanceTotal,
+      propertyTaxTotal,
+      insuranceTotal,
       totalHiddenCosts,
       monthlyHiddenDrag,
       mobilityPremium,
-      mobilityAdjustedRentNW,
-      geoArbitrageGain,
-      hcolRent,
-      lcolHomePrice
+      mobilityAdjustedRentNW
     };
-  }, [isPro, purchasePrice, monthlyRent, years, currentYearData, buyingCosts, sellingCosts, maintenanceRate, propertyTax]);
+  }, [isPro, purchasePrice, monthlyRent, years, currentYearData, buyingCosts, sellingCosts, maintenanceRate, propertyTax, appreciationRate]);
 
   return (
     <div className="space-y-8">
@@ -407,7 +415,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
             <div className="flex justify-between items-center mb-6">
               <div>
                 <h3 className="font-bold text-[var(--text-primary)]">Net Worth Trajectory</h3>
-                <p className="text-xs text-[var(--text-muted)]">Total liquid capital + home equity minus selling costs</p>
+                <p className="text-xs text-[var(--text-muted)]">Each side&apos;s invested savings, plus home equity net of selling costs for the buyer</p>
               </div>
               <div className="flex gap-4 text-xs font-medium">
                 <div className="flex items-center gap-1.5"><div className="w-3 h-3 bg-[var(--emerald-500)] rounded-full"></div> Buy</div>
@@ -516,7 +524,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
               <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                 <DollarSign size={24} className="mb-3" />
                 <h4 className="font-bold text-sm mb-2">Hidden Drag Calculator</h4>
-                <p className="text-[var(--mist-100)] text-xs font-medium">Quantify all the costs beyond your mortgage: maintenance, property tax, HOA, closing costs</p>
+                <p className="text-[var(--mist-100)] text-xs font-medium">Quantify all the costs beyond your mortgage: maintenance, property tax, insurance, closing costs</p>
               </div>
               <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                 <MapPin size={24} className="mb-3" />
@@ -604,7 +612,9 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
             <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
               <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
               <p className="font-medium text-white">
-                Over 3 expected moves, renting preserves {formatCurrency(lifecycleAnalysis.moves.extraFriction + nwDiff)} more wealth due to transaction costs and mobility value—even with "wasted" rent.
+                {winner === 'Rent'
+                  ? <>Over 3 expected moves, renting preserves {formatCurrency(lifecycleAnalysis.moves.extraFriction + nwDiff)} more wealth due to transaction costs and mobility value—even with "wasted" rent.</>
+                  : <>In your scenario, buying builds {formatCurrency(nwDiff)} more wealth despite transaction costs—but {formatCurrency(lifecycleAnalysis.moves.extraFriction)} of extra friction across 3 moves would eat into that lead.</>}
               </p>
             </div>
           </div>
@@ -622,20 +632,16 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                 </p>
                 <div className="space-y-3 mb-6">
                   <div className="flex items-center justify-between p-4 bg-[var(--bg-section)] rounded-xl">
-                    <span className="font-bold text-[var(--text-secondary)]">Maintenance ({maintenanceRate}% annually)</span>
-                    <span className="font-bold text-[var(--text-primary)]">{formatCurrency(purchasePrice * (maintenanceRate / 100) * years)}</span>
+                    <span className="font-bold text-[var(--text-secondary)]">Maintenance ({maintenanceRate}% of home value/yr)</span>
+                    <span className="font-bold text-[var(--text-primary)]">{formatCurrency(lifecycleAnalysis.maintenanceTotal)}</span>
                   </div>
                   <div className="flex items-center justify-between p-4 bg-[var(--bg-section)] rounded-xl">
-                    <span className="font-bold text-[var(--text-secondary)]">Property Tax ({propertyTax}% annually)</span>
-                    <span className="font-bold text-[var(--text-primary)]">{formatCurrency(purchasePrice * (propertyTax / 100) * years)}</span>
+                    <span className="font-bold text-[var(--text-secondary)]">Property Tax ({propertyTax}% of home value/yr)</span>
+                    <span className="font-bold text-[var(--text-primary)]">{formatCurrency(lifecycleAnalysis.propertyTaxTotal)}</span>
                   </div>
                   <div className="flex items-center justify-between p-4 bg-[var(--bg-section)] rounded-xl">
-                    <span className="font-bold text-[var(--text-secondary)]">Insurance (0.5% annually)</span>
-                    <span className="font-bold text-[var(--text-primary)]">{formatCurrency(purchasePrice * 0.005 * years)}</span>
-                  </div>
-                  <div className="flex items-center justify-between p-4 bg-[var(--bg-section)] rounded-xl">
-                    <span className="font-bold text-[var(--text-secondary)]">HOA/Condo Fees (est.)</span>
-                    <span className="font-bold text-[var(--text-primary)]">{formatCurrency(3600 * years)}</span>
+                    <span className="font-bold text-[var(--text-secondary)]">Insurance (0.5% of home value/yr)</span>
+                    <span className="font-bold text-[var(--text-primary)]">{formatCurrency(lifecycleAnalysis.insuranceTotal)}</span>
                   </div>
                   <div className="flex items-center justify-between p-4 bg-[var(--bg-section)] rounded-xl">
                     <span className="font-bold text-[var(--text-secondary)]">Closing Costs ({buyingCosts}%)</span>
@@ -673,7 +679,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                   Renting isn't just flexibility—it's career optionality with real dollar value.
                 </p>
                 <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 mb-6">
-                  <h5 className="font-bold mb-4">Real-World Scenario:</h5>
+                  <h5 className="font-bold mb-4">Illustrative Scenario:</h5>
                   <ul className="space-y-3 text-white/85">
                     <li className="flex items-start gap-3">
                       <div className="w-2 h-2 rounded-full bg-[var(--emerald-400)] mt-2 shrink-0"></div>
@@ -698,7 +704,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                     <p className="text-white/85 text-sm font-bold mb-2">Mobility-Adjusted Value</p>
                     <p className="text-4xl font-bold">{formatCurrency(lifecycleAnalysis.mobilityAdjustedRentNW)}</p>
                     <p className="text-white/85 text-xs font-medium mt-2">
-                      +{formatCurrency(lifecycleAnalysis.mobilityPremium)} opportunity value
+                      +{formatCurrency(lifecycleAnalysis.mobilityPremium)} illustrative opportunity value — a rule of thumb, not a measured figure
                     </p>
                   </div>
                 </div>
@@ -721,7 +727,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
               <div className="flex-1">
                 <h4 className="text-2xl font-bold text-[var(--text-primary)] mb-3">Market Timing Scenarios</h4>
                 <p className="text-[var(--text-secondary)] font-medium text-lg leading-relaxed mb-6">
-                  Housing markets fluctuate. Here's your outcome range based on historical data:
+                  Housing markets fluctuate. Here's an illustrative outcome range assuming a ±25% purchase-timing swing:
                 </p>
                 <div className="space-y-6">
                   <div>

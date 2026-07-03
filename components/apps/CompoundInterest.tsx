@@ -37,9 +37,12 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
     let totalContributions = inputs.principal;
     const years = Math.max(0, Math.floor(inputs.years));
     // Convert nominal annual rate to the effective annual rate for the
-    // selected compounding frequency, so the dropdown actually moves the math.
+    // selected compounding frequency, so the dropdown actually moves the math,
+    // then derive the equivalent monthly growth rate so contributions can be
+    // deposited monthly (end of month), matching the "Monthly Contribution" label.
     const freq = inputs.compoundingFrequency || 1;
-    const rate = Math.pow(1 + (inputs.annualReturn / 100) / freq, freq) - 1;
+    const ear = Math.pow(1 + (inputs.annualReturn / 100) / freq, freq) - 1;
+    const monthlyRate = Math.pow(1 + ear, 1 / 12) - 1;
 
     for (let year = 0; year <= years; year++) {
       data.push({
@@ -49,10 +52,10 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
         interest: Math.round(balance - totalContributions)
       });
 
-      // Simple yearly calculation for performance
-      const yearlyContribution = inputs.monthlyContribution * 12;
-      balance = (balance + yearlyContribution) * (1 + rate);
-      totalContributions += yearlyContribution;
+      for (let month = 0; month < 12; month++) {
+        balance = balance * (1 + monthlyRate) + inputs.monthlyContribution;
+      }
+      totalContributions += inputs.monthlyContribution * 12;
     }
     return data;
   }, [inputs]);
@@ -82,41 +85,42 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
     }
 
     const freq = inputs.compoundingFrequency || 1;
-    const rate = Math.pow(1 + (inputs.annualReturn / 100) / freq, freq) - 1;
-    const yearlyContribution = inputs.monthlyContribution * 12;
+    const ear = Math.pow(1 + (inputs.annualReturn / 100) / freq, freq) - 1;
+    const monthlyRate = Math.pow(1 + ear, 1 / 12) - 1;
     const totalYears = Math.max(0, Math.floor(inputs.years));
+
+    // Same convention as the main simulation: growth applied monthly,
+    // contribution deposited at end of each month.
+    const grow = (principal: number, monthly: number, months: number) => {
+      let b = principal;
+      for (let m = 0; m < months; m++) b = b * (1 + monthlyRate) + monthly;
+      return b;
+    };
 
     // 1. Delay Cost Analysis - What if you delay starting by 5 years?
     const delayYears = 5;
     const delayedYears = Math.max(0, totalYears - delayYears);
-    let delayedBalance = inputs.principal;
-    let delayedContributions = inputs.principal;
-    for (let year = 0; year < delayedYears; year++) {
-      delayedBalance = (delayedBalance + yearlyContribution) * (1 + rate);
-      delayedContributions += yearlyContribution;
-    }
+    const delayedBalance = grow(inputs.principal, inputs.monthlyContribution, delayedYears * 12);
     const delayCost = finalStats.balance - delayedBalance;
-    const delayPercentageLoss = (delayCost / finalStats.balance) * 100;
+    const delayPercentageLoss = finalStats.balance > 0 ? (delayCost / finalStats.balance) * 100 : 0;
 
-    // To match same outcome after delay, calculate required monthly increase
-    let requiredMonthly = inputs.monthlyContribution;
-    let testBalance = inputs.principal;
-    for (let attempt = 0; attempt < 100; attempt++) {
-      testBalance = inputs.principal;
-      for (let year = 0; year < delayedYears; year++) {
-        testBalance = (testBalance + requiredMonthly * 12) * (1 + rate);
-      }
-      if (testBalance >= finalStats.balance) break;
-      requiredMonthly += 50;
+    // To match the same outcome after the delay, solve the annuity formula
+    // FV = P·g + M·(g−1)/r for M over the remaining months (null if no time remains).
+    let requiredMonthly: number | null = null;
+    if (delayedYears > 0) {
+      const n = delayedYears * 12;
+      const g = Math.pow(1 + monthlyRate, n);
+      requiredMonthly = monthlyRate > 0
+        ? ((finalStats.balance - inputs.principal * g) * monthlyRate) / (g - 1)
+        : (finalStats.balance - inputs.principal) / n;
+      requiredMonthly = Math.max(0, requiredMonthly);
     }
-    const requiredIncreasePct = ((requiredMonthly - inputs.monthlyContribution) / inputs.monthlyContribution) * 100;
+    const requiredIncreasePct = requiredMonthly !== null && inputs.monthlyContribution > 0
+      ? ((requiredMonthly - inputs.monthlyContribution) / inputs.monthlyContribution) * 100
+      : null;
 
     // 2. Contribution Optimization - What if you increase monthly by 20%?
-    let optimizedBalance = inputs.principal;
-    const optimizedMonthly = inputs.monthlyContribution * 1.2;
-    for (let year = 0; year < totalYears; year++) {
-      optimizedBalance = (optimizedBalance + optimizedMonthly * 12) * (1 + rate);
-    }
+    const optimizedBalance = grow(inputs.principal, inputs.monthlyContribution * 1.2, totalYears * 12);
     const optimizationGain = optimizedBalance - finalStats.balance;
 
     // 3. Withdrawal Strategy - Show what this portfolio can support
@@ -165,7 +169,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
           toolId="compound-interest"
           toolName="Compound Interest Calculator"
           getInputs={() => inputs}
-          getKeyResult={() => `$${finalStats.balance.toLocaleString()} after ${inputs.years} years`}
+          getKeyResult={() => `$${finalStats.balance.toLocaleString()} after ${finalStats.year} years`}
           isLoggedIn={isLoggedIn}
           onLoginPrompt={onUpgrade}
         />
@@ -177,7 +181,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
           <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1">Total Future Value</p>
           <h4 className="text-2xl font-bold text-[var(--text-primary)]">${finalStats.balance.toLocaleString()}</h4>
           <p className="text-xs font-bold text-[var(--emerald-500)] mt-1 flex items-center gap-1">
-            <ArrowUpRight size={12} /> After {inputs.years} years
+            <ArrowUpRight size={12} /> After {finalStats.year} years
           </p>
         </div>
         <div className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border-default)] shadow-sm">
@@ -249,7 +253,9 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
               <Info size={16} className="text-[var(--emerald-400)]" /> The Rule of 72
             </h4>
             <p className="text-xs font-medium leading-relaxed text-white/80">
-              At {inputs.annualReturn}% return, your initial principal of ${inputs.principal.toLocaleString()} will double approximately every {Math.round(72 / (inputs.annualReturn || 1))} years.
+              {inputs.annualReturn > 0
+                ? `At ${inputs.annualReturn}% return, your initial principal of $${inputs.principal.toLocaleString()} will double approximately every ${Math.round(72 / inputs.annualReturn)} years.`
+                : `At 0% return, your money never doubles — growth only comes from what you contribute.`}
             </p>
           </div>
         </aside>
@@ -364,10 +370,25 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
                   </div>
                   <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                     <p className="text-white/85 text-sm font-bold mb-2">Required Contribution Increase</p>
-                    <p className="text-4xl font-bold">+{lifeImpactAnalysis.requiredIncreasePct.toFixed(0)}%</p>
-                    <p className="text-white/85 text-xs font-medium mt-2">
-                      You'd need ${Math.round(lifeImpactAnalysis.requiredMonthly).toLocaleString()}/mo instead of ${inputs.monthlyContribution.toLocaleString()}/mo
-                    </p>
+                    {lifeImpactAnalysis.requiredMonthly !== null ? (
+                      <>
+                        <p className="text-4xl font-bold">
+                          {lifeImpactAnalysis.requiredIncreasePct !== null
+                            ? `+${lifeImpactAnalysis.requiredIncreasePct.toFixed(0)}%`
+                            : `$${Math.round(lifeImpactAnalysis.requiredMonthly).toLocaleString()}/mo`}
+                        </p>
+                        <p className="text-white/85 text-xs font-medium mt-2">
+                          You'd need ${Math.round(lifeImpactAnalysis.requiredMonthly).toLocaleString()}/mo instead of ${inputs.monthlyContribution.toLocaleString()}/mo
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-4xl font-bold">N/A</p>
+                        <p className="text-white/85 text-xs font-medium mt-2">
+                          With a 5-year delay on a {Math.max(0, Math.floor(inputs.years))}-year horizon, no contribution level catches up in time
+                        </p>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -375,7 +396,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
             <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
               <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
               <p className="font-medium text-white">
-                Time is more valuable than amount. Starting today with ${inputs.monthlyContribution}/mo beats waiting 5 years and saving {lifeImpactAnalysis.requiredIncreasePct.toFixed(0)}% more per month.
+                Time is more valuable than amount. Starting today with ${inputs.monthlyContribution}/mo beats waiting 5 years{lifeImpactAnalysis.requiredIncreasePct !== null ? ` and saving ${lifeImpactAnalysis.requiredIncreasePct.toFixed(0)}% more per month` : ''}.
               </p>
             </div>
           </div>
@@ -407,7 +428,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
                     <p className="text-white/85 text-sm font-bold mb-2">Additional Wealth Created</p>
                     <p className="text-4xl font-bold mb-2">${Math.round(lifeImpactAnalysis.optimizationGain).toLocaleString()}</p>
                     <p className="text-white/85 text-xs font-medium">
-                      Just +${Math.round(inputs.monthlyContribution * 0.2).toLocaleString()}/mo compounds to an extra ${Math.round(lifeImpactAnalysis.optimizationGain).toLocaleString()} over {inputs.years} years
+                      Just +${Math.round(inputs.monthlyContribution * 0.2).toLocaleString()}/mo compounds to an extra ${Math.round(lifeImpactAnalysis.optimizationGain).toLocaleString()} over {finalStats.year} years
                     </p>
                   </div>
                 </div>
@@ -430,7 +451,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
                   <div className="bg-[var(--emerald-50)] rounded-2xl p-6 border border-[var(--emerald-border-soft)]">
                     <p className="text-[var(--emerald-500)] text-sm font-bold mb-2">Annual Income (4% Rule)</p>
                     <p className="text-4xl font-bold text-[var(--text-primary)]">${Math.round(lifeImpactAnalysis.annualIncome).toLocaleString()}</p>
-                    <p className="text-[var(--text-tertiary)] text-xs font-medium mt-2">Adjusted for inflation</p>
+                    <p className="text-[var(--text-tertiary)] text-xs font-medium mt-2">In future dollars — not adjusted for inflation</p>
                   </div>
                   <div className="bg-[var(--emerald-50)] rounded-2xl p-6 border border-[var(--emerald-border-soft)]">
                     <p className="text-[var(--emerald-500)] text-sm font-bold mb-2">Monthly Income</p>

@@ -44,14 +44,16 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
         year: i,
         burned: Math.round(cumulativeSpent),
         invested: Math.round(portfolioValue),
-        gap: Math.round(portfolioValue - cumulativeSpent)
       });
     }
     return chartData;
   }, [inputs]);
 
   const finalStats = simulationData[simulationData.length - 1];
-  const wealthGap = finalStats.invested - finalStats.burned;
+  // Under this tool's 100%-loss model, the end-wealth difference is the full invested balance:
+  // gambling leaves you at $0, investing leaves you at the portfolio value.
+  const wealthGap = finalStats.invested;
+  const compoundingGrowth = finalStats.invested - finalStats.burned;
 
   // PRO FEATURE: Advanced Analysis
   const proAnalysis = useMemo(() => {
@@ -68,21 +70,19 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
           { name: 'Used Car (Cash)', cost: 15000, yearsToReach: 2 },
           { name: 'House Down Payment', cost: 60000, yearsToReach: 8 },
         ],
-        breakEvenYear: 4,
         _isPreview: true
       };
     }
 
-    const rate = inputs.marketReturn / 100;
     const yearlyContribution = inputs.monthlyBet * 12;
 
     // 1. House Edge Analysis - What the house actually takes
-    const houseEdge = 0.08; // 8% average house edge
+    const houseEdge = 0.08; // ~8% realized hold (parlay-heavy), vs ~4.55% classic two-way vig at -110
     const totalWagered = yearlyContribution * 10 * inputs.years; // Assumes 10x churn on deposits
     const expectedLoss = totalWagered * houseEdge;
 
-    // 2. Addiction cost multiplier - What problem gamblers actually spend
-    const addictionMultiplier = 3.5; // Problem gamblers spend 3.5x their "budget"
+    // 2. Addiction cost multiplier - Illustrative scenario, not a measured statistic
+    const addictionMultiplier = 3.5; // Illustrative: escalating play often far exceeds the stated "budget"
     const realCostEstimate = finalStats.burned * addictionMultiplier;
 
     // 3. 4% Rule - Sustainable retirement income from invested amount
@@ -110,29 +110,13 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
       }
     });
 
-    // 5. Breakeven analysis - When does investing beat gambling's "entertainment value"?
-    const entertainmentValue = inputs.monthlyBet * 0.1; // Assume 10% of budget is "fun"
-    let investedBalance = 0;
-    let breakEvenYear = 0;
-    for (let year = 1; year <= inputs.years; year++) {
-      for (let m = 0; m < 12; m++) {
-        investedBalance = (investedBalance + inputs.monthlyBet) * (1 + inputs.marketReturn / 100 / 12);
-      }
-      const investmentGains = investedBalance - (inputs.monthlyBet * 12 * year);
-      const totalEntertainment = entertainmentValue * 12 * year;
-      if (investmentGains > totalEntertainment && breakEvenYear === 0) {
-        breakEvenYear = year;
-      }
-    }
-
     return {
       totalWagered: Math.round(totalWagered),
       expectedLoss: Math.round(expectedLoss),
       realCostEstimate: Math.round(realCostEstimate),
       annualIncome: Math.round(annualIncome),
       monthlyIncome: Math.round(monthlyIncome),
-      milestones: milestones.filter(m => m.yearsToReach > 0 && m.yearsToReach <= inputs.years),
-      breakEvenYear
+      milestones: milestones.filter(m => m.yearsToReach > 0 && m.yearsToReach <= inputs.years)
     };
   }, [isPro, inputs, finalStats]);
 
@@ -180,8 +164,14 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
         <h3 className="text-4xl md:text-5xl font-bold text-[var(--text-primary)] tracking-tight mb-4">
           {formatCurrency(wealthGap)}
         </h3>
-        <p className="text-[var(--text-tertiary)] font-medium max-w-md mx-auto">
+        <p className="text-[var(--text-tertiary)] font-medium max-w-md mx-auto mb-3">
           This is the "Wealth Gap"—the massive difference between supporting the sportsbook and supporting your future self.
+        </p>
+        <p className="text-sm font-bold text-[var(--text-secondary)] max-w-lg mx-auto">
+          {formatCurrency(finalStats.burned)} you'd have spent gambling + {formatCurrency(compoundingGrowth)} compounding growth = {formatCurrency(wealthGap)} future value
+        </p>
+        <p className="text-xs text-[var(--text-muted)] font-medium max-w-md mx-auto mt-2">
+          This figure assumes every dollar wagered is eventually lost.
         </p>
       </div>
 
@@ -273,7 +263,7 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
               </li>
               <li className="flex gap-2">
                 <div className="h-1.5 w-1.5 rounded-full bg-[var(--emerald-400)] mt-1.5 shrink-0" />
-                <span>The "House Edge" (Hold) typically takes <strong>7-9%</strong> of every dollar wagered.</span>
+                <span>Classic two-way vig at -110 costs <strong>~4.55%</strong>, but sportsbooks' realized hold runs <strong>7-9%</strong> of every dollar wagered thanks to parlay-heavy betting.</span>
               </li>
               <li className="flex gap-2">
                 <div className="h-1.5 w-1.5 rounded-full bg-[var(--emerald-400)] mt-1.5 shrink-0" />
@@ -444,16 +434,19 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
                     <p className="text-white/85 text-sm font-bold mb-2">Expected Loss to House Edge</p>
                     <p className="text-4xl font-bold">{formatCurrency(proAnalysis.expectedLoss)}</p>
                     <p className="text-white/85 text-xs font-medium mt-2">
-                      At 8% house edge over {inputs.years} years
+                      At ~8% realized hold over {inputs.years} years
                     </p>
                   </div>
                 </div>
+                <p className="text-white/85 text-xs font-medium mt-4">
+                  Unlike the "Wealth Gap" above—which assumes every dollar wagered is eventually lost—this figure is the statistical expectation from churn &times; house edge.
+                </p>
               </div>
             </div>
             <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
               <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
               <p className="font-medium text-white">
-                Problem gamblers typically spend 3.5x their stated "budget." That could mean a real cost of {formatCurrency(proAnalysis.realCostEstimate)} over {inputs.years} years.
+                If your real spend were 3.5x what you entered—common with escalating play—that's {formatCurrency(proAnalysis.realCostEstimate)} over {inputs.years} years. An illustrative estimate, not a measured figure.
               </p>
             </div>
           </div>

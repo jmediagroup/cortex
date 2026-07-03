@@ -23,7 +23,7 @@ function CarAffordabilityPageInner() {
     <ToolLayout
       eyebrow="FINANCE · VEHICLES"
       title="Car affordability calculator."
-      sub="The true cost of vehicle ownership — depreciation, maintenance, and opportunity cost included in the read."
+      sub="How much car your income supports under the 20/3/8 rule — 20% down, a 3-year loan, and a payment capped at 8% of gross income."
       breadcrumb={<Breadcrumb toolName="Car Affordability Calculator" />}
       cta={
         !hasSession ? (
@@ -33,7 +33,7 @@ function CarAffordabilityPageInner() {
           />
         ) : null
       }
-      narration="Most people see the monthly payment. You just saw what the car will actually cost you over ten years."
+      narration="Most people start from the sticker price. You just sized the price from a payment your income can actually carry."
       footer={
         <>
           <CalculatorSEOContent content={CALCULATOR_CONTENT['car-affordability']} />

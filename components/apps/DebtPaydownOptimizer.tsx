@@ -95,6 +95,9 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
     setDebts(debts.map(d => d.id === id ? { ...d, [field]: value } : d));
   };
 
+  const totalMinPayments = useMemo(() => debts.reduce((sum, d) => sum + d.minPayment, 0), [debts]);
+  const budgetShortfall = monthlyBudget < totalMinPayments;
+
   // Logic: Simulation Engine
   const simulate = (strategyType: 'avalanche' | 'snowball' | 'hybrid'): SimulationResult => {
     let currentDebts = debts.map(d => ({
@@ -125,23 +128,27 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
       });
       totalInterest += monthlyInterest;
 
-      // 2. Pay Minimums
+      // 2. Pay Minimums, tracking freed-up cash so the month a debt dies only
+      // the UNUSED portion of its minimum rolls into the extra pool (from the
+      // next month onward the full minimum rolls over). Total outlay per month
+      // never exceeds total minimums + extra cash.
+      let availableForExtra = extraCash;
       currentDebts.forEach(d => {
         if (d.currentBalance > 0) {
           const payment = Math.min(d.currentBalance, d.minPayment);
           d.currentBalance -= payment;
+          availableForExtra += d.minPayment - payment;
+        } else {
+          // Debt already paid off in a prior month: full minimum is freed up
+          availableForExtra += d.minPayment;
         }
       });
 
       // 3. Apply Snowball/Avalanche logic to extra cash + freed up minimums
-      let availableForExtra = extraCash + currentDebts
-        .filter(d => d.currentBalance <= 0)
-        .reduce((sum, d) => sum + d.minPayment, 0);
-
       // Sorting Strategy
       let sorted = [...currentDebts].filter(d => d.currentBalance > 0);
       if (strategyType === 'avalanche') {
-        sorted.sort((a, b) => b.rate - a.rate);
+        sorted.sort((a, b) => b.effectiveRate - a.effectiveRate);
       } else if (strategyType === 'snowball') {
         sorted.sort((a, b) => a.currentBalance - b.currentBalance);
       } else if (strategyType === 'hybrid') {
@@ -178,18 +185,19 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
     hybrid: simulate('hybrid'),
   }), [debts, monthlyBudget, taxRate, psychologicalWeight]);
 
-  // Opportunity Cost Calculation
+  // Opportunity Cost Calculation — only the discretionary slice (budget minus
+  // required minimums) is actually investable; minimums are contractual.
   const opportunityCost = useMemo(() => {
     const avgMonths = results.avalanche.months;
     let investedValue = 0;
-    const monthlyContribution = monthlyBudget;
+    const monthlyContribution = Math.max(0, monthlyBudget - totalMinPayments);
     const monthlyRate = (investmentRate / 100) / 12;
 
     for (let i = 0; i < avgMonths; i++) {
       investedValue = (investedValue + monthlyContribution) * (1 + monthlyRate);
     }
     return investedValue;
-  }, [results, monthlyBudget, investmentRate]);
+  }, [results, monthlyBudget, totalMinPayments, investmentRate]);
 
   // PRO FEATURE: Opportunity Cost Rebalancer
   const opportunityAnalysis = useMemo(() => {
@@ -227,41 +235,49 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
       investmentValue = (investmentValue + investableAmount) * (1 + monthlyRate);
     }
 
-    // Remaining debt after paying minimums only
+    // Remaining debt after paying minimums only: real month-by-month
+    // amortization of each debt at its minimum payment over the same horizon
     let remainingDebtValue = 0;
     debts.forEach(d => {
-      // Simple approximation: debt shrinks slowly with min payments
-      const monthlyInterest = (d.rate / 100) / 12;
-      const effectiveReduction = d.minPayment - (d.balance * monthlyInterest);
-      const balanceAfterPaydown = Math.max(0, d.balance - (effectiveReduction * paydownMonths));
-      remainingDebtValue += balanceAfterPaydown;
+      let balance = d.balance;
+      for (let m = 0; m < paydownMonths && balance > 0; m++) {
+        balance += (balance * (d.rate / 100)) / 12;
+        balance -= Math.min(balance, d.minPayment);
+      }
+      remainingDebtValue += Math.max(0, balance);
     });
 
     const netInvestStrategy = investmentValue - remainingDebtValue;
     const netPaydownStrategy = 0; // All debt paid, but no investments
     const opportunityCostGap = netInvestStrategy - netPaydownStrategy;
 
-    // 2. Tax-Adjusted Analysis
+    // 2. Tax-Adjusted Analysis: annual interest deducted at each debt's actual rate
     const taxDeductibleDebts = debts.filter(d => d.isTaxDeductible);
-    const totalTaxDeductibleBalance = taxDeductibleDebts.reduce((sum, d) => sum + d.balance, 0);
-    const taxBenefit = (totalTaxDeductibleBalance * (taxRate / 100)) * 0.05; // Rough annual benefit
+    const taxBenefit = taxDeductibleDebts.reduce((sum, d) => sum + d.balance * (d.rate / 100) * (taxRate / 100), 0);
 
     // 3. Cash Flow Flexibility Score
     // Paying minimum = high flexibility, aggressive = locked in
     const flexibilityScore = (investableAmount / monthlyBudget) * 100;
 
-    // 4. Refinance Opportunity
+    // 4. Refinance Opportunity: closed-form total interest of an amortized
+    // loan paid off over the current avalanche horizon, for both legs
+    const amortizedTotalInterest = (balance: number, annualRate: number, nMonths: number) => {
+      if (balance <= 0 || nMonths <= 0) return 0;
+      const r = (annualRate / 100) / 12;
+      if (r === 0) return 0;
+      const payment = (balance * r) / (1 - Math.pow(1 + r, -nMonths));
+      return payment * nMonths - balance;
+    };
     const highRateDebts = debts.filter(d => d.rate > 8);
     const refinanceSavings = highRateDebts.reduce((sum, d) => {
-      const currentInterest = d.balance * (d.rate / 100) * (paydownMonths / 12);
-      const refinancedInterest = d.balance * (0.05) * (paydownMonths / 12); // Assume 5% refi
+      const currentInterest = amortizedTotalInterest(d.balance, d.rate, paydownMonths);
+      const refinancedInterest = amortizedTotalInterest(d.balance, 5, paydownMonths); // Assume 5% refi
       return sum + (currentInterest - refinancedInterest);
     }, 0);
 
-    // 5. Debt-to-Income Improvement
-    const totalDebt = debts.reduce((sum, d) => sum + d.balance, 0);
-    const annualIncome = monthlyIncome * 12;
-    const initialDTI = annualIncome > 0 ? (totalDebt / annualIncome) * 100 : 0;
+    // 5. Debt-to-Income Improvement: payment-based DTI (monthly minimum
+    // payments / monthly gross income), matching the 43/36/30% standards
+    const initialDTI = monthlyIncome > 0 ? (totalMinPayments / monthlyIncome) * 100 : 0;
     const targetDTI = 30; // Industry standard
     const monthsToTargetDTI = initialDTI > targetDTI
       ? Math.ceil((initialDTI - targetDTI) * paydownMonths / initialDTI)
@@ -486,11 +502,21 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
 
         {/* Right Panel: Analysis */}
         <div className="lg:col-span-7 space-y-6">
+          {/* Budget Shortfall Warning */}
+          {budgetShortfall && (
+            <div className="p-4 bg-[var(--color-warning-soft)] rounded-2xl border border-[var(--color-warning)] flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-[var(--color-warning)] shrink-0 mt-0.5" />
+              <p className="text-sm text-[var(--text-secondary)] font-medium">
+                Your budget of <strong>${monthlyBudget.toLocaleString()}</strong> doesn&apos;t cover the <strong>${totalMinPayments.toLocaleString()}</strong> in required minimum payments — results below assume you pay all minimums.
+              </p>
+            </div>
+          )}
+
           {/* Strategy Comparison Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <StrategyCard
               title="Debt Avalanche"
-              subtitle="Pure Mathematical Efficiency"
+              subtitle="Highest After-Tax APR First"
               icon={<TrendingDown className="text-[var(--color-info)]" />}
               months={results.avalanche.months}
               interest={results.avalanche.totalInterest}
@@ -573,7 +599,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
               </h3>
               <div className="space-y-4">
                 <p className="text-sm text-[var(--text-tertiary)]">
-                  If you invested your <strong>${monthlyBudget}</strong> monthly at <strong>{investmentRate}%</strong> instead of paying off debt, you&apos;d have:
+                  If you invested your <strong>${Math.max(0, monthlyBudget - totalMinPayments).toLocaleString()}</strong> monthly surplus (budget minus required minimums) at <strong>{investmentRate}%</strong> instead of paying extra on debt, you&apos;d have:
                 </p>
                 <div className="text-3xl font-bold text-[var(--text-primary)]">
                   ${Math.round(opportunityCost).toLocaleString()}
@@ -612,7 +638,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                 <div className="pt-2">
                   <div className="text-xs font-bold text-[var(--text-muted)] uppercase mb-2">Psychological Momentum Plan</div>
                   <div className="flex flex-wrap gap-2">
-                    {debts.map((d, i) => (
+                    {[...debts].sort((a, b) => a.balance - b.balance).map((d, i) => (
                       <div key={d.id} className="text-[10px] px-2 py-1 bg-[var(--bg-glass)] rounded-md border border-[var(--border-default)]">
                         {i+1}. {d.name}
                       </div>
@@ -780,8 +806,8 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                   </p>
                   <p className="text-[var(--mist-100)] text-xs font-medium">
                     {opportunityAnalysis.opportunityCostGap > 0
-                      ? `Investing creates ${Math.round(Math.abs(opportunityAnalysis.opportunityCostGap))} more wealth despite carrying debt longer`
-                      : `Aggressive paydown wins by ${Math.round(Math.abs(opportunityAnalysis.opportunityCostGap))} - your debt rates are too high`}
+                      ? `Investing creates $${Math.round(Math.abs(opportunityAnalysis.opportunityCostGap)).toLocaleString()} more wealth despite carrying debt longer`
+                      : `Aggressive paydown wins by $${Math.round(Math.abs(opportunityAnalysis.opportunityCostGap)).toLocaleString()} - your debt rates are too high`}
                   </p>
                 </div>
               </div>
@@ -795,8 +821,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                   }
                   const lowestRateDebt = debts.reduce((min, d) => d.rate < min.rate ? d : min, debts[0]);
                   const highestBalanceDebt = debts.reduce((max, d) => d.balance > max.balance ? d : max, debts[0]);
-                  const totalDebt = debts.reduce((sum, d) => sum + d.balance, 0);
-                  const dti = (totalDebt / (monthlyIncome * 12)) * 100;
+                  const dti = monthlyIncome > 0 ? (totalMinPayments / monthlyIncome) * 100 : 0;
 
                   if (lowestRateDebt.rate < investmentRate) {
                     return `Your ${lowestRateDebt.name} at ${lowestRateDebt.rate.toFixed(1)}% costs less than ${investmentRate}% market returns. Paying extra on this debt sacrifices potential wealth growth. Better strategy: minimum payment + invest difference until DTI < 30% (currently ${dti.toFixed(0)}%).`;
@@ -977,7 +1002,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
               <div className="flex-1">
                 <h4 className="text-2xl font-bold text-[var(--text-primary)] mb-3">Debt-to-Income Trajectory</h4>
                 <p className="text-[var(--text-secondary)] font-medium text-lg leading-relaxed mb-6">
-                  With ${debts.reduce((sum, d) => sum + d.balance, 0).toLocaleString()} debt and ${monthlyIncome.toLocaleString()}/month income, here's your DTI path to financial optionality:
+                  With ${totalMinPayments.toLocaleString()}/month in minimum debt payments and ${monthlyIncome.toLocaleString()}/month income, here's your DTI path to financial optionality:
                 </p>
                 <div className="grid md:grid-cols-3 gap-6">
                   <div className="bg-[var(--bg-section)] rounded-2xl p-6 border border-[var(--border-subtle)]">

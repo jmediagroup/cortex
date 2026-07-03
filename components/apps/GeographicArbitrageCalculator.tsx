@@ -24,6 +24,7 @@ import SaveScenarioButton from './SaveScenarioButton';
 import Tooltip from '@/components/ui/Tooltip';
 import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 import ProGatedPreview from '@/components/monetization/ProGatedPreview';
+import { bracketTax, C } from '@/lib/tax/taxEngine2026';
 
 interface LocationData {
   taxRate: number;
@@ -44,7 +45,7 @@ const LOCATION_PRESETS: Record<string, LocationData> = {
   "Montgomery, AL": { taxRate: 0.05, colIndex: 0.85, housingBase: 1250, note: "Alabama Capital. High affordability in the Deep South." },
   "Juneau, AK": { taxRate: 0.0, colIndex: 1.3, housingBase: 2100, note: "Alaska Capital. 0% income tax but high cost of goods/services." },
   "Phoenix, AZ": { taxRate: 0.025, colIndex: 1.05, housingBase: 1950, note: "Arizona Capital. Low flat tax. Major destination for West Coast exits." },
-  "Little Rock, AR": { taxRate: 0.044, colIndex: 0.85, housingBase: 1300, note: "Arkansas Capital. Low cost of living and declining tax rates." },
+  "Little Rock, AR": { taxRate: 0.039, colIndex: 0.85, housingBase: 1300, note: "Arkansas Capital. Low cost of living and declining tax rates." },
   "Sacramento, CA": { taxRate: 0.093, colIndex: 1.3, housingBase: 2200, note: "California Capital. High state tax but ~30% cheaper than SF/LA." },
   "San Francisco, CA": { taxRate: 0.093, colIndex: 1.8, housingBase: 3500, note: "Benchmark Hub. Peak geographic arbitrage origin point." },
   "Los Angeles, CA": { taxRate: 0.093, colIndex: 1.6, housingBase: 2900, note: "Benchmark Hub. High CA tax. Significant utility/gas burden." },
@@ -54,21 +55,21 @@ const LOCATION_PRESETS: Record<string, LocationData> = {
   "Washington, D.C.": { taxRate: 0.085, colIndex: 1.7, housingBase: 2800, note: "U.S. Capital. High income tax brackets and extreme housing costs. Major outflow hub." },
   "Tallahassee, FL": { taxRate: 0.0, colIndex: 1.0, housingBase: 1750, note: "Florida Capital. 0% state income tax. Lower costs than Miami." },
   "Miami, FL": { taxRate: 0.0, colIndex: 1.2, housingBase: 2400, note: "Major Metro Hub. 0% state income tax. Significant housing demand and international appeal." },
-  "Atlanta, GA": { taxRate: 0.054, colIndex: 1.0, housingBase: 1900, note: "Georgia Capital. Major Inflow Hub. Corporate center with moderate housing." },
+  "Atlanta, GA": { taxRate: 0.0519, colIndex: 1.0, housingBase: 1900, note: "Georgia Capital. Major Inflow Hub. Corporate center with moderate housing." },
   "Honolulu, HI": { taxRate: 0.0825, colIndex: 1.8, housingBase: 3100, note: "Hawaii Capital. Extremely high COL and housing burden." },
   "Boise, ID": { taxRate: 0.058, colIndex: 1.05, housingBase: 2000, note: "Idaho Capital. High recent Inflow from West Coast. Rising housing." },
   "Springfield, IL": { taxRate: 0.0495, colIndex: 0.85, housingBase: 1300, note: "Illinois Capital. Flat tax and high housing affordability." },
-  "Indianapolis, IN": { taxRate: 0.0315, colIndex: 0.9, housingBase: 1500, note: "Indiana Capital. Low flat state tax and stable housing costs." },
-  "Des Moines, IA": { taxRate: 0.057, colIndex: 0.85, housingBase: 1300, note: "Iowa Capital. Strong insurance/finance hub. High affordability." },
+  "Indianapolis, IN": { taxRate: 0.03, colIndex: 0.9, housingBase: 1500, note: "Indiana Capital. Low flat state tax and stable housing costs." },
+  "Des Moines, IA": { taxRate: 0.038, colIndex: 0.85, housingBase: 1300, note: "Iowa Capital. Flat 3.8% tax. Strong insurance/finance hub. High affordability." },
   "Topeka, KS": { taxRate: 0.057, colIndex: 0.82, housingBase: 1250, note: "Kansas Capital. Highly affordable housing with moderate state tax." },
-  "Frankfort, KY": { taxRate: 0.045, colIndex: 0.85, housingBase: 1200, note: "Kentucky Capital. Very affordable living and flat tax rate." },
-  "Baton Rouge, LA": { taxRate: 0.0425, colIndex: 0.9, housingBase: 1350, note: "Louisiana Capital. Low housing costs and moderate state tax." },
+  "Frankfort, KY": { taxRate: 0.035, colIndex: 0.85, housingBase: 1200, note: "Kentucky Capital. Very affordable living and flat tax rate." },
+  "Baton Rouge, LA": { taxRate: 0.03, colIndex: 0.9, housingBase: 1350, note: "Louisiana Capital. Low housing costs and low flat state tax." },
   "Augusta, ME": { taxRate: 0.0715, colIndex: 0.95, housingBase: 1400, note: "Maine Capital. Higher state tax but low housing costs." },
   "Annapolis, MD": { taxRate: 0.0475, colIndex: 1.25, housingBase: 2400, note: "Maryland Capital. High local COL due to DC proximity." },
   "Boston, MA": { taxRate: 0.05, colIndex: 1.65, housingBase: 3200, note: "Massachusetts Capital. High Outflow due to housing burden." },
   "Lansing, MI": { taxRate: 0.0425, colIndex: 0.88, housingBase: 1350, note: "Michigan Capital. Low housing costs and flat tax rate." },
   "St. Paul, MN": { taxRate: 0.07, colIndex: 1.05, housingBase: 1700, note: "Minnesota Capital. Higher tax but high social service index." },
-  "Jackson, MS": { taxRate: 0.05, colIndex: 0.8, housingBase: 1150, note: "Mississippi Capital. Lowest housing baseline in the dataset." },
+  "Jackson, MS": { taxRate: 0.044, colIndex: 0.8, housingBase: 1150, note: "Mississippi Capital. Lowest housing baseline in the dataset." },
   "Jefferson City, MO": { taxRate: 0.0495, colIndex: 0.82, housingBase: 1200, note: "Missouri Capital. High affordability and moderate state tax." },
   "Helena, MT": { taxRate: 0.059, colIndex: 1.0, housingBase: 1700, note: "Montana Capital. Increasing Inflow. No sales tax." },
   "Lincoln, NE": { taxRate: 0.058, colIndex: 0.92, housingBase: 1450, note: "Nebraska Capital. High stability and low discretionary costs." },
@@ -78,19 +79,19 @@ const LOCATION_PRESETS: Record<string, LocationData> = {
   "Santa Fe, NM": { taxRate: 0.059, colIndex: 1.1, housingBase: 2000, note: "New Mexico Capital. High cultural value with moderate tax burden." },
   "Albany, NY": { taxRate: 0.065, colIndex: 1.05, housingBase: 1600, note: "NY State Capital. Progressive tax system. Moderate COL." },
   "New York, NY": { taxRate: 0.10, colIndex: 1.9, housingBase: 3800, note: "Benchmark Hub. Highest tax drag (City + State). Max Outflow risk." },
-  "Raleigh, NC": { taxRate: 0.045, colIndex: 0.95, housingBase: 1750, note: "North Carolina Capital. Flat tax and Research Triangle growth." },
-  "Wilmington, NC": { taxRate: 0.045, colIndex: 0.95, housingBase: 1650, note: "Coastal Destination. Favorable flat tax (4.5%) and high appeal for remote workers/retirees." },
+  "Raleigh, NC": { taxRate: 0.0399, colIndex: 0.95, housingBase: 1750, note: "North Carolina Capital. Flat tax and Research Triangle growth." },
+  "Wilmington, NC": { taxRate: 0.0399, colIndex: 0.95, housingBase: 1650, note: "Coastal Destination. Favorable flat tax (3.99%) and high appeal for remote workers/retirees." },
   "Bismarck, ND": { taxRate: 0.025, colIndex: 0.9, housingBase: 1300, note: "North Dakota Capital. Very low state tax and stable economy." },
   "Columbus, OH": { taxRate: 0.035, colIndex: 0.95, housingBase: 1650, note: "Ohio Capital. Rapidly growing tech/corporate hub." },
   "Oklahoma City, OK": { taxRate: 0.0475, colIndex: 0.88, housingBase: 1400, note: "Oklahoma Capital. Rapidly growing with low cost of operations." },
   "Salem, OR": { taxRate: 0.0875, colIndex: 1.1, housingBase: 1850, note: "Oregon Capital. High income tax but no sales tax." },
   "Harrisburg, PA": { taxRate: 0.0307, colIndex: 0.95, housingBase: 1400, note: "Pennsylvania Capital. Low flat tax rate and moderate COL." },
   "Providence, RI": { taxRate: 0.0475, colIndex: 1.15, housingBase: 1900, note: "Rhode Island Capital. Moderate costs with proximity to Boston." },
-  "Columbia, SC": { taxRate: 0.07, colIndex: 0.9, housingBase: 1450, note: "South Carolina Capital. Low COL offset by tax brackets." },
+  "Columbia, SC": { taxRate: 0.062, colIndex: 0.9, housingBase: 1450, note: "South Carolina Capital. Low COL offset by tax brackets." },
   "Pierre, SD": { taxRate: 0.0, colIndex: 0.9, housingBase: 1400, note: "South Dakota Capital. 0% state income tax. Favorable for savings." },
   "Nashville, TN": { taxRate: 0.0, colIndex: 0.95, housingBase: 1800, note: "Tennessee Capital. 0% state income tax. Massive cultural Inflow Hub." },
   "Austin, TX": { taxRate: 0.0, colIndex: 1.1, housingBase: 2100, note: "Texas Capital. 0% state income tax. Major tech Inflow Hub." },
-  "Salt Lake City, UT": { taxRate: 0.0485, colIndex: 1.1, housingBase: 2100, note: "Utah Capital. Flat tax and high Inflow (Silicon Slopes)." },
+  "Salt Lake City, UT": { taxRate: 0.045, colIndex: 1.1, housingBase: 2100, note: "Utah Capital. Flat tax and high Inflow (Silicon Slopes)." },
   "Montpelier, VT": { taxRate: 0.068, colIndex: 1.1, housingBase: 1750, note: "Vermont Capital. High tax burden but high social safety net." },
   "Richmond, VA": { taxRate: 0.0575, colIndex: 1.0, housingBase: 1850, note: "Virginia Capital. Moderate progressive tax and historical stability." },
   "Alexandria, VA": { taxRate: 0.0575, colIndex: 1.5, housingBase: 2600, note: "D.C. Outflow Hub. High COL and housing demand with proximity to the federal core." },
@@ -141,7 +142,7 @@ const SliderField = ({ label, icon: Icon, value, onChange, min = 0, max = 100, s
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = parseInt(e.target.value.replace(/,/g, '')) || min;
+    const newValue = parseFloat(e.target.value.replace(/,/g, '')) || min;
     if (newValue >= min && newValue <= max) {
       onChange(newValue);
     }
@@ -228,6 +229,12 @@ const LocationSelector = ({ label, value, onChange }: LocationSelectorProps) => 
   </div>
 );
 
+// 2026 Social Security wage base for employee-side FICA
+const SS_WAGE_BASE_2026 = 184500;
+
+// Currency formatter that keeps the sign readable for deficits (e.g. -$1,200)
+const fmtUSD = (value: number) => `${value < 0 ? '-' : ''}$${Math.abs(Math.round(value)).toLocaleString()}`;
+
 // Sort keys by State (suffix) then City (prefix)
 const sortedLocationKeys = Object.keys(LOCATION_PRESETS).sort((a, b) => {
   if (a === "Remote / LCOL") return 1;
@@ -251,9 +258,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
 
   const [lifestyle, setLifestyle] = useState({
     housing: 50,
-    dining: 40,
-    transit: 30,
-    discretionary: 50
+    dining: 40
   });
 
   const initialApplied = useRef(false);
@@ -273,15 +278,25 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
   const calculateMetrics = (locKey: string, income: number | string) => {
     const incomeNum = typeof income === 'string' ? parseFloat(income) || 0 : income;
     const loc = LOCATION_PRESETS[locKey];
-    const fedTax = 0.22;
-    const stateTax = loc.taxRate;
-    const totalTax = incomeNum * (fedTax + stateTax);
+    // 2026 federal income tax: single filer, standard deduction, via the shared engine
+    const federalTax = bracketTax(Math.max(0, incomeNum - C.stdDed.single), C.ordinary.single);
+    // Employee-side FICA: 6.2% Social Security up to the wage base,
+    // 1.45% Medicare, plus 0.9% Additional Medicare over $200k
+    const ficaTax = 0.062 * Math.min(incomeNum, SS_WAGE_BASE_2026)
+      + 0.0145 * incomeNum
+      + 0.009 * Math.max(0, incomeNum - 200000);
+    // State tax is a single-rate model: top-marginal rate x gross income.
+    // This overstates the bill in progressive states (CA, NY, etc.).
+    const stateTax = incomeNum * loc.taxRate;
+    const totalTax = federalTax + ficaTax + stateTax;
     const takeHome = incomeNum - totalTax;
     const housingCost = loc.housingBase * (lifestyle.housing / 50) * 12;
-    const dailyCosts = (1500 * loc.colIndex) * (1 + (lifestyle.dining + lifestyle.transit + lifestyle.discretionary) / 150) * 12;
+    const dailyCosts = (1500 * loc.colIndex) * (1 + lifestyle.dining / 50) * 12;
     const totalExpenses = housingCost + dailyCosts;
-    const netSavings = Math.max(0, takeHome - totalExpenses);
-    return { takeHome, totalTax, housingCost, dailyCosts, totalExpenses, netSavings };
+    // Deliberately unclamped: a negative surplus (deficit) must survive so
+    // that comparisons between two deficit cities still show the true delta.
+    const netSavings = takeHome - totalExpenses;
+    return { takeHome, totalTax, stateTax, housingCost, dailyCosts, totalExpenses, netSavings };
   };
 
   const currentMetrics = useMemo(() => calculateMetrics(currentLoc, annualIncome), [currentLoc, annualIncome, lifestyle]);
@@ -325,27 +340,24 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
       .sort((a, b) => b.delta - a.delta)
       .slice(0, 5);
 
-    // 2. Tax Migration Windfall (comparing current vs optimal state tax)
+    // 2. Tax Migration Windfall (current vs target state tax, same
+    // top-marginal-rate model; negative means the target state taxes more)
     const currentLoc_data = LOCATION_PRESETS[currentLoc];
-    const zeroTaxStates = Object.entries(LOCATION_PRESETS).filter(([_, data]) => data.taxRate === 0);
-    const avgZeroTaxCOL = zeroTaxStates.reduce((sum, [_, data]) => sum + data.colIndex, 0) / zeroTaxStates.length;
-    const taxSavings = incomeNum * currentLoc_data.taxRate;
-    const yearlyTaxWindfall = taxSavings;
+    const targetLoc_data = LOCATION_PRESETS[targetLoc];
+    const yearlyTaxWindfall = incomeNum * (currentLoc_data.taxRate - targetLoc_data.taxRate);
 
     // 3. Career Mobility Premium
     // Assumption: staying in expensive locations may boost salary trajectory by 5-10% over 10 years
     const mobilityPenalty = incomeNum * 0.07 * years; // 7% of salary lost per year
     const mobilityPremium = savingsDelta * years - mobilityPenalty;
 
-    // 4. Lifestyle Downgrade Risk Score (0-100)
-    // Calculate how much lifestyle is being compressed (lower = more compression).
-    // The savings ratio is clamped so a zero-savings origin city can't blow
-    // the score past the 0-100 scale.
-    const savingsRatio = Math.min(1.2, targetMetrics.netSavings / Math.max(1, currentMetrics.netSavings));
-    const lifestyleScore = Math.min(100, Math.round(
-      ((lifestyle.housing + lifestyle.dining + lifestyle.transit + lifestyle.discretionary) / 4) *
-      savingsRatio
-    ));
+    // 4. Lifestyle Compression Score (0-100)
+    // Compares post-tax, post-housing spending power in the target city
+    // against today. 75 = unchanged spending power, below 50 = significant
+    // compression, above 75 = the move expands your lifestyle budget.
+    const currentDiscretionary = Math.max(1, currentMetrics.takeHome - currentMetrics.housingCost);
+    const targetDiscretionary = targetMetrics.takeHome - targetMetrics.housingCost;
+    const lifestyleScore = Math.max(0, Math.min(100, Math.round(75 * (targetDiscretionary / currentDiscretionary))));
 
     // 5. Compounding Leverage - How much extra wealth from arbitrage savings invested
     let compoundedArbitrageWealth = 0;
@@ -361,7 +373,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
       lifestyleScore,
       compoundedArbitrageWealth
     };
-  }, [isPro, currentLoc, annualIncome, incomeAdjustment, currentMetrics, savingsDelta, lifestyle, years, investmentReturn]);
+  }, [isPro, currentLoc, targetLoc, annualIncome, incomeAdjustment, currentMetrics, targetMetrics, savingsDelta, lifestyle, years, investmentReturn]);
 
   const projectionData = useMemo(() => {
     let currentWealth = 0;
@@ -375,8 +387,9 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
         target: Math.round(targetWealth),
         difference: Math.round(targetWealth - currentWealth)
       });
-      currentWealth = (currentWealth + currentMetrics.netSavings) * r;
-      targetWealth = (targetWealth + targetMetrics.netSavings) * r;
+      // Negative contributions (deficits) drain the balance, floored at 0.
+      currentWealth = Math.max(0, (currentWealth + currentMetrics.netSavings) * r);
+      targetWealth = Math.max(0, (targetWealth + targetMetrics.netSavings) * r);
     }
     return data;
   }, [currentMetrics.netSavings, targetMetrics.netSavings, investmentReturn, years]);
@@ -440,7 +453,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
               </div>
             </div>
 
-            <SliderField label="Retention Ratio" icon={ArrowRightLeft} value={incomeAdjustment} onChange={setIncomeAdjustment} min={50} max={150} suffix="%" tooltip="The percentage of your income you keep after taxes and cost of living. Higher means more wealth-building potential." />
+            <SliderField label="Salary Adjustment" icon={ArrowRightLeft} value={incomeAdjustment} onChange={setIncomeAdjustment} min={50} max={150} suffix="%" tooltip="What percent of your current salary you would earn in the destination market. 100% means you keep your current pay (e.g. a fully remote role)." />
           </section>
 
           <section className="bg-[var(--bg-card)] p-7 rounded-3xl shadow-sm border border-[var(--border-default)]/60 ring-1 ring-[var(--border-subtle)]">
@@ -448,7 +461,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
               <TrendingUp size={22} className="text-[var(--emerald-500)]" />
               Variables & Lifestyle
             </h2>
-            <SliderField label="Housing Standard" icon={Home} value={lifestyle.housing} onChange={(v) => setLifestyle({...lifestyle, housing: v})} tooltip="Your relative housing quality preference (1-10). Higher means you want comparable or better housing in the new city." />
+            <SliderField label="Housing Standard" icon={Home} value={lifestyle.housing} onChange={(v) => setLifestyle({...lifestyle, housing: v})} tooltip="Your relative housing quality preference on a 0-100 scale (50 = market-typical). Higher means you want comparable or better housing in the new city." />
             <SliderField label="Consumption" icon={Coffee} value={lifestyle.dining} onChange={(v) => setLifestyle({...lifestyle, dining: v})} />
             <SliderField label="Time Horizon" value={years} onChange={setYears} min={1} max={40} suffix=" Years" />
             <SliderField label="Investment Yield" value={investmentReturn} onChange={setInvestmentReturn} min={1} max={12} suffix="%" />
@@ -464,7 +477,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
               </div>
               <p className="text-[var(--mist-100)] text-xs font-bold uppercase tracking-widest mb-2">Monthly Delta</p>
               <h3 className="text-3xl font-bold tabular-nums">
-                ${Math.round(savingsDelta / 12).toLocaleString()}
+                {fmtUSD(savingsDelta / 12)}
               </h3>
               <p className="text-xs text-[var(--mist-200)]/80 mt-3 font-medium leading-relaxed">Incremental monthly liquidity created by arbitrage.</p>
             </div>
@@ -472,7 +485,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
             <div className="bg-[var(--bg-card)] p-7 rounded-3xl border border-[var(--border-default)]/60 shadow-sm transition-all hover:border-[var(--emerald-border)]">
               <p className="text-[var(--text-tertiary)] text-xs font-bold uppercase tracking-widest mb-2">Wealth Gap</p>
               <h3 className="text-3xl font-bold text-[var(--emerald-500)] tabular-nums">
-                ${projectionData[projectionData.length - 1].difference.toLocaleString()}
+                {fmtUSD(projectionData[projectionData.length - 1].difference)}
               </h3>
               <p className="text-xs text-[var(--text-muted)] mt-3 font-medium leading-relaxed">The total opportunity cost of your current location.</p>
             </div>
@@ -564,7 +577,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                 <div className="pt-5 border-t border-[var(--border-subtle)] flex justify-between items-end">
                   <div>
                     <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase block tracking-widest">Yearly Surplus</span>
-                    <span className="text-2xl font-bold text-[var(--text-primary)] tabular-nums">${Math.round(currentMetrics.netSavings).toLocaleString()}</span>
+                    <span className="text-2xl font-bold text-[var(--text-primary)] tabular-nums">{fmtUSD(currentMetrics.netSavings)}</span>
                   </div>
                 </div>
               </div>
@@ -583,12 +596,18 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                 <div className="pt-5 border-t border-[var(--border-subtle)] flex justify-between items-end">
                   <div>
                     <span className="text-[10px] font-bold text-[var(--emerald-400)] uppercase block tracking-widest">Yearly Surplus</span>
-                    <span className="text-2xl font-bold text-[var(--emerald-500)] tabular-nums">${Math.round(targetMetrics.netSavings).toLocaleString()}</span>
+                    <span className="text-2xl font-bold text-[var(--emerald-500)] tabular-nums">{fmtUSD(targetMetrics.netSavings)}</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+
+          <p className="text-xs text-[var(--text-muted)] font-medium leading-relaxed">
+            Take-home estimates use 2026 federal brackets (single filer, standard deduction) plus employee-side FICA.
+            State tax applies each state's top marginal rate to gross income — a top-marginal estimate that
+            overstates the bill in progressive states like CA and NY.
+          </p>
 
           {/* PRO FEATURES SECTION */}
           {!isPro && (
@@ -653,12 +672,12 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                         </div>
                         <div>
                           <h4 className="font-bold text-[var(--text-primary)]">{dest.location}</h4>
-                          <p className="text-xs text-[var(--text-tertiary)] font-medium">Net Savings: ${Math.round(dest.netSavings).toLocaleString()}/year</p>
+                          <p className="text-xs text-[var(--text-tertiary)] font-medium">Net Savings: {fmtUSD(dest.netSavings)}/year</p>
                         </div>
                       </div>
                       <div className="text-right">
                         <p className="text-xs text-[var(--text-tertiary)] font-semibold uppercase tracking-wider mb-1">Delta</p>
-                        <p className="text-2xl font-bold text-[var(--emerald-500)]">+${Math.round(dest.delta).toLocaleString()}</p>
+                        <p className="text-2xl font-bold text-[var(--emerald-500)]">{dest.delta >= 0 ? '+' : ''}{fmtUSD(dest.delta)}</p>
                       </div>
                     </div>
                   ))}
@@ -669,8 +688,8 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                     <div>
                       <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
                       <p className="text-[var(--mist-100)] text-sm font-medium leading-relaxed">
-                        The #1 destination delivers ${Math.round(multiCityAnalysis.destinations[0].delta).toLocaleString()} more in annual savings than your current location.
-                        Your selected destination's savings advantage compounds to ${Math.round(multiCityAnalysis.compoundedArbitrageWealth).toLocaleString()} in extra wealth over {years} years.
+                        The #1 destination delivers {fmtUSD(multiCityAnalysis.destinations[0].delta)} more in annual savings than your current location.
+                        Your selected destination's savings advantage compounds to {fmtUSD(multiCityAnalysis.compoundedArbitrageWealth)} in extra wealth over {years} years.
                       </p>
                     </div>
                   </div>
@@ -686,15 +705,21 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                     <h3 className="text-xl font-bold text-[var(--emerald-500)]">Tax Migration Windfall</h3>
                   </div>
                   <p className="text-[var(--emerald-500)] font-medium mb-6 leading-relaxed">
-                    Quantifies the pure state income tax savings by moving to a lower-tax jurisdiction. This is money that would
+                    Quantifies the state income tax difference between your current and target locations. This is money that would
                     otherwise evaporate to state coffers.
                   </p>
                   <div className="bg-[var(--bg-card)] rounded-2xl p-6 border border-[var(--emerald-border-soft)] mb-5">
                     <p className="text-xs text-[var(--text-tertiary)] font-semibold uppercase tracking-wider mb-2">Annual Tax Savings</p>
-                    <p className="text-4xl font-bold text-[var(--emerald-500)] mb-3">${Math.round(multiCityAnalysis.yearlyTaxWindfall).toLocaleString()}</p>
+                    <p className="text-4xl font-bold text-[var(--emerald-500)] mb-3">${Math.round(Math.max(0, multiCityAnalysis.yearlyTaxWindfall)).toLocaleString()}</p>
                     <p className="text-sm text-[var(--text-secondary)] font-medium">
-                      Current state tax rate: <span className="font-bold text-[var(--text-primary)]">{(LOCATION_PRESETS[currentLoc].taxRate * 100).toFixed(1)}%</span>
+                      Top-marginal state rate: <span className="font-bold text-[var(--text-primary)]">{(LOCATION_PRESETS[currentLoc].taxRate * 100).toFixed(1)}%</span> current
+                      vs <span className="font-bold text-[var(--text-primary)]">{(LOCATION_PRESETS[targetLoc].taxRate * 100).toFixed(1)}%</span> target
                     </p>
+                    {multiCityAnalysis.yearlyTaxWindfall < 0 && (
+                      <p className="text-sm text-[var(--crimson-500)] font-medium mt-2">
+                        Your target state taxes more — this move adds {fmtUSD(Math.abs(multiCityAnalysis.yearlyTaxWindfall))}/year in state tax.
+                      </p>
+                    )}
                   </div>
                   <div className="bg-[var(--emerald-500)] rounded-2xl p-5 text-white">
                     <div className="flex items-start gap-3">
@@ -702,8 +727,9 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                       <div>
                         <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">CORTEX INSIGHT</p>
                         <p className="text-white/85 text-sm font-medium leading-relaxed">
-                          Moving to a zero-tax state like Texas, Florida, or Nevada would save you ${Math.round(multiCityAnalysis.yearlyTaxWindfall).toLocaleString()}/year
-                          in pure tax arbitrage, assuming comparable cost of living.
+                          {multiCityAnalysis.yearlyTaxWindfall > 0
+                            ? `Moving from ${currentLoc} to ${targetLoc} saves ${fmtUSD(multiCityAnalysis.yearlyTaxWindfall)}/year in pure state tax arbitrage, before cost-of-living differences.`
+                            : `${targetLoc} taxes income at the same or a higher rate than ${currentLoc} — there is no state tax windfall on this move.`}
                         </p>
                       </div>
                     </div>
@@ -754,8 +780,8 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                   <h3 className="text-xl font-bold text-[var(--text-primary)]">Lifestyle Compression Score</h3>
                 </div>
                 <p className="text-[var(--text-secondary)] font-medium mb-6 leading-relaxed">
-                  Measures how much lifestyle quality you may be sacrificing to achieve arbitrage gains. A score below 50 indicates
-                  significant compression; above 75 suggests sustainable lifestyle maintenance.
+                  Compares your post-tax, post-housing spending power in the target city with what you have today. A score of 75 means
+                  unchanged spending power, below 50 indicates significant compression, and above 75 means the move expands your budget.
                 </p>
                 <div className="bg-[var(--bg-card)] rounded-2xl p-6 border border-[var(--border-default)] mb-5">
                   <div className="flex items-center justify-between mb-4">

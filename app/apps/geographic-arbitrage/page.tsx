@@ -25,7 +25,7 @@ function GeographicArbitragePageInner() {
     <ToolLayout
       eyebrow="FINANCE · COST OF LIVING"
       title="Geographic arbitrage calculator."
-      sub="Income, state and local taxes, and cost of living modeled across all 50 states."
+      sub="Income, 2026 federal tax, top-marginal state tax estimates, and cost of living modeled across all 50 states."
       breadcrumb={<Breadcrumb toolName="Geographic Arbitrage Calculator" />}
       cta={
         !hasSession ? (

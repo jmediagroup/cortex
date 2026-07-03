@@ -37,19 +37,31 @@ export default function SCorpOptimizer({ isPro = false, onUpgrade, isLoggedIn = 
     // the 2.9% Medicare portion is uncapped. Applying the full 15.3% to
     // unlimited income overstates both sides (and the savings) badly at
     // high incomes.
-    const SS_WAGE_BASE = 176100; // 2025 Social Security wage base
+    const SS_WAGE_BASE = 184500; // 2026 Social Security wage base
+    // 0.9% Additional Medicare Tax above $200k (single-filer threshold,
+    // not inflation-indexed). Employee-side only, but an owner-employee
+    // bears it either way.
+    const ADDL_MEDICARE_THRESHOLD = 200000;
 
     // Self-Employment Tax on 92.35% of profit
     const seTaxBase = profit * 0.9235;
-    const seTax = Math.min(seTaxBase, SS_WAGE_BASE) * 0.124 + seTaxBase * 0.029;
+    const seTax =
+      Math.min(seTaxBase, SS_WAGE_BASE) * 0.124 +
+      seTaxBase * 0.029 +
+      Math.max(0, seTaxBase - ADDL_MEDICARE_THRESHOLD) * 0.009;
 
     // S-Corp Calculation
     // Salary is subject to FICA (employer + employee)
-    const ficaTax = Math.min(salary, SS_WAGE_BASE) * 0.124 + salary * 0.029;
+    const ficaTax =
+      Math.min(salary, SS_WAGE_BASE) * 0.124 +
+      salary * 0.029 +
+      Math.max(0, salary - ADDL_MEDICARE_THRESHOLD) * 0.009;
     const distributions = Math.max(0, profit - salary);
     // Distributions are NOT subject to FICA
 
-    const sCorpSavings = Math.max(0, seTax - ficaTax);
+    // Negative when the chosen salary makes the S-corp structure cost
+    // more in payroll tax than the sole proprietorship (e.g. salary > profit).
+    const sCorpSavings = seTax - ficaTax;
 
     return {
       solePropTax: seTax,
@@ -78,8 +90,12 @@ export default function SCorpOptimizer({ isPro = false, onUpgrade, isLoggedIn = 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border-default)] shadow-sm">
           <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1">Est. Payroll Tax Savings</p>
-          <h4 className="text-3xl font-bold text-[var(--emerald-500)]">${Math.round(stats.savings).toLocaleString()}</h4>
-          <p className="text-xs font-bold text-[var(--text-tertiary)] mt-1">vs. Sole Proprietorship</p>
+          <h4 className={`text-3xl font-bold ${stats.savings >= 0 ? 'text-[var(--emerald-500)]' : 'text-[var(--crimson-500)]'}`}>
+            {stats.savings < 0 ? '-' : ''}${Math.abs(Math.round(stats.savings)).toLocaleString()}
+          </h4>
+          <p className="text-xs font-bold text-[var(--text-tertiary)] mt-1">
+            {stats.savings >= 0 ? 'vs. Sole Proprietorship' : 'S-Corp costs more at this salary'}
+          </p>
         </div>
         <div className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border-default)] shadow-sm">
           <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1">Max Distribution</p>
@@ -122,6 +138,13 @@ export default function SCorpOptimizer({ isPro = false, onUpgrade, isLoggedIn = 
               <Info className="text-[var(--color-warning)] shrink-0" size={16} />
               <p className="text-[10px] font-medium leading-relaxed text-[var(--color-warning)]">
                 IRS requires a "reasonable salary" based on your industry. Setting this too low may trigger an audit.
+              </p>
+            </div>
+
+            <div className="p-4 bg-[var(--bg-section)] rounded-2xl border border-[var(--border-default)] flex items-start gap-3">
+              <Info className="text-[var(--text-muted)] shrink-0" size={16} />
+              <p className="text-[10px] font-medium leading-relaxed text-[var(--text-secondary)]">
+                This compares payroll (FICA / self-employment) taxes only, for tax year 2026. A higher salary also shrinks the 20% qualified business income (§199A) deduction on pass-through profit, so your all-in tax savings can be smaller than shown — or negative. It also excludes state payroll taxes, unemployment tax, and payroll-service costs. Run the numbers with a CPA before electing.
               </p>
             </div>
           </div>

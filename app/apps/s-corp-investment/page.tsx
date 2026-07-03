@@ -25,7 +25,7 @@ function SCorpInvestmentPageInner() {
     <ToolLayout
       eyebrow="FINANCE · SMALL BUSINESS"
       title="S-Corp investment optimizer."
-      sub="Maximize retirement contributions while keeping your owner compensation reasonable — SEP IRA, Solo 401(k), and profit-sharing all modeled."
+      sub="Maximize retirement contributions while keeping your owner compensation reasonable — employee deferrals, company match, IRA, and HSA all modeled with 2026 limits."
       breadcrumb={<Breadcrumb toolName="S-Corp Investment Optimizer" />}
       cta={
         !hasSession ? (
@@ -35,7 +35,7 @@ function SCorpInvestmentPageInner() {
           />
         ) : null
       }
-      narration="Most S-Corp owners default to a Roth IRA. You just saw what a Solo 401(k) plus profit-sharing does to the retirement number."
+      narration="Most S-Corp owners default to a Roth IRA. You just saw what a Solo 401(k) plus a company contribution does to the retirement number."
       footer={
         <>
           <CalculatorSEOContent content={CALCULATOR_CONTENT['s-corp-investment']} />

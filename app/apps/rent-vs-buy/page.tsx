@@ -25,7 +25,7 @@ function RentVsBuyPageInner() {
     <ToolLayout
       eyebrow="FINANCE · HOUSING"
       title="Rent vs buy reality engine."
-      sub="Opportunity cost, maintenance drag, and tax treatment — the things everyone forgets — all modeled here."
+      sub="Opportunity cost, maintenance drag, home appreciation, selling costs, and rent growth — the things everyone forgets — all modeled here."
       breadcrumb={<Breadcrumb toolName="Rent vs Buy Reality Engine" />}
       cta={
         !hasSession ? (

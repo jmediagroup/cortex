@@ -23,6 +23,7 @@ import {
 import SaveScenarioButton from './SaveScenarioButton';
 import NumberInput from '@/components/ui/NumberInput';
 import ProUpsellCard from '@/components/monetization/ProUpsellCard';
+import { C, bracketTax, ssTaxable } from '@/lib/tax/taxEngine2026';
 
 // IRS Uniform Lifetime Table (simplified for RMD age 73+)
 const RMD_TABLE: Record<number, number> = {
@@ -32,41 +33,31 @@ const RMD_TABLE: Record<number, number> = {
   97: 7.8, 98: 7.3, 99: 6.8, 100: 6.4
 };
 
-// Tax brackets for optimization
-const TAX_BRACKETS = [
-  { label: '10%', cap: 11600, rate: 0.10 },
-  { label: '12%', cap: 47150, rate: 0.12 },
-  { label: '22%', cap: 100525, rate: 0.22 },
-  { label: '24%', cap: 191950, rate: 0.24 },
-  { label: '32%', cap: 243725, rate: 0.32 },
-  { label: '35%', cap: 609350, rate: 0.35 },
-  { label: '37%', cap: Infinity, rate: 0.37 },
-];
+// Tax brackets for optimization — single-filer 2026 brackets and standard
+// deduction come from the shared tax engine (lib/tax/taxEngine2026). The
+// engine stores [start, rate] pairs; convert to the cap-based shape the
+// bracket-fill UI expects.
+const SINGLE_BRACKETS = C.ordinary.single;
+const TAX_BRACKETS = SINGLE_BRACKETS.map(([, rate], i) => ({
+  label: `${Math.round(rate * 100)}%`,
+  cap: i + 1 < SINGLE_BRACKETS.length ? SINGLE_BRACKETS[i + 1][0] : Infinity,
+  rate,
+}));
 
-const STANDARD_DEDUCTION = 14600;
+const STANDARD_DEDUCTION = C.stdDed.single;
 
-// Simplified 2024 Federal Tax Brackets (Single Filer).
-// `inflationFactor` indexes the bracket caps and standard deduction over the
-// simulation horizon (real brackets are CPI-indexed); without it, inflated
-// future spending gets taxed against frozen brackets and lifetime taxes are
-// badly overstated in later years.
+// Federal tax on ordinary income (single filer, 2026 base year via the tax
+// engine). `inflationFactor` indexes the bracket boundaries and standard
+// deduction over the simulation horizon (real brackets are CPI-indexed);
+// without it, inflated future spending gets taxed against frozen brackets
+// and lifetime taxes are badly overstated in later years.
 const estimateTax = (taxableIncome: number, inflationFactor: number = 1) => {
   if (taxableIncome <= 0) return 0;
   const income = Math.max(0, taxableIncome - STANDARD_DEDUCTION * inflationFactor);
-
-  let tax = 0;
-  let previousCap = 0;
-  for (const bracket of TAX_BRACKETS) {
-    const cap = bracket.cap * inflationFactor;
-    if (income > cap) {
-      tax += (cap - previousCap) * bracket.rate;
-      previousCap = cap;
-    } else {
-      tax += (income - previousCap) * bracket.rate;
-      break;
-    }
-  }
-  return tax;
+  const indexedBrackets = SINGLE_BRACKETS.map(
+    ([start, rate]) => [start * inflationFactor, rate] as [number, number]
+  );
+  return bracketTax(income, indexedBrackets);
 };
 
 interface RetirementStrategyEngineProps {
@@ -124,6 +115,11 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
     let baseSpending = inputs.annualSpending;
     const years = Math.max(0, inputs.retirementEndAge - inputs.currentAge);
 
+    // SECURE 2.0: RMDs begin at 75 for anyone born 1960 or later, 73
+    // otherwise. The sim starts this calendar year at the user's current age.
+    const birthYear = new Date().getFullYear() - inputs.currentAge;
+    const rmdStartAge = birthYear >= 1960 ? 75 : 73;
+
     for (let year = 0; year <= years; year++) {
       const age = inputs.currentAge + year;
       const isRetired = age >= inputs.targetRetirementAge;
@@ -144,18 +140,26 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
       const inflationFactor = Math.pow(1 + inputs.inflationRate/100, year);
       const currentYearNeed = isRetired ? baseSpending * inflationFactor : 0;
       let remainingNeed = Math.max(0, currentYearNeed - yrRes.ssIncome);
-      let taxableIncome = yrRes.ssIncome * 0.85; // Rough estimate of taxable SS
+      // Ordinary income other than Social Security (RMDs, conversions,
+      // traditional withdrawals). The taxable portion of SS is derived from
+      // it via the Pub 915 worksheet once the year's withdrawals are known.
+      let otherOrdinary = 0;
 
       // 2. RMD Logic — RMDs come first: they must be taken before any
       // conversion and their income counts toward the bracket the
       // auto-optimizer is trying to fill.
-      if (age >= 73) {
+      if (age >= rmdStartAge) {
         const divisor = RMD_TABLE[Math.min(age, 100)] || 6.4;
         const rmd = currentBalances.traditional / divisor;
         const takeRmd = Math.min(currentBalances.traditional, rmd);
         yrRes.withdrawn.traditional += takeRmd;
         currentBalances.traditional -= takeRmd;
-        taxableIncome += takeRmd;
+        otherOrdinary += takeRmd;
+        // Excess RMD beyond this year's spending need is reinvested in the
+        // taxable account (gross — its tax is charged with the rest of the
+        // year's tax bill below), not destroyed.
+        const excessRmd = Math.max(0, takeRmd - remainingNeed);
+        currentBalances.taxable += excessRmd;
         remainingNeed = Math.max(0, remainingNeed - takeRmd);
       }
 
@@ -166,7 +170,8 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
         if (inputs.useAutoOptimize && isPro) {
           // Auto-optimize to fill tax bracket (caps indexed with inflation)
           const targetCap = (TAX_BRACKETS[inputs.targetBracketIndex].cap + STANDARD_DEDUCTION) * inflationFactor;
-          potentialConv = Math.max(0, targetCap - taxableIncome);
+          const taxableSoFar = otherOrdinary + ssTaxable(yrRes.ssIncome, otherOrdinary, 0, 'single');
+          potentialConv = Math.max(0, targetCap - taxableSoFar);
           potentialConv = Math.min(currentBalances.traditional, potentialConv);
         } else {
           // Manual conversion amount
@@ -176,7 +181,7 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
         currentBalances.traditional -= potentialConv;
         currentBalances.roth += potentialConv;
         yrRes.conversions = potentialConv;
-        taxableIncome += potentialConv;
+        otherOrdinary += potentialConv;
       }
 
       // 4. Fill remaining need based on Strategy
@@ -186,24 +191,25 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
             yrRes.withdrawn[type] += take;
             currentBalances[type as keyof typeof currentBalances] -= take;
             remainingNeed -= take;
-            if (type === 'traditional') taxableIncome += take;
+            if (type === 'traditional') otherOrdinary += take;
         });
       } else if (inputs.strategy === 'bracket-filler') {
         const targetIncome = 60000 * inflationFactor; // Target bottom of 22% bracket roughly
-        const tradBuffer = Math.max(0, targetIncome - taxableIncome);
+        const taxableSoFar = otherOrdinary + ssTaxable(yrRes.ssIncome, otherOrdinary, 0, 'single');
+        const tradBuffer = Math.max(0, targetIncome - taxableSoFar);
         const takeTrad = Math.min(currentBalances.traditional, tradBuffer, remainingNeed);
 
         yrRes.withdrawn.traditional += takeTrad;
         currentBalances.traditional -= takeTrad;
         remainingNeed -= takeTrad;
-        taxableIncome += takeTrad;
+        otherOrdinary += takeTrad;
 
         ['taxable', 'roth', 'traditional'].forEach(type => {
             const take = Math.min(currentBalances[type as keyof typeof currentBalances], remainingNeed);
             yrRes.withdrawn[type] += take;
             currentBalances[type as keyof typeof currentBalances] -= take;
             remainingNeed -= take;
-            if (type === 'traditional') taxableIncome += take;
+            if (type === 'traditional') otherOrdinary += take;
         });
       } else { // Proportional
         const total = currentBalances.taxable + currentBalances.traditional + currentBalances.roth;
@@ -213,29 +219,39 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
                 const take = Math.min(currentBalances[type as keyof typeof currentBalances], share);
                 yrRes.withdrawn[type] += take;
                 currentBalances[type as keyof typeof currentBalances] -= take;
-                if (type === 'traditional') taxableIncome += take;
+                if (type === 'traditional') otherOrdinary += take;
             });
             remainingNeed = Math.max(0, remainingNeed - (yrRes.withdrawn.taxable + yrRes.withdrawn.traditional + yrRes.withdrawn.roth));
         }
       }
 
       yrRes.shortfall = remainingNeed;
+      // Taxable portion of Social Security via the IRC §86 / Pub 915
+      // worksheet (single filer), given the year's other ordinary income.
+      const taxableSS = ssTaxable(yrRes.ssIncome, otherOrdinary, 0, 'single');
+      const taxableIncome = otherOrdinary + taxableSS;
       yrRes.taxableIncome = taxableIncome;
+      yrRes.otherOrdinary = otherOrdinary;
+      yrRes.inflationFactor = inflationFactor;
       yrRes.taxesPaid = estimateTax(taxableIncome, inflationFactor);
 
-      // Withdraw taxes from Taxable or Roth
+      // Withdraw taxes from Taxable, then Roth, then Traditional; anything
+      // still uncovered is recorded as shortfall, consistent with how
+      // spending depletion is tracked.
       const taxToPull = yrRes.taxesPaid;
-      if (currentBalances.taxable >= taxToPull) {
-        currentBalances.taxable -= taxToPull;
-      } else {
-        const fromRoth = Math.min(currentBalances.roth, taxToPull - currentBalances.taxable);
-        currentBalances.taxable = 0;
-        currentBalances.roth -= fromRoth;
-      }
+      const taxFromTaxable = Math.min(currentBalances.taxable, taxToPull);
+      currentBalances.taxable -= taxFromTaxable;
+      const taxFromRoth = Math.min(currentBalances.roth, taxToPull - taxFromTaxable);
+      currentBalances.roth -= taxFromRoth;
+      const taxFromTrad = Math.min(currentBalances.traditional, taxToPull - taxFromTaxable - taxFromRoth);
+      currentBalances.traditional -= taxFromTrad;
+      yrRes.shortfall += taxToPull - taxFromTaxable - taxFromRoth - taxFromTrad;
 
-      // 5. Growth
+      // 5. Growth — sequence-risk stress hits the first 3 years of
+      // retirement, not the first 3 years of the simulation.
       let ret = inputs.avgReturn / 100;
-      if (inputs.sequenceRisk && year < 3) ret = -0.12;
+      const yearsIntoRetirement = age - inputs.targetRetirementAge;
+      if (inputs.sequenceRisk && yearsIntoRetirement >= 0 && yearsIntoRetirement < 3) ret = -0.12;
 
       currentBalances.taxable *= (1 + ret);
       currentBalances.traditional *= (1 + ret);
@@ -260,7 +276,10 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
         year: d.year,
         amount: d.conversions,
         taxableIncome: d.taxableIncome,
-        taxes: d.taxesPaid
+        // Marginal tax attributable to the conversion itself — the year's
+        // tax with vs. without the converted amount.
+        taxes: estimateTax(d.taxableIncome, d.inflationFactor ?? 1)
+          - estimateTax(d.taxableIncome - d.conversions, d.inflationFactor ?? 1)
       }));
 
     return {
@@ -542,7 +561,7 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
                       <div>
                         <div className="font-bold text-[var(--text-primary)]">Convert ${conv.amount.toLocaleString()}</div>
                         <div className="text-xs text-[var(--text-tertiary)] font-medium">
-                          Taxable income: ${Math.round(conv.taxableIncome).toLocaleString()} • Tax owed: ${Math.round(conv.taxes).toLocaleString()}
+                          Taxable income: ${Math.round(conv.taxableIncome).toLocaleString()} • Tax on this conversion: ${Math.round(conv.taxes).toLocaleString()}
                         </div>
                       </div>
                     </div>
