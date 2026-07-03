@@ -12,6 +12,7 @@ const PUBLIC_PATHS = [
   '/roadmap',
   '/enterprise',
   '/thinking',
+  '/guides',
   '/apps/compound-interest',
   '/apps/budget',
   '/apps/retirement-strategy',
@@ -65,7 +66,7 @@ const AI_USER_AGENTS = [
 export default function robots(): MetadataRoute.Robots {
   const aiRules = AI_USER_AGENTS.map((userAgent) => ({
     userAgent,
-    allow: ['/', '/articles/', '/apps/', '/thinking/', '/llms.txt', '/llms-full.txt'],
+    allow: ['/', '/articles/', '/apps/', '/thinking/', '/guides/', '/llms.txt', '/llms-full.txt'],
     disallow: PRIVATE_PATHS,
   }));
 

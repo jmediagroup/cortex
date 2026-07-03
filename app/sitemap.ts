@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next';
 import { getAllArticleSlugs } from '@/lib/wordpress/client';
 import { getAllOutlookSlugs } from '@/lib/outlook/content';
+import { getAllGuideSlugs } from '@/lib/guides/content';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://cortex.vip';
@@ -27,6 +28,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
+  // Guide entries from local Markdown.
+  const guideEntries: MetadataRoute.Sitemap = getAllGuideSlugs().map((g) => ({
+    url: `${baseUrl}/guides/${g.slug}`,
+    lastModified: new Date(`${g.date}T12:00:00Z`),
+    changeFrequency: 'monthly' as const,
+    priority: 0.8,
+  }));
+
   // Articles listing page
   const articlesListingEntry: MetadataRoute.Sitemap = [
     {
@@ -40,6 +49,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/guides`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.85,
     },
   ];
 
@@ -202,5 +217,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ),
   ];
 
-  return [...staticRoutes, ...articlesListingEntry, ...articleEntries, ...outlookEntries];
+  return [...staticRoutes, ...articlesListingEntry, ...articleEntries, ...outlookEntries, ...guideEntries];
 }

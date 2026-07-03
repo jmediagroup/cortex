@@ -1,0 +1,55 @@
+name: Weekly Cornerstone Guide
+
+on:
+  schedule:
+    # 5:00 AM ET on Sundays.
+    # 09:00 UTC covers EDT (UTC-4). During EST (UTC-5) this fires at 4:00 AM ET —
+    # still fine, the guide just goes live an hour earlier than usual.
+    - cron: '0 9 * * 0'
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: 'Specific topic to write about (leave blank to let Claude research and pick one)'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git identity
+        run: |
+          git config user.name "cortex-bot"
+          git config user.email "bot@users.noreply.github.com"
+
+      - name: Sanitize OAuth token
+        id: oauth
+        env:
+          RAW_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          TRIMMED=$(printf '%s' "$RAW_TOKEN" | tr -d '\r\n' | awk '{$1=$1; print}')
+          echo "::add-mask::$TRIMMED"
+          echo "token=$TRIMMED" >> "$GITHUB_OUTPUT"
+
+      - name: Research and publish this week's guide
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ steps.oauth.outputs.token }}
+          prompt: |
+            /guide ${{ inputs.topic || '' }}
+
+            You are running in GitHub Actions. Commit the finished guide directly to
+            main — do NOT create a branch or open a PR.
+          claude_args: "--allowedTools WebSearch,WebFetch,Bash,Read,Write,Edit --max-turns 50"
