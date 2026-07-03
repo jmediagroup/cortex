@@ -71,7 +71,7 @@ ${url}`,
       caption: `My Money Guy Mutants investor archetype: ${archetype.name}.
 "${archetype.tagline}"
 
-What's yours? Take the quiz at cortex.vip/apps/personality-quiz`,
+What's yours? Take the quiz at moneyguymutants.com/apps/personality-quiz`,
       text: `My Money Guy Mutants investor archetype: ${archetype.name}. "${archetype.tagline}" — find yours at ${QUIZ_URL}`,
     },
   };

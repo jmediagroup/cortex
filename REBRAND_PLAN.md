@@ -115,12 +115,17 @@ contrast + focus‑ring audit.
 ---
 
 ## Infra follow‑ups (NOT code — for the domain move)
+**See `DOMAIN_MIGRATION.md`** for the full cutover runbook (env vars, webhooks,
+DNS, email deliverability, external dashboards, redirects, rollback). Summary:
 - Set `NEXT_PUBLIC_APP_URL=https://moneyguymutants.com` in prod.
-- DNS + SPF/DKIM for `@moneyguymutants.com`; then switch email senders in
-  `lib/email.ts` (`sales@`, `notifications@`) and `lib/outlook/email.ts`
-  (`outlook@`, `unsubscribe@`) — currently still `@cortex.vip`.
-- `next.config.ts` `images.remotePatterns` still allowlists `cms.cortex.vip`;
-  move/allowlist the CMS image host if/when it relocates.
+- DNS + SPF/DKIM for `@moneyguymutants.com`; **then** flip the email sender env
+  vars. Senders are now env‑configurable (`ENTERPRISE_FROM_EMAIL`,
+  `OUTLOOK_FROM_EMAIL`, `OUTLOOK_UNSUBSCRIBE_EMAIL`, `SALES_NOTIFICATION_EMAIL`)
+  with safe `@cortex.vip` fallbacks so nothing breaks pre‑cutover.
+- New Stripe webhook endpoint on the new domain → new `STRIPE_WEBHOOK_SECRET`.
+- Repoint the WordPress `CORTEX_REVALIDATE_URL` at the new domain.
+- `cms.cortex.vip` **stays** (WordPress + image origin); keep the
+  `next.config.ts` `images.remotePatterns` allowlist entry.
 
 ## How to continue in a new session
 Read this file + `app/tokens.css` + `app/globals.css`, then pick a phase, restyle

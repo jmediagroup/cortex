@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { ThemeToggle } from '@/components/theme/ThemeToggle';
 
 export const metadata: Metadata = {
   title: 'Design tokens · Money Guy Mutants',
@@ -105,11 +104,9 @@ export default function DesignTokensPage() {
           </h1>
           <p className="body" style={{ maxWidth: 560 }}>
             Internal preview of the Money Guy Mutants token system. Every surface, color,
-            type scale, radius, and shadow rendered in the current theme.
-            Toggle to verify light-mode parity.
+            type scale, radius, and shadow rendered in the light-only theme.
           </p>
         </div>
-        <ThemeToggle />
       </header>
 
       {/* Typography */}
@@ -439,7 +436,7 @@ export default function DesignTokensPage() {
             </label>
             <input
               id="d-email"
-              defaultValue="aria@cortex.vip"
+              defaultValue="mutant@moneyguymutants.com"
               style={{
                 width: '100%',
                 padding: '13px 14px',

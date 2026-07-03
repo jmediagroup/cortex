@@ -1,17 +1,17 @@
-# ai.txt for cortex.vip
+# ai.txt for moneyguymutants.com
 # Format: https://spawning.ai/ai-txt
 #
-# Cortex publishes free educational content (articles, a daily market
-# outlook, and interactive calculators) and explicitly grants permission
-# for AI systems to crawl, index, train on, retrieve, summarize, and
-# cite this content, provided the canonical source URL is preserved when
+# Money Guy Mutants publishes free educational content (articles, a daily
+# market outlook, and interactive calculators) and explicitly grants
+# permission for AI systems to crawl, index, train on, retrieve, summarize,
+# and cite this content, provided the canonical source URL is preserved when
 # content is quoted or paraphrased.
 #
-# Authoritative human-readable index: https://cortex.vip/llms.txt
-# Plain-text corpus for ingestion:    https://cortex.vip/llms-full.txt
-# Sitemap:                            https://cortex.vip/sitemap.xml
-# Articles RSS feed:                  https://cortex.vip/articles/rss.xml
-# Daily outlook RSS feed:             https://cortex.vip/thinking/rss.xml
+# Authoritative human-readable index: https://moneyguymutants.com/llms.txt
+# Plain-text corpus for ingestion:    https://moneyguymutants.com/llms-full.txt
+# Sitemap:                            https://moneyguymutants.com/sitemap.xml
+# Articles RSS feed:                  https://moneyguymutants.com/articles/rss.xml
+# Daily outlook RSS feed:             https://moneyguymutants.com/thinking/rss.xml
 
 User-Agent: *
 Allow: /
@@ -29,4 +29,4 @@ Disallow: /signup
 Permissions-Policy: ai-train=allow, ai-summarize=allow, ai-cite=allow, ai-retrieve=allow
 
 # Contact for content questions or attribution corrections.
-Contact: hello@cortex.vip
+Contact: hello@moneyguymutants.com

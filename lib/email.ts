@@ -2,8 +2,15 @@ import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Email address to receive enterprise lead notifications
+// Email address to receive enterprise lead notifications.
 const SALES_EMAIL = process.env.SALES_NOTIFICATION_EMAIL || 'sales@cortex.vip';
+
+// Sender for outbound notifications. Env-configurable so the domain can flip to
+// @moneyguymutants.com at cutover (once Resend has verified it) without a deploy
+// — see DOMAIN_MIGRATION.md. Fallback keeps the verified @cortex.vip domain so
+// email never breaks pre-cutover.
+const FROM_EMAIL =
+  process.env.ENTERPRISE_FROM_EMAIL || 'Money Guy Mutants <notifications@cortex.vip>';
 
 export interface EnterpriseLeadEmailData {
   firstName: string;
@@ -23,18 +30,18 @@ export async function sendEnterpriseLeadNotification(
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const { error } = await resend.emails.send({
-      from: 'Cortex Sales <notifications@cortex.vip>',
+      from: FROM_EMAIL,
       to: SALES_EMAIL,
       subject: `New Enterprise Lead: ${lead.companyName}`,
       html: `
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <div style="background: linear-gradient(135deg, #054C7D 0%, #7c3aed 100%); padding: 24px; border-radius: 16px 16px 0 0;">
-            <h1 style="color: white; margin: 0; font-size: 24px; font-weight: 800;">
+          <div style="background: #054C7D; padding: 24px; border-radius: 8px 8px 0 0;">
+            <h1 style="color: white; margin: 0; font-size: 22px; font-weight: 800; letter-spacing: 0.02em; text-transform: uppercase;">
               New Enterprise Lead
             </h1>
           </div>
 
-          <div style="background: #F7F3F3; padding: 24px; border: 1px solid #E0DBDB; border-top: none; border-radius: 0 0 16px 16px;">
+          <div style="background: #F7F3F3; padding: 24px; border: 1px solid #E0DBDB; border-top: none; border-radius: 0 0 8px 8px;">
             <h2 style="color: #08375A; font-size: 18px; font-weight: 700; margin: 0 0 16px 0;">
               Contact Information
             </h2>
@@ -78,15 +85,15 @@ export async function sendEnterpriseLeadNotification(
             </div>
 
             <div style="margin-top: 24px; text-align: center;">
-              <a href="mailto:${lead.email}?subject=Re: Your Cortex Enterprise Inquiry"
-                 style="display: inline-block; background: #054C7D; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 700;">
+              <a href="mailto:${lead.email}?subject=Re: Your Money Guy Mutants Enterprise Inquiry"
+                 style="display: inline-block; background: #F26531; color: white; padding: 12px 26px; border-radius: 4px; text-decoration: none; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; font-size: 14px;">
                 Reply to Lead
               </a>
             </div>
           </div>
 
           <p style="color: #767676; font-size: 12px; text-align: center; margin-top: 16px;">
-            This is an automated notification from Cortex.
+            This is an automated notification from Money Guy Mutants.
           </p>
         </div>
       `,

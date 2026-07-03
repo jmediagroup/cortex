@@ -3,8 +3,13 @@ import type { OutlookListItem } from './types';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+// Sender + List-Unsubscribe mailbox are env-configurable so the domain can flip
+// to @moneyguymutants.com at cutover (once Resend has verified it) without a
+// deploy — see DOMAIN_MIGRATION.md. Fallbacks keep the verified @cortex.vip
+// domain so email never breaks pre-cutover.
 const FROM = process.env.OUTLOOK_FROM_EMAIL || 'Money Guy Mutants Outlook <outlook@cortex.vip>';
 const REPLY_TO = process.env.OUTLOOK_REPLY_TO || undefined;
+const UNSUBSCRIBE_EMAIL = process.env.OUTLOOK_UNSUBSCRIBE_EMAIL || 'unsubscribe@cortex.vip';
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://moneyguymutants.com';
 
 interface SendResult {
@@ -50,11 +55,11 @@ function shellHtml({
   <span style="display:none;visibility:hidden;opacity:0;color:transparent;height:0;width:0;">${escapeHtml(preheader)}</span>
   <div style="max-width:600px;margin:0 auto;background:#0a4a73;border:1px solid rgba(255,255,255,0.08);border-radius:16px;overflow:hidden;">
     <div style="padding:20px 24px;border-bottom:1px solid rgba(255,255,255,0.06);">
-      <a href="${APP_URL}" style="color:#1D8072;text-decoration:none;font-weight:700;letter-spacing:0.04em;font-size:13px;text-transform:uppercase;">Cortex · Outlook</a>
+      <a href="${APP_URL}" style="color:#4EC9F5;text-decoration:none;font-weight:700;letter-spacing:0.04em;font-size:13px;text-transform:uppercase;">Money Guy Mutants · Outlook</a>
     </div>
     ${bodyInner}
     <div style="padding:20px 24px;border-top:1px solid rgba(255,255,255,0.06);color:#48494A;font-size:12px;text-align:center;">
-      ${footer}<a href="${APP_URL}/thinking" style="color:#767676;text-decoration:underline;">More on Cortex</a>
+      ${footer}<a href="${APP_URL}/thinking" style="color:#767676;text-decoration:underline;">More from Money Guy Mutants</a>
     </div>
   </div>
 </body></html>`;
@@ -73,7 +78,7 @@ export async function sendConfirmationEmail(params: {
         <h1 style="color:#f5f5f7;font-size:22px;font-weight:700;margin:0 0 16px;letter-spacing:-0.02em;">Confirm your subscription</h1>
         <p style="margin:0 0 16px;">Click below to start receiving the daily and weekly Money Guy Mutants Investment Outlook.</p>
         <p style="margin:0 0 24px;">
-          <a href="${confirmUrl}" style="display:inline-block;background:#1D8072;color:#054C7D;padding:12px 22px;border-radius:10px;font-weight:700;text-decoration:none;">Confirm subscription</a>
+          <a href="${confirmUrl}" style="display:inline-block;background:#F26531;color:#ffffff;padding:12px 24px;border-radius:4px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;font-size:14px;text-decoration:none;">Confirm subscription</a>
         </p>
         <p style="margin:0;font-size:13px;color:#48494A;">If you didn't request this, you can ignore this email.</p>
       </div>`,
@@ -142,7 +147,7 @@ export async function sendDigestEmail(params: DigestSendParams): Promise<SendRes
           ${leadHtml}
         </div>
         <p style="margin:24px 0 0;">
-          <a href="${url}" style="display:inline-block;background:#1D8072;color:#054C7D;padding:12px 22px;border-radius:10px;font-weight:700;text-decoration:none;">Continue reading on Cortex →</a>
+          <a href="${url}" style="display:inline-block;background:#F26531;color:#ffffff;padding:12px 24px;border-radius:4px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;font-size:14px;text-decoration:none;">Continue reading →</a>
         </p>
       </div>`,
   });
@@ -157,7 +162,7 @@ export async function sendDigestEmail(params: DigestSendParams): Promise<SendRes
       html,
       text,
       headers: {
-        'List-Unsubscribe': `<${unsubscribeUrl}>, <mailto:unsubscribe@cortex.vip?subject=unsubscribe>`,
+        'List-Unsubscribe': `<${unsubscribeUrl}>, <mailto:${UNSUBSCRIBE_EMAIL}?subject=unsubscribe>`,
         'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
       },
       ...(REPLY_TO ? { replyTo: REPLY_TO } : {}),
