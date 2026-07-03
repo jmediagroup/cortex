@@ -293,18 +293,18 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
                     <stop offset="95%" stopColor="#CD2026" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#2C2C2E" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E0DBDB" />
                 <XAxis
                   dataKey="year"
                   axisLine={false}
                   tickLine={false}
-                  tick={{fill: '#8E8E93', fontSize: 11, fontWeight: 'bold'}}
-                  label={{ value: 'Years', position: 'insideBottom', offset: -5, fill: '#8E8E93', fontSize: 10 }}
+                  tick={{fill: '#767676', fontSize: 11, fontWeight: 'bold'}}
+                  label={{ value: 'Years', position: 'insideBottom', offset: -5, fill: '#767676', fontSize: 10 }}
                 />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{fill: '#8E8E93', fontSize: 11, fontWeight: 'bold'}}
+                  tick={{fill: '#767676', fontSize: 11, fontWeight: 'bold'}}
                   tickFormatter={(val) => `$${val > 999 ? (val/1000).toFixed(0) + 'k' : val}`}
                 />
                 <Tooltip
@@ -388,7 +388,7 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
             </div>
             <button
               onClick={onUpgrade}
-              className="bg-white text-[var(--emerald-700)] px-8 py-4 rounded-2xl font-bold hover:bg-[var(--emerald-50)] transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
+              className="bg-[var(--orange)] text-white px-8 py-4 rounded-2xl font-bold hover:opacity-90 transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
             >
               <Zap size={20} fill="currentColor" />
               Upgrade to Pro - $9/month

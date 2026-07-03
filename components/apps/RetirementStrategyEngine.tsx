@@ -457,7 +457,7 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
               {!isPro && (
                 <button
                   onClick={onUpgrade}
-                  className="w-full mt-3 bg-[var(--color-warning)] hover:bg-[var(--color-warning)] text-[var(--text-primary)] text-xs font-bold py-2 rounded-xl flex items-center justify-center gap-2 transition-transform active:scale-95"
+                  className="w-full mt-3 bg-[var(--orange)] hover:opacity-90 text-white text-xs font-bold py-2 rounded-xl flex items-center justify-center gap-2 transition-transform active:scale-95"
                 >
                   <Zap size={14} fill="currentColor" /> Upgrade to Pro
                 </button>
@@ -638,15 +638,15 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
             <div className="h-[400px]">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={simulationResults}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#2C2C2E" />
-                  <XAxis dataKey="age" axisLine={false} tickLine={false} tick={{fill: '#8E8E93', fontSize: 11}} dy={10} />
-                  <YAxis axisLine={false} tickLine={false} tick={{fill: '#8E8E93', fontSize: 11}} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E0DBDB" />
+                  <XAxis dataKey="age" axisLine={false} tickLine={false} tick={{fill: '#767676', fontSize: 11}} dy={10} />
+                  <YAxis axisLine={false} tickLine={false} tick={{fill: '#767676', fontSize: 11}} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
                   <Tooltip
                       contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}}
                       formatter={(val) => [`$${Math.round(Number(val) || 0).toLocaleString()}`, 'Balance']}
                   />
                   <Area type="monotone" dataKey="endBalances.taxable" stackId="1" stroke="#2E9E8D" fill="#2E9E8D" fillOpacity={0.6} />
-                  <Area type="monotone" dataKey="endBalances.traditional" stackId="1" stroke="#FFB800" fill="#FFB800" fillOpacity={0.8} />
+                  <Area type="monotone" dataKey="endBalances.traditional" stackId="1" stroke="#FEBF14" fill="#FEBF14" fillOpacity={0.8} />
                   <Area type="monotone" dataKey="endBalances.roth" stackId="1" stroke="#1D8072" fill="#1D8072" fillOpacity={0.9} />
                 </AreaChart>
               </ResponsiveContainer>
@@ -659,13 +659,13 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
               <div className="h-[300px]">
                   <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={simulationResults}>
-                          <XAxis dataKey="age" axisLine={false} tickLine={false} tick={{fill: '#8E8E93', fontSize: 11}} />
-                          <YAxis axisLine={false} tickLine={false} tick={{fill: '#8E8E93', fontSize: 11}} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
+                          <XAxis dataKey="age" axisLine={false} tickLine={false} tick={{fill: '#767676', fontSize: 11}} />
+                          <YAxis axisLine={false} tickLine={false} tick={{fill: '#767676', fontSize: 11}} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
                           <Tooltip formatter={(v) => `$${Math.round(Number(v) || 0).toLocaleString()}`} />
                           <Legend verticalAlign="top" height={36} />
-                          <Bar dataKey="ssIncome" stackId="a" fill="#E5E5EA" name="Social Security" />
+                          <Bar dataKey="ssIncome" stackId="a" fill="#E0DBDB" name="Social Security" />
                           <Bar dataKey="withdrawn.taxable" stackId="a" fill="#2E9E8D" name="Taxable Dist." />
-                          <Bar dataKey="withdrawn.traditional" stackId="a" fill="#FFB800" name="Trad. Dist." />
+                          <Bar dataKey="withdrawn.traditional" stackId="a" fill="#FEBF14" name="Trad. Dist." />
                           <Bar dataKey="withdrawn.roth" stackId="a" fill="#1D8072" name="Roth Dist." />
                       </BarChart>
                   </ResponsiveContainer>
