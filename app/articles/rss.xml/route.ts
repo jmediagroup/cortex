@@ -42,7 +42,7 @@ export async function GET() {
       <guid isPermaLink="true">${url}</guid>
       <pubDate>${toRfc822(a.date)}</pubDate>
       <description>${escapeXml(a.excerpt)}</description>
-      <author>noreply@cortex.vip (${escapeXml(a.author.name || 'Money Guy Mutants Team')})</author>
+      <author>noreply@moneyguymutants.com (${escapeXml(a.author.name || 'Money Guy Mutants Team')})</author>
       ${categoryTags}
     </item>`;
         })

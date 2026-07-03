@@ -13,7 +13,6 @@ import {
 import { getTierDisplayName, type Tier } from '@/lib/access-control';
 import { isAdmin } from '@/lib/admin';
 import { Wordmark } from '@/components/brand/Wordmark';
-import { ThemeToggle } from '@/components/theme/ThemeToggle';
 
 type User = { email: string; name?: string } | null | undefined;
 
@@ -82,7 +81,6 @@ export function AppTopBar({ user, userTier = 'free', onSignOut }: Props) {
       <div style={{ flex: 1 }} />
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <ThemeToggle />
         {user ? (
           <>
             <Link

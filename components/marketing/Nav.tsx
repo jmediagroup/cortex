@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { Menu, X } from 'lucide-react';
-import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import { Wordmark } from '@/components/brand/Wordmark';
 import { MutantMark } from '@/components/brand/MutantMark';
 
@@ -92,7 +91,6 @@ export function MarketingNav() {
         </div>
 
         <div className="marketing-nav-actions" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <ThemeToggle />
           <Link
             href="/login"
             className="marketing-nav-signin"
