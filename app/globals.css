@@ -64,6 +64,19 @@
   --color-warning: var(--color-warning);
   --color-info: var(--color-info);
 
+  /* MGM brand utilities — enables `bg-navy`, `text-sky`, `bg-orange`,
+     `border-navy`, `text-teal-green`, etc. for the surface phases. */
+  --color-navy: var(--navy);
+  --color-navy-deep: var(--navy-deep);
+  --color-sky: var(--sky);
+  --color-sky-pill: var(--sky-pill);
+  --color-mint: var(--mint);
+  --color-orange: var(--orange);
+  --color-yellow: var(--yellow);
+  --color-teal-green: var(--teal-green);
+  --color-off-white: var(--off-white);
+  --color-alert-red: var(--alert-red);
+
   /* Radii */
   --radius-xs: var(--radius-xs);
   --radius-sm: var(--radius-sm);
@@ -80,10 +93,10 @@
   --shadow-emerald: var(--emerald-glow);
   --shadow-crimson: var(--crimson-glow);
 
-  /* Fonts — prefer the next/font-managed Inter + JetBrains Mono, fall back
-     to tokens.css's literal stacks so the utility still resolves if
-     next/font fails to load. */
-  --font-sans: var(--font-inter, 'Inter'), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* Fonts — prefer the next/font-managed Hanken Grotesk + JetBrains Mono,
+     fall back to tokens.css's literal stacks so the utility still resolves
+     if next/font fails to load. */
+  --font-sans: var(--font-hanken, 'Hanken Grotesk'), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: var(--font-jetbrains, 'JetBrains Mono'), ui-monospace, 'SF Mono', Menlo, monospace;
 
   /* Motion */
@@ -204,27 +217,21 @@ body {
   --primary-800: var(--emerald-700);
   --primary-900: var(--emerald-700);
 
-  --chart-purple: #BF5AF2;
+  --chart-purple: #054C7D;   /* no purple in MGM -> navy */
   --chart-green: var(--emerald-500);
   --chart-blue: var(--color-info);
-  --chart-orange: var(--color-warning);
-  --chart-teal: var(--color-info);
-  --chart-pink: #FF66C4;
-  --chart-purple-area: rgba(191, 90, 242, 0.15);
+  --chart-orange: var(--orange);
+  --chart-teal: var(--teal-green);
+  --chart-pink: #F26531;     /* no pink in MGM -> orange */
+  --chart-purple-area: rgba(5, 76, 125, 0.12);
   --chart-green-area: var(--chart-emerald-area);
 
   /* Font overrides live in the @theme block above so Tailwind's
      `font-sans` / `font-mono` utilities pick up the right stack. */
 }
 
-/* Legacy chart-purple / chart-pink are hardcoded above so they
-   don't react to `--color-*` overrides — re-declare for light
-   so legacy chart consumers see the paper-safe hues. */
-[data-theme="light"] {
-  --chart-purple:      #7C3AED;
-  --chart-pink:        #C2185B;
-  --chart-purple-area: rgba(124, 58, 237, 0.12);
-}
+/* Single MGM light palette — chart hues are set once in the bridge above,
+   so no per-theme override is needed. */
 
 /* ============================================================
    Solid-surface text contract.

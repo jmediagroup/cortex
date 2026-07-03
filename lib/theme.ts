@@ -1,6 +1,6 @@
 export const THEME_COOKIE = 'cortex-theme';
 export const THEME_STORAGE_KEY = 'cortex-theme';
-export const THEME_DEFAULT: Theme = 'dark';
+export const THEME_DEFAULT: Theme = 'light';
 
 export type Theme = 'dark' | 'light';
 
