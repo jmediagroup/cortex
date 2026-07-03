@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import {
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as ChartTooltip, ResponsiveContainer, LineChart, Line, BarChart, Bar, Cell, ReferenceLine
+  ComposedChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as ChartTooltip, ResponsiveContainer, LineChart, Line, BarChart, Bar, Cell, ReferenceLine
 } from 'recharts';
 import {
   TrendingUp, Calculator, Info, ArrowUpRight, Lock, Zap, AlertTriangle, Target, Clock, ArrowRight,
@@ -45,7 +45,9 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
   // --- Core Calculations ---
   const calculations = useMemo(() => {
     const realGrowthRate = (inputs.investmentGrowth - inputs.inflationRate - inputs.investmentFees) / 100;
-    const yearsToRetire = inputs.retirementAge - inputs.currentAge;
+    // Clamp so a retirement age at/below the current age can't produce
+    // negative exponents (which would make the coast number exceed the target).
+    const yearsToRetire = Math.max(0, inputs.retirementAge - inputs.currentAge);
 
     // FIRE Number = Annual Spending / (Withdrawal Rate / 100)
     // Clamp the withdrawal rate so a cleared/zero input can't divide by zero.
@@ -57,7 +59,9 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
 
     const hasReachedCoast = inputs.currentInvested >= coastFIRENumber;
     const coastGap = coastFIRENumber - inputs.currentInvested;
-    const coastProgress = Math.min((inputs.currentInvested / coastFIRENumber) * 100, 100);
+    // Guard the 0/0 case (no spending target and no investments) so we never render "NaN%".
+    const rawCoastProgress = (inputs.currentInvested / coastFIRENumber) * 100;
+    const coastProgress = Number.isFinite(rawCoastProgress) ? Math.min(rawCoastProgress, 100) : 0;
 
     // Calculate when user will hit Coast FIRE at current savings rate
     let yearsToCoast = 0;
@@ -101,13 +105,19 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
         coastLine: Math.round(coastLineAtAge)
       });
 
-      currentBalance = (currentBalance + inputs.monthlyContribution * 12) * (1 + realGrowthRate);
-      coastBalance = coastBalance * (1 + realGrowthRate);
+      if (age < inputs.retirementAge) {
+        currentBalance = (currentBalance + inputs.monthlyContribution * 12) * (1 + realGrowthRate);
+        coastBalance = coastBalance * (1 + realGrowthRate);
+      } else {
+        // Past retirement: contributions stop and the plan's withdrawals begin.
+        currentBalance = Math.max(0, currentBalance * (1 + realGrowthRate) - inputs.annualSpending);
+        coastBalance = Math.max(0, coastBalance * (1 + realGrowthRate) - inputs.annualSpending);
+      }
     }
 
     // Estimated Retirement Income
     const projectedAtRetirement = projectionData.find(d => d.age === inputs.retirementAge)?.withContributions || 0;
-    const estAnnualIncome = projectedAtRetirement * (inputs.withdrawalRate / 100);
+    const estAnnualIncome = projectedAtRetirement * (safeWithdrawalRate / 100);
 
     return {
       targetFIRENumber,
@@ -121,7 +131,8 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
       estAnnualIncome,
       projectionData,
       yearsToRetire,
-      realGrowthRate
+      realGrowthRate,
+      safeWithdrawalRate
     };
   }, [inputs]);
 
@@ -135,8 +146,8 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
           { coastAge: 45, requiredMonthly: 500, freedomYears: 20, totalContributions: 90000, projectedBalance: 350000, requiredBalance: 280000, surplus: 70000, feasible: true },
         ],
         baristaScenarios: [
-          { name: 'Full Coast', partTimeIncome: 0, hoursPerWeek: 0, adjustedFIRENumber: 1250000, adjustedCoastNumber: 320000, canCoastNow: false, gapToBarista: 120000, yearsToBarista: 5, coastAge: 40 },
-          { name: 'Part-Time (20hr/wk)', partTimeIncome: 30000, hoursPerWeek: 20, adjustedFIRENumber: 500000, adjustedCoastNumber: 128000, canCoastNow: true, gapToBarista: 0, yearsToBarista: 0, coastAge: 35 },
+          { name: 'Full Coast', partTimeIncome: 0, hoursPerWeek: 0, adjustedFIRENumber: 1250000, adjustedCoastNumber: 320000, canCoastNow: false, gapToBarista: 120000, yearsToBarista: 5, reachable: true, coastAge: 40 },
+          { name: 'Part-Time (20hr/wk)', partTimeIncome: 30000, hoursPerWeek: 20, adjustedFIRENumber: 500000, adjustedCoastNumber: 128000, canCoastNow: true, gapToBarista: 0, yearsToBarista: 0, reachable: true, coastAge: 35 },
         ],
         flexibilityMetrics: { pessimisticGrowth: 5, pessimisticCoastNumber: 380000, highInflationCoastNumber: 420000, reducedSpendingCoastNumber: 270000 },
         flexibilityScore: 75,
@@ -157,6 +168,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
     }
 
     const realGrowthRate = calculations.realGrowthRate;
+    const safeWithdrawalRate = calculations.safeWithdrawalRate;
 
     // 1. COAST DATE OPTIMIZER - Find optimal age to stop contributing
     const coastDateAnalysis = [];
@@ -216,23 +228,26 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
     ].map(scenario => {
       // With part-time income, you need less from investments
       const adjustedSpending = inputs.annualSpending - scenario.partTimeIncome;
-      const adjustedFIRENumber = Math.max(0, adjustedSpending / (inputs.withdrawalRate / 100));
-      const adjustedCoastNumber = adjustedFIRENumber / Math.pow(1 + realGrowthRate, inputs.retirementAge - inputs.currentAge);
+      const adjustedFIRENumber = Math.max(0, adjustedSpending / (safeWithdrawalRate / 100));
+      const adjustedCoastNumber = adjustedFIRENumber / Math.pow(1 + realGrowthRate, calculations.yearsToRetire);
 
       const canCoastNow = inputs.currentInvested >= adjustedCoastNumber;
       const gapToBarista = adjustedCoastNumber - inputs.currentInvested;
 
-      // Calculate when they can reach this barista number
+      // Calculate when they can reach this barista number. Test every year
+      // through the final one (yearsRemaining === 0) so a target that's only
+      // reachable at retirement itself still counts.
       let yearsToBarista = 0;
+      let reachable = canCoastNow;
       let testBalance = inputs.currentInvested;
       if (!canCoastNow && adjustedCoastNumber > 0) {
-        for (let y = 1; y <= 50; y++) {
+        for (let y = 1; y <= calculations.yearsToRetire; y++) {
           testBalance = (testBalance + inputs.monthlyContribution * 12) * (1 + realGrowthRate);
-          const yearsRemaining = inputs.retirementAge - inputs.currentAge - y;
-          if (yearsRemaining <= 0) break;
+          const yearsRemaining = calculations.yearsToRetire - y;
           const futureBarista = adjustedFIRENumber / Math.pow(1 + realGrowthRate, yearsRemaining);
           if (testBalance >= futureBarista) {
             yearsToBarista = y;
+            reachable = true;
             break;
           }
         }
@@ -245,6 +260,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
         canCoastNow,
         gapToBarista: Math.round(Math.max(0, gapToBarista)),
         yearsToBarista,
+        reachable,
         coastAge: canCoastNow ? inputs.currentAge : inputs.currentAge + yearsToBarista
       };
     });
@@ -259,7 +275,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
       highInflationCoastNumber: calculations.targetFIRENumber / Math.pow(1 + (inputs.investmentGrowth - (inputs.inflationRate + 2) - inputs.investmentFees) / 100, calculations.yearsToRetire),
 
       // Spending flexibility
-      reducedSpendingCoastNumber: (inputs.annualSpending * 0.85) / (inputs.withdrawalRate / 100) / Math.pow(1 + realGrowthRate, calculations.yearsToRetire),
+      reducedSpendingCoastNumber: (inputs.annualSpending * 0.85) / (safeWithdrawalRate / 100) / Math.pow(1 + realGrowthRate, calculations.yearsToRetire),
     };
 
     const scenarioResults = {
@@ -306,7 +322,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
       }
     ].map(scenario => {
       const adjustedSpending = inputs.annualSpending * scenario.spendingMultiplier;
-      const adjustedFIRE = adjustedSpending / (inputs.withdrawalRate / 100);
+      const adjustedFIRE = adjustedSpending / (safeWithdrawalRate / 100);
       const adjustedCoast = adjustedFIRE / Math.pow(1 + realGrowthRate, calculations.yearsToRetire);
       const reached = inputs.currentInvested >= adjustedCoast;
 
@@ -321,8 +337,20 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
     });
 
     // 5. SOCIAL SECURITY INTEGRATION
-    const reducedFIRENumber = Math.max(0, (inputs.annualSpending - inputs.estimatedSocialSecurity * 12)) / (inputs.withdrawalRate / 100);
-    const reducedCoastNumber = reducedFIRENumber / Math.pow(1 + realGrowthRate, inputs.socialSecurityAge - inputs.currentAge);
+    const reducedFIRENumber = Math.max(0, (inputs.annualSpending - inputs.estimatedSocialSecurity * 12)) / (safeWithdrawalRate / 100);
+
+    // The reduced FIRE number only applies once Social Security starts. Before
+    // that, the bridge years between retirement and the SS start age still need
+    // full spending, so the amount required at retirement is the PV of those
+    // bridge withdrawals (taken at the start of each year) plus the reduced
+    // FIRE number discounted from the SS age back to retirement.
+    const ssStartAge = Math.max(inputs.socialSecurityAge, inputs.retirementAge);
+    const bridgeYears = ssStartAge - inputs.retirementAge;
+    let requiredAtRetirement = reducedFIRENumber / Math.pow(1 + realGrowthRate, bridgeYears);
+    for (let y = 0; y < bridgeYears; y++) {
+      requiredAtRetirement += inputs.annualSpending / Math.pow(1 + realGrowthRate, y);
+    }
+    const reducedCoastNumber = requiredAtRetirement / Math.pow(1 + realGrowthRate, calculations.yearsToRetire);
 
     const ssIntegration = {
       monthlyBenefit: inputs.estimatedSocialSecurity,
@@ -386,6 +414,12 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
 
   const formatCurrency = (val: number) =>
     new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
+
+  // Prefer the 10-years-out coast row for the insight, but fall back to the
+  // last available row when the horizon is shorter than 10 years.
+  const coastInsightRow = proAnalytics.coastDateAnalysis.length > 0
+    ? proAnalytics.coastDateAnalysis[Math.min(9, proAnalytics.coastDateAnalysis.length - 1)]
+    : null;
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
@@ -479,7 +513,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
           </div>
           <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1">FIRE Target</p>
           <p className="text-xl font-bold text-[var(--text-primary)]">{formatCurrency(calculations.targetFIRENumber)}</p>
-          <p className="text-xs text-[var(--text-muted)] mt-1">at {inputs.withdrawalRate}% withdrawal</p>
+          <p className="text-xs text-[var(--text-muted)] mt-1">at {calculations.safeWithdrawalRate}% withdrawal</p>
         </div>
 
         <div className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border-default)] shadow-sm">
@@ -539,6 +573,12 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                   />
                 </div>
               </div>
+
+              {inputs.retirementAge <= inputs.currentAge && (
+                <p className="text-xs font-bold text-[var(--crimson-500)] flex items-center gap-1.5">
+                  <AlertTriangle size={14} /> Retirement age must be greater than your current age.
+                </p>
+              )}
 
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Current Investments ($)</label>
@@ -604,7 +644,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                     />
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-[var(--text-tertiary)] font-medium">Withdrawal Rate (%)<Tooltip content="The percentage of your portfolio you plan to withdraw annually in retirement. 4% is the traditional safe withdrawal rate." /></span>
+                    <span className="text-[var(--text-tertiary)] font-medium">Withdrawal Rate (%)<Tooltip content="The percentage of your portfolio you plan to withdraw annually in retirement. 4% is the traditional safe withdrawal rate. Rates below 0.1% are clamped to 0.1% to keep the math defined." /></span>
                     <NumberInput
                       step="0.1"
                       className="w-20 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg px-2 py-1.5 text-right font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
@@ -655,13 +695,14 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
             <div className="flex flex-wrap gap-4 text-[10px] font-semibold uppercase">
               <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-[var(--emerald-500)]" /> Current Plan</div>
               <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-[var(--color-info)]" /> Coasting Only</div>
+              <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-[var(--color-warning)]" /> Coast Target</div>
               <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-[var(--bg-glass-strong)]" /> FIRE Target</div>
             </div>
           </div>
 
           <div className="h-[400px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={calculations.projectionData}>
+              <ComposedChart data={calculations.projectionData}>
                 <defs>
                   <linearGradient id="colorWithCoast" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#00F0A0" stopOpacity={0.15}/>
@@ -725,7 +766,16 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                   fill="url(#colorCoastOnly)"
                   name="Coasting Only"
                 />
-              </AreaChart>
+                <Line
+                  type="monotone"
+                  dataKey="coastLine"
+                  stroke="#FFB800"
+                  strokeWidth={2}
+                  strokeDasharray="5 5"
+                  dot={false}
+                  name="Coast Target"
+                />
+              </ComposedChart>
             </ResponsiveContainer>
           </div>
 
@@ -735,12 +785,12 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
             <div className="grid md:grid-cols-2 gap-6 text-sm text-[var(--text-secondary)]">
               <div>
                 <p>
-                  To support <strong className="text-[var(--text-primary)]">{formatCurrency(inputs.annualSpending)}/year</strong>, you need a total portfolio of <strong className="text-[var(--text-primary)]">{formatCurrency(calculations.targetFIRENumber)}</strong> (using the {inputs.withdrawalRate}% rule).
+                  To support <strong className="text-[var(--text-primary)]">{formatCurrency(inputs.annualSpending)}/year</strong>, you need a total portfolio of <strong className="text-[var(--text-primary)]">{formatCurrency(calculations.targetFIRENumber)}</strong> (using the {calculations.safeWithdrawalRate}% rule{inputs.withdrawalRate < 0.1 ? ', clamped to a 0.1% minimum' : ''}).
                 </p>
               </div>
               <div>
                 <p>
-                  With a real return of <strong className="text-[var(--text-primary)]">{(inputs.investmentGrowth - inputs.inflationRate - inputs.investmentFees).toFixed(2)}%</strong> and <strong className="text-[var(--text-primary)]">{calculations.yearsToRetire} years</strong> to grow, you need <strong className="text-[var(--text-primary)]">{formatCurrency(calculations.coastFIRENumber)}</strong> today to coast.
+                  With a real return of <strong className="text-[var(--text-primary)]">{(inputs.investmentGrowth - inputs.inflationRate - inputs.investmentFees).toFixed(2)}%</strong> (approximation: growth − inflation − fees) and <strong className="text-[var(--text-primary)]">{calculations.yearsToRetire} years</strong> to grow, you need <strong className="text-[var(--text-primary)]">{formatCurrency(calculations.coastFIRENumber)}</strong> today to coast.
                 </p>
               </div>
             </div>
@@ -947,7 +997,11 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                     {scenario.hoursPerWeek > 0 ? `${scenario.hoursPerWeek} hrs/week @ $${Math.round(scenario.partTimeIncome / 52 / scenario.hoursPerWeek)}/hr` : 'No work required'}
                   </p>
                   <div className={`text-lg font-bold mb-1 ${scenario.canCoastNow ? 'text-[var(--emerald-600)]' : 'text-white'}`}>
-                    {scenario.canCoastNow ? 'Available Now!' : `${scenario.yearsToBarista} years away`}
+                    {scenario.canCoastNow
+                      ? 'Available Now!'
+                      : scenario.reachable
+                      ? `${scenario.yearsToBarista} years away`
+                      : 'Not reachable before retirement'}
                   </div>
                   <p className={`text-xs ${scenario.canCoastNow ? 'text-[var(--mist-500)]' : 'text-white/70'}`}>
                     Coast # needed: {formatCurrency(scenario.adjustedCoastNumber)}
@@ -1036,7 +1090,9 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
               <p className="text-sm font-medium">
                 {calculations.hasReachedCoast
                   ? "You've already reached Coast FIRE! Every dollar you save now accelerates your timeline or increases your retirement income."
-                  : `To coast by age ${inputs.currentAge + 10}, you'd need to save ${formatCurrency(proAnalytics.coastDateAnalysis[9]?.requiredMonthly || 0)}/month. Consider if the ${proAnalytics.coastDateAnalysis[9]?.freedomYears || 0} years of freedom is worth the extra effort.`}
+                  : coastInsightRow
+                  ? `To coast by age ${coastInsightRow.coastAge}, you'd need to save ${formatCurrency(coastInsightRow.requiredMonthly)}/month. Consider if the ${coastInsightRow.freedomYears} years of freedom is worth the extra effort.`
+                  : "Set a retirement age later than your current age to explore coast date trade-offs."}
               </p>
             </div>
           </div>
@@ -1162,7 +1218,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
 
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={proAnalytics.workOptionalTimeline}>
+                <ComposedChart data={proAnalytics.workOptionalTimeline}>
                   <defs>
                     <linearGradient id="colorTimeline" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#00F0A0" stopOpacity={0.2}/>
@@ -1208,7 +1264,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                     fill="url(#colorTimeline)"
                     name="Your Balance"
                   />
-                </AreaChart>
+                </ComposedChart>
               </ResponsiveContainer>
             </div>
 
