@@ -17,6 +17,7 @@ const LINK_GROUPS: LinkGroup[] = [
     heading: 'Company',
     links: [
       { label: 'About', href: '/about' },
+      { label: 'Guides', href: '/guides' },
       { label: 'Thinking', href: '/thinking' },
       { label: 'Articles', href: '/articles' },
       { label: 'Enterprise', href: '/enterprise' },

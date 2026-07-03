@@ -8,6 +8,7 @@ import { MarketingIcon } from './Icons';
 
 const NAV_LINKS = [
   { label: 'Tools', href: '/#tools' },
+  { label: 'Guides', href: '/guides' },
   { label: 'Thinking', href: '/thinking' },
   { label: 'Pricing', href: '/pricing' },
   { label: 'Articles', href: '/articles' },
