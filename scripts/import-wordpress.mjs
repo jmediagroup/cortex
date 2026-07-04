@@ -10,11 +10,22 @@
  *   SUPABASE_SERVICE_ROLE_KEY=eyJ... \
  *   node scripts/import-wordpress.mjs
  *
- * Requires the `turndown` devDependency (npm i -D turndown).
+ * Requires the `turndown` and `undici` devDependencies.
+ *
+ * Behind an egress proxy (e.g. Claude Code cloud sessions), Node's global fetch
+ * ignores HTTPS_PROXY, so both the WordPress and Supabase calls fail. Set the
+ * proxy dispatcher below and pass the proxy CA so TLS verifies:
+ *   NODE_EXTRA_CA_CERTS=/path/to/ca-bundle.crt HTTPS_PROXY=... node scripts/import-wordpress.mjs
  */
 
 import { createClient } from '@supabase/supabase-js';
 import TurndownService from 'turndown';
+import { setGlobalDispatcher, ProxyAgent } from 'undici';
+
+// Route Node's fetch (used by both this script and supabase-js) through an
+// egress proxy when one is configured. No-op in normal environments.
+const proxyUrl = process.env.HTTPS_PROXY || process.env.https_proxy;
+if (proxyUrl) setGlobalDispatcher(new ProxyAgent(proxyUrl));
 
 const WP_URL =
   process.env.NEXT_PUBLIC_WORDPRESS_GRAPHQL_URL || process.env.WORDPRESS_GRAPHQL_URL;
