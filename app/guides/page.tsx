@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { Clock, Calendar } from 'lucide-react';
 import { getAllGuides } from '@/lib/guides/content';
 import type { GuideListItem } from '@/lib/guides/types';
-import { MarketingIcon } from '@/components/marketing/Icons';
+import { FeaturedBanner } from '@/components/brand/FeaturedBanner';
 
 export const metadata: Metadata = {
   title: 'Guides — Personal Finance, Explained',
@@ -156,89 +156,81 @@ function GuideCard({ guide }: { guide: GuideListItem }) {
         overflow: 'hidden',
         textDecoration: 'none',
         boxShadow: 'var(--shadow-card)',
-        padding: 20,
-        gap: 12,
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div style={{ height: 168 }}>
+        <FeaturedBanner markSize={52} label={guide.category ?? 'GUIDE'} />
+      </div>
+
+      <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 10, flex: 1 }}>
         {guide.category && (
-          <span
-            style={{
-              fontSize: 10,
-              fontWeight: 700,
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              color: '#fff',
-              background: 'var(--sky-pill)',
-              padding: '4px 10px',
-              borderRadius: 9999,
-            }}
-          >
-            {guide.category}
-          </span>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            <span
+              style={{
+                fontSize: 10,
+                fontWeight: 700,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                color: '#fff',
+                background: 'var(--sky-pill)',
+                padding: '4px 10px',
+                borderRadius: 9999,
+              }}
+            >
+              {guide.category}
+            </span>
+          </div>
         )}
-        <span
+
+        <h2
           style={{
+            fontSize: 17,
+            fontWeight: 700,
+            color: 'var(--text-primary)',
+            lineHeight: 1.3,
+            letterSpacing: '-0.01em',
+            margin: 0,
+          }}
+        >
+          {guide.title}
+        </h2>
+
+        <p
+          style={{
+            color: 'var(--text-secondary)',
+            fontSize: 13,
+            lineHeight: 1.55,
+            margin: 0,
+            display: '-webkit-box',
+            WebkitLineClamp: 3,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+          }}
+        >
+          {guide.summary}
+        </p>
+
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
             fontSize: 11,
             color: 'var(--text-muted)',
             fontFamily: 'var(--font-mono)',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 4,
+            paddingTop: 12,
+            borderTop: '1px solid var(--border-subtle)',
+            marginTop: 'auto',
           }}
         >
-          <Calendar size={11} />
-          {formatGuideDate(guide.date)}
-        </span>
-      </div>
-
-      <h2
-        style={{
-          fontSize: 17,
-          fontWeight: 700,
-          color: 'var(--text-primary)',
-          lineHeight: 1.3,
-          letterSpacing: '-0.01em',
-          margin: 0,
-        }}
-      >
-        {guide.title}
-      </h2>
-
-      <p
-        style={{
-          color: 'var(--text-secondary)',
-          fontSize: 13,
-          lineHeight: 1.55,
-          margin: 0,
-          display: '-webkit-box',
-          WebkitLineClamp: 3,
-          WebkitBoxOrient: 'vertical',
-          overflow: 'hidden',
-        }}
-      >
-        {guide.summary}
-      </p>
-
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          fontSize: 11,
-          color: 'var(--text-muted)',
-          fontFamily: 'var(--font-mono)',
-          paddingTop: 12,
-          borderTop: '1px solid var(--border-subtle)',
-          marginTop: 'auto',
-        }}
-      >
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-          <Clock size={11} /> {guide.readingTime} min
-        </span>
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--orange)', fontWeight: 700 }}>
-          Read <MarketingIcon name="arrowRight" size={12} />
-        </span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <Calendar size={11} />
+            {formatGuideDate(guide.date)}
+          </span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+            <Clock size={11} /> {guide.readingTime} min
+          </span>
+        </div>
       </div>
     </Link>
   );

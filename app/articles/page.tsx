@@ -15,6 +15,7 @@ import {
 } from '@/lib/cms/articles';
 import { ArticleListItem } from '@/lib/cms/types';
 import { MarketingIcon } from '@/components/marketing/Icons';
+import { FeaturedBanner } from '@/components/brand/FeaturedBanner';
 
 export const metadata: Metadata = {
   title: 'Articles — Financial Insights & Guides',
@@ -578,17 +579,8 @@ function ArticleCard({ article }: { article: ArticleListItem }) {
           />
         </div>
       ) : (
-        <div
-          style={{
-            height: 168,
-            background: 'var(--off-white)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'var(--navy)',
-          }}
-        >
-          <MarketingIcon name="brain" size={40} />
+        <div style={{ height: 168 }}>
+          <FeaturedBanner markSize={52} label={article.categories[0]?.name} />
         </div>
       )}
 

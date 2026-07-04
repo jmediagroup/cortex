@@ -40,12 +40,14 @@ export function OutlookSubscribeForm({ source = 'thinking' }: { source?: string 
     }
   }
 
+  // Label + copy use currentColor so the form reads correctly both on the
+  // white sidebar card (navy ink) and inside the navy email band (white text).
   if (status === 'success') {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         <span
-          className="eyebrow"
-          style={{ color: 'var(--text-tertiary)', fontSize: 11 }}
+          className="mgm-eyebrow"
+          style={{ color: 'currentColor', opacity: 0.7 }}
         >
           DAILY OUTLOOK BY EMAIL
         </span>
@@ -56,7 +58,7 @@ export function OutlookSubscribeForm({ source = 'thinking' }: { source?: string 
             margin: 0,
             fontSize: 13,
             lineHeight: 1.5,
-            color: 'var(--emerald-500)',
+            color: 'currentColor',
           }}
         >
           {message}
@@ -71,8 +73,8 @@ export function OutlookSubscribeForm({ source = 'thinking' }: { source?: string 
       style={{ display: 'flex', flexDirection: 'column', gap: 10 }}
     >
       <label
-        className="eyebrow"
-        style={{ color: 'var(--text-tertiary)', fontSize: 11 }}
+        className="mgm-eyebrow"
+        style={{ color: 'currentColor', opacity: 0.7 }}
         htmlFor="outlook-email"
       >
         DAILY OUTLOOK BY EMAIL
@@ -82,7 +84,8 @@ export function OutlookSubscribeForm({ source = 'thinking' }: { source?: string 
           margin: 0,
           fontSize: 12,
           lineHeight: 1.5,
-          color: 'var(--text-tertiary)',
+          color: 'currentColor',
+          opacity: 0.7,
         }}
       >
         Free. Weekday mornings + a Sunday recap. Unsubscribe in one click.
@@ -98,9 +101,9 @@ export function OutlookSubscribeForm({ source = 'thinking' }: { source?: string 
         disabled={status === 'submitting'}
         style={{
           padding: '10px 12px',
-          border: '1px solid var(--border-default)',
-          borderRadius: 10,
-          background: 'var(--bg-glass-strong)',
+          border: '1px solid var(--gray-300)',
+          borderRadius: 'var(--radius-sm)',
+          background: 'var(--white)',
           color: 'var(--text-primary)',
           fontSize: 13,
           fontFamily: 'inherit',
@@ -109,18 +112,9 @@ export function OutlookSubscribeForm({ source = 'thinking' }: { source?: string 
       />
       <button
         type="submit"
+        className="mgm-btn mgm-btn--primary mgm-btn--md"
         disabled={status === 'submitting'}
-        style={{
-          padding: '10px 14px',
-          background: 'var(--emerald-500)',
-          color: 'var(--text-inverse)',
-          border: 'none',
-          borderRadius: 10,
-          fontWeight: 700,
-          fontSize: 13,
-          cursor: status === 'submitting' ? 'wait' : 'pointer',
-          boxShadow: '0 0 0 1px var(--cta-glow-ring), 0 0 16px var(--cta-glow-soft)',
-        }}
+        style={{ width: '100%', cursor: status === 'submitting' ? 'wait' : 'pointer' }}
       >
         {status === 'submitting' ? 'Sending…' : 'Subscribe'}
       </button>
@@ -130,7 +124,7 @@ export function OutlookSubscribeForm({ source = 'thinking' }: { source?: string 
           style={{
             margin: 0,
             fontSize: 12,
-            color: status === 'error' ? '#f87171' : 'var(--emerald-500)',
+            color: status === 'error' ? 'var(--alert-red)' : 'currentColor',
           }}
         >
           {message}
