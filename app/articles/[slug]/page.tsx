@@ -9,6 +9,7 @@ import { ShareButtons } from './ShareButtons';
 import { RelatedArticles } from './RelatedArticles';
 import { MarketingIcon } from '@/components/marketing/Icons';
 import { Button } from '@/components/ui/Button';
+import { FeaturedBanner } from '@/components/brand/FeaturedBanner';
 import './article-styles.css';
 
 type PageProps = { params: Promise<{ slug: string }> };
@@ -27,7 +28,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const seo = article.seo;
   const title = seo?.title || article.title;
   const description = seo?.description || article.excerpt;
-  const ogImage = seo?.ogImage || article.featuredImage?.url || '/opengraph-image';
+  // Priority: explicit SEO override → uploaded featured image → the standard
+  // per-article Money Guy Mutant social card generated at build time.
+  const ogImage =
+    seo?.ogImage || article.featuredImage?.url || `/articles/${slug}/opengraph-image`;
 
   const articleUrl = `https://moneyguymutants.com/articles/${slug}`;
   const tagNames = article.tags.map((t) => t.name);
@@ -101,38 +105,44 @@ export default async function ArticlePage({ params }: PageProps) {
       />
 
       <article lang="en-US" style={{ position: 'relative' }}>
-        {article.featuredImage && (
-          <div
-            style={{
-              position: 'relative',
-              width: '100%',
-              height: 'clamp(260px, 45vh, 500px)',
-              background: 'var(--navy)',
-            }}
-          >
-            <Image
-              src={article.featuredImage.url}
-              alt={article.featuredImage.alt}
-              fill
-              style={{ objectFit: 'cover' }}
-              priority
-            />
-            <div
-              aria-hidden="true"
-              style={{
-                position: 'absolute',
-                inset: 0,
-                background:
-                  'linear-gradient(to bottom, transparent 0%, var(--bg-canvas) 100%)',
-              }}
-            />
-          </div>
-        )}
+        {/* Every article ships a hero: the uploaded featured image if present,
+            otherwise the standard Money Guy Mutant branded banner. */}
+        <div
+          style={{
+            position: 'relative',
+            width: '100%',
+            height: 'clamp(260px, 45vh, 500px)',
+            background: 'var(--navy)',
+          }}
+        >
+          {article.featuredImage ? (
+            <>
+              <Image
+                src={article.featuredImage.url}
+                alt={article.featuredImage.alt}
+                fill
+                style={{ objectFit: 'cover' }}
+                priority
+              />
+              <div
+                aria-hidden="true"
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  background:
+                    'linear-gradient(to bottom, transparent 0%, var(--bg-canvas) 100%)',
+                }}
+              />
+            </>
+          ) : (
+            <FeaturedBanner markSize={128} label={article.categories[0]?.name} />
+          )}
+        </div>
 
         <header
           style={{
             position: 'relative',
-            marginTop: article.featuredImage ? -96 : 48,
+            marginTop: -96,
             padding: '0 24px',
           }}
         >
@@ -140,9 +150,9 @@ export default async function ArticlePage({ params }: PageProps) {
             style={{
               maxWidth: 760,
               margin: '0 auto',
-              background: article.featuredImage ? 'var(--bg-canvas)' : 'transparent',
-              borderRadius: article.featuredImage ? 'var(--radius-md) var(--radius-md) 0 0' : 0,
-              padding: article.featuredImage ? '32px 0 0' : 0,
+              background: 'var(--bg-canvas)',
+              borderRadius: 'var(--radius-md) var(--radius-md) 0 0',
+              padding: '32px 0 0',
             }}
           >
             <nav style={{ marginBottom: 20 }}>
@@ -480,7 +490,7 @@ function generateArticleSchema(article: Article) {
           width: article.featuredImage.width,
           height: article.featuredImage.height,
         }
-      : 'https://moneyguymutants.com/opengraph-image',
+      : `https://moneyguymutants.com/articles/${article.slug}/opengraph-image`,
     datePublished: article.date,
     dateModified: article.modified,
     author,

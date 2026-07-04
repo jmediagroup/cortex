@@ -4,6 +4,7 @@ import { Clock, Calendar } from 'lucide-react';
 import { getAllOutlooks } from '@/lib/outlook/content';
 import type { OutlookListItem, OutlookType } from '@/lib/outlook/types';
 import { MarketingIcon } from '@/components/marketing/Icons';
+import { FeaturedBanner } from '@/components/brand/FeaturedBanner';
 import { OutlookSubscribeForm } from './_components/OutlookSubscribeForm';
 
 export const metadata: Metadata = {
@@ -106,14 +107,11 @@ export default async function ThinkingPage({ searchParams }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
 
-      <section
-        className="hero-gradient"
-        style={{ padding: '96px 24px 48px', textAlign: 'center' }}
-      >
+      <section style={{ padding: '96px 24px 48px', textAlign: 'center' }}>
         <div style={{ maxWidth: 760, margin: '0 auto', position: 'relative' }}>
           <div
-            className="eyebrow"
-            style={{ marginBottom: 16, color: 'var(--text-tertiary)' }}
+            className="mgm-eyebrow"
+            style={{ marginBottom: 16, color: 'var(--gray-500)' }}
           >
             THINKING
           </div>
@@ -148,13 +146,11 @@ export default async function ThinkingPage({ searchParams }: PageProps) {
               style={{
                 position: 'sticky',
                 top: 88,
-                background: 'var(--bg-glass)',
-                backdropFilter: 'var(--glass-blur)',
-                WebkitBackdropFilter: 'var(--glass-blur)',
-                border: '1px solid var(--glass-border)',
-                borderRadius: 'var(--radius-xl)',
+                background: 'var(--bg-card)',
+                border: '1px solid var(--border-default)',
+                borderRadius: 'var(--radius-md)',
                 padding: 20,
-                boxShadow: 'var(--shadow-card), var(--shadow-inset-top)',
+                boxShadow: 'var(--shadow-card)',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 24,
@@ -162,8 +158,8 @@ export default async function ThinkingPage({ searchParams }: PageProps) {
             >
               <div>
                 <div
-                  className="eyebrow"
-                  style={{ marginBottom: 10, color: 'var(--text-tertiary)' }}
+                  className="mgm-eyebrow"
+                  style={{ marginBottom: 10, color: 'var(--gray-500)' }}
                 >
                   CADENCE
                 </div>
@@ -210,9 +206,9 @@ export default async function ThinkingPage({ searchParams }: PageProps) {
                 style={{
                   textAlign: 'center',
                   padding: '64px 24px',
-                  background: 'var(--bg-glass)',
-                  border: '1px solid var(--glass-border)',
-                  borderRadius: 'var(--radius-xl)',
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border-default)',
+                  borderRadius: 'var(--radius-md)',
                   color: 'var(--text-secondary)',
                 }}
               >
@@ -221,7 +217,7 @@ export default async function ThinkingPage({ searchParams }: PageProps) {
                     ? 'No outlooks published yet.'
                     : `No ${filter} outlooks yet.`}
                 </p>
-                <p style={{ color: 'var(--text-tertiary)', fontSize: 13 }}>
+                <p style={{ color: 'var(--gray-500)', fontSize: 13 }}>
                   Subscribe to be notified when the first one drops.
                 </p>
               </div>
@@ -265,13 +261,13 @@ function FilterLink({
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '8px 10px',
-          borderRadius: 10,
+          borderRadius: 'var(--radius-sm)',
           fontSize: 13,
-          fontWeight: 500,
+          fontWeight: active ? 700 : 500,
           textDecoration: 'none',
-          color: active ? 'var(--emerald-500)' : 'var(--text-secondary)',
-          background: active ? 'var(--emerald-tint-soft)' : 'transparent',
-          border: `1px solid ${active ? 'var(--emerald-border-soft)' : 'transparent'}`,
+          color: active ? 'var(--navy)' : 'var(--text-secondary)',
+          background: active ? 'var(--off-white)' : 'transparent',
+          border: `1px solid ${active ? 'var(--border-default)' : 'transparent'}`,
         }}
       >
         <span>{label}</span>
@@ -279,7 +275,7 @@ function FilterLink({
           style={{
             fontSize: 10,
             fontWeight: 600,
-            color: active ? 'var(--emerald-500)' : 'var(--text-muted)',
+            color: active ? 'var(--navy)' : 'var(--text-muted)',
           }}
         >
           {count}
@@ -307,119 +303,123 @@ function OutlookCard({ outlook }: { outlook: OutlookListItem }) {
       style={{
         display: 'flex',
         flexDirection: 'column',
-        background: 'var(--bg-glass)',
-        backdropFilter: 'var(--glass-blur)',
-        WebkitBackdropFilter: 'var(--glass-blur)',
-        border: '1px solid var(--glass-border)',
-        borderRadius: 'var(--radius-xl)',
+        background: 'var(--bg-card)',
+        border: '1px solid var(--border-default)',
+        borderRadius: 'var(--radius-md)',
         overflow: 'hidden',
         textDecoration: 'none',
-        boxShadow: 'var(--shadow-card), var(--shadow-inset-top)',
-        padding: 20,
-        gap: 12,
+        boxShadow: 'var(--shadow-card)',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span
+      <div style={{ height: 168 }}>
+        <FeaturedBanner
+          markSize={52}
+          label={outlook.type === 'weekly' ? 'WEEKLY OUTLOOK' : 'DAILY OUTLOOK'}
+        />
+      </div>
+
+      <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 10, flex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span
+            style={{
+              fontSize: 10,
+              fontWeight: 700,
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              color: '#fff',
+              background: 'var(--sky-pill)',
+              padding: '4px 10px',
+              borderRadius: 9999,
+            }}
+          >
+            {outlook.type === 'weekly' ? 'Weekly' : 'Daily'}
+          </span>
+          <span
+            style={{
+              fontSize: 11,
+              color: 'var(--text-muted)',
+              fontFamily: 'var(--font-mono)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 4,
+            }}
+          >
+            <Calendar size={11} />
+            {formatOutlookDate(outlook.date)}
+          </span>
+        </div>
+
+        <h2
           style={{
-            fontSize: 10,
+            fontSize: 17,
             fontWeight: 700,
-            letterSpacing: '0.08em',
-            textTransform: 'uppercase',
-            color: 'var(--emerald-500)',
-            background: 'var(--emerald-tint-soft)',
-            border: '1px solid var(--emerald-border-soft)',
-            padding: '4px 8px',
-            borderRadius: 9999,
+            color: 'var(--text-primary)',
+            lineHeight: 1.3,
+            letterSpacing: '-0.01em',
+            margin: 0,
           }}
         >
-          {outlook.type === 'weekly' ? 'Weekly' : 'Daily'}
-        </span>
-        <span
+          {outlook.title}
+        </h2>
+
+        <p
           style={{
+            color: 'var(--text-secondary)',
+            fontSize: 13,
+            lineHeight: 1.55,
+            margin: 0,
+            display: '-webkit-box',
+            WebkitLineClamp: 3,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+          }}
+        >
+          {outlook.summary}
+        </p>
+
+        {outlook.tickers.length > 0 && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            {outlook.tickers.slice(0, 6).map((t) => (
+              <span
+                key={t}
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 10,
+                  fontWeight: 600,
+                  letterSpacing: '0.04em',
+                  color: 'var(--navy)',
+                  background: 'var(--off-white)',
+                  border: '1px solid var(--border-default)',
+                  padding: '3px 8px',
+                  borderRadius: 9999,
+                }}
+              >
+                {t}
+              </span>
+            ))}
+          </div>
+        )}
+
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
             fontSize: 11,
             color: 'var(--text-muted)',
             fontFamily: 'var(--font-mono)',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 4,
+            paddingTop: 12,
+            borderTop: '1px solid var(--border-subtle)',
+            marginTop: 'auto',
           }}
         >
-          <Calendar size={11} />
-          {formatOutlookDate(outlook.date)}
-        </span>
-      </div>
-
-      <h2
-        style={{
-          fontSize: 17,
-          fontWeight: 600,
-          color: 'var(--text-primary)',
-          lineHeight: 1.3,
-          letterSpacing: '-0.01em',
-          margin: 0,
-        }}
-      >
-        {outlook.title}
-      </h2>
-
-      <p
-        style={{
-          color: 'var(--text-tertiary)',
-          fontSize: 13,
-          lineHeight: 1.55,
-          margin: 0,
-          display: '-webkit-box',
-          WebkitLineClamp: 3,
-          WebkitBoxOrient: 'vertical',
-          overflow: 'hidden',
-        }}
-      >
-        {outlook.summary}
-      </p>
-
-      {outlook.tickers.length > 0 && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-          {outlook.tickers.slice(0, 6).map((t) => (
-            <span
-              key={t}
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                fontWeight: 600,
-                letterSpacing: '0.04em',
-                color: 'var(--text-secondary)',
-                background: 'var(--bg-glass-strong)',
-                border: '1px solid var(--glass-border)',
-                padding: '3px 8px',
-                borderRadius: 9999,
-              }}
-            >
-              {t}
-            </span>
-          ))}
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+            <Clock size={11} /> {outlook.readingTime} min
+          </span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--orange)', fontWeight: 700 }}>
+            Read <MarketingIcon name="arrowRight" size={12} />
+          </span>
         </div>
-      )}
-
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          fontSize: 11,
-          color: 'var(--text-muted)',
-          fontFamily: 'var(--font-mono)',
-          paddingTop: 12,
-          borderTop: '1px solid var(--border-subtle)',
-          marginTop: 'auto',
-        }}
-      >
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-          <Clock size={11} /> {outlook.readingTime} min
-        </span>
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--emerald-500)' }}>
-          Read <MarketingIcon name="arrowRight" size={12} />
-        </span>
       </div>
     </Link>
   );

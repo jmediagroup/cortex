@@ -6,6 +6,8 @@ import { useState } from 'react';
 interface ShareButtonsProps {
   url: string;
   title: string;
+  /** Eyebrow label above the row — e.g. "SHARE THIS ARTICLE" / "SHARE THIS GUIDE". */
+  label?: string;
 }
 
 const chipStyle: React.CSSProperties = {
@@ -22,7 +24,7 @@ const chipStyle: React.CSSProperties = {
   transition: 'all 160ms var(--ease-out-expo)',
 };
 
-export function ShareButtons({ url, title }: ShareButtonsProps) {
+export function ShareButtons({ url, title, label = 'SHARE THIS ARTICLE' }: ShareButtonsProps) {
   const [copied, setCopied] = useState(false);
   const encodedUrl = encodeURIComponent(url);
   const encodedTitle = encodeURIComponent(title);
@@ -73,7 +75,7 @@ export function ShareButtons({ url, title }: ShareButtonsProps) {
             className="mgm-eyebrow"
             style={{ margin: 0, color: 'var(--gray-500)' }}
           >
-            SHARE THIS ARTICLE
+            {label}
           </span>
         </div>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>

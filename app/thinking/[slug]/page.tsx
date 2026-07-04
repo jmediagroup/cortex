@@ -5,6 +5,9 @@ import { ArrowLeft, Calendar, Clock } from 'lucide-react';
 import { getAllOutlookSlugs, getAllOutlooks, getOutlookBySlug } from '@/lib/outlook/content';
 import type { Outlook } from '@/lib/outlook/types';
 import { MarketingIcon } from '@/components/marketing/Icons';
+import { Button } from '@/components/ui/Button';
+import { FeaturedBanner } from '@/components/brand/FeaturedBanner';
+import { ShareButtons } from '@/app/articles/[slug]/ShareButtons';
 import { OutlookSubscribeForm } from '../_components/OutlookSubscribeForm';
 import '@/app/articles/[slug]/article-styles.css';
 
@@ -86,8 +89,32 @@ export default async function OutlookDetailPage({ params }: PageProps) {
       />
 
       <article lang="en-US">
-        <header style={{ padding: '64px 24px 0' }}>
-          <div style={{ maxWidth: 760, margin: '0 auto' }}>
+        {/* Standard Money Guy Mutant branded hero — outlooks have no uploaded
+            featured image, so every post gets the same on-brand banner. */}
+        <div
+          style={{
+            position: 'relative',
+            width: '100%',
+            height: 'clamp(240px, 40vh, 440px)',
+            background: 'var(--navy)',
+          }}
+        >
+          <FeaturedBanner
+            markSize={124}
+            label={outlook.type === 'weekly' ? 'WEEKLY OUTLOOK' : 'DAILY OUTLOOK'}
+          />
+        </div>
+
+        <header style={{ position: 'relative', marginTop: -96, padding: '0 24px' }}>
+          <div
+            style={{
+              maxWidth: 760,
+              margin: '0 auto',
+              background: 'var(--bg-canvas)',
+              borderRadius: 'var(--radius-md) var(--radius-md) 0 0',
+              padding: '32px 0 0',
+            }}
+          >
             <nav style={{ marginBottom: 20 }}>
               <Link
                 href="/thinking"
@@ -112,9 +139,8 @@ export default async function OutlookDetailPage({ params }: PageProps) {
                   fontWeight: 700,
                   letterSpacing: '0.08em',
                   textTransform: 'uppercase',
-                  color: 'var(--emerald-500)',
-                  background: 'var(--emerald-tint-soft)',
-                  border: '1px solid var(--emerald-border-soft)',
+                  color: '#fff',
+                  background: 'var(--sky-pill)',
                   padding: '5px 12px',
                   borderRadius: 9999,
                 }}
@@ -153,7 +179,7 @@ export default async function OutlookDetailPage({ params }: PageProps) {
                 flexWrap: 'wrap',
                 alignItems: 'center',
                 gap: 16,
-                color: 'var(--text-tertiary)',
+                color: 'var(--text-muted)',
                 fontSize: 13,
                 paddingBottom: 24,
                 borderBottom: '1px solid var(--border-subtle)',
@@ -189,11 +215,10 @@ export default async function OutlookDetailPage({ params }: PageProps) {
                     style={{
                       fontFamily: 'var(--font-mono)',
                       fontSize: 11,
-                      fontWeight: 600,
+                      fontWeight: 700,
                       letterSpacing: '0.04em',
-                      color: 'var(--emerald-500)',
-                      background: 'var(--emerald-tint-soft)',
-                      border: '1px solid var(--emerald-border-soft)',
+                      color: '#fff',
+                      background: 'var(--sky-pill)',
                       padding: '4px 10px',
                       borderRadius: 9999,
                     }}
@@ -206,10 +231,10 @@ export default async function OutlookDetailPage({ params }: PageProps) {
                     key={`s-${s}`}
                     style={{
                       fontSize: 11,
-                      fontWeight: 500,
-                      color: 'var(--text-secondary)',
-                      background: 'var(--bg-glass-strong)',
-                      border: '1px solid var(--glass-border)',
+                      fontWeight: 600,
+                      color: 'var(--navy)',
+                      background: 'var(--off-white)',
+                      border: '1px solid var(--border-default)',
                       padding: '4px 10px',
                       borderRadius: 9999,
                     }}
@@ -229,30 +254,27 @@ export default async function OutlookDetailPage({ params }: PageProps) {
             dangerouslySetInnerHTML={{ __html: outlook.contentHtml }}
           />
 
+          <ShareButtons url={url} title={outlook.title} label="SHARE THIS OUTLOOK" />
+
           <div
-            style={{
-              margin: '40px 0',
-              padding: 32,
-              background: 'linear-gradient(135deg, #0a4a73 0%, #054C7D 100%)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: 'var(--radius-xl)',
-              color: '#F5F5F7',
-            }}
+            className="mgm-band"
+            style={{ margin: '40px 0', padding: 32 }}
           >
-            <div className="eyebrow" style={{ color: '#1D8072', marginBottom: 12 }}>
+            <div className="mgm-eyebrow" style={{ color: 'var(--sky)', marginBottom: 12 }}>
               GET THIS BY EMAIL
             </div>
             <h3
               style={{
                 fontSize: 22,
                 fontWeight: 700,
+                color: '#fff',
                 margin: '0 0 10px',
                 letterSpacing: '-0.015em',
               }}
             >
               Wake up to the outlook.
             </h3>
-            <p style={{ color: '#AEAEB2', margin: '0 0 20px', lineHeight: 1.55 }}>
+            <p style={{ color: 'rgba(255,255,255,0.82)', margin: '0 0 20px', lineHeight: 1.55 }}>
               Free. Weekday mornings + a Sunday recap. Unsubscribe in one click.
             </p>
             <div style={{ maxWidth: 360 }}>
@@ -283,14 +305,16 @@ export default async function OutlookDetailPage({ params }: PageProps) {
                   <li key={r.slug}>
                     <Link
                       href={`/thinking/${r.slug}`}
+                      className="hover-lift"
                       style={{
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center',
                         padding: '12px 14px',
-                        background: 'var(--bg-glass)',
-                        border: '1px solid var(--glass-border)',
-                        borderRadius: 12,
+                        background: 'var(--bg-card)',
+                        border: '1px solid var(--border-default)',
+                        borderRadius: 'var(--radius-md)',
+                        boxShadow: 'var(--shadow-card)',
                         color: 'var(--text-primary)',
                         textDecoration: 'none',
                         fontSize: 14,
@@ -338,25 +362,11 @@ export default async function OutlookDetailPage({ params }: PageProps) {
             >
               Browse all outlooks.
             </h3>
-            <Link
-              href="/thinking"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 8,
-                background: 'var(--emerald-500)',
-                color: 'var(--text-inverse)',
-                padding: '13px 24px',
-                borderRadius: 12,
-                fontWeight: 700,
-                fontSize: 14,
-                textDecoration: 'none',
-                boxShadow: '0 0 0 1px var(--cta-glow-ring), 0 0 24px var(--cta-glow-soft)',
-                marginTop: 16,
-              }}
-            >
-              View the archive <MarketingIcon name="arrowRight" size={14} />
-            </Link>
+            <div style={{ marginTop: 16 }}>
+              <Button variant="primary" href="/thinking">
+                View the archive <MarketingIcon name="arrowRight" size={14} />
+              </Button>
+            </div>
           </div>
         </div>
       </article>

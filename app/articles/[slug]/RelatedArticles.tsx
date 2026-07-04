@@ -7,7 +7,7 @@ import {
   formatArticleDate,
 } from '@/lib/cms/articles';
 import type { ArticleListItem } from '@/lib/cms/types';
-import { MarketingIcon } from '@/components/marketing/Icons';
+import { FeaturedBanner } from '@/components/brand/FeaturedBanner';
 
 type Props = {
   currentSlug: string;
@@ -102,17 +102,8 @@ export async function RelatedArticles({ currentSlug, categorySlug, limit = 3 }: 
                 />
               </div>
             ) : (
-              <div
-                style={{
-                  height: 140,
-                  background: 'var(--off-white)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'var(--navy)',
-                }}
-              >
-                <MarketingIcon name="brain" size={32} />
+              <div style={{ height: 140 }}>
+                <FeaturedBanner markSize={40} label={article.categories[0]?.name} />
               </div>
             )}
             <div

@@ -7,6 +7,8 @@ import type { Guide } from '@/lib/guides/types';
 import { CALCULATOR_CONTENT } from '@/lib/calculator-content';
 import { MarketingIcon } from '@/components/marketing/Icons';
 import { Button } from '@/components/ui/Button';
+import { FeaturedBanner } from '@/components/brand/FeaturedBanner';
+import { ShareButtons } from '@/app/articles/[slug]/ShareButtons';
 import '@/app/articles/[slug]/article-styles.css';
 
 type PageProps = { params: Promise<{ slug: string }> };
@@ -85,8 +87,29 @@ export default async function GuideDetailPage({ params }: PageProps) {
       )}
 
       <article lang="en-US">
-        <header style={{ padding: '64px 24px 0' }}>
-          <div style={{ maxWidth: 760, margin: '0 auto' }}>
+        {/* Standard Money Guy Mutant branded hero — guides have no uploaded
+            featured image, so every guide gets the same on-brand banner. */}
+        <div
+          style={{
+            position: 'relative',
+            width: '100%',
+            height: 'clamp(240px, 40vh, 440px)',
+            background: 'var(--navy)',
+          }}
+        >
+          <FeaturedBanner markSize={124} label={guide.category ?? 'GUIDE'} />
+        </div>
+
+        <header style={{ position: 'relative', marginTop: -96, padding: '0 24px' }}>
+          <div
+            style={{
+              maxWidth: 760,
+              margin: '0 auto',
+              background: 'var(--bg-canvas)',
+              borderRadius: 'var(--radius-md) var(--radius-md) 0 0',
+              padding: '32px 0 0',
+            }}
+          >
             <nav style={{ marginBottom: 20 }}>
               <Link
                 href="/guides"
@@ -194,6 +217,8 @@ export default async function GuideDetailPage({ params }: PageProps) {
             style={{ padding: '40px 0' }}
             dangerouslySetInnerHTML={{ __html: guide.contentHtml }}
           />
+
+          <ShareButtons url={url} title={guide.title} label="SHARE THIS GUIDE" />
 
           {relatedTools.length > 0 && (
             <section

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
+import { Button } from '@/components/ui/Button';
+import { MarketingIcon } from '@/components/marketing/Icons';
 
 export const metadata: Metadata = {
   title: 'Subscription confirmed — Money Guy Mutants Outlook',
@@ -11,8 +12,8 @@ export default function SubscribedPage() {
     <div style={{ padding: '120px 24px', textAlign: 'center' }}>
       <div style={{ maxWidth: 560, margin: '0 auto' }}>
         <div
-          className="eyebrow"
-          style={{ color: 'var(--emerald-500)', marginBottom: 16 }}
+          className="mgm-eyebrow"
+          style={{ color: 'var(--teal-green)', marginBottom: 16 }}
         >
           SUBSCRIBED
         </div>
@@ -38,24 +39,9 @@ export default function SubscribedPage() {
           The next Money Guy Mutants Investment Outlook will land in your inbox at 7am ET. You
           can unsubscribe in one click from any email.
         </p>
-        <Link
-          href="/thinking"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 8,
-            background: 'var(--emerald-500)',
-            color: 'var(--text-inverse)',
-            padding: '12px 22px',
-            borderRadius: 12,
-            fontWeight: 700,
-            fontSize: 14,
-            textDecoration: 'none',
-            boxShadow: '0 0 0 1px var(--cta-glow-ring), 0 0 24px var(--cta-glow-soft)',
-          }}
-        >
-          Read the latest outlook →
-        </Link>
+        <Button variant="primary" href="/thinking">
+          Read the latest outlook <MarketingIcon name="arrowRight" size={14} />
+        </Button>
       </div>
     </div>
   );
