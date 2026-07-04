@@ -3,14 +3,14 @@ import { Resend } from 'resend';
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Email address to receive enterprise lead notifications.
-const SALES_EMAIL = process.env.SALES_NOTIFICATION_EMAIL || 'sales@cortex.vip';
+const SALES_EMAIL = process.env.SALES_NOTIFICATION_EMAIL || 'sales@moneyguymutants.com';
 
-// Sender for outbound notifications. Env-configurable so the domain can flip to
-// @moneyguymutants.com at cutover (once Resend has verified it) without a deploy
-// — see DOMAIN_MIGRATION.md. Fallback keeps the verified @cortex.vip domain so
-// email never breaks pre-cutover.
+// Sender for outbound notifications. Env-configurable via Vercel; defaults now
+// point at the primary @moneyguymutants.com domain (Resend-verified post-cutover
+// — see DOMAIN_MIGRATION.md). The old @cortex.vip default was dropped once the
+// domain moved, so a missing env var no longer sends from an unverified domain.
 const FROM_EMAIL =
-  process.env.ENTERPRISE_FROM_EMAIL || 'Money Guy Mutants <notifications@cortex.vip>';
+  process.env.ENTERPRISE_FROM_EMAIL || 'Money Guy Mutants <notifications@moneyguymutants.com>';
 
 export interface EnterpriseLeadEmailData {
   firstName: string;

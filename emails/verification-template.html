@@ -1,100 +1,76 @@
 <!--
-  Cortex Email Verification Template
+  Money Guy Mutants — Confirm your email
   Copy this HTML into Supabase Dashboard > Authentication > Email Templates > "Confirm signup"
 
-  Supabase Variables:
-  - {{ .ConfirmationURL }} - The verification link
-  - {{ .Email }} - User's email address
-  - {{ .SiteURL }} - Your site URL (https://cortex.vip)
+  Supabase variables used:
+  - {{ .ConfirmationURL }} — the confirmation link
+  - {{ .Email }} — the user’s email address
+  - {{ .SiteURL }} — your site URL (https://moneyguymutants.com)
 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Verify Your Email - Cortex</title>
+  <meta name="color-scheme" content="dark light">
+  <title>Confirm your email — Money Guy Mutants</title>
 </head>
-<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f8fafc;">
-  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f8fafc;">
+<body style="margin:0; padding:0; background-color:#054C7D; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+  <span style="display:none; visibility:hidden; opacity:0; color:transparent; height:0; width:0; overflow:hidden;">Confirm your email to activate your Money Guy Mutants account.</span>
+  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color:#054C7D;">
     <tr>
-      <td style="padding: 40px 20px;">
-        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 520px; margin: 0 auto; background-color: #ffffff; border-radius: 24px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); overflow: hidden;">
+      <td style="padding:32px 20px;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width:560px; margin:0 auto; background-color:#0a4a73; border:1px solid rgba(255,255,255,0.10); border-radius:16px; overflow:hidden;">
 
-          <!-- Header with solid background (gradient fallback for email clients) -->
+          <!-- Header / wordmark -->
           <tr>
-            <td style="background-color: #4f46e5; padding: 40px 40px 32px 40px; text-align: center;">
-              <!-- Brain Icon -->
-              <div style="width: 56px; height: 56px; background-color: #6366f1; border-radius: 16px; margin: 0 auto 20px auto; line-height: 56px; font-size: 28px;">
-                &#129504;
-              </div>
-              <h1 style="margin: 0 0 8px 0; color: #ffffff !important; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;">
-                Welcome to Cortex
-              </h1>
-              <p style="margin: 0; color: #c7d2fe; font-size: 14px; font-weight: 500;">
-                Tools for Long-Term Thinking
-              </p>
+            <td style="padding:20px 32px; border-bottom:1px solid rgba(255,255,255,0.06);">
+              <a href="https://moneyguymutants.com" style="color:#4EC9F5; text-decoration:none; font-weight:700; letter-spacing:0.06em; font-size:13px; text-transform:uppercase;">Money Guy Mutants</a>
             </td>
           </tr>
 
-          <!-- Body content -->
+          <!-- Body -->
           <tr>
-            <td style="padding: 40px;">
-              <p style="margin: 0 0 24px 0; color: #334155; font-size: 16px; line-height: 1.6;">
-                Thanks for signing up! Please verify your email address to get started with your free account.
-              </p>
+            <td style="padding:36px 32px 8px 32px;">
+              <h1 style="margin:0 0 16px 0; color:#F5F5F7; font-size:24px; font-weight:700; letter-spacing:-0.02em; line-height:1.25;">Confirm your email</h1>
+              <p style="margin:0 0 28px 0; color:#C8C8C8; font-size:16px; line-height:1.6;">Welcome to Money Guy Mutants. Confirm your email address to activate your free account and start building your financial trajectory.</p>
 
-              <!-- CTA Button -->
-              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+              <!-- CTA -->
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0">
                 <tr>
-                  <td style="text-align: center; padding: 8px 0 32px 0;">
-                    <a href="{{ .ConfirmationURL }}" style="display: inline-block; background-color: #4f46e5; color: #ffffff; font-size: 16px; font-weight: 700; text-decoration: none; padding: 16px 40px; border-radius: 16px; box-shadow: 0 4px 14px 0 rgba(79, 70, 229, 0.35);">
-                      Verify Email Address
-                    </a>
+                  <td style="border-radius:4px; background-color:#F26531;">
+                    <a href="{{ .ConfirmationURL }}" style="display:inline-block; background-color:#F26531; color:#FFFFFF; font-size:14px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; text-decoration:none; padding:14px 30px; border-radius:4px;">Confirm email</a>
                   </td>
                 </tr>
               </table>
 
-              <!-- Security note -->
-              <p style="margin: 0 0 16px 0; color: #64748b; font-size: 14px; line-height: 1.6;">
-                This link will expire in <strong style="color: #334155;">24 hours</strong>. If you didn't create an account with Cortex, you can safely ignore this email.
-              </p>
+              <p style="margin:28px 0 0 0; color:#8A9BA8; font-size:14px; line-height:1.6;">This link expires in <strong style="color:#C8C8C8;">24 hours</strong>. If you didn’t create a Money Guy Mutants account, you can safely ignore this email.</p>
 
               <!-- Fallback link -->
-              <p style="margin: 24px 0 0 0; padding: 16px; background-color: #f8fafc; border-radius: 12px; color: #64748b; font-size: 13px; line-height: 1.5;">
-                <strong style="color: #334155;">Button not working?</strong><br>
-                Copy and paste this link into your browser:<br>
-                <a href="{{ .ConfirmationURL }}" style="color: #4f46e5; word-break: break-all;">{{ .ConfirmationURL }}</a>
+              <p style="margin:24px 0 8px 0; padding:16px; background-color:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.06); border-radius:10px; color:#8A9BA8; font-size:13px; line-height:1.5;">
+                <strong style="color:#C8C8C8;">Button not working?</strong><br>
+                Paste this link into your browser:<br>
+                <a href="{{ .ConfirmationURL }}" style="color:#4EC9F5; word-break:break-all;">{{ .ConfirmationURL }}</a>
               </p>
             </td>
           </tr>
 
           <!-- Footer -->
           <tr>
-            <td style="padding: 24px 40px; background-color: #f8fafc; border-top: 1px solid #e2e8f0;">
-              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
-                <tr>
-                  <td style="text-align: center;">
-                    <p style="margin: 0 0 8px 0; color: #64748b; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
-                      Cortex Technologies
-                    </p>
-                    <p style="margin: 0; color: #94a3b8; font-size: 12px;">
-                      <a href="https://cortex.vip" style="color: #94a3b8; text-decoration: none;">cortex.vip</a>
-                    </p>
-                  </td>
-                </tr>
-              </table>
+            <td style="padding:20px 32px; border-top:1px solid rgba(255,255,255,0.06); text-align:center;">
+              <p style="margin:0 0 6px 0; color:#5F7280; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em;">Money Guy Mutants</p>
+              <p style="margin:0; color:#5F7280; font-size:12px;">
+                <a href="https://moneyguymutants.com" style="color:#5F7280; text-decoration:none;">moneyguymutants.com</a>
+              </p>
             </td>
           </tr>
 
         </table>
 
-        <!-- Email footer text -->
-        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 520px; margin: 24px auto 0 auto;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width:560px; margin:20px auto 0 auto;">
           <tr>
-            <td style="text-align: center;">
-              <p style="margin: 0; color: #94a3b8; font-size: 11px;">
-                You're receiving this email because you signed up for Cortex using {{ .Email }}
-              </p>
+            <td style="text-align:center;">
+              <p style="margin:0; color:#5F7280; font-size:11px; line-height:1.5;">You’re receiving this because you signed up for Money Guy Mutants with {{ .Email }}.</p>
             </td>
           </tr>
         </table>
