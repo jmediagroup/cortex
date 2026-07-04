@@ -121,15 +121,15 @@ export default function SCorpOptimizer({ isPro = false, onUpgrade, isLoggedIn = 
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Annual Net Profit</label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] font-bold z-10">$</span>
-                  <NumberInput value={profit} onValueChange={(n) => setProfit(n)} min={0} className="mgm-input pl-8 font-bold border border-[var(--border-default)]" />
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] font-bold z-10">$</span>
+                  <NumberInput value={profit} onValueChange={(n) => setProfit(n)} min={0} className="w-full pl-7 pr-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
                 </div>
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Proposed Reasonable Salary<Tooltip content="The IRS requires S-Corp owners to pay themselves a reasonable salary. This is typically 40-60% of net profit." /></label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] font-bold z-10">$</span>
-                  <NumberInput value={salary} onValueChange={(n) => setSalary(n)} min={0} className="mgm-input pl-8 font-bold border border-[var(--border-default)]" />
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] font-bold z-10">$</span>
+                  <NumberInput value={salary} onValueChange={(n) => setSalary(n)} min={0} className="w-full pl-7 pr-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
                 </div>
               </div>
             </div>

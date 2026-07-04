@@ -256,14 +256,14 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
               <div>
                 <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Annual W-2 Salary</label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] font-bold z-10">$</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] font-bold z-10">$</span>
                   <NumberInput
                     name="annualSalary"
                     value={inputs.annualSalary}
                     onValueChange={(n) => setInputs(prev => ({ ...prev, annualSalary: n }))}
                     min={0}
                     step="1000"
-                    className="mgm-input pl-8 font-bold border border-[var(--border-default)]"
+                    className="w-full pl-7 pr-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                   />
                 </div>
               </div>
@@ -276,7 +276,7 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
                     value={inputs.age}
                     onValueChange={(n) => setInputs(prev => ({ ...prev, age: n }))}
                     min={1}
-                    className="mgm-input font-bold border border-[var(--border-default)]"
+                    className="w-full px-3 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                   />
                 </div>
                 <div>
@@ -286,7 +286,7 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
                     value={inputs.estTaxRate}
                     onValueChange={(n) => setInputs(prev => ({ ...prev, estTaxRate: n }))}
                     step="1"
-                    className="mgm-input font-bold border border-[var(--border-default)]"
+                    className="w-full px-3 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                   />
                 </div>
               </div>
@@ -297,7 +297,7 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
                   name="taxStrategy"
                   value={inputs.taxStrategy}
                   onChange={(e) => setInputs(prev => ({ ...prev, taxStrategy: e.target.value }))}
-                  className="mgm-input font-bold border border-[var(--border-default)]"
+                  className="w-full px-3 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                 >
                   <option value="roth">Roth (Employee)</option>
                   <option value="traditional">Traditional (Pre-Tax)</option>
@@ -325,8 +325,8 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
                   onValueChange={(n) => setInputs(prev => ({ ...prev, monthlyEmp401k: n }))}
                   min={0}
                   step="50"
-                  className={`mgm-input font-bold border ${
-                    inputs.monthlyEmp401k > LIMITS.emp401k.monthly ? 'border-[var(--crimson-border)] bg-[var(--crimson-50)]' : 'border-[var(--border-default)]'
+                  className={`w-full px-3 py-2.5 rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)] border ${
+                    inputs.monthlyEmp401k > LIMITS.emp401k.monthly ? 'border-[var(--crimson-border)] bg-[var(--crimson-50)]' : 'border-[var(--border-default)] bg-[var(--bg-section)]'
                   }`}
                 />
               </div>
@@ -342,8 +342,8 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
                   onValueChange={(n) => setInputs(prev => ({ ...prev, monthlyCo401k: n }))}
                   min={0}
                   step="50"
-                  className={`mgm-input font-bold border ${
-                    inputs.monthlyCo401k > LIMITS.co401k.monthly ? 'border-[var(--crimson-border)] bg-[var(--crimson-50)]' : 'border-[var(--border-default)]'
+                  className={`w-full px-3 py-2.5 rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)] border ${
+                    inputs.monthlyCo401k > LIMITS.co401k.monthly ? 'border-[var(--crimson-border)] bg-[var(--crimson-50)]' : 'border-[var(--border-default)] bg-[var(--bg-section)]'
                   }`}
                 />
                 {(inputs.monthlyEmp401k + inputs.monthlyCo401k) * 12 > LIMITS.combined401k.annual && (
@@ -364,8 +364,8 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
                   onValueChange={(n) => setInputs(prev => ({ ...prev, monthlyIra: n }))}
                   min={0}
                   step="50"
-                  className={`mgm-input font-bold border ${
-                    inputs.monthlyIra > LIMITS.ira.monthly ? 'border-[var(--crimson-border)] bg-[var(--crimson-50)]' : 'border-[var(--border-default)]'
+                  className={`w-full px-3 py-2.5 rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)] border ${
+                    inputs.monthlyIra > LIMITS.ira.monthly ? 'border-[var(--crimson-border)] bg-[var(--crimson-50)]' : 'border-[var(--border-default)] bg-[var(--bg-section)]'
                   }`}
                 />
                 {inputs.taxStrategy === 'traditional' && inputs.monthlyIra > 0 && calculations.iraDeductibleFraction < 1 && (
@@ -393,8 +393,8 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
                   onValueChange={(n) => setInputs(prev => ({ ...prev, monthlyHsa: n }))}
                   min={0}
                   step="10"
-                  className={`mgm-input font-bold border ${
-                    inputs.monthlyHsa > LIMITS.hsa.monthly ? 'border-[var(--crimson-border)] bg-[var(--crimson-50)]' : 'border-[var(--border-default)]'
+                  className={`w-full px-3 py-2.5 rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)] border ${
+                    inputs.monthlyHsa > LIMITS.hsa.monthly ? 'border-[var(--crimson-border)] bg-[var(--crimson-50)]' : 'border-[var(--border-default)] bg-[var(--bg-section)]'
                   }`}
                 />
               </div>
@@ -407,7 +407,7 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
                   onValueChange={(n) => setInputs(prev => ({ ...prev, monthlyBrokerage: n }))}
                   min={0}
                   step="100"
-                  className="mgm-input font-bold border border-[var(--border-default)]"
+                  className="w-full px-3 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                 />
               </div>
             </div>
@@ -425,7 +425,7 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
                     value={inputs.growthRate}
                     onValueChange={(n) => setInputs(prev => ({ ...prev, growthRate: n }))}
                     step="0.5"
-                    className="mgm-input font-bold border border-[var(--border-default)]"
+                    className="w-full px-3 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                   />
                 </div>
                 <div>
@@ -435,7 +435,7 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
                     value={inputs.inflationRate}
                     onValueChange={(n) => setInputs(prev => ({ ...prev, inflationRate: n }))}
                     step="0.1"
-                    className="mgm-input font-bold border border-[var(--border-default)]"
+                    className="w-full px-3 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                   />
                 </div>
               </div>
@@ -444,7 +444,7 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
                   name="adjustInflation"
                   value={inputs.adjustInflation ? 'true' : 'false'}
                   onChange={(e) => setInputs(prev => ({ ...prev, adjustInflation: e.target.value === 'true' }))}
-                  className="mgm-input text-sm border border-[var(--border-default)]"
+                  className="w-full px-3 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl text-sm outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                 >
                   <option value="false">Show Future Nominal Dollars</option>
                   <option value="true">Show Adjusted "Today" Dollars</option>
