@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { getAllArticleSlugs } from '@/lib/wordpress/client';
+import { getAllArticleSlugs } from '@/lib/cms/articles';
 import { getAllOutlookSlugs } from '@/lib/outlook/content';
 import { getAllGuideSlugs } from '@/lib/guides/content';
 

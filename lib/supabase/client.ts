@@ -219,6 +219,165 @@ export type Database = {
         };
         Relationships: [];
       };
+      cms_content: {
+        Row: {
+          id: string;
+          type: 'article' | 'guide' | 'daily' | 'weekly';
+          slug: string;
+          title: string;
+          excerpt: string | null;
+          body_markdown: string;
+          status: 'draft' | 'published' | 'scheduled' | 'archived';
+          featured_image_url: string | null;
+          featured_image_alt: string | null;
+          featured_image_width: number | null;
+          featured_image_height: number | null;
+          author_name: string;
+          author_slug: string;
+          author_avatar: string | null;
+          author_bio: string | null;
+          seo_title: string | null;
+          seo_description: string | null;
+          seo_keywords: string | null;
+          seo_og_title: string | null;
+          seo_og_description: string | null;
+          seo_og_image: string | null;
+          seo_canonical: string | null;
+          metadata: Record<string, unknown>;
+          reading_time: number | null;
+          published_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          type?: 'article' | 'guide' | 'daily' | 'weekly';
+          slug: string;
+          title: string;
+          excerpt?: string | null;
+          body_markdown?: string;
+          status?: 'draft' | 'published' | 'scheduled' | 'archived';
+          featured_image_url?: string | null;
+          featured_image_alt?: string | null;
+          featured_image_width?: number | null;
+          featured_image_height?: number | null;
+          author_name?: string;
+          author_slug?: string;
+          author_avatar?: string | null;
+          author_bio?: string | null;
+          seo_title?: string | null;
+          seo_description?: string | null;
+          seo_keywords?: string | null;
+          seo_og_title?: string | null;
+          seo_og_description?: string | null;
+          seo_og_image?: string | null;
+          seo_canonical?: string | null;
+          metadata?: Record<string, unknown>;
+          reading_time?: number | null;
+          published_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          type?: 'article' | 'guide' | 'daily' | 'weekly';
+          slug?: string;
+          title?: string;
+          excerpt?: string | null;
+          body_markdown?: string;
+          status?: 'draft' | 'published' | 'scheduled' | 'archived';
+          featured_image_url?: string | null;
+          featured_image_alt?: string | null;
+          featured_image_width?: number | null;
+          featured_image_height?: number | null;
+          author_name?: string;
+          author_slug?: string;
+          author_avatar?: string | null;
+          author_bio?: string | null;
+          seo_title?: string | null;
+          seo_description?: string | null;
+          seo_keywords?: string | null;
+          seo_og_title?: string | null;
+          seo_og_description?: string | null;
+          seo_og_image?: string | null;
+          seo_canonical?: string | null;
+          metadata?: Record<string, unknown>;
+          reading_time?: number | null;
+          published_at?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      cms_categories: {
+        Row: {
+          id: string;
+          slug: string;
+          name: string;
+          description: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          slug: string;
+          name: string;
+          description?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          slug?: string;
+          name?: string;
+          description?: string | null;
+        };
+        Relationships: [];
+      };
+      cms_tags: {
+        Row: {
+          id: string;
+          slug: string;
+          name: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          slug: string;
+          name: string;
+          created_at?: string;
+        };
+        Update: {
+          slug?: string;
+          name?: string;
+        };
+        Relationships: [];
+      };
+      cms_content_categories: {
+        Row: {
+          content_id: string;
+          category_id: string;
+        };
+        Insert: {
+          content_id: string;
+          category_id: string;
+        };
+        Update: {
+          content_id?: string;
+          category_id?: string;
+        };
+        Relationships: [];
+      };
+      cms_content_tags: {
+        Row: {
+          content_id: string;
+          tag_id: string;
+        };
+        Insert: {
+          content_id: string;
+          tag_id: string;
+        };
+        Update: {
+          content_id?: string;
+          tag_id?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<never, never>;
     Functions: Record<never, never>;

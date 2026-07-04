@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidateTag, revalidatePath } from 'next/cache';
-import { CACHE_TAGS } from '@/lib/wordpress/client';
+import { CACHE_TAGS } from '@/lib/cms/articles';
 
 // Secret token to prevent unauthorized revalidation requests
 const REVALIDATION_SECRET = process.env.REVALIDATION_SECRET;

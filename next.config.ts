@@ -83,6 +83,11 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'cms.cortex.vip',
       },
+      {
+        // Supabase Storage (cms-media bucket) — CMS-hosted images.
+        protocol: 'https',
+        hostname: '**.supabase.co',
+      },
     ],
   },
 };
