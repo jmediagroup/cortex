@@ -1,10 +1,10 @@
 <!--
-  Money Guy Mutants — You’re invited
-  Copy this HTML into Supabase Dashboard > Authentication > Email Templates > "Invite user"
+  Money Guy Mutants — Confirm it’s you
+  Copy this HTML into Supabase Dashboard > Authentication > Email Templates > "Reauthentication"
 
   Supabase variables used:
-  - {{ .ConfirmationURL }} — the invite acceptance link
-  - {{ .Email }} — the invited email address
+  - {{ .Token }} — the reauthentication code the user must enter
+  - {{ .Email }} — the user’s email address
   - {{ .SiteURL }} — your site URL (https://moneyguymutants.com)
 -->
 <!DOCTYPE html>
@@ -13,10 +13,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="dark light">
-  <title>You’re invited — Money Guy Mutants</title>
+  <title>Confirm it’s you — Money Guy Mutants</title>
 </head>
 <body style="margin:0; padding:0; background-color:#F7F3F3; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
-  <span style="display:none; visibility:hidden; opacity:0; color:transparent; height:0; width:0; overflow:hidden;">You’ve been invited to Money Guy Mutants.</span>
+  <span style="display:none; visibility:hidden; opacity:0; color:transparent; height:0; width:0; overflow:hidden;">Your Money Guy Mutants verification code.</span>
   <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color:#F7F3F3;">
     <tr>
       <td style="padding:32px 20px;">
@@ -35,26 +35,20 @@
           <!-- Body -->
           <tr>
             <td style="padding:36px 32px 8px 32px;">
-              <h1 style="margin:0 0 16px 0; color:#F5F5F7; font-size:24px; font-weight:700; letter-spacing:-0.02em; line-height:1.25;">You’re invited to Money Guy Mutants</h1>
-              <p style="margin:0 0 28px 0; color:#C8C8C8; font-size:16px; line-height:1.6;">You’ve been invited to join Money Guy Mutants with the email address <strong style="color:#C8C8C8;">{{ .Email }}</strong>. Set up your account to start using the Money Guy Mutants apps and dashboards.</p>
+              <h1 style="margin:0 0 16px 0; color:#F5F5F7; font-size:24px; font-weight:700; letter-spacing:-0.02em; line-height:1.25;">Confirm it’s you</h1>
+              <p style="margin:0 0 28px 0; color:#C8C8C8; font-size:16px; line-height:1.6;">You’re completing a sensitive action on your Money Guy Mutants account. Enter the verification code below to continue — it was requested for <strong style="color:#C8C8C8;">{{ .Email }}</strong>.</p>
 
-              <!-- CTA -->
-              <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+              <!-- Code -->
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin:4px 0 0 0;">
                 <tr>
-                  <td style="border-radius:4px; background-color:#F26531;">
-                    <a href="{{ .ConfirmationURL }}" style="display:inline-block; background-color:#F26531; color:#FFFFFF; font-size:14px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; text-decoration:none; padding:14px 30px; border-radius:4px;">Accept invitation</a>
+                  <td style="background-color:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:22px 16px; text-align:center;">
+                    <div style="color:#8A9BA8; font-size:12px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; margin:0 0 12px 0;">Verification code</div>
+                    <div style="font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:30px; font-weight:800; letter-spacing:8px; color:#F5F5F7;">{{ .Token }}</div>
                   </td>
                 </tr>
               </table>
 
-              <p style="margin:28px 0 0 0; color:#8A9BA8; font-size:14px; line-height:1.6;">This invitation link expires in <strong style="color:#C8C8C8;">24 hours</strong>. If you weren’t expecting this invitation, you can safely ignore this email.</p>
-
-              <!-- Fallback link -->
-              <p style="margin:24px 0 8px 0; padding:16px; background-color:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.06); border-radius:10px; color:#8A9BA8; font-size:13px; line-height:1.5;">
-                <strong style="color:#C8C8C8;">Button not working?</strong><br>
-                Paste this link into your browser:<br>
-                <a href="{{ .ConfirmationURL }}" style="color:#4EC9F5; word-break:break-all;">{{ .ConfirmationURL }}</a>
-              </p>
+              <p style="margin:24px 0 8px 0; color:#8A9BA8; font-size:14px; line-height:1.6;">If you didn’t request this, you can ignore this email. Someone may have entered your email address by mistake.</p>
             </td>
           </tr>
 
@@ -73,7 +67,7 @@
         <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width:560px; margin:20px auto 0 auto;">
           <tr>
             <td style="text-align:center;">
-              <p style="margin:0; color:#5A6675; font-size:11px; line-height:1.5;">You’re receiving this because someone invited you to join Money Guy Mutants using {{ .Email }}.</p>
+              <p style="margin:0; color:#5A6675; font-size:11px; line-height:1.5;">You’re receiving this because a reauthentication code was requested for {{ .Email }}.</p>
             </td>
           </tr>
         </table>
