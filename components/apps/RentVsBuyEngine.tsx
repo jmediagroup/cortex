@@ -306,14 +306,14 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                   <label className="block text-xs font-bold text-[var(--text-tertiary)] uppercase mb-1">Mortgage Rate %</label>
                   <NumberInput
                     step={0.1} min={0} max={25} value={mortgageRate} onValueChange={setMortgageRate}
-                    className="w-full p-2 border border-[var(--border-default)] rounded-md bg-[var(--bg-section)] focus:outline-indigo-600"
+                    className="w-full p-2 border border-[var(--border-default)] rounded-xl bg-[var(--bg-section)] outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-[var(--text-tertiary)] uppercase mb-1">Down Payment %</label>
                   <NumberInput
                     min={0} max={100} value={downPaymentPct} onValueChange={setDownPaymentPct}
-                    className="w-full p-2 border border-[var(--border-default)] rounded-md bg-[var(--bg-section)] focus:outline-indigo-600"
+                    className="w-full p-2 border border-[var(--border-default)] rounded-xl bg-[var(--bg-section)] outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                   />
                 </div>
               </div>

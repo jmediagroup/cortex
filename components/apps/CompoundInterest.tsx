@@ -206,28 +206,28 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Initial Principal</label>
                 <div className="relative">
-                  <span className="absolute left-4 top-2.5 text-[var(--text-muted)] font-bold">$</span>
-                  <NumberInput value={inputs.principal} onValueChange={setField('principal')} min={0} className="mgm-input pl-8 font-bold" />
+                  <span className="absolute left-3 top-2.5 text-[var(--text-muted)] font-bold">$</span>
+                  <NumberInput value={inputs.principal} onValueChange={setField('principal')} min={0} className="w-full pl-7 pr-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
                 </div>
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Monthly Contribution</label>
                 <div className="relative">
-                  <span className="absolute left-4 top-2.5 text-[var(--text-muted)] font-bold">$</span>
-                  <NumberInput value={inputs.monthlyContribution} onValueChange={setField('monthlyContribution')} min={0} className="mgm-input pl-8 font-bold" />
+                  <span className="absolute left-3 top-2.5 text-[var(--text-muted)] font-bold">$</span>
+                  <NumberInput value={inputs.monthlyContribution} onValueChange={setField('monthlyContribution')} min={0} className="w-full pl-7 pr-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
                 </div>
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Avg. Return Rate (%)</label>
-                <NumberInput value={inputs.annualReturn} onValueChange={setField('annualReturn')} step={0.1} className="mgm-input font-bold" />
+                <NumberInput value={inputs.annualReturn} onValueChange={setField('annualReturn')} step={0.1} className="w-full px-3 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Investment Horizon (Years)</label>
-                <NumberInput value={inputs.years} onValueChange={setField('years')} min={0} max={80} className="mgm-input font-bold" />
+                <NumberInput value={inputs.years} onValueChange={setField('years')} min={0} max={80} className="w-full px-3 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Current Age</label>
-                <NumberInput value={inputs.currentAge} onValueChange={setField('currentAge')} min={0} max={100} className="mgm-input font-bold" />
+                <NumberInput value={inputs.currentAge} onValueChange={setField('currentAge')} min={0} max={100} className="w-full px-3 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">
@@ -237,7 +237,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
                 <select
                   value={inputs.compoundingFrequency}
                   onChange={(e) => setInputs({ ...inputs, compoundingFrequency: Number(e.target.value) })}
-                  className="mgm-input font-bold"
+                  className="w-full px-3 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                 >
                   <option value={1}>Annually</option>
                   <option value={4}>Quarterly</option>
@@ -252,7 +252,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
             <h4 className="font-bold text-sm uppercase tracking-widest mb-4 flex items-center gap-2 text-white">
               <Info size={16} className="text-[var(--sky)]" /> The Rule of 72
             </h4>
-            <p className="text-xs font-medium leading-relaxed text-white/80">
+            <p className="text-xs font-medium leading-relaxed">
               {inputs.annualReturn > 0
                 ? `At ${inputs.annualReturn}% return, your initial principal of $${inputs.principal.toLocaleString()} will double approximately every ${Math.round(72 / inputs.annualReturn)} years.`
                 : `At 0% return, your money never doubles — growth only comes from what you contribute.`}

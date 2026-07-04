@@ -115,7 +115,7 @@ const CategoryGroup = ({
                       handleAllocationChange(cat.id, inputValue);
                     }}
                     onBlur={() => handleAllocationBlur(cat.id, isAnnual)}
-                    className="w-28 pl-5 pr-2 py-1.5 text-right bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg text-sm font-mono focus:ring-2 focus:ring-[var(--emerald-200)] focus:border-[var(--emerald-border)] transition-all outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="w-28 pl-5 pr-2 py-1.5 text-right bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl text-sm font-mono focus:ring-2 focus:ring-[var(--emerald-200)] focus:border-[var(--emerald-border)] transition-all outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                 </div>
               </div>
@@ -509,7 +509,7 @@ const App = () => {
                         : Math.max(0, grossIncome);
                       setGrossIncome(numValue);
                     }}
-                    className="w-full pl-7 pr-4 py-2 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--emerald-500)] outline-none font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="w-full pl-7 pr-4 py-2 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl focus:ring-2 focus:ring-[var(--emerald-500)] outline-none font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                 </div>
               </div>

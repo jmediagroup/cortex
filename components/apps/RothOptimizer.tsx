@@ -316,35 +316,35 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Current Age</label>
-                <NumberInput min={18} max={100} value={inputs.currentAge} onValueChange={setField('currentAge')} className="mgm-input font-bold" />
+                <NumberInput min={18} max={100} value={inputs.currentAge} onValueChange={setField('currentAge')} className="w-full px-3 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Retire Age</label>
-                <NumberInput min={18} max={100} value={inputs.retirementAge} onValueChange={setField('retirementAge')} className="mgm-input font-bold" />
+                <NumberInput min={18} max={100} value={inputs.retirementAge} onValueChange={setField('retirementAge')} className="w-full px-3 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Plan To Age</label>
-                <NumberInput min={60} max={110} value={inputs.endAge} onValueChange={setField('endAge')} className="mgm-input font-bold" />
+                <NumberInput min={60} max={110} value={inputs.endAge} onValueChange={setField('endAge')} className="w-full px-3 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Annual Spend</label>
-                <NumberInput min={0} value={inputs.annualSpending} onValueChange={setField('annualSpending')} className="mgm-input font-bold" />
+                <NumberInput min={0} value={inputs.annualSpending} onValueChange={setField('annualSpending')} className="w-full px-3 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Avg Return %</label>
-                <NumberInput step={0.1} value={inputs.avgReturn} onValueChange={setField('avgReturn')} className="mgm-input font-bold" />
+                <NumberInput step={0.1} value={inputs.avgReturn} onValueChange={setField('avgReturn')} className="w-full px-3 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Inflation %</label>
-                <NumberInput step={0.1} value={inputs.inflationRate} onValueChange={setField('inflationRate')} className="mgm-input font-bold" />
+                <NumberInput step={0.1} value={inputs.inflationRate} onValueChange={setField('inflationRate')} className="w-full px-3 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Annual Soc. Sec.</label>
-                <NumberInput min={0} value={inputs.ssAmount} onValueChange={setField('ssAmount')} className="mgm-input font-bold" />
+                <NumberInput min={0} value={inputs.ssAmount} onValueChange={setField('ssAmount')} className="w-full px-3 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">SS Start Age</label>
-                <NumberInput min={62} max={70} value={inputs.ssStartAge} onValueChange={setField('ssStartAge')} className="mgm-input font-bold" />
+                <NumberInput min={62} max={70} value={inputs.ssStartAge} onValueChange={setField('ssStartAge')} className="w-full px-3 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
               </div>
             </div>
 
@@ -353,7 +353,7 @@ export default function RothOptimizer({ isPro = false, onUpgrade }: RothOptimize
               {['taxable', 'traditional', 'roth'].map(t => (
                 <div key={t} className="flex items-center justify-between mb-2">
                   <span className="text-[10px] font-semibold uppercase text-[var(--text-muted)]">{t}</span>
-                  <NumberInput min={0} value={inputs.balances[t as keyof typeof inputs.balances]} onValueChange={(n) => setInputs(prev => ({ ...prev, balances: { ...prev.balances, [t]: n } }))} className="mgm-input text-right font-bold w-32" />
+                  <NumberInput min={0} value={inputs.balances[t as keyof typeof inputs.balances]} onValueChange={(n) => setInputs(prev => ({ ...prev, balances: { ...prev.balances, [t]: n } }))} className="w-32 px-3 py-2 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-lg text-right font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
                 </div>
               ))}
             </div>

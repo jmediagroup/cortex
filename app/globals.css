@@ -247,16 +247,32 @@ body {
    dark ink onto dark/solid surfaces — e.g. a bare <h3> inside a green
    hero goes black-on-green.
 
-   When a wrapper marks itself as `.text-white` (or carries
-   data-theme="dark"), nested bare headings/paragraphs inherit white
-   from the wrapper rather than resolving to the global element color.
+   When a wrapper marks itself as `.text-white`, `.mgm-band` (the navy
+   duotone band, which sets its own `color`), or carries
+   data-theme="dark", nested bare headings/paragraphs inherit that light
+   color from the wrapper rather than resolving to the global element
+   color. `.mgm-band` is included so any navy band is legible without
+   each call site having to remember to add `text-white`.
 
-   Specificity is tuned to (0,0,1) — same as the bare element selectors
-   it overrides (so source order wins), but lower than any explicit
-   class selector like `.text-emerald-400` on the child (0,1,0). Authored
-   intent on a child always wins; only bare tags inherit.
+   The base element colors live in `@layer base` (below), which sits under
+   `@layer utilities`, so an authored color utility on a child now wins on
+   light surfaces (e.g. `<p class="text-[var(--teal-green)]">` renders teal).
+   This inherit rule stays UNLAYERED, so on dark wrappers it still beats both
+   the base colors and utilities — bare headings/paragraphs inherit the
+   wrapper's light color exactly as before.
    ============================================================ */
-body :where(.text-white, [data-theme="dark"])
+
+/* Base text colors — in @layer base so `@layer utilities` color classes win.
+   The font/size/weight/spacing for these selectors stay unlayered in
+   tokens.css so metrics/layout are unchanged; only `color` moved here. */
+@layer base {
+  .h-hero, .h-display, .balance-hero,
+  h1, .h1, h2, .h2, h3, .h3 { color: var(--text-primary); }
+  p, .body, .body-sm        { color: var(--text-secondary); }
+  .eyebrow                  { color: var(--text-eyebrow-color); }
+}
+
+body :where(.text-white, .mgm-band, [data-theme="dark"])
   :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, th, td, figcaption, blockquote) {
   color: inherit;
 }
