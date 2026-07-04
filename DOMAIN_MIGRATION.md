@@ -4,10 +4,12 @@ Companion to `REBRAND_PLAN.md`. That doc covers the **cosmetic/naming** rebrand;
 this one covers the **operational cutover** of the domain: environment variables,
 webhooks, DNS, email deliverability, and the external service dashboards.
 
-**Scope decision:** everything moves to `moneyguymutants.com` **except the CMS**,
-which stays at `cms.cortex.vip` for now (WordPress host, image origin, GraphQL
-endpoint all unchanged). Keep the `cms.cortex.vip` DNS zone and the
-`next.config.ts` `images.remotePatterns` allowlist entry as-is.
+**Scope decision:** everything moves to `moneyguymutants.com`. Articles are now
+served by the **built-in CMS** (Supabase-backed — see `CMS.md`), so WordPress is
+no longer in the article read path. `cms.cortex.vip` is retained only as (a) a
+one-time import source and (b) the image origin for imported posts whose images
+haven't been re-uploaded yet — keep its DNS zone and the `next.config.ts`
+`images.remotePatterns` allowlist entry until those images are migrated.
 
 **Owner:** drew@jmediagroup.net · **Operating entity:** J Media Group LLC
 (legal strings stay "Cortex Technologies" — do not touch).

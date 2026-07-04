@@ -1,4 +1,4 @@
-import { getArticles } from '@/lib/wordpress/client';
+import { getArticles } from '@/lib/cms/articles';
 
 // /articles/rss.xml — Atom-compatible RSS 2.0 feed of recent articles.
 // Drives freshness signals to Google, Bing, news aggregators, AI search

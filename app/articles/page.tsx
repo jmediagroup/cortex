@@ -12,8 +12,8 @@ import {
   formatArticleDate,
   Category,
   Tag as TagType,
-} from '@/lib/wordpress/client';
-import { ArticleListItem } from '@/lib/wordpress/types';
+} from '@/lib/cms/articles';
+import { ArticleListItem } from '@/lib/cms/types';
 import { MarketingIcon } from '@/components/marketing/Icons';
 
 export const metadata: Metadata = {

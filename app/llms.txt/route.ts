@@ -1,4 +1,4 @@
-import { getArticles, getCategories } from '@/lib/wordpress/client';
+import { getArticles, getCategories } from '@/lib/cms/articles';
 import { getAllOutlooks } from '@/lib/outlook/content';
 
 // /llms.txt — curated, machine-readable index for LLMs and AI search engines.

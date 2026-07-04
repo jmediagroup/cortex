@@ -1,4 +1,4 @@
-import { getAllArticleSlugs, getArticleBySlug } from '@/lib/wordpress/client';
+import { getAllArticleSlugs, getArticleBySlug } from '@/lib/cms/articles';
 import { getAllOutlooksWithBody } from '@/lib/outlook/content';
 
 // /llms-full.txt — every article and market outlook concatenated as plain

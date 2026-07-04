@@ -5,8 +5,8 @@ import {
   getArticlesByCategory,
   getArticles,
   formatArticleDate,
-} from '@/lib/wordpress/client';
-import type { ArticleListItem } from '@/lib/wordpress/types';
+} from '@/lib/cms/articles';
+import type { ArticleListItem } from '@/lib/cms/types';
 import { MarketingIcon } from '@/components/marketing/Icons';
 
 type Props = {

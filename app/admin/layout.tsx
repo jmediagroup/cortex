@@ -9,6 +9,7 @@ import {
   Users,
   BarChart3,
   CreditCard,
+  FileText,
   ArrowLeft,
   Shield,
   Loader2,
@@ -18,6 +19,7 @@ import { isAdmin } from '@/lib/admin';
 
 const adminNav = [
   { label: 'Overview', href: '/admin', icon: LayoutDashboard },
+  { label: 'Content', href: '/admin/content', icon: FileText },
   { label: 'Users', href: '/admin/users', icon: Users },
   { label: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
   { label: 'Subscriptions', href: '/admin/subscriptions', icon: CreditCard },

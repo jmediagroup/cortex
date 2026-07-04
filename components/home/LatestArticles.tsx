@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Clock } from 'lucide-react';
-import { getArticles, formatArticleDate } from '@/lib/wordpress/client';
-import { ArticleListItem } from '@/lib/wordpress/types';
+import { getArticles, formatArticleDate } from '@/lib/cms/articles';
+import { ArticleListItem } from '@/lib/cms/types';
 import { MarketingIcon } from '@/components/marketing/Icons';
 
 /**
