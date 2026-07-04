@@ -247,16 +247,19 @@ body {
    dark ink onto dark/solid surfaces — e.g. a bare <h3> inside a green
    hero goes black-on-green.
 
-   When a wrapper marks itself as `.text-white` (or carries
-   data-theme="dark"), nested bare headings/paragraphs inherit white
-   from the wrapper rather than resolving to the global element color.
+   When a wrapper marks itself as `.text-white`, `.mgm-band` (the navy
+   duotone band, which sets its own `color`), or carries
+   data-theme="dark", nested bare headings/paragraphs inherit that light
+   color from the wrapper rather than resolving to the global element
+   color. `.mgm-band` is included so any navy band is legible without
+   each call site having to remember to add `text-white`.
 
    Specificity is tuned to (0,0,1) — same as the bare element selectors
    it overrides (so source order wins), but lower than any explicit
    class selector like `.text-emerald-400` on the child (0,1,0). Authored
    intent on a child always wins; only bare tags inherit.
    ============================================================ */
-body :where(.text-white, [data-theme="dark"])
+body :where(.text-white, .mgm-band, [data-theme="dark"])
   :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, th, td, figcaption, blockquote) {
   color: inherit;
 }

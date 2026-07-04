@@ -252,7 +252,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
             <h4 className="font-bold text-sm uppercase tracking-widest mb-4 flex items-center gap-2 text-white">
               <Info size={16} className="text-[var(--sky)]" /> The Rule of 72
             </h4>
-            <p className="text-xs font-medium leading-relaxed text-[var(--mist-50)]!">
+            <p className="text-xs font-medium leading-relaxed">
               {inputs.annualReturn > 0
                 ? `At ${inputs.annualReturn}% return, your initial principal of $${inputs.principal.toLocaleString()} will double approximately every ${Math.round(72 / inputs.annualReturn)} years.`
                 : `At 0% return, your money never doubles — growth only comes from what you contribute.`}
