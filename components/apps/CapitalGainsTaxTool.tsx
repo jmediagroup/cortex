@@ -39,16 +39,18 @@ function Money({ value, size = 14, color, bold }: { value: number; size?: number
 
 function Field({ label, value, onChange, hint, prefix = "$", step = 1000 }:
   { label: string; value: number | string; onChange: (v: number | "") => void; hint?: string; prefix?: string; step?: number }) {
+  const [focused, setFocused] = useState(false);
   return (
     <label style={{ display: "block", marginBottom: 10 }}>
       <div style={{ fontSize: 12, color: palette.muted, marginBottom: 4, display: "flex", justifyContent: "space-between" }}>
         <span>{label}</span>{hint && <span style={{ fontSize: 11, opacity: .8 }}>{hint}</span>}
       </div>
-      <div style={{ display: "flex", alignItems: "center", background: palette.paper, border: `1px solid ${palette.hair}`, borderRadius: 8, padding: "0 10px" }}>
+      <div style={{ display: "flex", alignItems: "center", background: "var(--bg-section)", border: `1px solid ${palette.hair}`, borderRadius: 12, padding: "0 12px", boxShadow: focused ? "0 0 0 2px var(--emerald-500)" : "none", transition: "box-shadow .15s ease" }}>
         {prefix && <span style={{ color: palette.muted, fontSize: 13, marginRight: 4 }}>{prefix}</span>}
         <input type="number" value={value} step={step}
+          onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
           onChange={e => onChange(e.target.value === "" ? "" : +e.target.value)}
-          style={{ flex: 1, border: "none", background: "transparent", outline: "none", fontFamily: mono, fontSize: 14, padding: "9px 0", color: palette.ink, fontVariantNumeric: "tabular-nums", width: "100%" }} />
+          style={{ flex: 1, border: "none", background: "transparent", outline: "none", fontFamily: mono, fontSize: 14, padding: "10px 0", color: palette.ink, fontVariantNumeric: "tabular-nums", width: "100%" }} />
       </div>
     </label>
   );

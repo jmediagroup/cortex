@@ -167,13 +167,13 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
               <div>
                 <label className="block text-sm font-bold text-[var(--text-secondary)] mb-2">Annual Gross Income</label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] font-bold">$</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] font-bold">$</span>
                   <NumberInput
                     name="annualIncome"
                     value={inputs.annualIncome}
                     onValueChange={(n) => setInputs(prev => ({ ...prev, annualIncome: n }))}
                     min={0}
-                    className="w-full pl-8 pr-4 py-3 border border-[var(--border-default)] rounded-sm font-bold text-[var(--text-primary)] focus:border-[var(--sky)] focus:ring-2 focus:ring-[var(--sky)] focus:outline-none transition-colors"
+                    className="w-full pl-7 pr-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--emerald-500)] transition-colors"
                   />
                 </div>
                 <p className="text-xs text-[var(--text-tertiary)] mt-1 font-medium">Your total annual income before taxes</p>
@@ -188,7 +188,7 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
                     value={inputs.interestRate}
                     onValueChange={(n) => setInputs(prev => ({ ...prev, interestRate: n }))}
                     step="0.1"
-                    className="w-full pr-8 pl-4 py-3 border border-[var(--border-default)] rounded-sm font-bold text-[var(--text-primary)] focus:border-[var(--sky)] focus:ring-2 focus:ring-[var(--sky)] focus:outline-none transition-colors"
+                    className="w-full pr-8 pl-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--emerald-500)] transition-colors"
                   />
                   <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] font-bold">%</span>
                 </div>
@@ -199,13 +199,13 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
               <div>
                 <label className="block text-sm font-bold text-[var(--text-secondary)] mb-2">Current Monthly Car Payments</label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] font-bold">$</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] font-bold">$</span>
                   <NumberInput
                     name="currentMonthlyPayment"
                     value={inputs.currentMonthlyPayment}
                     onValueChange={(n) => setInputs(prev => ({ ...prev, currentMonthlyPayment: n }))}
                     min={0}
-                    className="w-full pl-8 pr-4 py-3 border border-[var(--border-default)] rounded-sm font-bold text-[var(--text-primary)] focus:border-[var(--sky)] focus:ring-2 focus:ring-[var(--sky)] focus:outline-none transition-colors"
+                    className="w-full pl-7 pr-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--emerald-500)] transition-colors"
                   />
                 </div>
                 <p className="text-xs text-[var(--text-tertiary)] mt-1 font-medium">Any existing car loan payments (optional)</p>
