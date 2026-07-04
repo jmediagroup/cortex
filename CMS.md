@@ -53,6 +53,12 @@ filters `status = 'published'` explicitly.
 
 ## Importing from WordPress (one-time)
 
+> **Status: done.** All 23 published WordPress posts were imported into
+> `cms_content` (10 categories, 48 tags) on 2026-07-04. The exact idempotent SQL
+> that was applied is checked in at
+> `supabase/migrations/import_wordpress_articles.sql` — re-running it (SQL Editor
+> or `npm run import:wordpress`) upserts on `(type, slug)` and is safe.
+
 ```bash
 NEXT_PUBLIC_WORDPRESS_GRAPHQL_URL=https://cms.cortex.vip/graphql \
 NEXT_PUBLIC_SUPABASE_URL=https://<ref>.supabase.co \
