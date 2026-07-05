@@ -112,6 +112,22 @@ export function MarketingFooter() {
           >
             © {new Date().getFullYear()} Cortex Technologies
           </span>
+          <p
+            style={{
+              flexBasis: '100%',
+              order: 3,
+              fontSize: 11,
+              color: 'var(--text-muted)',
+              lineHeight: 1.55,
+              margin: 0,
+            }}
+          >
+            Money Guy Mutants is an independent, fan-made project built by
+            personal-finance enthusiasts. We are not affiliated with, endorsed
+            by, or sponsored by The Money Guy Show or Abound Wealth Management,
+            LLC. &ldquo;The Money Guy Show&rdquo; and related marks are the
+            property of their respective owners.
+          </p>
           <span
             style={{
               fontSize: 12,
