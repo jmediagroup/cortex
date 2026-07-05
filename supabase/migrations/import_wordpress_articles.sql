@@ -18,8 +18,9 @@
 -- has been rebranded Cortex -> Money Guy Mutants. Visible brand text, the
 -- "cortex-blueprint-..." slug (-> "money-guy-mutants-blueprint-..."), and the
 -- in-article tool links (https://cortex.vip/apps/... -> https://moneyguymutants.com/apps/...)
--- are updated here and in the live DB. Legacy CMS image URLs on cms.cortex.vip
--- are intentionally left as-is (the images are still hosted there).
+-- are updated here and in the live DB. The single legacy inline image that was
+-- hosted on cms.cortex.vip has since been removed (2026-07-05), so no article
+-- content references the old WordPress CMS anymore.
 -- ============================================================================
 
 begin;
@@ -820,8 +821,6 @@ When you invest a fixed amount every month—regardless of the price—volatilit
 -   **When markets are low:** Your monthly contribution buys _more_ shares.
 
 This means you are mathematically forced to buy more when things are “cheap.” Over 20 or 30 years, this “mechanical” buying during downturns is what builds the majority of your terminal wealth. Every “red” day is an opportunity to lower your average cost per share.
-
-![Dollar Cost Averaging](https://cms.cortex.vip/wp-content/uploads/2026/01/dca.webp)
 
 ## Reframing the “Drop”
 

@@ -40,7 +40,7 @@ filters `status = 'published'` explicitly.
    `cms-media` bucket.
 2. **Confirm the admin allowlist.** `NEXT_PUBLIC_ADMIN_EMAILS` must include the
    admin address(es), e.g. `drew@jmediagroup.net`.
-3. **(Optional) Import existing WordPress posts** — see below.
+3. The one-time WordPress import is already done — see below for history.
 
 ## Admin usage
 
@@ -51,27 +51,22 @@ filters `status = 'published'` explicitly.
 - Saving a published article revalidates the public site immediately (article
   page, `/articles`, home, sitemap) via `revalidateTag`/`revalidatePath`.
 
-## Importing from WordPress (one-time)
+## WordPress import (historical — retired)
 
-> **Status: done.** All 23 published WordPress posts were imported into
-> `cms_content` (10 categories, 48 tags) on 2026-07-04. The exact idempotent SQL
-> that was applied is checked in at
-> `supabase/migrations/import_wordpress_articles.sql` — re-running it (SQL Editor
-> or `npm run import:wordpress`) upserts on `(type, slug)` and is safe.
+> **Status: done and decommissioned.** All 23 published WordPress posts were
+> imported into `cms_content` (10 categories, 48 tags) on 2026-07-04, then
+> rebranded Cortex → Money Guy Mutants. The exact idempotent SQL that was applied
+> is checked in at `supabase/migrations/import_wordpress_articles.sql` (SQL Editor
+> upsert on `(type, slug)`, safe to re-run) and remains the reproducible record of
+> the seed data.
 
-```bash
-NEXT_PUBLIC_WORDPRESS_GRAPHQL_URL=https://cms.cortex.vip/graphql \
-NEXT_PUBLIC_SUPABASE_URL=https://<ref>.supabase.co \
-SUPABASE_SERVICE_ROLE_KEY=<service-role-key> \
-npm run import:wordpress
-```
-
-The importer (`scripts/import-wordpress.mjs`) pages through published posts,
-converts each post's HTML to Markdown with `turndown`, and upserts into
-`cms_content` (idempotent on `(type, slug)`) plus its categories/tags. Complex
-HTML may not round-trip perfectly — clean up in the editor afterward. Imported
-posts keep referencing WordPress-hosted images (`cms.cortex.vip`) until you
-re-upload them, so that image host stays in `next.config.ts`.
+WordPress is no longer a source of any kind: the live GraphQL importer
+(`scripts/import-wordpress.mjs`), the `npm run import:wordpress` script, the
+`lib/wordpress/` client, and the `cms.cortex.vip` image host have all been
+removed. The single legacy inline image still hosted on `cms.cortex.vip` was
+deleted from its article, so no article content references the old CMS anymore.
+Author avatars still resolve via `secure.gravatar.com` (allowlisted in
+`next.config.ts`). All new media is uploaded to Supabase Storage (`cms-media`).
 
 ## Adding a new content type later (Guides / Thinking)
 

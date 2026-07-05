@@ -6,7 +6,7 @@ import { getAllGuideSlugs } from '@/lib/guides/content';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://moneyguymutants.com';
 
-  // Fetch all article slugs from WordPress
+  // Fetch all article slugs from the CMS
   let articleEntries: MetadataRoute.Sitemap = [];
   try {
     const articles = await getAllArticleSlugs();
