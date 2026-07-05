@@ -39,7 +39,7 @@ function decodeEntities(text: string): string {
     .replace(/&([a-zA-Z]+);/g, (m, name) => HTML_ENTITIES[name] || m);
 }
 
-// Convert WordPress HTML into a readable plain-text representation that
+// Convert rendered article HTML into a readable plain-text representation that
 // preserves heading hierarchy, lists, and paragraph breaks.
 function htmlToPlainText(html: string): string {
   return decodeEntities(

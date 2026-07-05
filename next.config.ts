@@ -76,24 +76,13 @@ const nextConfig: NextConfig = {
   // Enable React strict mode for better development
   reactStrictMode: true,
 
-  // Configure remote image patterns for WordPress
+  // Configure remote image patterns for CMS-hosted media
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: '**.wordpress.com',
-      },
-      {
-        protocol: 'https',
-        hostname: '**.wp.com',
-      },
-      {
+        // Author avatars (imported from the legacy CMS).
         protocol: 'https',
         hostname: 'secure.gravatar.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'cms.cortex.vip',
       },
       {
         // Supabase Storage (cms-media bucket) — CMS-hosted images.
