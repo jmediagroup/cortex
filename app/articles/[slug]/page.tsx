@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     keywords: fallbackKeywords,
     authors: article.author?.name
       ? [{ name: article.author.name }]
-      : [{ name: 'Cortex Technologies' }],
+      : [{ name: 'Money Guy Mutants Technologies' }],
     category: article.categories[0]?.name,
     openGraph: {
       title: seo?.ogTitle || title,
@@ -472,7 +472,7 @@ function generateArticleSchema(article: Article) {
     : {
         '@type': 'Organization',
         '@id': 'https://moneyguymutants.com/#organization',
-        name: 'Cortex Technologies',
+        name: 'Money Guy Mutants Technologies',
       };
 
   return {
@@ -497,7 +497,7 @@ function generateArticleSchema(article: Article) {
     publisher: {
       '@type': 'Organization',
       '@id': 'https://moneyguymutants.com/#organization',
-      name: 'Cortex Technologies',
+      name: 'Money Guy Mutants Technologies',
       logo: { '@type': 'ImageObject', url: 'https://moneyguymutants.com/icon' },
     },
     mainEntityOfPage: {

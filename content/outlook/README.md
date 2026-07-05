@@ -1,4 +1,4 @@
-# Cortex Investment Outlook
+# Money Guy Mutants Investment Outlook
 
 This directory holds Markdown source for the daily and weekly investment
 outlooks published at `/thinking`. Files here are committed to the repo (by

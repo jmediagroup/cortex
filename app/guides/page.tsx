@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'budgeting guide',
     'investing guide',
     'retirement planning guide',
-    'cortex guides',
+    'money guy mutants guides',
   ],
   openGraph: {
     title: 'Money Guy Mutants Guides — Personal Finance, Explained',

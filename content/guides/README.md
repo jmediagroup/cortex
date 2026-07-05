@@ -1,4 +1,4 @@
-# Cortex Guides
+# Money Guy Mutants Guides
 
 This directory holds Markdown source for the cornerstone personal-finance
 guides published at `/guides`. Files here are committed to the repo (by the

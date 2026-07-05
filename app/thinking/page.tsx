@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     'daily market outlook',
     'weekly market outlook',
     'investing newsletter',
-    'cortex research',
+    'money guy mutants research',
   ],
   openGraph: {
     title: 'Money Guy Mutants Thinking — Daily & Weekly Investment Outlook',
