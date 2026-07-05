@@ -384,7 +384,7 @@ function generateArticleSchema(guide: Guide, url: string) {
     publisher: {
       '@type': 'Organization',
       '@id': 'https://moneyguymutants.com/#organization',
-      name: 'Cortex Technologies',
+      name: 'Money Guy Mutants Technologies',
       logo: { '@type': 'ImageObject', url: 'https://moneyguymutants.com/icon' },
     },
     mainEntityOfPage: { '@type': 'WebPage', '@id': url },
