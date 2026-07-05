@@ -58,6 +58,18 @@ const nextConfig: NextConfig = {
     ];
   },
 
+  async redirects() {
+    return [
+      {
+        // Article slug rebranded Cortex -> Money Guy Mutants; preserve the old URL.
+        source: '/articles/cortex-blueprint-your-6-month-roadmap-to-total-financial-clarity',
+        destination:
+          '/articles/money-guy-mutants-blueprint-your-6-month-roadmap-to-total-financial-clarity',
+        permanent: true,
+      },
+    ];
+  },
+
   // Disable x-powered-by header to reduce fingerprinting
   poweredByHeader: false,
 

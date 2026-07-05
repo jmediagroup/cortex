@@ -11,21 +11,28 @@
 -- relinking, so re-running is safe. Run in the Supabase SQL Editor (repo
 -- convention — no CLI migration runner), or via `npm run import:wordpress`.
 --
--- Applied to project "Cortex Finance" (pehteunyustvnxmxjcfk) on 2026-07-04:
+-- Applied to project "Money Guy Mutants" (pehteunyustvnxmxjcfk) on 2026-07-04:
 -- 23 articles, 10 categories, 48 tags, 27 category links, 63 tag links.
+--
+-- Rebrand (2026-07-05): article copy migrated from the original WordPress import
+-- has been rebranded Cortex -> Money Guy Mutants. Visible brand text, the
+-- "cortex-blueprint-..." slug (-> "money-guy-mutants-blueprint-..."), and the
+-- in-article tool links (https://cortex.vip/apps/... -> https://moneyguymutants.com/apps/...)
+-- are updated here and in the live DB. Legacy CMS image URLs on cms.cortex.vip
+-- are intentionally left as-is (the images are still hosted there).
 -- ============================================================================
 
 begin;
 
--- [1] cortex-blueprint-your-6-month-roadmap-to-total-financial-clarity
+-- [1] money-guy-mutants-blueprint-your-6-month-roadmap-to-total-financial-clarity
 insert into public.cms_content
   (type, slug, title, excerpt, body_markdown, status,
    featured_image_url, featured_image_alt, featured_image_width, featured_image_height,
    author_name, author_slug, author_avatar, author_bio, metadata, published_at)
 values
-  ('article', 'cortex-blueprint-your-6-month-roadmap-to-total-financial-clarity', 'Cortex Blueprint: Your 6-Month Roadmap to Total Financial Clarity', 'Over the last few months, we’ve explored the mechanics of wealth: from the psychological momentum of debt paydown to the tax-efficient structures of S-Corps and the relentless power of compounding. But knowledge without a system is just noise. To achieve true financial freedom in 2026, you need a Blueprint. This final post is your step-by-step […]', 'Over the last few months, we’ve explored the mechanics of wealth: from the psychological momentum of debt paydown to the tax-efficient structures of S-Corps and the relentless power of compounding. But knowledge without a system is just noise. To achieve true financial freedom in 2026, you need a **Blueprint.**
+  ('article', 'money-guy-mutants-blueprint-your-6-month-roadmap-to-total-financial-clarity', 'Money Guy Mutants Blueprint: Your 6-Month Roadmap to Total Financial Clarity', 'Over the last few months, we’ve explored the mechanics of wealth: from the psychological momentum of debt paydown to the tax-efficient structures of S-Corps and the relentless power of compounding. But knowledge without a system is just noise. To achieve true financial freedom in 2026, you need a Blueprint. This final post is your step-by-step […]', 'Over the last few months, we’ve explored the mechanics of wealth: from the psychological momentum of debt paydown to the tax-efficient structures of S-Corps and the relentless power of compounding. But knowledge without a system is just noise. To achieve true financial freedom in 2026, you need a **Blueprint.**
 
-This final post is your step-by-step roadmap to integrating the Cortex ecosystem into your daily life. Here is how to move from “financial stress” to “total clarity” in exactly six months.
+This final post is your step-by-step roadmap to integrating the Money Guy Mutants ecosystem into your daily life. Here is how to move from “financial stress” to “total clarity” in exactly six months.
 
 * * *
 
@@ -35,7 +42,7 @@ You cannot improve what you do not measure. Your first 30 days are about establi
 
 -   **Week 1:** Audit your assets and liabilities. Establish your “North Star” number.
 -   **Week 2:** Implement the **Anti-Budget**. Identify your “Tension Metrics” and give yourself permission to spend guilt-free on what matters.
--   **Featured Tool:** [Net Worth Engine](https://cortex.vip/apps/net-worth)
+-   **Featured Tool:** [Net Worth Engine](https://moneyguymutants.com/apps/net-worth)
 
 ## Month 2: The Efficiency Scrub
 
@@ -43,7 +50,7 @@ Month 2 is about plugging the leaks. We’re looking for “lazy cash” and uno
 
 -   **The Scrub:** Perform your 48-hour Financial Hygiene audit. Cancel zombie subscriptions and move cash to high-yield accounts.
 -   **The Pivot:** Use the **Hybrid Debt Strategy** to knock out a small win and then attack high-interest rates.
--   **Featured Tool:** [Debt Paydown Strategy Optimizer](https://cortex.vip/apps/debt-paydown)
+-   **Featured Tool:** [Debt Paydown Strategy Optimizer](https://moneyguymutants.com/apps/debt-paydown)
 
 ## Month 3: The Big Ticket Optimization
 
@@ -51,7 +58,7 @@ Now that the small leaks are plugged, we address the “Big Three”: Housing, T
 
 -   **The Car Check:** Apply the **20/3/8 Rule** to your current vehicle. If you’re “car poor,” make a plan to downsize.
 -   **The Reality Engine:** Run the numbers on your home. Is it an asset or an anchor? Explore **Geographic Arbitrage** to see if a change of zip code could save you $1M.
--   **Featured Tool:** [Rent vs Buy Reality Engine](https://cortex.vip/apps/rent-vs-buy)
+-   **Featured Tool:** [Rent vs Buy Reality Engine](https://moneyguymutants.com/apps/rent-vs-buy)
 
 ## Month 4: The Wealth Accumulation Engine
 
@@ -59,7 +66,7 @@ With your expenses optimized and your debt shrinking, it’s time to turn on the
 
 -   **Core Investing:** Choose your core index funds (VOO vs. QQQM) and automate your contributions.
 -   **The Redirect:** Take the money saved from your efficiency scrub and the “odds” you used to play, and funnel it into the market.
--   **Featured Tool:** [Index Fund Growth Visualizer](https://cortex.vip/apps/index-fund-visualizer)
+-   **Featured Tool:** [Index Fund Growth Visualizer](https://moneyguymutants.com/apps/index-fund-visualizer)
 
 ## Month 5: The Entrepreneur’s Edge (Optional)
 
@@ -67,7 +74,7 @@ If you own a business or freelance, Month 5 is your tax-savings masterclass. If 
 
 -   **S-Corp Check:** Find your “Reasonable Salary” and calculate your self-employment tax savings.
 -   **Retirement Maxing:** Split your contributions between Employer and Employee portions to shield the maximum amount of income from the IRS.
--   **Featured Tool:** [S-Corp Tax Optimizer](https://cortex.vip/apps/s-corp-optimizer)
+-   **Featured Tool:** [S-Corp Tax Optimizer](https://moneyguymutants.com/apps/s-corp-optimizer)
 
 ## Month 6: The Exit Strategy
 
@@ -75,7 +82,7 @@ In the final month, we look at the finish line. Whether retirement is 5 years or
 
 -   **Stress Testing:** Run your portfolio through **Sequence of Returns** simulations.
 -   **RMD Planning:** Map out your future tax obligations to ensure the IRS doesn’t eat your hard-earned 401(k).
--   **Featured Tool:** [Retirement Strategy Engine](https://cortex.vip/apps/retirement-strategy)
+-   **Featured Tool:** [Retirement Strategy Engine](https://moneyguymutants.com/apps/retirement-strategy)
 
 * * *
 
@@ -83,10 +90,10 @@ In the final month, we look at the finish line. Whether retirement is 5 years or
 
 The 6-month blueprint only works if you take the first step. Financial clarity isn’t a destination; it’s a system of hygiene and optimization that builds over time.
 
-Start today by identifying your baseline. Use the **Cortex Net Worth Engine** to visualize your current trajectory and see exactly where the next six months can take you.
+Start today by identifying your baseline. Use the **Money Guy Mutants Net Worth Engine** to visualize your current trajectory and see exactly where the next six months can take you.
 
-[Launch the Net Worth Engine →](https://cortex.vip/apps/net-worth)', 'published',
-   NULL, 'Cortex Blueprint: Your 6-Month Roadmap to Total Financial Clarity', NULL, NULL,
+[Launch the Net Worth Engine →](https://moneyguymutants.com/apps/net-worth)', 'published',
+   NULL, 'Money Guy Mutants Blueprint: Your 6-Month Roadmap to Total Financial Clarity', NULL, NULL,
    'drew@jmediagroup.net', 'drewjmediagroup-net', 'https://secure.gravatar.com/avatar/e590050db46a6ecb3cdd59edbbbeea3966f792b952709ab2ee9808fcd0f71e98?s=96&d=mm&r=g', NULL, '{}'::jsonb, '2026-03-26T11:00:21.000Z'::timestamptz)
 on conflict (type, slug) do update set
   title = excluded.title,
@@ -104,18 +111,18 @@ on conflict (type, slug) do update set
   published_at = excluded.published_at,
   updated_at = now();
 delete from public.cms_content_categories cc using public.cms_content c
-  where cc.content_id = c.id and c.type = 'article' and c.slug = 'cortex-blueprint-your-6-month-roadmap-to-total-financial-clarity';
+  where cc.content_id = c.id and c.type = 'article' and c.slug = 'money-guy-mutants-blueprint-your-6-month-roadmap-to-total-financial-clarity';
 delete from public.cms_content_tags ct using public.cms_content c
-  where ct.content_id = c.id and c.type = 'article' and c.slug = 'cortex-blueprint-your-6-month-roadmap-to-total-financial-clarity';
+  where ct.content_id = c.id and c.type = 'article' and c.slug = 'money-guy-mutants-blueprint-your-6-month-roadmap-to-total-financial-clarity';
 insert into public.cms_categories (slug, name) values ('personal-finance', 'Personal Finance') on conflict (slug) do nothing;
 insert into public.cms_content_categories (content_id, category_id)
   select c.id, cat.id from public.cms_content c, public.cms_categories cat
-  where c.type = 'article' and c.slug = 'cortex-blueprint-your-6-month-roadmap-to-total-financial-clarity' and cat.slug = 'personal-finance'
+  where c.type = 'article' and c.slug = 'money-guy-mutants-blueprint-your-6-month-roadmap-to-total-financial-clarity' and cat.slug = 'personal-finance'
   on conflict do nothing;
 insert into public.cms_tags (slug, name) values ('financial-planning', 'financial planning') on conflict (slug) do nothing;
 insert into public.cms_content_tags (content_id, tag_id)
   select c.id, t.id from public.cms_content c, public.cms_tags t
-  where c.type = 'article' and c.slug = 'cortex-blueprint-your-6-month-roadmap-to-total-financial-clarity' and t.slug = 'financial-planning'
+  where c.type = 'article' and c.slug = 'money-guy-mutants-blueprint-your-6-month-roadmap-to-total-financial-clarity' and t.slug = 'financial-planning'
   on conflict do nothing;
 
 -- [2] the-sequence-of-returns-risk-the-danger-of-a-downturn-at-year-one
@@ -159,11 +166,11 @@ You cannot control what the market does on the day you retire. But you _can_ con
 
 ### Stress-Test Your Sequence Risk
 
-Are you prepared for a “Year One” downturn? The **Cortex Retirement Strategy Engine** allows you to simulate your withdrawal plan against historical bear markets and “bad luck” sequences.
+Are you prepared for a “Year One” downturn? The **Money Guy Mutants Retirement Strategy Engine** allows you to simulate your withdrawal plan against historical bear markets and “bad luck” sequences.
 
 See exactly how a market drop would impact your longevity and test out cash buffers and guardrails to see what works for your specific net worth. Don’t leave your retirement to chance.
 
-[Launch the Retirement Engine →](https://cortex.vip/apps/retirement-strategy)', 'published',
+[Launch the Retirement Engine →](https://moneyguymutants.com/apps/retirement-strategy)', 'published',
    NULL, 'The Sequence of Returns Risk: The Danger of a Downturn at Year One', NULL, NULL,
    'drew@jmediagroup.net', 'drewjmediagroup-net', 'https://secure.gravatar.com/avatar/e590050db46a6ecb3cdd59edbbbeea3966f792b952709ab2ee9808fcd0f71e98?s=96&d=mm&r=g', NULL, '{}'::jsonb, '2026-03-24T11:00:07.000Z'::timestamptz)
 on conflict (type, slug) do update set
@@ -247,11 +254,11 @@ Because the money in the QLAC is removed from your RMD calculation, you instantl
 
 ### Calculate Your RMD Trajectory
 
-Don’t let your RMDs catch you by surprise. The **Cortex Retirement Strategy Engine** allows you to simulate your mandatory withdrawals based on your current age and account balances.
+Don’t let your RMDs catch you by surprise. The **Money Guy Mutants Retirement Strategy Engine** allows you to simulate your mandatory withdrawals based on your current age and account balances.
 
 We’ll show you exactly how RMDs will impact your taxes and help you test strategies like QCDs and Roth conversions to see which path preserves the most of your hard-earned wealth. Plan your exit with precision.
 
-[Launch the Retirement Engine →](https://cortex.vip/apps/retirement-strategy)', 'published',
+[Launch the Retirement Engine →](https://moneyguymutants.com/apps/retirement-strategy)', 'published',
    NULL, 'RMDs and You: How to Stop the IRS from Eating Your 401(k)', NULL, NULL,
    'drew@jmediagroup.net', 'drewjmediagroup-net', 'https://secure.gravatar.com/avatar/e590050db46a6ecb3cdd59edbbbeea3966f792b952709ab2ee9808fcd0f71e98?s=96&d=mm&r=g', NULL, '{}'::jsonb, '2026-03-19T11:00:22.000Z'::timestamptz)
 on conflict (type, slug) do update set
@@ -332,7 +339,7 @@ insert into public.cms_content
 values
   ('article', 'the-4-rule-is-dead-navigating-retirement-withdrawals-in-a-new-era', 'The 4% Rule is Dead: Navigating Retirement Withdrawals in a New Era', 'For decades, the “4% Rule” was the gold standard of retirement planning. Developed in the 1990s by Bill Bengen, it suggested that if you withdrew 4% of your portfolio in your first year of retirement and adjusted for inflation thereafter, your money would almost certainly last 30 years. It was simple, elegant, and—in the economic […]', 'For decades, the “4% Rule” was the gold standard of retirement planning. Developed in the 1990s by Bill Bengen, it suggested that if you withdrew 4% of your portfolio in your first year of retirement and adjusted for inflation thereafter, your money would almost certainly last 30 years. It was simple, elegant, and—in the economic landscape of 2026—potentially dangerous.
 
-At Cortex, we believe that a static rule cannot navigate a dynamic world. Between fluctuating inflation, extended lifespans, and current market valuations, the “set it and forget it” approach to withdrawals is a relic of the past. It’s time to move toward a **Flexible Retirement Engine.**
+At Money Guy Mutants, we believe that a static rule cannot navigate a dynamic world. Between fluctuating inflation, extended lifespans, and current market valuations, the “set it and forget it” approach to withdrawals is a relic of the past. It’s time to move toward a **Flexible Retirement Engine.**
 
 * * *
 
@@ -364,11 +371,11 @@ By planning for these phases, you can often afford a **higher** initial withdraw
 
 ### Stress-Test Your Retirement Plan
 
-Don’t rely on a 30-year-old rule of thumb to fund your future. The **Cortex Retirement Strategy Engine** provides a comprehensive simulation of your withdrawals, including RMD calculations, sequence risk testing, and dynamic spending adjustments.
+Don’t rely on a 30-year-old rule of thumb to fund your future. The **Money Guy Mutants Retirement Strategy Engine** provides a comprehensive simulation of your withdrawals, including RMD calculations, sequence risk testing, and dynamic spending adjustments.
 
 See exactly how your portfolio holds up against the volatility of 2026 and beyond. Get the clarity you need to retire with confidence, not just hope.
 
-[Launch the Retirement Engine →](https://cortex.vip/apps/retirement-strategy)', 'published',
+[Launch the Retirement Engine →](https://moneyguymutants.com/apps/retirement-strategy)', 'published',
    NULL, 'The 4% Rule is Dead: Navigating Retirement Withdrawals in a New Era', NULL, NULL,
    'drew@jmediagroup.net', 'drewjmediagroup-net', 'https://secure.gravatar.com/avatar/e590050db46a6ecb3cdd59edbbbeea3966f792b952709ab2ee9808fcd0f71e98?s=96&d=mm&r=g', NULL, '{}'::jsonb, '2026-03-17T11:00:26.000Z'::timestamptz)
 on conflict (type, slug) do update set
@@ -458,11 +465,11 @@ The best audit defense is **contemporaneous documentation**. Don’t wait for a 
 
 ### Find Your Defensible “Sweet Spot”
 
-You don’t have to guess at your compliance. The **Cortex S-Corp Tax Optimizer** helps you find the balance between maximum tax savings and IRS-defensible compensation.
+You don’t have to guess at your compliance. The **Money Guy Mutants S-Corp Tax Optimizer** helps you find the balance between maximum tax savings and IRS-defensible compensation.
 
 We’ll help you analyze your profit and roles to identify a salary range that satisfies the “Reasonable” test while keeping your trajectory on track. Secure your savings today.
 
-[Launch the S-Corp Optimizer →](https://cortex.vip/apps/s-corp-optimizer)', 'published',
+[Launch the S-Corp Optimizer →](https://moneyguymutants.com/apps/s-corp-optimizer)', 'published',
    NULL, 'The Reasonable Salary Trap: How Not to Get Audited by the IRS', NULL, NULL,
    'drew@jmediagroup.net', 'drewjmediagroup-net', 'https://secure.gravatar.com/avatar/e590050db46a6ecb3cdd59edbbbeea3966f792b952709ab2ee9808fcd0f71e98?s=96&d=mm&r=g', NULL, '{}'::jsonb, '2026-03-12T11:00:49.000Z'::timestamptz)
 on conflict (type, slug) do update set
@@ -546,11 +553,11 @@ If you are nearing the finish line, 2026 offers unique opportunities. The “Sup
 
 ### Optimize Your Retirement Split
 
-Don’t let your retirement strategy be an afterthought. The **Cortex S-Corp Investment Optimizer** helps you find the “Goldilocks” balance between employee deferrals and company profit-sharing.
+Don’t let your retirement strategy be an afterthought. The **Money Guy Mutants S-Corp Investment Optimizer** helps you find the “Goldilocks” balance between employee deferrals and company profit-sharing.
 
 We’ll calculate exactly how much you can contribute based on your 2026 salary and show you the long-term impact of choosing Roth vs. Traditional. Maximize your savings and protect your legacy.
 
-[Launch the Investment Optimizer →](https://cortex.vip/apps/s-corp-investment)', 'published',
+[Launch the Investment Optimizer →](https://moneyguymutants.com/apps/s-corp-investment)', 'published',
    NULL, 'Employer or Employee? Maximize Your Retirement as a Solo-Preneur', NULL, NULL,
    'drew@jmediagroup.net', 'drewjmediagroup-net', 'https://secure.gravatar.com/avatar/e590050db46a6ecb3cdd59edbbbeea3966f792b952709ab2ee9808fcd0f71e98?s=96&d=mm&r=g', NULL, '{}'::jsonb, '2026-03-10T11:00:04.000Z'::timestamptz)
 on conflict (type, slug) do update set
@@ -611,7 +618,7 @@ insert into public.cms_content
 values
   ('article', 'the-s-corp-secret-how-to-save-5k-in-self-employment-taxes', 'The S-Corp Secret: How to Save $5k+ in Self-Employment Taxes', 'If you are a freelancer, consultant, or small business owner operating as a standard Sole Proprietorship or a single-member LLC, you might be overpaying the IRS by thousands of dollars every year. The culprit? Self-employment tax. In 2026, the tax burden on independent earners remains one of the largest obstacles to business growth. But there […]', 'If you are a freelancer, consultant, or small business owner operating as a standard Sole Proprietorship or a single-member LLC, you might be overpaying the IRS by thousands of dollars every year. The culprit? **Self-employment tax.**
 
-In 2026, the tax burden on independent earners remains one of the largest obstacles to business growth. But there is a legal, strategic path used by savvy entrepreneurs to lower that burden: the **S-Corp Election.** At Cortex, we want to help you keep more of what you earn so you can reinvest it in your trajectory.
+In 2026, the tax burden on independent earners remains one of the largest obstacles to business growth. But there is a legal, strategic path used by savvy entrepreneurs to lower that burden: the **S-Corp Election.** At Money Guy Mutants, we want to help you keep more of what you earn so you can reinvest it in your trajectory.
 
 * * *
 
@@ -640,11 +647,11 @@ When done correctly, an S-Corp election is like giving yourself a $5,000 to $10,
 
 ### Calculate Your S-Corp Savings
 
-Is it time to make the switch? Don’t leave your tax strategy to guesswork. The **Cortex S-Corp Tax Optimizer** helps you calculate your potential self-employment tax savings based on your business profit.
+Is it time to make the switch? Don’t leave your tax strategy to guesswork. The **Money Guy Mutants S-Corp Tax Optimizer** helps you calculate your potential self-employment tax savings based on your business profit.
 
 Find your ideal salary/distribution split and see exactly how much you could be saving every year. Stop overpaying and start optimizing.
 
-[Launch the S-Corp Optimizer →](https://cortex.vip/apps/s-corp-optimizer)', 'published',
+[Launch the S-Corp Optimizer →](https://moneyguymutants.com/apps/s-corp-optimizer)', 'published',
    NULL, 'The S-Corp Secret: How to Save $5k+ in Self-Employment Taxes', NULL, NULL,
    'drew@jmediagroup.net', 'drewjmediagroup-net', 'https://secure.gravatar.com/avatar/e590050db46a6ecb3cdd59edbbbeea3966f792b952709ab2ee9808fcd0f71e98?s=96&d=mm&r=g', NULL, '{}'::jsonb, '2026-03-05T11:00:12.000Z'::timestamptz)
 on conflict (type, slug) do update set
@@ -710,7 +717,7 @@ insert into public.cms_content
 values
   ('article', 'inflation-proofing-your-future-the-case-for-consistent-contributions', 'Inflation-Proofing Your Future: The Case for Consistent Contributions', 'Inflation is often called the “silent thief” of personal finance. Unlike a market crash, which is loud and visible on every news headline, inflation works quietly in the background, eroding the purchasing power of every dollar you’ve worked hard to save. In early 2026, while we see inflation rates finally cooling toward the 2.4% mark, […]', 'Inflation is often called the “silent thief” of personal finance. Unlike a market crash, which is loud and visible on every news headline, inflation works quietly in the background, eroding the purchasing power of every dollar you’ve worked hard to save. In early 2026, while we see inflation rates finally cooling toward the 2.4% mark, the reality remains: a dollar today simply does not buy what a dollar bought five years ago.
 
-At Cortex, we believe the best defense against a devaluing currency isn’t “timing” the market or hoarding cash—it’s the relentless execution of **Consistent Contributions.**
+At Money Guy Mutants, we believe the best defense against a devaluing currency isn’t “timing” the market or hoarding cash—it’s the relentless execution of **Consistent Contributions.**
 
 * * *
 
@@ -737,11 +744,11 @@ Don’t let the “noise” of the 2026 economy scare you into standing still. T
 
 ### See the Power of Consistency
 
-Is your current savings plan enough to outpace the “silent thief”? The **Cortex Compound Interest Calculator** helps you visualize your growth trajectory against different contribution schedules.
+Is your current savings plan enough to outpace the “silent thief”? The **Money Guy Mutants Compound Interest Calculator** helps you visualize your growth trajectory against different contribution schedules.
 
 Plug in your monthly contribution and see exactly how much wealth you can build, even in a fluctuating economy. Take control of your future purchasing power today.
 
-[Launch the Compound Interest Calculator →](https://cortex.vip/apps/compound-interest)', 'published',
+[Launch the Compound Interest Calculator →](https://moneyguymutants.com/apps/compound-interest)', 'published',
    NULL, 'Inflation-Proofing Your Future: The Case for Consistent Contributions', NULL, NULL,
    'drew@jmediagroup.net', 'drewjmediagroup-net', 'https://secure.gravatar.com/avatar/e590050db46a6ecb3cdd59edbbbeea3966f792b952709ab2ee9808fcd0f71e98?s=96&d=mm&r=g', NULL, '{}'::jsonb, '2026-03-03T11:00:01.000Z'::timestamptz)
 on conflict (type, slug) do update set
@@ -795,7 +802,7 @@ insert into public.cms_content
    featured_image_url, featured_image_alt, featured_image_width, featured_image_height,
    author_name, author_slug, author_avatar, author_bio, metadata, published_at)
 values
-  ('article', 'the-volatility-myth-why-seeing-red-is-actually-good-for-your-growth', 'The Volatility Myth: Why Seeing Red is Actually Good for Your Growth', 'When the stock market turns red and the headlines start screaming about a “correction,” the natural human instinct is to protect what we have. Our brains are hardwired to view a drop in account value as a threat. But for the long-term builder, this is the Volatility Myth: the idea that a falling market is […]', 'When the stock market turns red and the headlines start screaming about a “correction,” the natural human instinct is to protect what we have. Our brains are hardwired to view a drop in account value as a threat. But for the long-term builder, this is the **Volatility Myth**: the idea that a falling market is a sign of failure.At Cortex, we want to help you reframe your relationship with market movement. If you are in the “accumulation phase” of your life—meaning you are still adding money to your accounts—market volatility isn’t your enemy. It’s your greatest ally.
+  ('article', 'the-volatility-myth-why-seeing-red-is-actually-good-for-your-growth', 'The Volatility Myth: Why Seeing Red is Actually Good for Your Growth', 'When the stock market turns red and the headlines start screaming about a “correction,” the natural human instinct is to protect what we have. Our brains are hardwired to view a drop in account value as a threat. But for the long-term builder, this is the Volatility Myth: the idea that a falling market is […]', 'When the stock market turns red and the headlines start screaming about a “correction,” the natural human instinct is to protect what we have. Our brains are hardwired to view a drop in account value as a threat. But for the long-term builder, this is the **Volatility Myth**: the idea that a falling market is a sign of failure.At Money Guy Mutants, we want to help you reframe your relationship with market movement. If you are in the “accumulation phase” of your life—meaning you are still adding money to your accounts—market volatility isn’t your enemy. It’s your greatest ally.
 
 * * *
 
@@ -826,11 +833,11 @@ The only time volatility is truly dangerous is when you are forced to sell. As l
 
 ### Don’t Just Feel the Market—Simulate It
 
-It’s easy to stay calm in a bull market, but how will you react when the index drops 20%? The **Cortex Index Fund Growth Visualizer** allows you to simulate historical volatility for popular ETFs like VOO and QQQM.
+It’s easy to stay calm in a bull market, but how will you react when the index drops 20%? The **Money Guy Mutants Index Fund Growth Visualizer** allows you to simulate historical volatility for popular ETFs like VOO and QQQM.
 
 See exactly how much “red” occurred in the past and how it set the stage for long-term wealth. Build a portfolio that can weather any storm.
 
-[Launch the Growth Visualizer →](https://cortex.vip/apps/index-fund-visualizer)', 'published',
+[Launch the Growth Visualizer →](https://moneyguymutants.com/apps/index-fund-visualizer)', 'published',
    NULL, 'The Volatility Myth: Why Seeing Red is Actually Good for Your Growth', NULL, NULL,
    'drew@jmediagroup.net', 'drewjmediagroup-net', 'https://secure.gravatar.com/avatar/e590050db46a6ecb3cdd59edbbbeea3966f792b952709ab2ee9808fcd0f71e98?s=96&d=mm&r=g', NULL, '{}'::jsonb, '2026-02-26T11:00:04.000Z'::timestamptz)
 on conflict (type, slug) do update set
@@ -888,7 +895,7 @@ QQQM tracks the NASDAQ-100, which consists of the 100 largest non-financial comp
 
 A common mistake investors make in 2026 is buying both VOO and QQQM in equal parts, thinking they are diversifying. In reality, there is significant **overlap**. Because the largest tech companies (Apple, Microsoft, Nvidia) are in both indices, you might inadvertently be creating a portfolio that is 40% or 50% tech-heavy.
 
-At Cortex, we recommend visualizing your “Core” first. For many, that is a broad fund like VOO. You can then use QQQM as a “Satellite” holding to tilt your portfolio toward growth if your risk tolerance allows for the extra volatility.
+At Money Guy Mutants, we recommend visualizing your “Core” first. For many, that is a broad fund like VOO. You can then use QQQM as a “Satellite” holding to tilt your portfolio toward growth if your risk tolerance allows for the extra volatility.
 
 ## Visualizing Historical Reality
 
@@ -898,11 +905,11 @@ Investing isn’t just about picking a ticker; it’s about understanding **Hist
 
 ### Simulate Your Portfolio Growth
 
-Don’t guess which index fund is right for your timeline. The **Cortex Index Fund Growth Visualizer** allows you to simulate historical returns and volatility for VOO, VTI, QQQM, and more.
+Don’t guess which index fund is right for your timeline. The **Money Guy Mutants Index Fund Growth Visualizer** allows you to simulate historical returns and volatility for VOO, VTI, QQQM, and more.
 
 Visualize your contribution schedule against real market data to see which fund best aligns with your risk tolerance and goals. Build your core with confidence.
 
-[Launch the Growth Visualizer →](https://cortex.vip/apps/index-fund-visualizer)', 'published',
+[Launch the Growth Visualizer →](https://moneyguymutants.com/apps/index-fund-visualizer)', 'published',
    NULL, 'VOO vs. QQQM: Which Index Fund Deserves a Spot in Your Core?', NULL, NULL,
    'drew@jmediagroup.net', 'drewjmediagroup-net', 'https://secure.gravatar.com/avatar/e590050db46a6ecb3cdd59edbbbeea3966f792b952709ab2ee9808fcd0f71e98?s=96&d=mm&r=g', NULL, '{}'::jsonb, '2026-02-24T11:00:24.000Z'::timestamptz)
 on conflict (type, slug) do update set
@@ -961,9 +968,9 @@ insert into public.cms_content
    featured_image_url, featured_image_alt, featured_image_width, featured_image_height,
    author_name, author_slug, author_avatar, author_bio, metadata, published_at)
 values
-  ('article', 'the-eighth-wonder-visualizing-the-quiet-power-of-compounding', 'The Eighth Wonder: Visualizing the Quiet Power of Compounding', 'Albert Einstein reportedly called compound interest the “eighth wonder of the world,” adding, “He who understands it, earns it… he who doesn’t, pays it.” In 2026, with the speed of information and the pressure for “instant” results, the quiet, relentless power of compounding is more overlooked than ever. At Cortex, we don’t believe in get-rich-quick […]', 'Albert Einstein reportedly called compound interest the “eighth wonder of the world,” adding, “He who understands it, earns it… he who doesn’t, pays it.” In 2026, with the speed of information and the pressure for “instant” results, the quiet, relentless power of compounding is more overlooked than ever.
+  ('article', 'the-eighth-wonder-visualizing-the-quiet-power-of-compounding', 'The Eighth Wonder: Visualizing the Quiet Power of Compounding', 'Albert Einstein reportedly called compound interest the “eighth wonder of the world,” adding, “He who understands it, earns it… he who doesn’t, pays it.” In 2026, with the speed of information and the pressure for “instant” results, the quiet, relentless power of compounding is more overlooked than ever. At Money Guy Mutants, we don’t believe in get-rich-quick […]', 'Albert Einstein reportedly called compound interest the “eighth wonder of the world,” adding, “He who understands it, earns it… he who doesn’t, pays it.” In 2026, with the speed of information and the pressure for “instant” results, the quiet, relentless power of compounding is more overlooked than ever.
 
-At Cortex, we don’t believe in get-rich-quick schemes. We believe in the **Mathematical Inevitability** of time and consistency. Here is how compounding actually works and why the “early” years are the only ones that truly matter.
+At Money Guy Mutants, we don’t believe in get-rich-quick schemes. We believe in the **Mathematical Inevitability** of time and consistency. Here is how compounding actually works and why the “early” years are the only ones that truly matter.
 
 * * *
 
@@ -994,11 +1001,11 @@ When you automate your contributions, you move your financial trajectory from �
 
 ### See Your Future Wealth
 
-Are you ready to see what your consistency is worth? The **Cortex Compound Interest Calculator** allows you to visualize your long-term wealth accumulation with custom contribution schedules and growth rates.
+Are you ready to see what your consistency is worth? The **Money Guy Mutants Compound Interest Calculator** allows you to visualize your long-term wealth accumulation with custom contribution schedules and growth rates.
 
 Stop wondering if you’re doing enough and start seeing the curve. Give your money the gift of time.
 
-[Launch the Compound Interest Calculator →](https://cortex.vip/apps/compound-interest)', 'published',
+[Launch the Compound Interest Calculator →](https://moneyguymutants.com/apps/compound-interest)', 'published',
    NULL, 'The Eighth Wonder: Visualizing the Quiet Power of Compounding', NULL, NULL,
    'drew@jmediagroup.net', 'drewjmediagroup-net', 'https://secure.gravatar.com/avatar/e590050db46a6ecb3cdd59edbbbeea3966f792b952709ab2ee9808fcd0f71e98?s=96&d=mm&r=g', NULL, '{}'::jsonb, '2026-02-19T11:00:53.000Z'::timestamptz)
 on conflict (type, slug) do update set
@@ -1034,7 +1041,7 @@ insert into public.cms_content
 values
   ('article', 'leasing-vs-buying-in-2026-the-new-math-on-depreciation', 'Leasing vs. Buying in 2026: The New Math on Depreciation', 'The old-school financial advice was simple: “Never lease. It’s just renting a car you’ll never own.” But as we move through 2026, the rapid evolution of automotive technology—specifically in the Electric Vehicle (EV) and software-defined vehicle space—has flipped the script. The math of depreciation has changed, and blindly buying could be a costlier mistake than […]', 'The old-school financial advice was simple: “Never lease. It’s just renting a car you’ll never own.” But as we move through 2026, the rapid evolution of automotive technology—specifically in the Electric Vehicle (EV) and software-defined vehicle space—has flipped the script. The math of depreciation has changed, and blindly buying could be a costlier mistake than leasing.
 
-At Cortex, we focus on **Total Cost of Ownership (TCO)**. Whether you lease or buy, the goal is the same: minimize the amount of your net worth that “evaporates” into a driveway ornament.
+At Money Guy Mutants, we focus on **Total Cost of Ownership (TCO)**. Whether you lease or buy, the goal is the same: minimize the amount of your net worth that “evaporates” into a driveway ornament.
 
 * * *
 
@@ -1066,11 +1073,11 @@ To make the right choice, you have to look past the monthly payment. You must ca
 
 ### Run Your Own Depreciation Simulation
 
-Don’t let a dealer’s “four-square” worksheet confuse you. The **Cortex Car Affordability Calculator** helps you break down the true math of leasing versus buying based on your specific mileage and tax situation.
+Don’t let a dealer’s “four-square” worksheet confuse you. The **Money Guy Mutants Car Affordability Calculator** helps you break down the true math of leasing versus buying based on your specific mileage and tax situation.
 
 See exactly how each option impacts your long-term wealth trajectory before you sign the dotted line. Drive what you love, but keep your net worth in the fast lane.
 
-[Launch the Car Calculator →](https://cortex.vip/apps/car-affordability)', 'published',
+[Launch the Car Calculator →](https://moneyguymutants.com/apps/car-affordability)', 'published',
    NULL, 'Leasing vs. Buying in 2026: The New Math on Depreciation', NULL, NULL,
    'drew@jmediagroup.net', 'drewjmediagroup-net', 'https://secure.gravatar.com/avatar/e590050db46a6ecb3cdd59edbbbeea3966f792b952709ab2ee9808fcd0f71e98?s=96&d=mm&r=g', NULL, '{}'::jsonb, '2026-02-17T11:00:33.000Z'::timestamptz)
 on conflict (type, slug) do update set
@@ -1144,17 +1151,17 @@ By using this “Sprint then Pivot” model, you solve the two biggest problems 
 
 The Hybrid Strategy is ideal for anyone who feels overwhelmed by multiple lines of credit. It’s about **Opportunity Cost Analysis**—understanding that the “cost” of paying a little extra interest on a small balance is worth the “gain” of the psychological momentum it creates.
 
-In the Cortex ecosystem, we don’t just look at the numbers; we look at the trajectory. Eliminating debt is the fastest way to increase your liquidity and lower your financial tension metrics.
+In the Money Guy Mutants ecosystem, we don’t just look at the numbers; we look at the trajectory. Eliminating debt is the fastest way to increase your liquidity and lower your financial tension metrics.
 
 * * *
 
 ### Optimize Your Path to Zero
 
-Don’t get stuck in a one-size-fits-all debt plan. The **Cortex Debt Paydown Strategy Optimizer** allows you to toggle between Snowball, Avalanche, and Hybrid models in real-time.
+Don’t get stuck in a one-size-fits-all debt plan. The **Money Guy Mutants Debt Paydown Strategy Optimizer** allows you to toggle between Snowball, Avalanche, and Hybrid models in real-time.
 
 We’ll show you the exact date you’ll be debt-free under each scenario, including the “psychological weight” of each debt. Take control of your debt and clear the path for your wealth to grow.
 
-[Launch the Debt Optimizer →](https://cortex.vip/apps/debt-paydown)', 'published',
+[Launch the Debt Optimizer →](https://moneyguymutants.com/apps/debt-paydown)', 'published',
    NULL, 'The ‘Hybrid’ Debt Strategy: How to Optimize for Both Math and Mindset', NULL, NULL,
    'drew@jmediagroup.net', 'drewjmediagroup-net', 'https://secure.gravatar.com/avatar/e590050db46a6ecb3cdd59edbbbeea3966f792b952709ab2ee9808fcd0f71e98?s=96&d=mm&r=g', NULL, '{}'::jsonb, '2026-02-12T11:00:33.000Z'::timestamptz)
 on conflict (type, slug) do update set
@@ -1205,7 +1212,7 @@ insert into public.cms_content
 values
   ('article', 'the-20-3-8-rule-why-your-car-is-killing-your-retirement', 'The 20/3/8 Rule: Why Your Car is Killing Your Retirement', 'In 2026, the average new car payment has reached staggering new heights. For many, the monthly cost of “metal and rubber” is the single largest barrier to reaching a seven-figure net worth. We’ve become a culture of monthly payment buyers, often forgetting that every dollar sent to a car lender is a dollar that isn’t […]', 'In 2026, the average new car payment has reached staggering new heights. For many, the monthly cost of “metal and rubber” is the single largest barrier to reaching a seven-figure net worth. We’ve become a culture of monthly payment buyers, often forgetting that every dollar sent to a car lender is a dollar that isn’t compounding in the market.
 
-At Cortex, we believe a car should be a tool for utility, not a status symbol that anchors your future. To keep your financial trajectory on track, we recommend following the **20/3/8 Rule.**
+At Money Guy Mutants, we believe a car should be a tool for utility, not a status symbol that anchors your future. To keep your financial trajectory on track, we recommend following the **20/3/8 Rule.**
 
 * * *
 
@@ -1233,11 +1240,11 @@ By following the 20/3/8 rule, you ensure that your “lifestyle” expenses don�
 
 ### See the Real Cost of Your Commute
 
-Before you step onto the lot, run the numbers for yourself. The **Cortex Car Affordability Calculator** applies the 20/3/8 rule to your specific income and debt profile.
+Before you step onto the lot, run the numbers for yourself. The **Money Guy Mutants Car Affordability Calculator** applies the 20/3/8 rule to your specific income and debt profile.
 
 We’ll show you exactly how much car you can afford without stalling your retirement engine. Don’t let your car drive your future into a ditch.
 
-[Launch the Car Calculator →](https://cortex.vip/apps/car-affordability)', 'published',
+[Launch the Car Calculator →](https://moneyguymutants.com/apps/car-affordability)', 'published',
    NULL, 'The 20/3/8 Rule: Why Your Car is Killing Your Retirement', NULL, NULL,
    'drew@jmediagroup.net', 'drewjmediagroup-net', 'https://secure.gravatar.com/avatar/e590050db46a6ecb3cdd59edbbbeea3966f792b952709ab2ee9808fcd0f71e98?s=96&d=mm&r=g', NULL, '{}'::jsonb, '2026-02-10T11:00:45.000Z'::timestamptz)
 on conflict (type, slug) do update set
@@ -1283,7 +1290,7 @@ insert into public.cms_content
 values
   ('article', 'the-hidden-costs-of-cheap-cities-taxes-transit-and-trade-offs', 'The Hidden Costs of ‘Cheap’ Cities: Taxes, Transit, and Trade-offs', 'In the hunt for financial freedom, the allure of a “low cost of living” (LCOL) area is powerful. We see the $1,200 mortgages and the $4 craft beers and think we’ve found a shortcut to a seven-figure net worth. However, “cheap” is often a relative term. If you aren’t careful, the money you save on […]', 'In the hunt for financial freedom, the allure of a “low cost of living” (LCOL) area is powerful. We see the $1,200 mortgages and the $4 craft beers and think we’ve found a shortcut to a seven-figure net worth. However, “cheap” is often a relative term. If you aren’t careful, the money you save on rent can quickly be swallowed by the hidden inefficiencies of a less developed hub.
 
-Before you pack the U-Haul, you need to look past the sticker price. At Cortex, we look at the **Total Cost of Existence**. Here are the three hidden traps of “cheap” cities that could derail your arbitrage strategy.
+Before you pack the U-Haul, you need to look past the sticker price. At Money Guy Mutants, we look at the **Total Cost of Existence**. Here are the three hidden traps of “cheap” cities that could derail your arbitrage strategy.
 
 * * *
 
@@ -1315,11 +1322,11 @@ Geographic arbitrage works best when the **savings on big-ticket items** (housin
 
 ### Run the Full Cost-Benefit Analysis
 
-Don’t get blinded by low rent. The **Cortex Geographic Arbitrage Calculator** is designed to uncover the hidden variables. We analyze the interplay between income, state and local taxes, and real-world cost of living data across all 50 U.S. state capitals.
+Don’t get blinded by low rent. The **Money Guy Mutants Geographic Arbitrage Calculator** is designed to uncover the hidden variables. We analyze the interplay between income, state and local taxes, and real-world cost of living data across all 50 U.S. state capitals.
 
 Find out exactly how much you’ll _actually_ save before you sign a new lease. Get the data, get the clarity, and make your move with confidence.
 
-[Launch the Arbitrage Calculator →](https://cortex.vip/apps/geographic-arbitrage)', 'published',
+[Launch the Arbitrage Calculator →](https://moneyguymutants.com/apps/geographic-arbitrage)', 'published',
    NULL, 'The Hidden Costs of ‘Cheap’ Cities: Taxes, Transit, and Trade-offs', NULL, NULL,
    'drew@jmediagroup.net', 'drewjmediagroup-net', 'https://secure.gravatar.com/avatar/e590050db46a6ecb3cdd59edbbbeea3966f792b952709ab2ee9808fcd0f71e98?s=96&d=mm&r=g', NULL, '{}'::jsonb, '2026-02-05T11:00:58.000Z'::timestamptz)
 on conflict (type, slug) do update set
@@ -1404,11 +1411,11 @@ Not everyone faces the same level of mobility risk. You should consider your car
 
 ### Calculate Your Flexibility Premium
 
-Is the equity you’re building worth the opportunities you might be missing? The **Cortex Rent vs. Buy Reality Engine** doesn’t just look at interest rates—it calculates **Mobility Risk** as a core variable.
+Is the equity you’re building worth the opportunities you might be missing? The **Money Guy Mutants Rent vs. Buy Reality Engine** doesn’t just look at interest rates—it calculates **Mobility Risk** as a core variable.
 
 See the real-world impact of homeownership on your career trajectory and decide if now is truly the right time to buy.
 
-[Launch the Reality Engine →](https://cortex.vip/apps/rent-vs-buy)', 'published',
+[Launch the Reality Engine →](https://moneyguymutants.com/apps/rent-vs-buy)', 'published',
    NULL, 'Mobility Risk: Why Buying a House Could Stunt Your Career Growth', NULL, NULL,
    'drew@jmediagroup.net', 'drewjmediagroup-net', 'https://secure.gravatar.com/avatar/e590050db46a6ecb3cdd59edbbbeea3966f792b952709ab2ee9808fcd0f71e98?s=96&d=mm&r=g', NULL, '{}'::jsonb, '2026-02-03T11:00:02.000Z'::timestamptz)
 on conflict (type, slug) do update set
@@ -1495,11 +1502,11 @@ Geographic arbitrage isn’t about moving to the middle of nowhere; it’s about
 
 ### Calculate Your Relocation ROI
 
-Thinking about making a move? Don’t guess the numbers. The **Cortex Geographic Arbitrage Calculator** compares income, local taxes, and cost of living across all 50 U.S. state capitals and major hubs.
+Thinking about making a move? Don’t guess the numbers. The **Money Guy Mutants Geographic Arbitrage Calculator** compares income, local taxes, and cost of living across all 50 U.S. state capitals and major hubs.
 
 See exactly how much faster you could reach your goals by changing your zip code. Your million-dollar move is just a calculation away.
 
-[Launch the Arbitrage Calculator →](https://cortex.vip/apps/geographic-arbitrage)', 'published',
+[Launch the Arbitrage Calculator →](https://moneyguymutants.com/apps/geographic-arbitrage)', 'published',
    NULL, 'Geographic Arbitrage: How Moving to a State Capital Could Save You $1M', NULL, NULL,
    'drew@jmediagroup.net', 'drewjmediagroup-net', 'https://secure.gravatar.com/avatar/e590050db46a6ecb3cdd59edbbbeea3966f792b952709ab2ee9808fcd0f71e98?s=96&d=mm&r=g', NULL, '{}'::jsonb, '2026-01-29T11:00:54.000Z'::timestamptz)
 on conflict (type, slug) do update set
@@ -1548,9 +1555,9 @@ insert into public.cms_content
    featured_image_url, featured_image_alt, featured_image_width, featured_image_height,
    author_name, author_slug, author_avatar, author_bio, metadata, published_at)
 values
-  ('article', 'the-rent-vs-buy-lie-is-homeownership-still-the-american-dream-in-2026', 'The Rent vs. Buy Lie: Is Homeownership Still the American Dream in 2026?', 'For generations, the “American Dream” was synonymous with a 30-year fixed mortgage and a white picket fence. We were told that renting is “throwing money away,” while buying a home is the ultimate path to wealth. But in 2026, the math has changed, and the old advice might actually be holding you back. At Cortex, […]', 'For generations, the “American Dream” was synonymous with a 30-year fixed mortgage and a white picket fence. We were told that renting is “throwing money away,” while buying a home is the ultimate path to wealth. But in 2026, the math has changed, and the old advice might actually be holding you back.
+  ('article', 'the-rent-vs-buy-lie-is-homeownership-still-the-american-dream-in-2026', 'The Rent vs. Buy Lie: Is Homeownership Still the American Dream in 2026?', 'For generations, the “American Dream” was synonymous with a 30-year fixed mortgage and a white picket fence. We were told that renting is “throwing money away,” while buying a home is the ultimate path to wealth. But in 2026, the math has changed, and the old advice might actually be holding you back. At Money Guy Mutants, […]', 'For generations, the “American Dream” was synonymous with a 30-year fixed mortgage and a white picket fence. We were told that renting is “throwing money away,” while buying a home is the ultimate path to wealth. But in 2026, the math has changed, and the old advice might actually be holding you back.
 
-At Cortex, we don’t look at homes as emotional milestones; we look at them as financial engines. Sometimes that engine powers you forward—and sometimes it stalls your trajectory. Here is why the “renting vs. buying” debate is more complex than it looks.
+At Money Guy Mutants, we don’t look at homes as emotional milestones; we look at them as financial engines. Sometimes that engine powers you forward—and sometimes it stalls your trajectory. Here is why the “renting vs. buying” debate is more complex than it looks.
 
 * * *
 
@@ -1580,11 +1587,11 @@ This doesn’t mean you should _never_ buy. It means you should never buy becaus
 
 ### Run Your Real-World Numbers
 
-Don’t make the biggest financial decision of your life based on a 1950s cliché. The **Cortex Rent vs. Buy Reality Engine** goes beyond the mortgage calculator. We factor in opportunity cost, maintenance drag, mobility risk, and tax treatment to give you a clear answer.
+Don’t make the biggest financial decision of your life based on a 1950s cliché. The **Money Guy Mutants Rent vs. Buy Reality Engine** goes beyond the mortgage calculator. We factor in opportunity cost, maintenance drag, mobility risk, and tax treatment to give you a clear answer.
 
 Find out if your “dream home” is actually a financial nightmare or your next big win.
 
-[Launch the Reality Engine →](https://cortex.vip/apps/rent-vs-buy)', 'published',
+[Launch the Reality Engine →](https://moneyguymutants.com/apps/rent-vs-buy)', 'published',
    NULL, 'The Rent vs. Buy Lie: Is Homeownership Still the American Dream in 2026?', NULL, NULL,
    'drew@jmediagroup.net', 'drewjmediagroup-net', 'https://secure.gravatar.com/avatar/e590050db46a6ecb3cdd59edbbbeea3966f792b952709ab2ee9808fcd0f71e98?s=96&d=mm&r=g', NULL, '{}'::jsonb, '2026-01-27T11:00:21.000Z'::timestamptz)
 on conflict (type, slug) do update set
@@ -1658,11 +1665,11 @@ A clean portfolio isn’t just about spending less; it’s about **clarity of mo
 
 ### See Your Clean Trajectory
 
-A weekend audit is just the beginning. To maintain true financial hygiene, you need a way to track your assets and liabilities in real-time. We built the **Cortex Net Worth Engine** to help you identify leverage points and visualize your trajectory with zero friction.
+A weekend audit is just the beginning. To maintain true financial hygiene, you need a way to track your assets and liabilities in real-time. We built the **Money Guy Mutants Net Worth Engine** to help you identify leverage points and visualize your trajectory with zero friction.
 
 Don’t let a cluttered portfolio slow down your momentum. Get clear today.
 
-[Launch the Net Worth Engine →](https://cortex.vip/apps/net-worth)', 'published',
+[Launch the Net Worth Engine →](https://moneyguymutants.com/apps/net-worth)', 'published',
    NULL, 'Financial Hygiene 101: A Weekend Audit for a Cleaner Portfolio', NULL, NULL,
    'drew@jmediagroup.net', 'drewjmediagroup-net', 'https://secure.gravatar.com/avatar/e590050db46a6ecb3cdd59edbbbeea3966f792b952709ab2ee9808fcd0f71e98?s=96&d=mm&r=g', NULL, '{}'::jsonb, '2026-01-22T11:00:48.000Z'::timestamptz)
 on conflict (type, slug) do update set
@@ -1698,7 +1705,7 @@ insert into public.cms_content
 values
   ('article', 'ownership-vs-the-odds-the-mathematical-case-for-quitting-the-lottery', 'Ownership vs. The Odds: The Mathematical Case for Quitting the Lottery', 'There is a specific kind of hope that comes with a lottery ticket or a parlay bet. It’s the dream of the “quantum leap”—the idea that one lucky moment can permanently rewrite your financial story. But when we look at the cold, hard math of 2026, the reality is that playing the odds is often […]', 'There is a specific kind of hope that comes with a lottery ticket or a parlay bet. It’s the dream of the “quantum leap”—the idea that one lucky moment can permanently rewrite your financial story. But when we look at the cold, hard math of 2026, the reality is that playing the odds is often the single greatest barrier to actually owning your future.
 
-At Cortex, we want to help you transition from a **speculator** to an **owner**. Here is why the math of the market will always beat the math of the bookie.
+At Money Guy Mutants, we want to help you transition from a **speculator** to an **owner**. Here is why the math of the market will always beat the math of the bookie.
 
 * * *
 
@@ -1724,11 +1731,11 @@ The “thrill” of a win provides a temporary dopamine hit, but the “peace”
 
 ### See the Life-Changing Difference
 
-Are you curious what your “harmless” habits are actually costing your future self? The **Cortex Gambling Spend Redirect** tool shows you the mathematical reality of playing the odds versus owning the market.
+Are you curious what your “harmless” habits are actually costing your future self? The **Money Guy Mutants Gambling Spend Redirect** tool shows you the mathematical reality of playing the odds versus owning the market.
 
 Plug in your weekly spend and see exactly how much wealth you could build by making one simple shift in where your money goes.
 
-[Launch the Redirect Tool →](https://cortex.vip/apps/gambling-redirect)', 'published',
+[Launch the Redirect Tool →](https://moneyguymutants.com/apps/gambling-redirect)', 'published',
    NULL, 'Ownership vs. The Odds: The Mathematical Case for Quitting the Lottery', NULL, NULL,
    'drew@jmediagroup.net', 'drewjmediagroup-net', 'https://secure.gravatar.com/avatar/e590050db46a6ecb3cdd59edbbbeea3966f792b952709ab2ee9808fcd0f71e98?s=96&d=mm&r=g', NULL, '{}'::jsonb, '2026-01-20T10:00:53.000Z'::timestamptz)
 on conflict (type, slug) do update set
@@ -1762,7 +1769,7 @@ insert into public.cms_content
    featured_image_url, featured_image_alt, featured_image_width, featured_image_height,
    author_name, author_slug, author_avatar, author_bio, metadata, published_at)
 values
-  ('article', 'strategic-allocation-why-your-business-profit-should-be-your-retirement-fund', 'Strategic Allocation: Why Your Business Profit Should Be Your Retirement Fund', 'As an entrepreneur, your business is likely your most valuable asset. But there is a massive risk in having 100% of your net worth tied up in a single entity. At Cortex, we teach S-Corp owners that the goal of a business isn’t just to generate “profit”—it’s to generate liquidity that can be strategically allocated […]', 'As an entrepreneur, your business is likely your most valuable asset. But there is a massive risk in having 100% of your net worth tied up in a single entity. At Cortex, we teach S-Corp owners that the goal of a business isn’t just to generate “profit”—it’s to generate **liquidity** that can be strategically allocated into diversified wealth.
+  ('article', 'strategic-allocation-why-your-business-profit-should-be-your-retirement-fund', 'Strategic Allocation: Why Your Business Profit Should Be Your Retirement Fund', 'As an entrepreneur, your business is likely your most valuable asset. But there is a massive risk in having 100% of your net worth tied up in a single entity. At Money Guy Mutants, we teach S-Corp owners that the goal of a business isn’t just to generate “profit”—it’s to generate liquidity that can be strategically allocated […]', 'As an entrepreneur, your business is likely your most valuable asset. But there is a massive risk in having 100% of your net worth tied up in a single entity. At Money Guy Mutants, we teach S-Corp owners that the goal of a business isn’t just to generate “profit”—it’s to generate **liquidity** that can be strategically allocated into diversified wealth.
 
 In 2026, the most successful solo-preneurs aren’t just letting their extra cash sit in a business checking account earning 0.01%. They are using a “Strategic Allocation” model to move business wins into personal wealth engines.
 
@@ -1798,11 +1805,11 @@ Many founders plan to fund their retirement by selling their business one day. T
 
 ### Build Your Retirement Engine
 
-Your business profit shouldn’t be sitting still. The **Cortex S-Corp Investment Optimizer** is designed to help you visualize exactly how much business cash you can move into retirement accounts while staying within IRS limits.
+Your business profit shouldn’t be sitting still. The **Money Guy Mutants S-Corp Investment Optimizer** is designed to help you visualize exactly how much business cash you can move into retirement accounts while staying within IRS limits.
 
 See the long-term impact of consistent allocation and turn your business success into personal freedom. Start building your exit strategy today—one contribution at a time.
 
-[Launch the Investment Optimizer →](https://cortex.vip/apps/s-corp-investment)', 'published',
+[Launch the Investment Optimizer →](https://moneyguymutants.com/apps/s-corp-investment)', 'published',
    NULL, 'Strategic Allocation: Why Your Business Profit Should Be Your Retirement Fund', NULL, NULL,
    'drew@jmediagroup.net', 'drewjmediagroup-net', 'https://secure.gravatar.com/avatar/e590050db46a6ecb3cdd59edbbbeea3966f792b952709ab2ee9808fcd0f71e98?s=96&d=mm&r=g', NULL, '{}'::jsonb, '2026-01-17T21:36:04.000Z'::timestamptz)
 on conflict (type, slug) do update set
@@ -1861,9 +1868,9 @@ insert into public.cms_content
    featured_image_url, featured_image_alt, featured_image_width, featured_image_height,
    author_name, author_slug, author_avatar, author_bio, metadata, published_at)
 values
-  ('article', 'the-anti-budget-how-to-allocate-resources-without-feeling-restricted', 'The Anti-Budget: How to Allocate Resources Without Feeling Restricted', 'Most people treat budgeting like a crash diet. They start with high energy, cut out everything that brings them joy, and inevitably “relapse” into old spending habits within three months. The reason? Traditional budgeting is built on restriction, not reality. At Cortex, we believe that your money should serve your life, not the other way […]', 'Most people treat budgeting like a crash diet. They start with high energy, cut out everything that brings them joy, and inevitably “relapse” into old spending habits within three months. The reason? Traditional budgeting is built on restriction, not reality.
+  ('article', 'the-anti-budget-how-to-allocate-resources-without-feeling-restricted', 'The Anti-Budget: How to Allocate Resources Without Feeling Restricted', 'Most people treat budgeting like a crash diet. They start with high energy, cut out everything that brings them joy, and inevitably “relapse” into old spending habits within three months. The reason? Traditional budgeting is built on restriction, not reality. At Money Guy Mutants, we believe that your money should serve your life, not the other way […]', 'Most people treat budgeting like a crash diet. They start with high energy, cut out everything that brings them joy, and inevitably “relapse” into old spending habits within three months. The reason? Traditional budgeting is built on restriction, not reality.
 
-At Cortex, we believe that your money should serve your life, not the other way around. It’s time to move away from the “stop spending” mindset and toward a system of **strategic resource allocation.**
+At Money Guy Mutants, we believe that your money should serve your life, not the other way around. It’s time to move away from the “stop spending” mindset and toward a system of **strategic resource allocation.**
 
 * * *
 
@@ -1892,11 +1899,11 @@ When you stop viewing your money as a series of “no’s” and start viewing i
 
 ### Build a System That Breathes
 
-Stop fighting with spreadsheets. The **Cortex Household Budgeting System** uses AI-powered optimization to analyze your unique financial constraints. It identifies your tension metrics and provides a flexibility analysis so you can spend guilt-free on what matters most.
+Stop fighting with spreadsheets. The **Money Guy Mutants Household Budgeting System** uses AI-powered optimization to analyze your unique financial constraints. It identifies your tension metrics and provides a flexibility analysis so you can spend guilt-free on what matters most.
 
 Design a system that works for your life, not a spreadsheet’s life.
 
-[Launch the Budgeting System →](https://cortex.vip/apps/budget)', 'published',
+[Launch the Budgeting System →](https://moneyguymutants.com/apps/budget)', 'published',
    NULL, 'The Anti-Budget: How to Allocate Resources Without Feeling Restricted', NULL, NULL,
    'drew@jmediagroup.net', 'drewjmediagroup-net', 'https://secure.gravatar.com/avatar/e590050db46a6ecb3cdd59edbbbeea3966f792b952709ab2ee9808fcd0f71e98?s=96&d=mm&r=g', NULL, '{}'::jsonb, '2026-01-17T18:32:47.000Z'::timestamptz)
 on conflict (type, slug) do update set
@@ -1967,11 +1974,11 @@ When you know your number, decisions become easier. Should you buy that new car?
 
 ### Stop Guessing, Start Visualizing
 
-Most spreadsheets are static and boring. We built the **Cortex Net Worth Engine** to give you a living, breathing look at your financial life.
+Most spreadsheets are static and boring. We built the **Money Guy Mutants Net Worth Engine** to give you a living, breathing look at your financial life.
 
 It doesn’t just list your assets—it analyzes your liquidity, identifies your leverage points, and visualizes your trajectory so you can see exactly where you’ll be in 5, 10, or 20 years.
 
-[Launch the Net Worth Engine →](https://cortex.vip/apps/net-worth)', 'published',
+[Launch the Net Worth Engine →](https://moneyguymutants.com/apps/net-worth)', 'published',
    NULL, 'Beyond the Spreadsheet: Why Your Net Worth is the Only Metric That Matters', NULL, NULL,
    'drew@jmediagroup.net', 'drewjmediagroup-net', 'https://secure.gravatar.com/avatar/e590050db46a6ecb3cdd59edbbbeea3966f792b952709ab2ee9808fcd0f71e98?s=96&d=mm&r=g', NULL, '{}'::jsonb, '2026-01-17T18:10:36.000Z'::timestamptz)
 on conflict (type, slug) do update set
