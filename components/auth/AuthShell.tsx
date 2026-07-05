@@ -70,6 +70,11 @@ export function AuthShell({ children, footer }: Props) {
             <span>ENCRYPTED · SUPABASE AUTH</span>
           </div>
 
+          <p className="mgm-auth__affiliation">
+            An independent, fan-made project — not affiliated with, endorsed by,
+            or sponsored by The Money Guy Show or Abound Wealth Management, LLC.
+          </p>
+
           {footer}
         </div>
       </main>
@@ -150,6 +155,14 @@ const authShellCss = `
   font-weight: 700;
   letter-spacing: var(--tracking-widest);
   text-transform: uppercase;
+}
+.mgm-auth__affiliation {
+  max-width: 420px;
+  margin: -12px 0 0;
+  text-align: center;
+  color: var(--gray-500);
+  font-size: 11px;
+  line-height: 1.5;
 }
 
 @media (max-width: 860px) {

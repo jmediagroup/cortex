@@ -143,6 +143,18 @@ export function ToolLayout({
         >
           {disclaimer}
         </p>
+        <p
+          style={{
+            fontSize: 11,
+            color: 'var(--text-muted)',
+            margin: '10px 0 0',
+            lineHeight: 1.55,
+          }}
+        >
+          Money Guy Mutants is an independent, fan-made project and is not
+          affiliated with, endorsed by, or sponsored by The Money Guy Show or
+          Abound Wealth Management, LLC.
+        </p>
       </footer>
     </div>
   );
