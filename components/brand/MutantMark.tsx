@@ -14,18 +14,20 @@ export function MutantMark({
   style,
   className,
 }: {
-  size?: number;
+  /** Mark width — a px number, or any CSS length (e.g. a responsive clamp()).
+   *  Height is derived from the 120×124 aspect ratio. */
+  size?: number | string;
   title?: string;
   style?: CSSProperties;
   className?: string;
 }) {
+  const width = typeof size === 'number' ? `${size}px` : size;
+  const height = `calc(${width} * 124 / 120)`;
   return (
     <svg
-      width={size}
-      height={(size * 124) / 120}
       viewBox="0 0 120 124"
       className={className}
-      style={{ display: 'block', flex: 'none', ...style }}
+      style={{ display: 'block', flex: 'none', width, height, ...style }}
       role={title ? 'img' : undefined}
       aria-label={title}
       aria-hidden={title ? undefined : true}

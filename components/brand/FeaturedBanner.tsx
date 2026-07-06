@@ -23,17 +23,22 @@ export function FeaturedBanner({
 }: {
   /** Optional uppercase eyebrow (e.g. category / "DAILY OUTLOOK") drawn above the mark. */
   label?: string;
-  /** Mascot width in px; the wordmark scales from this. */
-  markSize?: number;
+  /** Mascot width — a px number, or any CSS length (e.g. a responsive clamp()).
+   *  The wordmark and internal spacing scale from it. */
+  markSize?: number | string;
   showWordmark?: boolean;
   style?: CSSProperties;
   className?: string;
 }) {
+  // A single length drives the whole lockup so the mascot, wordmark, and gaps
+  // scale together — pass a number for px or a clamp()/vh length for a hero
+  // that shrinks the logo to fit above the overlapping article card.
+  const mark = typeof markSize === 'number' ? `${markSize}px` : markSize;
   // Wordmark lockup, proportioned to match the brand OG cards: "MUTANTS" sits
-  // at ~0.44× the "MONEYGUY" size with ~0.8× its own font as letter-spacing.
-  const wordSize = Math.max(13, markSize * 0.26);
-  const mutantSize = wordSize * 0.44;
-  const mutantTrack = mutantSize * 0.82;
+  // at ~0.44× the "MONEYGUY" size with ~0.82× its own font as letter-spacing.
+  const wordSize = `max(13px, ${mark} * 0.26)`;
+  const mutantSize = `calc(${wordSize} * 0.44)`;
+  const mutantTrack = `calc(${wordSize} * 0.3608)`; // 0.44 × 0.82
 
   return (
     <div
@@ -49,7 +54,7 @@ export function FeaturedBanner({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: Math.round(markSize * 0.2),
+        gap: `calc(${mark} * 0.2)`,
         background: 'linear-gradient(135deg, #0a4a73 0%, var(--navy) 100%)',
         overflow: 'hidden',
         ...style,
@@ -101,11 +106,11 @@ export function FeaturedBanner({
             style={{
               fontSize: mutantSize,
               fontWeight: 400,
-              letterSpacing: `${mutantTrack}px`,
+              letterSpacing: mutantTrack,
               color: '#fff',
               marginTop: 5,
               // optical centering: the trailing tracking pushes the block right.
-              marginRight: `-${mutantTrack}px`,
+              marginRight: `calc(${wordSize} * -0.3608)`,
             }}
           >
             MUTANTS

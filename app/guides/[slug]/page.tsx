@@ -97,7 +97,13 @@ export default async function GuideDetailPage({ params }: PageProps) {
             background: 'var(--navy)',
           }}
         >
-          <FeaturedBanner markSize={124} label={guide.category ?? 'GUIDE'} />
+          <FeaturedBanner
+            markSize="clamp(44px, 9vh, 92px)"
+            label={guide.category ?? 'GUIDE'}
+            // Lift the lockup above the 96px the guide card overlaps, so it
+            // centers in the visible navy band with even breathing room.
+            style={{ paddingBottom: 96 }}
+          />
         </div>
 
         <header style={{ position: 'relative', marginTop: -96 }}>
