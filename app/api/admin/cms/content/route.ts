@@ -6,7 +6,7 @@ import {
   pickContentFields,
   slugify,
   syncTaxonomy,
-  revalidateArticles,
+  revalidateContent,
   CmsValidationError,
 } from '@/lib/cms/admin';
 
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
     }
 
     await syncTaxonomy(supabase, data.id, body.categories, body.tags);
-    revalidateArticles(data.slug);
+    revalidateContent(updates.type, data.slug);
 
     return NextResponse.json({ id: data.id, slug: data.slug }, { status: 201 });
   } catch (error) {
