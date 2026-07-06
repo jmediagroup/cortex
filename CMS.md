@@ -44,12 +44,23 @@ filters `status = 'published'` explicitly.
 
 ## Admin usage
 
-- `/admin/content` — list, filter by status, create/edit/delete.
-- The editor supports Markdown + live preview, featured-image and inline-image
-  uploads, categories/tags (comma-separated; created on the fly), SEO overrides,
-  FAQ entries, a related calculator, and a CTA.
-- Saving a published article revalidates the public site immediately (article
-  page, `/articles`, home, sitemap) via `revalidateTag`/`revalidatePath`.
+- `/admin/content` — list, filter by **type** (article / guide / daily / weekly)
+  and **status**, create/edit/delete. The **New** button is a type picker; each
+  row shows a type badge and links to the right public path.
+- The editor is **type-aware** (`components/admin/ContentEditor.tsx` +
+  `lib/cms/content-types.ts`): Markdown + live preview, featured/inline-image
+  uploads, and SEO overrides are shared by every type, while type-specific
+  panels swap in:
+  - **article** — categories/tags, related calculator, CTA, FAQ.
+  - **guide** — categories/tags, topic, related tools.
+  - **daily / weekly** — tickers, sectors.
+- Saving revalidates the public surfaces for that type (`revalidateContent` in
+  `lib/cms/admin.ts`). Articles bust the article caches + `/articles`, home, and
+  sitemap; guides/outlook revalidate their own routes only.
+- **Public read path:** only **articles** are served from the CMS today. Guides
+  and Thinking (daily/weekly) can be authored and stored here, but their public
+  pages still render from the Markdown pipeline until Phase 2 migrates those
+  reads — the editor notes this inline for non-article types.
 
 ## WordPress import (historical — retired)
 

@@ -5,7 +5,7 @@ import {
   requireAdmin,
   pickContentFields,
   syncTaxonomy,
-  revalidateArticles,
+  revalidateContent,
   CmsValidationError,
 } from '@/lib/cms/admin';
 
@@ -72,13 +72,15 @@ export async function PATCH(
 
     const supabase = createServiceClient();
 
-    // Grab the current slug so we can revalidate the old path if the slug changes.
+    // Grab the current slug + type so we can revalidate the old path if the slug
+    // changes, scoped to the right content type.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: existing } = await (supabase.from('cms_content') as any)
-      .select('slug')
+      .select('slug,type')
       .eq('id', id)
       .maybeSingle();
     if (!existing) return errorResponse('Content not found', 404);
+    const contentType = updates.type ?? existing.type;
 
     let updated = existing;
     if (Object.keys(updates).length > 0) {
@@ -100,8 +102,8 @@ export async function PATCH(
 
     await syncTaxonomy(supabase, id, body.categories, body.tags);
 
-    revalidateArticles(updated.slug);
-    if (existing.slug && existing.slug !== updated.slug) revalidateArticles(existing.slug);
+    revalidateContent(contentType, updated.slug);
+    if (existing.slug && existing.slug !== updated.slug) revalidateContent(contentType, existing.slug);
 
     return NextResponse.json({ id, slug: updated.slug });
   } catch (error) {
@@ -128,7 +130,7 @@ export async function DELETE(
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: existing } = await (supabase.from('cms_content') as any)
-      .select('slug')
+      .select('slug,type')
       .eq('id', id)
       .maybeSingle();
 
@@ -138,7 +140,7 @@ export async function DELETE(
       return errorResponse('Failed to delete content', 500);
     }
 
-    revalidateArticles(existing?.slug);
+    revalidateContent(existing?.type, existing?.slug);
     return NextResponse.json({ success: true });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Internal server error';

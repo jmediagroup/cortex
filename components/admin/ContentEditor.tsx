@@ -14,6 +14,11 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { createBrowserClient } from '@/lib/supabase/client';
+import {
+  getContentTypeMeta,
+  normalizeContentType,
+  type ContentTypeKey,
+} from '@/lib/cms/content-types';
 import '@/app/articles/[slug]/article-styles.css';
 
 type Status = 'draft' | 'published' | 'scheduled' | 'archived';
@@ -38,10 +43,17 @@ interface FormState {
   seo_description: string;
   seo_keywords: string;
   seo_og_image: string;
+  // article-only
   related_calculator: string;
   cta_text: string;
   cta_link: string;
   faq: FaqItem[];
+  // guide-only
+  topic: string;
+  related_tools: string; // comma-separated
+  // outlook-only (daily / weekly)
+  tickers: string; // comma-separated
+  sectors: string; // comma-separated
 }
 
 const EMPTY: FormState = {
@@ -63,6 +75,10 @@ const EMPTY: FormState = {
   cta_text: '',
   cta_link: '',
   faq: [],
+  topic: '',
+  related_tools: '',
+  tickers: '',
+  sectors: '',
 };
 
 function slugify(input: string): string {
@@ -81,10 +97,23 @@ const labelClass = 'block text-xs font-bold uppercase tracking-wider text-[var(-
 const cardClass =
   'rounded-[var(--radius-xl)] border border-[var(--border-primary)] bg-[var(--surface-primary)] p-5';
 
-export default function ContentEditor({ contentId }: { contentId?: string }) {
+const splitCsv = (s: string) =>
+  s
+    .split(',')
+    .map((x) => x.trim())
+    .filter(Boolean);
+
+export default function ContentEditor({
+  contentId,
+  initialType = 'article',
+}: {
+  contentId?: string;
+  initialType?: ContentTypeKey;
+}) {
   const router = useRouter();
   const supabase = useRef(createBrowserClient()).current;
   const [form, setForm] = useState<FormState>(EMPTY);
+  const [type, setType] = useState<ContentTypeKey>(initialType);
   const [slugTouched, setSlugTouched] = useState(false);
   const [loading, setLoading] = useState(Boolean(contentId));
   const [saving, setSaving] = useState(false);
@@ -94,6 +123,11 @@ export default function ContentEditor({ contentId }: { contentId?: string }) {
   const [previewHtml, setPreviewHtml] = useState('');
   const [uploadingFeatured, setUploadingFeatured] = useState(false);
   const [uploadingInline, setUploadingInline] = useState(false);
+
+  const meta = getContentTypeMeta(type);
+  const isArticle = type === 'article';
+  const isGuide = type === 'guide';
+  const isOutlook = type === 'daily' || type === 'weekly';
 
   const token = useCallback(async () => {
     const {
@@ -125,7 +159,9 @@ export default function ContentEditor({ contentId }: { contentId?: string }) {
         if (!res.ok) throw new Error((await res.json()).error || 'Failed to load');
         const { content } = await res.json();
         if (cancelled) return;
-        const meta = content.metadata ?? {};
+        const m = content.metadata ?? {};
+        const csv = (v: unknown) => (Array.isArray(v) ? v.join(', ') : '');
+        setType(normalizeContentType(content.type));
         setForm({
           title: content.title ?? '',
           slug: content.slug ?? '',
@@ -141,10 +177,14 @@ export default function ContentEditor({ contentId }: { contentId?: string }) {
           seo_description: content.seo_description ?? '',
           seo_keywords: content.seo_keywords ?? '',
           seo_og_image: content.seo_og_image ?? '',
-          related_calculator: meta.related_calculator ?? '',
-          cta_text: meta.cta?.text ?? '',
-          cta_link: meta.cta?.link ?? '',
-          faq: Array.isArray(meta.faq) ? meta.faq : [],
+          related_calculator: m.related_calculator ?? '',
+          cta_text: m.cta?.text ?? '',
+          cta_link: m.cta?.link ?? '',
+          faq: Array.isArray(m.faq) ? m.faq : [],
+          topic: m.topic ?? '',
+          related_tools: csv(m.related_tools),
+          tickers: csv(m.tickers),
+          sectors: csv(m.sectors),
         });
         setSlugTouched(true);
       } catch (e) {
@@ -216,21 +256,26 @@ export default function ContentEditor({ contentId }: { contentId?: string }) {
     e.target.value = '';
   }
 
-  function buildPayload() {
+  function buildMetadata(): Record<string, unknown> {
     const metadata: Record<string, unknown> = {};
-    if (form.faq.length) metadata.faq = form.faq.filter((f) => f.question.trim() && f.answer.trim());
-    if (form.cta_text.trim() && form.cta_link.trim())
-      metadata.cta = { text: form.cta_text.trim(), link: form.cta_link.trim() };
-    if (form.related_calculator.trim()) metadata.related_calculator = form.related_calculator.trim();
+    if (isArticle) {
+      if (form.faq.length) metadata.faq = form.faq.filter((f) => f.question.trim() && f.answer.trim());
+      if (form.cta_text.trim() && form.cta_link.trim())
+        metadata.cta = { text: form.cta_text.trim(), link: form.cta_link.trim() };
+      if (form.related_calculator.trim()) metadata.related_calculator = form.related_calculator.trim();
+    } else if (isGuide) {
+      if (form.topic.trim()) metadata.topic = form.topic.trim();
+      if (form.related_tools.trim()) metadata.related_tools = splitCsv(form.related_tools);
+    } else if (isOutlook) {
+      if (form.tickers.trim()) metadata.tickers = splitCsv(form.tickers);
+      if (form.sectors.trim()) metadata.sectors = splitCsv(form.sectors);
+    }
+    return metadata;
+  }
 
-    const splitCsv = (s: string) =>
-      s
-        .split(',')
-        .map((x) => x.trim())
-        .filter(Boolean);
-
+  function buildPayload() {
     return {
-      type: 'article',
+      type,
       title: form.title.trim(),
       slug: effectiveSlug,
       excerpt: form.excerpt.trim() || null,
@@ -243,9 +288,10 @@ export default function ContentEditor({ contentId }: { contentId?: string }) {
       seo_description: form.seo_description.trim() || null,
       seo_keywords: form.seo_keywords.trim() || null,
       seo_og_image: form.seo_og_image.trim() || null,
-      metadata,
-      categories: splitCsv(form.categories),
-      tags: splitCsv(form.tags),
+      metadata: buildMetadata(),
+      // Only taxonomy-backed types manage categories/tags; clear them otherwise.
+      categories: meta.usesTaxonomy ? splitCsv(form.categories) : [],
+      tags: meta.usesTaxonomy ? splitCsv(form.tags) : [],
     };
   }
 
@@ -307,21 +353,32 @@ export default function ContentEditor({ contentId }: { contentId?: string }) {
     );
   }
 
+  const typeLabel = meta.label.toLowerCase();
+  const showLiveLink = meta.publicReadsFromDb && form.status === 'published' && effectiveSlug;
+
   return (
     <div className="space-y-6">
       {/* Header / actions */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">
-            {contentId ? 'Edit article' : 'New article'}
-          </h1>
+          <div className="flex items-center gap-2">
+            <span
+              className="inline-block rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider"
+              style={{ backgroundColor: meta.badge.bg, color: meta.badge.color }}
+            >
+              {meta.short}
+            </span>
+            <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">
+              {contentId ? `Edit ${typeLabel}` : `New ${typeLabel}`}
+            </h1>
+          </div>
           <p className="mt-1 text-sm text-[var(--text-tertiary)] font-medium">
             {effectiveSlug ? (
               <>
-                /articles/{effectiveSlug}
-                {form.status === 'published' && (
+                {meta.pathPrefix}/{effectiveSlug}
+                {showLiveLink && (
                   <a
-                    href={`/articles/${effectiveSlug}`}
+                    href={`${meta.pathPrefix}/${effectiveSlug}`}
                     target="_blank"
                     rel="noreferrer"
                     className="ml-2 inline-flex items-center gap-1 text-[var(--color-accent)]"
@@ -376,7 +433,11 @@ export default function ContentEditor({ contentId }: { contentId?: string }) {
               className={inputClass}
               value={form.title}
               onChange={(e) => set('title', e.target.value)}
-              placeholder="How compound interest actually works"
+              placeholder={
+                isOutlook
+                  ? 'Markets reopen at records; today’s flow story'
+                  : 'How compound interest actually works'
+              }
             />
             <div className="mt-4">
               <label className={labelClass}>Slug</label>
@@ -391,7 +452,7 @@ export default function ContentEditor({ contentId }: { contentId?: string }) {
               />
             </div>
             <div className="mt-4">
-              <label className={labelClass}>Excerpt</label>
+              <label className={labelClass}>{isArticle ? 'Excerpt' : 'Summary'}</label>
               <textarea
                 className={inputClass}
                 rows={2}
@@ -460,9 +521,16 @@ export default function ContentEditor({ contentId }: { contentId?: string }) {
               <option value="scheduled">Scheduled</option>
               <option value="archived">Archived</option>
             </select>
-            <p className="mt-2 text-xs text-[var(--text-tertiary)]">
-              Only <strong>published</strong> content is visible on the public site.
-            </p>
+            {meta.publicReadsFromDb ? (
+              <p className="mt-2 text-xs text-[var(--text-tertiary)]">
+                Only <strong>published</strong> content is visible on the public site.
+              </p>
+            ) : (
+              <p className="mt-2 text-xs text-[var(--text-tertiary)]">
+                Managed here in the CMS. Public {meta.pathPrefix} pages still render from the existing
+                content pipeline until that read path is migrated.
+              </p>
+            )}
           </div>
 
           <div className={cardClass}>
@@ -495,106 +563,163 @@ export default function ContentEditor({ contentId }: { contentId?: string }) {
             )}
           </div>
 
-          <div className={cardClass}>
-            <label className={labelClass}>Categories</label>
-            <input
-              className={inputClass}
-              value={form.categories}
-              onChange={(e) => set('categories', e.target.value)}
-              placeholder="Investing, Retirement"
-            />
-            <label className={`${labelClass} mt-4`}>Tags</label>
-            <input
-              className={inputClass}
-              value={form.tags}
-              onChange={(e) => set('tags', e.target.value)}
-              placeholder="compound-interest, 401k"
-            />
-            <p className="mt-2 text-xs text-[var(--text-tertiary)]">Comma-separated. New ones are created automatically.</p>
-          </div>
-
-          <div className={cardClass}>
-            <label className={labelClass}>Related calculator</label>
-            <input
-              className={inputClass}
-              value={form.related_calculator}
-              onChange={(e) => set('related_calculator', e.target.value)}
-              placeholder="compound-interest"
-            />
-            <p className="mt-2 text-xs text-[var(--text-tertiary)]">
-              An app slug under <code>/apps/</code>. Powers the &ldquo;try it yourself&rdquo; band.
-            </p>
-            <label className={`${labelClass} mt-4`}>CTA text</label>
-            <input
-              className={inputClass}
-              value={form.cta_text}
-              onChange={(e) => set('cta_text', e.target.value)}
-              placeholder="Run your own numbers"
-            />
-            <label className={`${labelClass} mt-4`}>CTA link</label>
-            <input
-              className={inputClass}
-              value={form.cta_link}
-              onChange={(e) => set('cta_link', e.target.value)}
-              placeholder="/apps/compound-interest"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* FAQ */}
-      <div className={cardClass}>
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-base font-bold text-[var(--text-primary)]">FAQ</h2>
-          <button
-            onClick={() => set('faq', [...form.faq, { question: '', answer: '' }])}
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--color-accent)]"
-          >
-            <Plus size={14} /> Add question
-          </button>
-        </div>
-        {form.faq.length === 0 && (
-          <p className="text-sm text-[var(--text-tertiary)]">
-            Optional. FAQ entries render on the article and emit FAQ schema.
-          </p>
-        )}
-        <div className="space-y-3">
-          {form.faq.map((item, i) => (
-            <div key={i} className="rounded-[var(--radius-md)] border border-[var(--border-primary)] p-3">
-              <div className="mb-2 flex items-center gap-2">
-                <input
-                  className={inputClass}
-                  value={item.question}
-                  onChange={(e) => {
-                    const faq = [...form.faq];
-                    faq[i] = { ...faq[i], question: e.target.value };
-                    set('faq', faq);
-                  }}
-                  placeholder="Question"
-                />
-                <button
-                  onClick={() => set('faq', form.faq.filter((_, j) => j !== i))}
-                  className="text-[var(--text-tertiary)] hover:text-[var(--crimson-500)]"
-                  aria-label="Remove question"
-                >
-                  <X size={16} />
-                </button>
-              </div>
-              <textarea
+          {/* Taxonomy — articles & guides */}
+          {meta.usesTaxonomy && (
+            <div className={cardClass}>
+              <label className={labelClass}>Categories</label>
+              <input
                 className={inputClass}
-                rows={2}
-                value={item.answer}
-                onChange={(e) => {
-                  const faq = [...form.faq];
-                  faq[i] = { ...faq[i], answer: e.target.value };
-                  set('faq', faq);
-                }}
-                placeholder="Answer"
+                value={form.categories}
+                onChange={(e) => set('categories', e.target.value)}
+                placeholder="Investing, Retirement"
+              />
+              <label className={`${labelClass} mt-4`}>Tags</label>
+              <input
+                className={inputClass}
+                value={form.tags}
+                onChange={(e) => set('tags', e.target.value)}
+                placeholder="compound-interest, 401k"
+              />
+              <p className="mt-2 text-xs text-[var(--text-tertiary)]">
+                Comma-separated. New ones are created automatically.
+              </p>
+            </div>
+          )}
+
+          {/* Guide-specific fields */}
+          {isGuide && (
+            <div className={cardClass}>
+              <label className={labelClass}>Topic</label>
+              <input
+                className={inputClass}
+                value={form.topic}
+                onChange={(e) => set('topic', e.target.value)}
+                placeholder="Debt payoff strategy (avalanche vs snowball)"
+              />
+              <p className="mt-2 text-xs text-[var(--text-tertiary)]">
+                Used for dedup and internal topic tracking.
+              </p>
+              <label className={`${labelClass} mt-4`}>Related tools</label>
+              <input
+                className={inputClass}
+                value={form.related_tools}
+                onChange={(e) => set('related_tools', e.target.value)}
+                placeholder="debt-paydown, budget, net-worth"
+              />
+              <p className="mt-2 text-xs text-[var(--text-tertiary)]">
+                Comma-separated app slugs under <code>/apps/</code>.
+              </p>
+            </div>
+          )}
+
+          {/* Outlook-specific fields — daily & weekly */}
+          {isOutlook && (
+            <div className={cardClass}>
+              <label className={labelClass}>Tickers</label>
+              <input
+                className={inputClass}
+                value={form.tickers}
+                onChange={(e) => set('tickers', e.target.value)}
+                placeholder="SPCX, TSM, CMCSA"
+              />
+              <label className={`${labelClass} mt-4`}>Sectors</label>
+              <input
+                className={inputClass}
+                value={form.sectors}
+                onChange={(e) => set('sectors', e.target.value)}
+                placeholder="semiconductors, industrials"
+              />
+              <p className="mt-2 text-xs text-[var(--text-tertiary)]">Comma-separated.</p>
+            </div>
+          )}
+
+          {/* Article-specific: related calculator + CTA */}
+          {isArticle && (
+            <div className={cardClass}>
+              <label className={labelClass}>Related calculator</label>
+              <input
+                className={inputClass}
+                value={form.related_calculator}
+                onChange={(e) => set('related_calculator', e.target.value)}
+                placeholder="compound-interest"
+              />
+              <p className="mt-2 text-xs text-[var(--text-tertiary)]">
+                An app slug under <code>/apps/</code>. Powers the &ldquo;try it yourself&rdquo; band.
+              </p>
+              <label className={`${labelClass} mt-4`}>CTA text</label>
+              <input
+                className={inputClass}
+                value={form.cta_text}
+                onChange={(e) => set('cta_text', e.target.value)}
+                placeholder="Run your own numbers"
+              />
+              <label className={`${labelClass} mt-4`}>CTA link</label>
+              <input
+                className={inputClass}
+                value={form.cta_link}
+                onChange={(e) => set('cta_link', e.target.value)}
+                placeholder="/apps/compound-interest"
               />
             </div>
-          ))}
+          )}
         </div>
       </div>
+
+      {/* FAQ — articles only */}
+      {isArticle && (
+        <div className={cardClass}>
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-base font-bold text-[var(--text-primary)]">FAQ</h2>
+            <button
+              onClick={() => set('faq', [...form.faq, { question: '', answer: '' }])}
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--color-accent)]"
+            >
+              <Plus size={14} /> Add question
+            </button>
+          </div>
+          {form.faq.length === 0 && (
+            <p className="text-sm text-[var(--text-tertiary)]">
+              Optional. FAQ entries render on the article and emit FAQ schema.
+            </p>
+          )}
+          <div className="space-y-3">
+            {form.faq.map((item, i) => (
+              <div key={i} className="rounded-[var(--radius-md)] border border-[var(--border-primary)] p-3">
+                <div className="mb-2 flex items-center gap-2">
+                  <input
+                    className={inputClass}
+                    value={item.question}
+                    onChange={(e) => {
+                      const faq = [...form.faq];
+                      faq[i] = { ...faq[i], question: e.target.value };
+                      set('faq', faq);
+                    }}
+                    placeholder="Question"
+                  />
+                  <button
+                    onClick={() => set('faq', form.faq.filter((_, j) => j !== i))}
+                    className="text-[var(--text-tertiary)] hover:text-[var(--crimson-500)]"
+                    aria-label="Remove question"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+                <textarea
+                  className={inputClass}
+                  rows={2}
+                  value={item.answer}
+                  onChange={(e) => {
+                    const faq = [...form.faq];
+                    faq[i] = { ...faq[i], answer: e.target.value };
+                    set('faq', faq);
+                  }}
+                  placeholder="Answer"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* SEO */}
       <div className={cardClass}>
@@ -606,7 +731,7 @@ export default function ContentEditor({ contentId }: { contentId?: string }) {
               className={inputClass}
               value={form.seo_title}
               onChange={(e) => set('seo_title', e.target.value)}
-              placeholder="Defaults to the article title"
+              placeholder={`Defaults to the ${typeLabel} title`}
             />
           </div>
           <div>

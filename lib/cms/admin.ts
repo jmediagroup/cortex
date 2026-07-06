@@ -177,3 +177,27 @@ export function revalidateArticles(slug?: string): void {
   revalidatePath('/');
   revalidatePath('/sitemap.xml');
 }
+
+// Public route base per content type. Guides/outlook still render from the
+// Markdown pipeline, so revalidating them is a no-op today but keeps the write
+// path correct for when their reads migrate — and avoids busting the article
+// caches on a non-article write.
+const TYPE_PATH: Record<string, string> = {
+  guide: '/guides',
+  daily: '/thinking',
+  weekly: '/thinking',
+};
+
+/** Revalidate the public surfaces for a content write, scoped to its type. */
+export function revalidateContent(type: string | undefined, slug?: string): void {
+  if (!type || type === 'article') {
+    revalidateArticles(slug);
+    return;
+  }
+  const base = TYPE_PATH[type];
+  if (base) {
+    revalidatePath(base);
+    if (slug) revalidatePath(`${base}/${slug}`);
+  }
+  revalidatePath('/sitemap.xml');
+}
