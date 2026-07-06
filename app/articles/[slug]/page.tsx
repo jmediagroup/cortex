@@ -143,7 +143,6 @@ export default async function ArticlePage({ params }: PageProps) {
           style={{
             position: 'relative',
             marginTop: -96,
-            padding: '0 24px',
           }}
         >
           <div
@@ -152,7 +151,7 @@ export default async function ArticlePage({ params }: PageProps) {
               margin: '0 auto',
               background: 'var(--bg-canvas)',
               borderRadius: 'var(--radius-md) var(--radius-md) 0 0',
-              padding: '56px 0 0',
+              padding: '32px 24px 0',
             }}
           >
             <nav style={{ marginBottom: 20 }}>

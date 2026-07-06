@@ -105,14 +105,14 @@ export default async function OutlookDetailPage({ params }: PageProps) {
           />
         </div>
 
-        <header style={{ position: 'relative', marginTop: -96, padding: '0 24px' }}>
+        <header style={{ position: 'relative', marginTop: -96 }}>
           <div
             style={{
               maxWidth: 760,
               margin: '0 auto',
               background: 'var(--bg-canvas)',
               borderRadius: 'var(--radius-md) var(--radius-md) 0 0',
-              padding: '56px 0 0',
+              padding: '32px 24px 0',
             }}
           >
             <nav style={{ marginBottom: 20 }}>
