@@ -107,7 +107,7 @@ export default async function GuideDetailPage({ params }: PageProps) {
               margin: '0 auto',
               background: 'var(--bg-canvas)',
               borderRadius: 'var(--radius-md) var(--radius-md) 0 0',
-              padding: '32px 0 0',
+              padding: '56px 0 0',
             }}
           >
             <nav style={{ marginBottom: 20 }}>
