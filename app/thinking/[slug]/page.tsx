@@ -100,8 +100,11 @@ export default async function OutlookDetailPage({ params }: PageProps) {
           }}
         >
           <FeaturedBanner
-            markSize={124}
+            markSize="clamp(44px, 9vh, 92px)"
             label={outlook.type === 'weekly' ? 'WEEKLY OUTLOOK' : 'DAILY OUTLOOK'}
+            // Lift the lockup above the 96px the outlook card overlaps, so it
+            // centers in the visible navy band with even breathing room.
+            style={{ paddingBottom: 96 }}
           />
         </div>
 

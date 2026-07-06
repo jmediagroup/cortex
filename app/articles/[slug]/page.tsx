@@ -135,7 +135,13 @@ export default async function ArticlePage({ params }: PageProps) {
               />
             </>
           ) : (
-            <FeaturedBanner markSize={128} label={article.categories[0]?.name} />
+            <FeaturedBanner
+              markSize="clamp(48px, 10vh, 100px)"
+              label={article.categories[0]?.name}
+              // Lift the lockup above the 96px the article card overlaps, so it
+              // centers in the visible navy band with even breathing room.
+              style={{ paddingBottom: 96 }}
+            />
           )}
         </div>
 
