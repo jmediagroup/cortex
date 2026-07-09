@@ -119,7 +119,7 @@ export default function AccountPage() {
   };
 
   const handleDowngradeToFree = async () => {
-    if (!confirm('Are you sure you want to downgrade to the Free tier? This will cancel your subscription and you will lose access to Pro features.')) {
+    if (!confirm('Cancel your Finance Pro subscription? It stays active until the end of your current billing period — you keep Pro access until then, and you won’t be charged again.')) {
       return;
     }
 
@@ -150,9 +150,17 @@ export default function AccountPage() {
         throw new Error(data.error || 'Failed to cancel subscription');
       }
 
-      setUserTier('free');
-      setSuccessMessage('Successfully downgraded to Free tier. Your subscription has been canceled.');
-      setTimeout(() => setSuccessMessage(''), 5000);
+      // Immediate cancellations (no active sub / already gone in Stripe) flip to
+      // free now; a scheduled cancel keeps Pro until the period ends.
+      if (data.immediate) {
+        setUserTier('free');
+      }
+      const scheduledMsg =
+        data.cancelAt && typeof data.cancelAt === 'number'
+          ? `Your subscription will cancel on ${new Date(data.cancelAt * 1000).toLocaleDateString()}. You keep Finance Pro until then.`
+          : (data.message || 'Your subscription will cancel at the end of the billing period.');
+      setSuccessMessage(data.immediate ? 'Your plan is now Free.' : scheduledMsg);
+      setTimeout(() => setSuccessMessage(''), 6000);
     } catch (error: any) {
       setErrorMessage(error.message || 'Failed to downgrade tier');
       setTimeout(() => setErrorMessage(''), 5000);

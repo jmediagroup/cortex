@@ -76,19 +76,9 @@ function SignupForm() {
       });
       if (signUpError) throw signUpError;
       if (data.user) {
-        try {
-          await fetch('/api/create-user-record', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              userId: data.user.id,
-              email: data.user.email || '',
-              firstName: trimmedFirstName || undefined,
-            }),
-          });
-        } catch (insertErr) {
-          console.error('Error creating user record:', insertErr);
-        }
+        // The public.users row (including first_name, from the signUp
+        // metadata) is created atomically by the handle_new_user trigger —
+        // no client-side fallback call needed.
         setUserEmail(email);
         setSignupComplete(true);
       }

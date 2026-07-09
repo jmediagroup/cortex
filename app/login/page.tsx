@@ -25,6 +25,9 @@ function AuthForm() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [needsVerification, setNeedsVerification] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendMsg, setResendMsg] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createBrowserClient();
@@ -70,6 +73,8 @@ function AuthForm() {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setNeedsVerification(false);
+    setResendMsg(null);
 
     try {
       const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
@@ -82,7 +87,12 @@ function AuthForm() {
     } catch (err: unknown) {
       const e = err as { message?: string; code?: string };
       console.error('Auth error:', err);
-      setError(e.message || 'An error occurred. Please try again.');
+      if (e.code === 'email_not_confirmed') {
+        setNeedsVerification(true);
+        setError('Your email isn’t verified yet. Check your inbox for the link, or resend it below.');
+      } else {
+        setError(e.message || 'An error occurred. Please try again.');
+      }
       setLoading(false);
       await trackEvent(
         'error_occurred',
@@ -93,6 +103,23 @@ function AuthForm() {
         },
         true,
       );
+    }
+  };
+
+  const handleResendVerification = async () => {
+    if (!email || resendLoading) return;
+    setResendLoading(true);
+    setResendMsg(null);
+    try {
+      const { error: resendError } = await supabase.auth.resend({ type: 'signup', email });
+      if (resendError) throw resendError;
+      setResendMsg('Verification email sent — check your inbox.');
+      await trackEvent('resend_verification_requested', { context: 'login' }, true);
+    } catch (err: unknown) {
+      const e = err as { message?: string };
+      setResendMsg(e.message || 'Could not resend right now. Please try again shortly.');
+    } finally {
+      setResendLoading(false);
     }
   };
 
@@ -303,6 +330,24 @@ function AuthForm() {
             autoComplete="current-password"
           />
         </AuthField>
+
+        {needsVerification && (
+          <div style={{ marginTop: -6 }}>
+            <button
+              type="button"
+              onClick={handleResendVerification}
+              disabled={resendLoading}
+              style={{ ...authLinkStyle, fontSize: 13 }}
+            >
+              {resendLoading ? 'Sending…' : 'Resend verification email'}
+            </button>
+            {resendMsg && (
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 6 }}>
+                {resendMsg}
+              </div>
+            )}
+          </div>
+        )}
 
         <div style={{ marginTop: -6, textAlign: 'right' }}>
           <button
