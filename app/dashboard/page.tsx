@@ -68,10 +68,35 @@ function DashboardInner() {
         .eq('id', session.user.id)
         .single()) as { data: UserRow | null };
 
-      const tier = userData?.tier ?? 'free';
+      let tier = userData?.tier ?? 'free';
       if (userData?.tier) setUserTier(userData.tier);
 
       const isProSuccess = successParam === 'true';
+      const checkoutSessionId = searchParams.get('session_id');
+
+      // Reconcile straight from Stripe on return from checkout so a delayed or
+      // failed webhook doesn't leave a paying user stuck on the free tier.
+      if (isProSuccess && checkoutSessionId) {
+        try {
+          const resp = await fetch('/api/verify-checkout', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${session.access_token}`,
+            },
+            body: JSON.stringify({ sessionId: checkoutSessionId }),
+          });
+          if (resp.ok) {
+            const reconciled = await resp.json();
+            if (reconciled?.tier) {
+              tier = reconciled.tier;
+              setUserTier(reconciled.tier);
+            }
+          }
+        } catch {
+          // Non-fatal: fall back to the tier read from the DB above.
+        }
+      }
 
       if (isProSuccess) {
         setShowProWelcome(true);

@@ -219,6 +219,25 @@ export type Database = {
         };
         Relationships: [];
       };
+      webhook_events: {
+        Row: {
+          id: string;
+          type: string;
+          processed_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id: string;
+          type: string;
+          processed_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          type?: string;
+          processed_at?: string | null;
+        };
+        Relationships: [];
+      };
       cms_content: {
         Row: {
           id: string;

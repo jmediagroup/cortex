@@ -37,7 +37,9 @@ export async function createCheckoutSession(
       },
     ],
     allow_promotion_codes: true,
-    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?success=true`,
+    // Carry the session id back so /dashboard can reconcile the tier
+    // server-side if the webhook is delayed or fails.
+    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?success=true&session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing?canceled=true`,
     metadata: {
       userId,

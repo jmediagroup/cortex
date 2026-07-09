@@ -56,10 +56,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // If no subscription exists, just update the tier in database
+    // No subscription on file — nothing to cancel; ensure they're on free.
     if (!userData.stripe_subscription_id) {
-      console.log('[Cancel Subscription] No active subscription found, updating tier only');
-
       const { error: updateError } = await (supabase
         .from('users')
         .update as any)({
@@ -71,53 +69,36 @@ export async function POST(request: NextRequest) {
 
       if (updateError) {
         console.error('[Cancel Subscription] Failed to update tier:', updateError);
-        return NextResponse.json(
-          { error: 'Failed to update tier' },
-          { status: 500 }
-        );
+        return NextResponse.json({ error: 'Failed to update tier' }, { status: 500 });
       }
 
       return NextResponse.json({
         success: true,
-        message: 'Tier updated to free (no active subscription found)'
+        immediate: true,
+        message: 'No active subscription found. Your plan is set to Free.',
       });
     }
 
-    // Cancel the Stripe subscription
-    console.log('[Cancel Subscription] Canceling subscription:', userData.stripe_subscription_id);
-
+    // Schedule cancellation at the end of the paid period so the member keeps
+    // the access they already paid for. The tier is NOT downgraded here — the
+    // customer.subscription.deleted webhook flips it to free when the period
+    // actually ends.
     try {
-      const canceledSubscription = await stripe.subscriptions.cancel(
-        userData.stripe_subscription_id
+      const subscription = await stripe.subscriptions.update(
+        userData.stripe_subscription_id,
+        { cancel_at_period_end: true },
       );
-
-      console.log('[Cancel Subscription] Subscription canceled:', canceledSubscription.id);
-
-      // Update database to reflect cancellation
-      const { error: updateError } = await (supabase
-        .from('users')
-        .update as any)({
-          tier: 'free',
-          subscription_status: 'canceled',
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', userId);
-
-      if (updateError) {
-        console.error('[Cancel Subscription] Failed to update database:', updateError);
-        // Subscription was canceled in Stripe, but database update failed
-        // This is not critical as the webhook will eventually update it
-      }
 
       return NextResponse.json({
         success: true,
-        message: 'Subscription canceled successfully'
+        immediate: false,
+        cancelAt: subscription.cancel_at ?? subscription.current_period_end ?? null,
+        message: 'Your subscription will cancel at the end of the current billing period. You keep Finance Pro until then.',
       });
-
     } catch (stripeError: any) {
       console.error('[Cancel Subscription] Stripe API error:', stripeError);
 
-      // If subscription doesn't exist in Stripe, just update database
+      // Subscription no longer exists in Stripe — reconcile to free locally.
       if (stripeError.code === 'resource_missing') {
         const { error: updateError } = await (supabase
           .from('users')
@@ -130,15 +111,13 @@ export async function POST(request: NextRequest) {
           .eq('id', userId);
 
         if (updateError) {
-          return NextResponse.json(
-            { error: 'Failed to update tier' },
-            { status: 500 }
-          );
+          return NextResponse.json({ error: 'Failed to update tier' }, { status: 500 });
         }
 
         return NextResponse.json({
           success: true,
-          message: 'Subscription not found in Stripe, tier updated to free'
+          immediate: true,
+          message: 'Subscription not found in Stripe; your plan is set to Free.',
         });
       }
 
@@ -147,7 +126,6 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
-
   } catch (error: any) {
     console.error('[Cancel Subscription] Unexpected error:', error);
     return NextResponse.json(

@@ -2,41 +2,50 @@ import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import Stripe from 'stripe';
 import { stripe } from '@/lib/stripe/server';
-import { createServiceClient, type Database } from '@/lib/supabase/client';
-import { type Tier } from '@/lib/access-control';
+import { createServiceClient } from '@/lib/supabase/client';
+import { getTierFromSubscription, tierForSubscription } from '@/lib/stripe/tier';
 import { trackServerEvent } from '@/lib/analytics-server';
 
-// Map Stripe price IDs to tier names
-function getPriceIdToTierMap(): Record<string, Tier> {
-  return {
-    // Finance Pro (monthly and annual)
-    [process.env.NEXT_PUBLIC_STRIPE_FINANCE_PRO_MONTHLY_PRICE_ID!]: 'finance_pro',
-    [process.env.NEXT_PUBLIC_STRIPE_FINANCE_PRO_ANNUAL_PRICE_ID!]: 'finance_pro',
+type ServiceClient = ReturnType<typeof createServiceClient>;
 
-    // Legacy Elite (maps to finance_pro for backward compatibility)
-    [process.env.NEXT_PUBLIC_STRIPE_ELITE_MONTHLY_PRICE_ID!]: 'finance_pro',
-    [process.env.NEXT_PUBLIC_STRIPE_ELITE_ANNUAL_PRICE_ID!]: 'finance_pro',
+/**
+ * Resolve the Cortex user id for a Stripe event. Prefers the `userId` we stamp
+ * on session/subscription metadata, but falls back to a DB lookup by
+ * subscription id then customer id — so a subscription changed outside our
+ * checkout (e.g. from the Stripe dashboard or the billing portal) still maps
+ * back to the right user instead of silently no-oping.
+ */
+async function resolveUserId(
+  supabase: ServiceClient,
+  opts: { metadataUserId?: string | null; subscriptionId?: string | null; customerId?: string | null },
+): Promise<string | null> {
+  if (opts.metadataUserId) return opts.metadataUserId;
 
-    // Legacy (maps to finance_pro for backward compatibility)
-    [process.env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PRICE_ID!]: 'finance_pro',
-  };
-}
+  if (opts.subscriptionId) {
+    const { data } = await supabase
+      .from('users')
+      .select('id')
+      .eq('stripe_subscription_id', opts.subscriptionId)
+      .maybeSingle();
+    if (data?.id) return data.id as string;
+  }
 
-// Determine tier from a Stripe subscription
-function getTierFromSubscription(subscription: Stripe.Subscription): Tier {
-  const priceId = subscription.items.data[0]?.price.id;
-  if (!priceId) return 'free';
+  if (opts.customerId) {
+    const { data } = await supabase
+      .from('users')
+      .select('id')
+      .eq('stripe_customer_id', opts.customerId)
+      .maybeSingle();
+    if (data?.id) return data.id as string;
+  }
 
-  const priceToTierMap = getPriceIdToTierMap();
-  return priceToTierMap[priceId] || 'free';
+  return null;
 }
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
   const headersList = await headers();
   const signature = headersList.get('stripe-signature');
-
-  console.log('[Webhook] Received webhook request');
 
   if (!signature) {
     console.error('[Webhook] No signature found in request');
@@ -51,7 +60,6 @@ export async function POST(request: NextRequest) {
       signature,
       process.env.STRIPE_WEBHOOK_SECRET!
     );
-    console.log(`[Webhook] Event verified: ${event.type} (${event.id})`);
   } catch (err: any) {
     console.error(`[Webhook] Signature verification failed: ${err.message}`);
     return NextResponse.json({ error: err.message }, { status: 400 });
@@ -59,56 +67,55 @@ export async function POST(request: NextRequest) {
 
   const supabase = createServiceClient();
 
+  // Idempotency: skip events we've already fully processed (Stripe retries
+  // deliveries, and can send the same event more than once).
+  const { data: alreadyProcessed } = await supabase
+    .from('webhook_events')
+    .select('id')
+    .eq('id', event.id)
+    .maybeSingle();
+  if (alreadyProcessed) {
+    return NextResponse.json({ received: true, duplicate: true });
+  }
+
   try {
     switch (event.type) {
       case 'customer.subscription.created':
       case 'customer.subscription.updated': {
         const subscription = event.data.object as Stripe.Subscription;
         const customerId = subscription.customer as string;
-        const userId = subscription.metadata.userId;
-
-        console.log(`[Webhook] Processing subscription ${event.type}`, {
+        const userId = await resolveUserId(supabase, {
+          metadataUserId: subscription.metadata.userId,
           subscriptionId: subscription.id,
           customerId,
-          userId,
-          status: subscription.status,
-          metadata: subscription.metadata
         });
 
         if (!userId) {
-          console.error('[Webhook] No userId in subscription metadata');
+          console.error('[Webhook] Could not resolve userId for subscription', subscription.id);
           break;
         }
 
-        // Determine tier from subscription price ID
-        const tier = subscription.status === 'active' ? getTierFromSubscription(subscription) : 'free';
+        const tier = tierForSubscription(subscription);
 
-        console.log(`[Webhook] Determined tier: ${tier} for subscription ${subscription.id}`);
-
-        const { data, error } = await (supabase
-          .from('users')
-          .update as any)({
-            tier,
-            stripe_customer_id: customerId,
-            stripe_subscription_id: subscription.id,
-            subscription_status: subscription.status,
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', userId);
+        const { error } = await (supabase.from('users').update as any)({
+          tier,
+          stripe_customer_id: customerId,
+          stripe_subscription_id: subscription.id,
+          subscription_status: subscription.status,
+          updated_at: new Date().toISOString(),
+        }).eq('id', userId);
 
         if (error) {
           console.error('[Webhook] Database update failed:', error);
-        } else {
-          console.log(`[Webhook] Successfully updated user tier to ${tier} for userId:`, userId);
+          throw new Error('DB update failed');
+        }
 
-          // Track subscription upgrade event
-          if (event.type === 'customer.subscription.created' || subscription.status === 'active') {
-            await trackServerEvent(userId, 'subscription_upgrade', {
-              new_tier: tier,
-              subscription_id: subscription.id,
-              subscription_status: subscription.status,
-            });
-          }
+        if (event.type === 'customer.subscription.created' || subscription.status === 'active') {
+          await trackServerEvent(userId, 'subscription_upgrade', {
+            new_tier: tier,
+            subscription_id: subscription.id,
+            subscription_status: subscription.status,
+          });
         }
 
         break;
@@ -116,25 +123,30 @@ export async function POST(request: NextRequest) {
 
       case 'customer.subscription.deleted': {
         const subscription = event.data.object as Stripe.Subscription;
-        const userId = subscription.metadata.userId;
+        const userId = await resolveUserId(supabase, {
+          metadataUserId: subscription.metadata.userId,
+          subscriptionId: subscription.id,
+          customerId: subscription.customer as string,
+        });
 
         if (!userId) {
-          console.error('No userId in subscription metadata');
+          console.error('[Webhook] Could not resolve userId for deleted subscription', subscription.id);
           break;
         }
 
         const oldTier = getTierFromSubscription(subscription);
 
-        await (supabase
-          .from('users')
-          .update as any)({
-            tier: 'free',
-            subscription_status: 'canceled',
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', userId);
+        const { error } = await (supabase.from('users').update as any)({
+          tier: 'free',
+          subscription_status: 'canceled',
+          updated_at: new Date().toISOString(),
+        }).eq('id', userId);
 
-        // Track subscription cancellation
+        if (error) {
+          console.error('[Webhook] Database update failed:', error);
+          throw new Error('DB update failed');
+        }
+
         await trackServerEvent(userId, 'subscription_cancel', {
           old_tier: oldTier,
           new_tier: 'free',
@@ -146,23 +158,18 @@ export async function POST(request: NextRequest) {
 
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
-        const userId = session.metadata?.userId;
-
-        console.log('[Webhook] Processing checkout.session.completed', {
-          sessionId: session.id,
-          userId,
-          customerId: session.customer,
-          subscriptionId: session.subscription,
-          metadata: session.metadata
+        const subscriptionId = session.subscription as string;
+        const customerId = session.customer as string;
+        const userId = await resolveUserId(supabase, {
+          metadataUserId: session.metadata?.userId,
+          subscriptionId,
+          customerId,
         });
 
         if (!userId) {
-          console.error('[Webhook] No userId in session metadata:', session.metadata);
+          console.error('[Webhook] Could not resolve userId for checkout session', session.id);
           break;
         }
-
-        // Get the subscription
-        const subscriptionId = session.subscription as string;
 
         if (!subscriptionId) {
           console.error('[Webhook] No subscription ID in checkout session');
@@ -170,52 +177,45 @@ export async function POST(request: NextRequest) {
         }
 
         const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+        const tier = tierForSubscription(subscription);
 
-        console.log('[Webhook] Retrieved subscription:', {
-          id: subscription.id,
-          status: subscription.status
-        });
-
-        // Determine tier from subscription price ID
-        const tier = getTierFromSubscription(subscription);
-
-        console.log(`[Webhook] Determined tier: ${tier} from checkout session`);
-
-        const { data, error} = await (supabase
-          .from('users')
-          .update as any)({
-            tier,
-            stripe_customer_id: session.customer as string,
-            stripe_subscription_id: subscriptionId,
-            subscription_status: subscription.status,
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', userId);
+        const { error } = await (supabase.from('users').update as any)({
+          tier,
+          stripe_customer_id: customerId,
+          stripe_subscription_id: subscriptionId,
+          subscription_status: subscription.status,
+          updated_at: new Date().toISOString(),
+        }).eq('id', userId);
 
         if (error) {
           console.error('[Webhook] Database update failed:', error);
-        } else {
-          console.log(`[Webhook] Successfully updated user tier to ${tier} for userId:`, userId);
-
-          // Track successful checkout/upgrade
-          await trackServerEvent(userId, 'subscription_upgrade', {
-            new_tier: tier,
-            subscription_id: subscriptionId,
-            subscription_status: subscription.status,
-            checkout_session_id: session.id,
-          });
+          throw new Error('DB update failed');
         }
+
+        await trackServerEvent(userId, 'subscription_upgrade', {
+          new_tier: tier,
+          subscription_id: subscriptionId,
+          subscription_status: subscription.status,
+          checkout_session_id: session.id,
+        });
 
         break;
       }
 
       default:
-        console.log(`Unhandled event type: ${event.type}`);
+        // Unhandled event type — nothing to do, but still mark it processed below.
+        break;
     }
+
+    // Mark processed only after the handler succeeded, so a failed handler is
+    // retried by Stripe rather than silently skipped.
+    await supabase
+      .from('webhook_events')
+      .insert({ id: event.id, type: event.type, processed_at: new Date().toISOString() } as any);
 
     return NextResponse.json({ received: true });
   } catch (error: any) {
-    console.error('Webhook handler error:', error);
+    console.error('[Webhook] handler error:', error);
     return NextResponse.json(
       { error: error.message || 'Webhook handler failed' },
       { status: 500 }
