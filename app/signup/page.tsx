@@ -5,6 +5,7 @@ import { ArrowRight, Check, Loader2, Lock, Mail, User as UserIcon } from 'lucide
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createBrowserClient } from '@/lib/supabase/client';
+import { siteUrl } from '@/lib/site-url';
 import {
   AuthShell,
   AuthField,
@@ -66,7 +67,10 @@ function SignupForm() {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}${postVerifyRedirect}`,
+          // Route the verification link through /auth/callback (on the
+          // canonical origin) so the PKCE code is exchanged into a session
+          // before the user reaches their post-verify destination.
+          emailRedirectTo: `${siteUrl()}/auth/callback?next=${encodeURIComponent(postVerifyRedirect)}`,
           data: trimmedFirstName ? { first_name: trimmedFirstName } : undefined,
         },
       });
