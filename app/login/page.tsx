@@ -5,6 +5,8 @@ import { ArrowLeft, ArrowRight, Loader2, Lock, Mail } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createBrowserClient } from '@/lib/supabase/client';
+import { siteUrl } from '@/lib/site-url';
+import { safeNextPath } from '@/lib/safe-redirect';
 import { trackEvent } from '@/lib/analytics';
 import {
   AuthShell,
@@ -57,7 +59,7 @@ function AuthForm() {
         data: { session },
       } = await supabase.auth.getSession();
       if (session) {
-        const redirect = searchParams.get('redirect') || '/dashboard';
+        const redirect = safeNextPath(searchParams.get('redirect'), '/dashboard');
         router.push(redirect);
       }
     };
@@ -74,7 +76,7 @@ function AuthForm() {
       if (signInError) throw signInError;
       if (data.session) {
         await trackEvent('user_login', {}, true);
-        const redirect = searchParams.get('redirect') || '/dashboard';
+        const redirect = safeNextPath(searchParams.get('redirect'), '/dashboard');
         router.push(redirect);
       }
     } catch (err: unknown) {
@@ -100,7 +102,9 @@ function AuthForm() {
     setError(null);
     try {
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
+        // Exchange the recovery code at /auth/callback first, then land on the
+        // set-new-password screen with a live recovery session.
+        redirectTo: `${siteUrl()}/auth/callback?next=${encodeURIComponent('/reset-password')}`,
       });
       if (resetError) throw resetError;
       setResetEmailSent(true);
