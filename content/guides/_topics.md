@@ -11,3 +11,4 @@ removing the line, so the topic isn't accidentally reused.
 |---|---|---|
 | 2026-07-02 | debt-avalanche-vs-snowball | Debt payoff strategy (avalanche vs snowball) |
 | 2026-07-05 | coast-fire-explained | Coast FIRE |
+| 2026-07-12 | capital-gains-tax-on-stocks | Capital gains tax on stocks |
