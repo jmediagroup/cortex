@@ -149,4 +149,7 @@ export const RATE_LIMITS = {
 
   // Outlook subscribe form: 5 requests per 5 minutes per IP
   outlookSubscribe: { limit: 5, windowSeconds: 300 },
+
+  // "What's Your Why" AI synthesis: 5 reflections per 5 minutes per user
+  whySynthesis: { limit: 5, windowSeconds: 300 },
 } as const;
