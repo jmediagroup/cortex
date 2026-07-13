@@ -122,6 +122,13 @@ export const DEFAULT_TOOLS: MarketingTool[] = [
     href: '/apps/personality-quiz',
     tag: 'FREE',
   },
+  {
+    icon: 'compass',
+    title: "What's Your Why",
+    desc: 'Eight reflective questions that surface what actually drives your money decisions — reflected back as a personal read on your relationship with money.',
+    href: '/apps/whats-your-why',
+    tag: 'PRO',
+  },
 ];
 
 function ToolCard({ tool }: { tool: MarketingTool }) {

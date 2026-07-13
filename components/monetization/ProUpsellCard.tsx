@@ -18,6 +18,7 @@ const TOOL_BENEFITS: Record<string, string[]> = {
   'retirement-strategy': ['Roth conversion ladder modeling', 'Social Security optimization', 'Sequence of returns risk'],
   's-corp-investment': ['Solo 401k contribution maximizer', 'Defined benefit plan modeling', 'After-tax return comparison'],
   's-corp-optimizer': ['State tax optimization', 'Benefits and deduction planning', 'Multi-year salary strategy'],
+  'whats-your-why': ['AI-synthesized reflection on your money psychology', 'Named themes, core tension, and a personal next step', 'Private, saved reflections you can revisit'],
 };
 
 interface ProUpsellCardProps {

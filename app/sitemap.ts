@@ -207,6 +207,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly',
       priority: 0.9,
     },
+    // What's Your Why
+    {
+      url: `${baseUrl}/apps/whats-your-why`,
+      lastModified: lastUpdated,
+      changeFrequency: 'monthly',
+      priority: 0.9,
+    },
     ...['accumulator', 'optimizer', 'fortress', 'tactician', 'visionary', 'steward'].map(
       (id) => ({
         url: `${baseUrl}/apps/personality-quiz/r/${id}`,

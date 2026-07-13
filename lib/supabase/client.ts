@@ -238,6 +238,27 @@ export type Database = {
         };
         Relationships: [];
       };
+      why_reflections: {
+        Row: {
+          id: string;
+          user_id: string;
+          answers: Record<string, string>;
+          summary: Record<string, any>;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          answers: Record<string, string>;
+          summary: Record<string, any>;
+          created_at?: string;
+        };
+        Update: {
+          answers?: Record<string, string>;
+          summary?: Record<string, any>;
+        };
+        Relationships: [];
+      };
       cms_content: {
         Row: {
           id: string;
