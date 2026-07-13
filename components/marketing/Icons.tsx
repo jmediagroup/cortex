@@ -28,7 +28,12 @@ export type MarketingIconName =
   | 'car'
   | 'scale'
   | 'mapPin'
-  | 'building';
+  | 'building'
+  | 'play'
+  | 'youtube'
+  | 'bell'
+  | 'headphones'
+  | 'externalLink';
 
 type Props = Omit<SVGProps<SVGSVGElement>, 'name' | 'stroke' | 'width' | 'height'> & {
   name: MarketingIconName;
@@ -219,6 +224,33 @@ const paths: Record<MarketingIconName, React.ReactNode> = {
       <path d="M16 14h.01" />
       <path d="M8 10h.01" />
       <path d="M8 14h.01" />
+    </>
+  ),
+  play: <polygon points="6 4 20 12 6 20 6 4" fill="currentColor" stroke="none" />,
+  youtube: (
+    <>
+      <path d="M22 8.4a2.8 2.8 0 0 0-2-2C18.3 6 12 6 12 6s-6.3 0-8 .4a2.8 2.8 0 0 0-2 2A29 29 0 0 0 1.7 12a29 29 0 0 0 .3 3.6 2.8 2.8 0 0 0 2 2C5.7 18 12 18 12 18s6.3 0 8-.4a2.8 2.8 0 0 0 2-2 29 29 0 0 0 .3-3.6 29 29 0 0 0-.3-3.6z" />
+      <polygon points="10 9 15.2 12 10 15 10 9" fill="currentColor" stroke="none" />
+    </>
+  ),
+  bell: (
+    <>
+      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+      <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+    </>
+  ),
+  headphones: (
+    <>
+      <path d="M3 14v-2a9 9 0 0 1 18 0v2" />
+      <path d="M21 15a2 2 0 0 1-2 2h-1v-6h1a2 2 0 0 1 2 2z" />
+      <path d="M3 15a2 2 0 0 0 2 2h1v-6H5a2 2 0 0 0-2 2z" />
+    </>
+  ),
+  externalLink: (
+    <>
+      <path d="M15 3h6v6" />
+      <path d="M10 14 21 3" />
+      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
     </>
   ),
 };

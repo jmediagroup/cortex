@@ -89,6 +89,13 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: '**.supabase.co',
       },
+      {
+        // YouTube video thumbnails for the Money Guy Show tribute page
+        // (/the-money-guy-show). We construct i.ytimg.com URLs from public
+        // video ids; the images link out to youtube.com.
+        protocol: 'https',
+        hostname: 'i.ytimg.com',
+      },
     ],
   },
 };

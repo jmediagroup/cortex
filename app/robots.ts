@@ -14,6 +14,7 @@ const PUBLIC_PATHS = [
   '/thinking',
   '/guides',
   '/financial-mutants',
+  '/the-money-guy-show',
   '/apps',
   '/apps/compound-interest',
   '/apps/budget',

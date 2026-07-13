@@ -177,6 +177,7 @@ export async function GET() {
     `- [Outlook RSS feed](${BASE_URL}/thinking/rss.xml): subscribe to the daily and weekly market outlook`,
     `- [Full content corpus](${BASE_URL}/llms-full.txt): every article and market outlook concatenated as plain text, optimized for LLM ingestion`,
     `- [Tools for Financial Mutants](${BASE_URL}/financial-mutants): calculators and decision engines for financial mutants and fans of the Money Guy Show, organized around the Financial Order of Operations`,
+    `- [The Money Guy Show tribute](${BASE_URL}/the-money-guy-show): an independent fan hub to subscribe on YouTube and watch the show's latest episodes, with links to run the numbers behind the Financial Order of Operations (not affiliated with the show)`,
     `- [About Money Guy Mutants](${BASE_URL}/about)`,
     `- [Pricing](${BASE_URL}/pricing)`,
     '',
