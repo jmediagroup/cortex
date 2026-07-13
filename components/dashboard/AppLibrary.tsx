@@ -193,6 +193,17 @@ const APPS: AppConfig[] = [
     category: 'Personal Finance',
     path: '/apps/personality-quiz',
   },
+  {
+    id: 'whats-your-why',
+    name: "What's Your Why",
+    description: 'Eight reflective questions that surface what actually drives your money decisions — synthesized into a personal read on your relationship with money.',
+    icon: Compass,
+    iconColor: 'text-[var(--navy)]',
+    tier: 'pro',
+    sector: 'finance',
+    category: 'Personal Finance',
+    path: '/apps/whats-your-why',
+  },
 ];
 
 interface AppLibraryProps {
