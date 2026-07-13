@@ -13,6 +13,8 @@ const PUBLIC_PATHS = [
   '/enterprise',
   '/thinking',
   '/guides',
+  '/financial-mutants',
+  '/apps',
   '/apps/compound-interest',
   '/apps/budget',
   '/apps/retirement-strategy',
@@ -26,6 +28,9 @@ const PUBLIC_PATHS = [
   '/apps/coast-fire',
   '/apps/s-corp-optimizer',
   '/apps/s-corp-investment',
+  '/apps/capital-gains-tax',
+  '/apps/personality-quiz',
+  '/apps/whats-your-why',
 ];
 
 const PRIVATE_PATHS = [

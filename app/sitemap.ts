@@ -112,6 +112,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly',
       priority: 0.4,
     },
+    // Keyword landing page for the Money Guy Show / Financial Mutants audience
+    {
+      url: `${baseUrl}/financial-mutants`,
+      lastModified: lastUpdated,
+      changeFrequency: 'monthly',
+      priority: 0.9,
+    },
+    // All-tools index
+    {
+      url: `${baseUrl}/apps`,
+      lastModified: lastUpdated,
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
     // Public Financial Calculators - highest priority for SEO
     {
       url: `${baseUrl}/apps/compound-interest`,
