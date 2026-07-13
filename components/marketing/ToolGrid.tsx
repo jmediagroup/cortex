@@ -127,7 +127,7 @@ export const DEFAULT_TOOLS: MarketingTool[] = [
     title: "What's Your Why",
     desc: 'Eight reflective questions that surface what actually drives your money decisions — reflected back as a personal read on your relationship with money.',
     href: '/apps/whats-your-why',
-    tag: 'FREE',
+    tag: 'PRO',
   },
 ];
 

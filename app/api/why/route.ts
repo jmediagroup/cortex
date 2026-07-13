@@ -6,6 +6,7 @@ import {
   unauthorizedResponse,
 } from '@/lib/auth-helpers';
 import { checkRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
+import { hasProAccess, type Tier } from '@/lib/access-control';
 import { WHY_QUESTION_IDS, type WhyAnswers } from '@/lib/why/questions';
 import { synthesizeWhy, SynthesisError } from '@/lib/why/synthesis';
 
@@ -33,6 +34,26 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const auth = await authenticateRequest(request);
   if (isAuthError(auth)) return unauthorizedResponse(auth.error);
+
+  const supabase = createServiceClient();
+
+  // Pro-only: this reflection requires a paid plan.
+  const { data: userData } = await supabase
+    .from('users')
+    .select('tier')
+    .eq('id', auth.user.id)
+    .single();
+
+  const userTier = ((userData as { tier?: Tier } | null)?.tier || 'free') as Tier;
+  if (!hasProAccess('finance', userTier)) {
+    return NextResponse.json(
+      {
+        error: 'PRO_REQUIRED',
+        message: "What's Your Why is a Pro feature. Upgrade to a paid plan to generate your reflection.",
+      },
+      { status: 403 },
+    );
+  }
 
   // Rate limit the AI call per user to keep cost and abuse in check.
   const rateLimit = checkRateLimit(
@@ -100,7 +121,6 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const supabase = createServiceClient();
   const { data, error } = await supabase
     .from('why_reflections')
     .insert({

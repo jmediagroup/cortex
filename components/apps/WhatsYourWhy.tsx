@@ -3,17 +3,20 @@
 import { useCallback, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { createBrowserClient } from '@/lib/supabase/client';
+import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 import { WHY_QUESTIONS } from '@/lib/why/questions';
 import type { WhySummary } from '@/lib/why/synthesis';
 
 type Stage = 'intro' | 'reflect' | 'loading' | 'result' | 'error';
 
 interface Props {
-  /** Whether a session exists — gates the AI generation step. */
+  /** Whether the user is on a paid plan — gates the entire tool. */
+  isPro: boolean;
+  /** Whether a session exists — controls the upsell copy. */
   isLoggedIn: boolean;
 }
 
-export default function WhatsYourWhy({ isLoggedIn }: Props) {
+export default function WhatsYourWhy({ isPro, isLoggedIn }: Props) {
   const [stage, setStage] = useState<Stage>('intro');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -92,6 +95,28 @@ export default function WhatsYourWhy({ isLoggedIn }: Props) {
     }
   }, [answers]);
 
+  // Pro-only tool. Non-paid visitors get a short framing + the upgrade card.
+  if (!isPro) {
+    return (
+      <div style={shellStyle}>
+        <style>{whyCss}</style>
+        <div className="why-card why-fade" style={{ marginBottom: 20 }}>
+          <div className="eyebrow" style={{ color: 'var(--navy)', marginBottom: 12 }}>
+            ● EIGHT QUESTIONS · A FEW MINUTES
+          </div>
+          <h2 className="why-h2">Before the strategy, the why.</h2>
+          <p className="why-lead">
+            Budgets, portfolios, and plans fall apart without a clear reason
+            underneath them. This Pro reflection surfaces yours — eight guided
+            questions, synthesized into a single personal read on your
+            relationship with money.
+          </p>
+        </div>
+        <ProUpsellCard toolId="whats-your-why" isLoggedIn={isLoggedIn} />
+      </div>
+    );
+  }
+
   return (
     <div style={shellStyle}>
       <style>{whyCss}</style>
@@ -106,7 +131,6 @@ export default function WhatsYourWhy({ isLoggedIn }: Props) {
           subtext={question.subtext}
           value={answers[question.id] ?? ''}
           isLast={isLast}
-          isLoggedIn={isLoggedIn}
           canGenerate={answeredCount >= 3}
           onChange={setAnswer}
           onBack={back}
@@ -124,7 +148,6 @@ export default function WhatsYourWhy({ isLoggedIn }: Props) {
       {stage === 'error' && (
         <ErrorPanel
           message={errorMessage}
-          isLoggedIn={isLoggedIn}
           onRetry={generate}
           onBack={() => setStage('reflect')}
         />
@@ -170,7 +193,6 @@ function ReflectPanel({
   subtext,
   value,
   isLast,
-  isLoggedIn,
   canGenerate,
   onChange,
   onBack,
@@ -183,7 +205,6 @@ function ReflectPanel({
   subtext: string;
   value: string;
   isLast: boolean;
-  isLoggedIn: boolean;
   canGenerate: boolean;
   onChange: (v: string) => void;
   onBack: () => void;
@@ -232,7 +253,7 @@ function ReflectPanel({
           <button type="button" className="why-btn why-btn-primary" onClick={onNext}>
             Next
           </button>
-        ) : isLoggedIn ? (
+        ) : (
           <button
             type="button"
             className="why-btn why-btn-primary"
@@ -246,22 +267,8 @@ function ReflectPanel({
           >
             Reveal your why
           </button>
-        ) : (
-          <Link href="/signup" className="why-btn why-btn-primary">
-            Sign in to reveal your why
-          </Link>
         )}
       </div>
-
-      {isLast && !isLoggedIn && (
-        <p className="why-signin-note">
-          Your reflection is generated with a free account.{' '}
-          <Link href="/login" className="why-inline-link">
-            Already have one? Sign in
-          </Link>
-          .
-        </p>
-      )}
     </section>
   );
 }
@@ -349,12 +356,10 @@ function ResultPanel({
 
 function ErrorPanel({
   message,
-  isLoggedIn,
   onRetry,
   onBack,
 }: {
   message: string;
-  isLoggedIn: boolean;
   onRetry: () => void;
   onBack: () => void;
 }) {
@@ -368,15 +373,9 @@ function ErrorPanel({
         <button type="button" className="why-btn why-btn-ghost" onClick={onBack}>
           Back to my answers
         </button>
-        {isLoggedIn ? (
-          <button type="button" className="why-btn why-btn-primary" onClick={onRetry}>
-            Try again
-          </button>
-        ) : (
-          <Link href="/signup" className="why-btn why-btn-primary">
-            Create free account
-          </Link>
-        )}
+        <button type="button" className="why-btn why-btn-primary" onClick={onRetry}>
+          Try again
+        </button>
       </div>
     </section>
   );
@@ -507,13 +506,6 @@ const whyCss = `
   color: var(--text-secondary);
   border-color: var(--border-default, rgba(0,0,0,0.14));
 }
-.why-signin-note {
-  margin: 16px 0 0;
-  font-size: 13px;
-  color: var(--text-tertiary);
-  line-height: 1.55;
-}
-.why-inline-link { color: var(--navy, #0A4A73); font-weight: 600; }
 .why-pulse {
   display: flex;
   gap: 8px;
