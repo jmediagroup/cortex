@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { MarketingShell } from '@/components/marketing/MarketingShell';
 import { MarketingIcon, type MarketingIconName } from '@/components/marketing/Icons';
 import { Card } from '@/components/ui/Card';
@@ -198,6 +199,23 @@ export default function FinancialMutantsPage() {
               Start with compound interest
             </Button>
           </div>
+          <p style={{ margin: '18px 0 0' }}>
+            <Link
+              href="/the-money-guy-show"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                fontSize: 13,
+                fontWeight: 600,
+                color: 'var(--orange)',
+                textDecoration: 'none',
+              }}
+            >
+              New — watch the latest Money Guy Show episodes{' '}
+              <MarketingIcon name="arrowRight" size={13} />
+            </Link>
+          </p>
         </div>
       </section>
 

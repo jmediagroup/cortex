@@ -8,6 +8,7 @@ import { MutantMark } from '@/components/brand/MutantMark';
 
 const NAV_LINKS = [
   { label: 'Tools', href: '/#tools' },
+  { label: 'Watch', href: '/the-money-guy-show' },
   { label: 'Guides', href: '/guides' },
   { label: 'Thinking', href: '/thinking' },
   { label: 'Pricing', href: '/pricing' },

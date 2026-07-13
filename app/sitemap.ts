@@ -119,6 +119,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly',
       priority: 0.9,
     },
+    // Money Guy Show tribute hub (subscribe + latest videos feed)
+    {
+      url: `${baseUrl}/the-money-guy-show`,
+      lastModified: lastUpdated,
+      changeFrequency: 'daily',
+      priority: 0.9,
+    },
     // All-tools index
     {
       url: `${baseUrl}/apps`,

@@ -8,6 +8,7 @@ const LINK_GROUPS: LinkGroup[] = [
     heading: 'Product',
     links: [
       { label: 'Tools', href: '/#tools' },
+      { label: 'The Money Guy Show', href: '/the-money-guy-show' },
       { label: 'For Financial Mutants', href: '/financial-mutants' },
       { label: 'Pricing', href: '/pricing' },
       { label: 'Roadmap', href: '/roadmap' },
