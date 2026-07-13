@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     template: "%s | Money Guy Mutants"
   },
   description: "Free online financial calculators and budget planning tools. Retirement planning, compound interest calculator, budget optimizer, net worth tracker, and more. Make smarter money decisions with Money Guy Mutants.",
-  keywords: ['financial calculator', 'budget planner', 'retirement calculator', 'compound interest calculator', 'net worth tracker', 'budget optimizer', 'financial planning tool', 'money management app', 'investment calculator', 'debt payoff calculator', 'financial decision making', 'personal finance software'],
+  keywords: ['money guy', 'moneyguy', 'money guy show', 'financial mutants', 'financial mutant', 'money guy show tools', 'financial order of operations', 'financial calculator', 'budget planner', 'retirement calculator', 'compound interest calculator', 'net worth tracker', 'budget optimizer', 'financial planning tool', 'money management app', 'investment calculator', 'debt payoff calculator', 'financial decision making', 'personal finance software'],
   authors: [{ name: 'Cortex Technologies' }],
   creator: 'Cortex Technologies',
   publisher: 'Cortex Technologies',
