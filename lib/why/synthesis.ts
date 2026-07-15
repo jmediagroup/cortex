@@ -174,7 +174,26 @@ export async function synthesizeWhy(answers: WhyAnswers): Promise<WhySummary> {
   const data = (await res.json()) as {
     stop_reason?: string;
     content?: Array<{ type: string; text?: string }>;
+    usage?: {
+      input_tokens?: number;
+      output_tokens?: number;
+      cache_read_input_tokens?: number;
+      cache_creation_input_tokens?: number;
+    };
   };
+
+  // Log token usage so per-run cost is observable. Input tokens dominate the
+  // cost of this call, so watch `input_tokens` here against expectations
+  // (~1k system + up to ~3k answers). A number far above that points to an
+  // upstream problem (duplicated payload, retries) rather than a pricing one.
+  if (data.usage) {
+    console.info('[why/synthesis] token usage', {
+      model: MODEL,
+      input_tokens: data.usage.input_tokens,
+      output_tokens: data.usage.output_tokens,
+      cache_read_input_tokens: data.usage.cache_read_input_tokens,
+    });
+  }
 
   if (data.stop_reason === 'refusal') {
     throw new SynthesisError('The reflection could not be generated.', 422);
