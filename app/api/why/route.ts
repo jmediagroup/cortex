@@ -10,6 +10,12 @@ import { hasProAccess, type Tier } from '@/lib/access-control';
 import { WHY_QUESTION_IDS, type WhyAnswers } from '@/lib/why/questions';
 import { synthesizeWhy, SynthesisError } from '@/lib/why/synthesis';
 
+// Per-answer character cap. The synthesis cost is dominated by input tokens, so
+// this bounds the worst case: 8 answers × 1500 chars ≈ 3k input tokens, versus
+// ~10k under the old 5000-char cap. Reflection answers are typically a few
+// sentences; this only trims an unusually long single response.
+const MAX_ANSWER_CHARS = 1500;
+
 // GET /api/why - List the authenticated user's past reflections (newest first)
 export async function GET(request: NextRequest) {
   const auth = await authenticateRequest(request);
@@ -90,7 +96,8 @@ export async function POST(request: NextRequest) {
   const answers: WhyAnswers = {};
   for (const id of WHY_QUESTION_IDS) {
     const value = (rawAnswers as Record<string, unknown>)[id];
-    answers[id] = typeof value === 'string' ? value.slice(0, 5000).trim() : '';
+    answers[id] =
+      typeof value === 'string' ? value.slice(0, MAX_ANSWER_CHARS).trim() : '';
   }
 
   // Require at least some substance so we don't burn a call on an empty form.
