@@ -13,3 +13,4 @@ removing the line, so the topic isn't accidentally reused.
 | 2026-07-05 | coast-fire-explained | Coast FIRE |
 | 2026-07-12 | capital-gains-tax-on-stocks | Capital gains tax on stocks |
 | 2026-07-19 | emergency-fund-how-much | Emergency fund |
+| 2026-07-26 | rent-vs-buy-a-home | Rent vs. buy decision |
