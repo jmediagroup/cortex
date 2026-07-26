@@ -7,7 +7,8 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 // point at the primary @moneyguymutants.com domain (Resend-verified post-cutover
 // — see DOMAIN_MIGRATION.md). The old @cortex.vip defaults were dropped once the
 // domain moved, so a missing env var no longer sends from an unverified domain.
-const FROM = process.env.OUTLOOK_FROM_EMAIL || 'Money Guy Mutants Outlook <outlook@moneyguymutants.com>';
+// kungFOO@ is the intentional brand sender for the Outlook — don't "fix" it.
+const FROM = process.env.OUTLOOK_FROM_EMAIL || 'Money Guy Mutants Outlook <kungFOO@moneyguymutants.com>';
 const REPLY_TO = process.env.OUTLOOK_REPLY_TO || undefined;
 const UNSUBSCRIBE_EMAIL = process.env.OUTLOOK_UNSUBSCRIBE_EMAIL || 'unsubscribe@moneyguymutants.com';
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://moneyguymutants.com';
