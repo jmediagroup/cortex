@@ -12,6 +12,13 @@ const REPLY_TO = process.env.OUTLOOK_REPLY_TO || undefined;
 const UNSUBSCRIBE_EMAIL = process.env.OUTLOOK_UNSUBSCRIBE_EMAIL || 'unsubscribe@moneyguymutants.com';
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://moneyguymutants.com';
 
+// Palette tuned for the navy card background (#0a4a73). The original values
+// came from the Cortex obsidian (near-black) theme and were illegible on navy.
+const COLOR_BODY = '#cfdde8'; // primary body copy
+const COLOR_MUTED = '#8fb0c4'; // fine print, timestamps, footer links
+const COLOR_HEADING = '#f5f7fa';
+const COLOR_TICKER = '#6fe0ce'; // ticker pill text on translucent teal
+
 interface SendResult {
   success: boolean;
   error?: string;
@@ -47,7 +54,7 @@ function shellHtml({
   unsubscribeUrl?: string;
 }): string {
   const footer = unsubscribeUrl
-    ? `<a href="${unsubscribeUrl}" style="color:#767676;text-decoration:underline;">Unsubscribe</a> · `
+    ? `<a href="${unsubscribeUrl}" style="color:${COLOR_MUTED};text-decoration:underline;">Unsubscribe</a> · `
     : '';
   return `<!DOCTYPE html>
 <html><head><meta charset="utf-8"><title>Money Guy Mutants Outlook</title></head>
@@ -58,8 +65,8 @@ function shellHtml({
       <a href="${APP_URL}" style="color:#4EC9F5;text-decoration:none;font-weight:700;letter-spacing:0.04em;font-size:13px;text-transform:uppercase;">Money Guy Mutants · Outlook</a>
     </div>
     ${bodyInner}
-    <div style="padding:20px 24px;border-top:1px solid rgba(255,255,255,0.06);color:#48494A;font-size:12px;text-align:center;">
-      ${footer}<a href="${APP_URL}/thinking" style="color:#767676;text-decoration:underline;">More from Money Guy Mutants</a>
+    <div style="padding:20px 24px;border-top:1px solid rgba(255,255,255,0.06);color:${COLOR_MUTED};font-size:12px;text-align:center;">
+      ${footer}<a href="${APP_URL}/thinking" style="color:${COLOR_MUTED};text-decoration:underline;">More from Money Guy Mutants</a>
     </div>
   </div>
 </body></html>`;
@@ -74,13 +81,13 @@ export async function sendConfirmationEmail(params: {
   const html = shellHtml({
     preheader: 'Confirm your subscription to the Money Guy Mutants Investment Outlook.',
     bodyInner: `
-      <div style="padding:32px 24px;color:#aeaeb2;line-height:1.6;">
-        <h1 style="color:#f5f5f7;font-size:22px;font-weight:700;margin:0 0 16px;letter-spacing:-0.02em;">Confirm your subscription</h1>
+      <div style="padding:32px 24px;color:${COLOR_BODY};line-height:1.6;">
+        <h1 style="color:${COLOR_HEADING};font-size:22px;font-weight:700;margin:0 0 16px;letter-spacing:-0.02em;">Confirm your subscription</h1>
         <p style="margin:0 0 16px;">Click below to start receiving the daily and weekly Money Guy Mutants Investment Outlook.</p>
         <p style="margin:0 0 24px;">
           <a href="${confirmUrl}" style="display:inline-block;background:#F26531;color:#ffffff;padding:12px 24px;border-radius:4px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;font-size:14px;text-decoration:none;">Confirm subscription</a>
         </p>
-        <p style="margin:0;font-size:13px;color:#48494A;">If you didn't request this, you can ignore this email.</p>
+        <p style="margin:0;font-size:13px;color:${COLOR_MUTED};">If you didn't request this, you can ignore this email.</p>
       </div>`,
   });
 
@@ -126,7 +133,7 @@ export async function sendDigestEmail(params: DigestSendParams): Promise<SendRes
           .slice(0, 8)
           .map(
             (t) =>
-              `<span style="display:inline-block;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#1D8072;background:rgba(29,128,114,0.08);border:1px solid rgba(29,128,114,0.25);padding:3px 9px;border-radius:9999px;margin:0 4px 4px 0;">${escapeHtml(t)}</span>`,
+              `<span style="display:inline-block;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;font-weight:600;letter-spacing:0.04em;color:${COLOR_TICKER};background:rgba(111,224,206,0.12);border:1px solid rgba(111,224,206,0.35);padding:3px 9px;border-radius:9999px;margin:0 4px 4px 0;">${escapeHtml(t)}</span>`,
           )
           .join('')}
       </div>`
@@ -136,14 +143,14 @@ export async function sendDigestEmail(params: DigestSendParams): Promise<SendRes
     preheader: outlook.summary,
     unsubscribeUrl,
     bodyInner: `
-      <div style="padding:32px 24px;color:#aeaeb2;line-height:1.65;">
-        <div style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;color:#48494A;letter-spacing:0.06em;text-transform:uppercase;margin:0 0 12px;">
+      <div style="padding:32px 24px;color:${COLOR_BODY};line-height:1.65;">
+        <div style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;color:${COLOR_MUTED};letter-spacing:0.06em;text-transform:uppercase;margin:0 0 12px;">
           ${escapeHtml(outlook.type === 'weekly' ? 'Weekly Outlook' : 'Daily Outlook')} · ${escapeHtml(formatDate(outlook.date))}
         </div>
-        <h1 style="color:#f5f5f7;font-size:26px;font-weight:700;margin:0 0 12px;letter-spacing:-0.02em;line-height:1.2;">${escapeHtml(outlook.title)}</h1>
-        <p style="margin:0 0 20px;color:#C8C8C8;font-size:16px;">${escapeHtml(outlook.summary)}</p>
+        <h1 style="color:${COLOR_HEADING};font-size:26px;font-weight:700;margin:0 0 12px;letter-spacing:-0.02em;line-height:1.2;">${escapeHtml(outlook.title)}</h1>
+        <p style="margin:0 0 20px;color:${COLOR_BODY};font-size:16px;">${escapeHtml(outlook.summary)}</p>
         ${tickersHtml}
-        <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:20px;color:#C8C8C8;">
+        <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:20px;color:${COLOR_BODY};">
           ${leadHtml}
         </div>
         <p style="margin:24px 0 0;">
