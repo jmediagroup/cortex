@@ -25,7 +25,17 @@ function todayInET(): string {
 }
 
 function authorized(request: NextRequest): boolean {
-  if (!CRON_SECRET) return true; // No secret configured: allow (dev only).
+  if (!CRON_SECRET) {
+    // Fail closed in production: without a secret, anyone who finds the URL
+    // could trigger (or ?force=1 re-blast) a send to the whole list. Vercel
+    // automatically attaches "Authorization: Bearer $CRON_SECRET" to cron
+    // invocations once the env var is set, so setting it is all that's needed.
+    if (process.env.NODE_ENV === 'production') {
+      console.error('[outlook] CRON_SECRET is not set — refusing to run in production');
+      return false;
+    }
+    return true; // Local dev convenience.
+  }
   const header = request.headers.get('authorization');
   return header === `Bearer ${CRON_SECRET}`;
 }
@@ -93,7 +103,8 @@ export async function runDigest(
   const { data: subscribers, error } = await supabase
     .from('outlook_subscribers')
     .select('email, unsubscribe_token')
-    .not('confirmed_at', 'is', null);
+    .not('confirmed_at', 'is', null)
+    .is('unsubscribed_at', null);
 
   if (error) {
     console.error(`[outlook/${type}] failed to load subscribers:`, error);

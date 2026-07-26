@@ -6,6 +6,9 @@ type Status = 'idle' | 'submitting' | 'success' | 'error';
 
 export function OutlookSubscribeForm({ source = 'thinking' }: { source?: string }) {
   const [email, setEmail] = useState('');
+  // Honeypot: hidden from humans (see the off-screen input below); bots that
+  // autofill it get a fake success server-side and never touch the database.
+  const [company, setCompany] = useState('');
   const [status, setStatus] = useState<Status>('idle');
   const [message, setMessage] = useState<string | null>(null);
 
@@ -19,7 +22,7 @@ export function OutlookSubscribeForm({ source = 'thinking' }: { source?: string 
       const res = await fetch('/api/outlook/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim(), source }),
+        body: JSON.stringify({ email: email.trim(), source, company }),
       });
       const json = (await res.json().catch(() => ({}))) as {
         error?: string;
@@ -88,8 +91,20 @@ export function OutlookSubscribeForm({ source = 'thinking' }: { source?: string 
           opacity: 0.7,
         }}
       >
-        Free. Weekday mornings + a Sunday recap. Unsubscribe in one click.
+        Free. Every weekday morning. Unsubscribe in one click.
       </p>
+      <div aria-hidden="true" style={{ position: 'absolute', left: -9999, top: -9999, height: 0, overflow: 'hidden' }}>
+        <label htmlFor="outlook-company">Company</label>
+        <input
+          id="outlook-company"
+          type="text"
+          name="company"
+          tabIndex={-1}
+          autoComplete="off"
+          value={company}
+          onChange={(e) => setCompany(e.target.value)}
+        />
+      </div>
       <input
         id="outlook-email"
         type="email"

@@ -163,6 +163,7 @@ export type Database = {
           email: string;
           confirmation_token: string;
           confirmed_at: string | null;
+          unsubscribed_at: string | null;
           unsubscribe_token: string;
           user_id: string | null;
           source: string | null;
@@ -173,6 +174,7 @@ export type Database = {
           email: string;
           confirmation_token?: string;
           confirmed_at?: string | null;
+          unsubscribed_at?: string | null;
           unsubscribe_token?: string;
           user_id?: string | null;
           source?: string | null;
@@ -182,6 +184,7 @@ export type Database = {
           email?: string;
           confirmation_token?: string;
           confirmed_at?: string | null;
+          unsubscribed_at?: string | null;
           unsubscribe_token?: string;
           user_id?: string | null;
           source?: string | null;

@@ -4,7 +4,7 @@ import { isValidEmail, sanitizeString } from '@/lib/validation';
 import { checkRateLimit, getClientIP, RATE_LIMITS } from '@/lib/rate-limit';
 import { sendConfirmationEmail } from '@/lib/outlook/email';
 
-type SubscribeBody = { email?: unknown; source?: unknown };
+type SubscribeBody = { email?: unknown; source?: unknown; company?: unknown };
 
 function logError(stage: string, detail: unknown) {
   console.error(`[outlook/subscribe] ${stage}:`, detail);
@@ -51,6 +51,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Email is required.' }, { status: 400 });
     }
 
+    // Honeypot: the form renders a visually hidden "company" field that
+    // humans never see. Bots that fill every field get a fake success and
+    // no database row.
+    if (typeof body.company === 'string' && body.company.trim()) {
+      return NextResponse.json(
+        { success: true, message: 'Check your inbox to confirm your subscription.' },
+        { status: 200 },
+      );
+    }
+
     const email = sanitizeString(body.email, 255).toLowerCase();
     if (!isValidEmail(email)) {
       return NextResponse.json({ error: 'Please enter a valid email address.' }, { status: 400 });
@@ -91,7 +101,7 @@ export async function POST(request: NextRequest) {
     // Check for an existing subscriber row.
     const { data: existing, error: existingError } = await supabase
       .from('outlook_subscribers')
-      .select('id, email, confirmed_at, confirmation_token')
+      .select('id, email, confirmed_at, unsubscribed_at, confirmation_token')
       .eq('email', email)
       .maybeSingle();
 
@@ -100,10 +110,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Could not subscribe. Please try again.' }, { status: 500 });
     }
 
-    if (existing?.confirmed_at) {
-      // Already confirmed — succeed silently to avoid leaking subscription state.
+    if (existing?.confirmed_at && !existing.unsubscribed_at) {
+      // Already an active subscriber — return the same message as a fresh
+      // signup so the response doesn't reveal whether an address is on the list.
       return NextResponse.json(
-        { success: true, message: "You're already subscribed. Thanks!" },
+        { success: true, message: 'Check your inbox to confirm your subscription.' },
         { status: 200 },
       );
     }
@@ -111,6 +122,8 @@ export async function POST(request: NextRequest) {
     let confirmationToken: string;
 
     if (existing) {
+      // Unconfirmed, or previously unsubscribed and opting back in — either
+      // way they must click a fresh confirmation email.
       confirmationToken = existing.confirmation_token;
     } else {
       const { data: inserted, error: insertError } = await supabase
@@ -132,8 +145,14 @@ export async function POST(request: NextRequest) {
 
     const emailResult = await sendConfirmationEmail({ email, confirmationToken });
     if (!emailResult.success) {
-      // Row exists; the user can resubmit to re-trigger the email. Log for visibility.
+      // Tell the user instead of pretending an email is on the way — a silent
+      // failure here is how six weeks of dead signups went unnoticed during
+      // the domain migration. The row exists, so resubmitting retries the send.
       logError('confirmation_email_send', emailResult.error);
+      return NextResponse.json(
+        { error: "We couldn't send the confirmation email. Please try again in a few minutes." },
+        { status: 502 },
+      );
     }
 
     return NextResponse.json(

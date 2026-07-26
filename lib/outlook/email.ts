@@ -83,7 +83,7 @@ export async function sendConfirmationEmail(params: {
     bodyInner: `
       <div style="padding:32px 24px;color:${COLOR_BODY};line-height:1.6;">
         <h1 style="color:${COLOR_HEADING};font-size:22px;font-weight:700;margin:0 0 16px;letter-spacing:-0.02em;">Confirm your subscription</h1>
-        <p style="margin:0 0 16px;">Click below to start receiving the daily and weekly Money Guy Mutants Investment Outlook.</p>
+        <p style="margin:0 0 16px;">Click below to start receiving the Money Guy Mutants Investment Outlook every weekday morning.</p>
         <p style="margin:0 0 24px;">
           <a href="${confirmUrl}" style="display:inline-block;background:#F26531;color:#ffffff;padding:12px 24px;border-radius:4px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;font-size:14px;text-decoration:none;">Confirm subscription</a>
         </p>
