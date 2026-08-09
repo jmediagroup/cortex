@@ -16,6 +16,19 @@ export type Database = {
         Row: {
           id: string;
           email: string;
+          /**
+           * Generated column (see supabase/migrations/harden_signup_abuse.sql):
+           * canonical form of `email` used to detect alias duplicates. Read
+           * only — Postgres computes it, and it is not a delivery address.
+           */
+          email_normalized: string;
+          /** NULL means the address was never confirmed. */
+          email_verified_at: string | null;
+          /** Salted hash of the signup IP; NULL when no salt is configured. */
+          signup_ip_hash: string | null;
+          /** Abuse reason codes from lib/email-hygiene.ts `assessSignup`. */
+          signup_flags: string[];
+          is_flagged: boolean;
           tier: 'free' | 'finance_pro';
           first_name?: string | null;
           last_name?: string | null;
@@ -29,9 +42,15 @@ export type Database = {
           created_at: string;
           updated_at: string;
         };
+        // `email_normalized` is intentionally absent from Insert and Update —
+        // it is GENERATED ALWAYS, and writing to it is a Postgres error.
         Insert: {
           id: string;
           email: string;
+          email_verified_at?: string | null;
+          signup_ip_hash?: string | null;
+          signup_flags?: string[];
+          is_flagged?: boolean;
           tier?: 'free' | 'finance_pro';
           first_name?: string | null;
           last_name?: string | null;
@@ -48,6 +67,10 @@ export type Database = {
         Update: {
           id?: string;
           email?: string;
+          email_verified_at?: string | null;
+          signup_ip_hash?: string | null;
+          signup_flags?: string[];
+          is_flagged?: boolean;
           tier?: 'free' | 'finance_pro';
           first_name?: string | null;
           last_name?: string | null;
@@ -422,7 +445,32 @@ export type Database = {
         Relationships: [];
       };
     };
-    Views: Record<never, never>;
+    Views: {
+      // Defined in supabase/migrations/harden_signup_abuse.sql.
+      signup_abuse_summary: {
+        Row: {
+          total_users: number;
+          verified_users: number;
+          unverified_users: number;
+          flagged_users: number;
+          stale_unverified_users: number;
+          distinct_inboxes: number;
+        };
+        Relationships: [];
+      };
+      /** One row per real inbox that has more than one account. */
+      user_alias_clusters: {
+        Row: {
+          email_normalized: string;
+          account_count: number;
+          verified_count: number;
+          addresses: string[];
+          first_seen: string;
+          last_seen: string;
+        };
+        Relationships: [];
+      };
+    };
     Functions: Record<never, never>;
     Enums: Record<never, never>;
     CompositeTypes: Record<never, never>;

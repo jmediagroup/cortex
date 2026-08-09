@@ -1,11 +1,11 @@
 'use client';
 
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowRight, Check, Loader2, Lock, Mail, User as UserIcon } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createBrowserClient } from '@/lib/supabase/client';
-import { siteUrl } from '@/lib/site-url';
+import { TurnstileWidget, isTurnstileEnabled } from '@/components/auth/TurnstileWidget';
 import {
   AuthShell,
   AuthField,
@@ -27,9 +27,23 @@ function SignupForm() {
   const [resendCooldown, setResendCooldown] = useState(0);
   const [resendLoading, setResendLoading] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
+  // Anti-bot state. `website` is a honeypot: hidden from humans, filled in by
+  // naive form-fillers. `formStartedAt` lets the server reject submissions
+  // that arrive faster than a person could type.
+  const [website, setWebsite] = useState('');
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [captchaNonce, setCaptchaNonce] = useState(0);
+  const formStartedAt = useRef<number>(Date.now());
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createBrowserClient();
+
+  // Turnstile tokens are single-use — after a failed attempt the widget must
+  // hand us a fresh one before the next submit.
+  const resetCaptcha = useCallback(() => {
+    setCaptchaToken(null);
+    setCaptchaNonce((n) => n + 1);
+  }, []);
 
   const plan = searchParams.get('plan');
   const billing = searchParams.get('billing');
@@ -62,30 +76,42 @@ function SignupForm() {
     setError(null);
 
     try {
-      const trimmedFirstName = firstName.trim();
-      const { data, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          // Route the verification link through /auth/callback (on the
-          // canonical origin) so the PKCE code is exchanged into a session
-          // before the user reaches their post-verify destination.
-          emailRedirectTo: `${siteUrl()}/auth/callback?next=${encodeURIComponent(postVerifyRedirect)}`,
-          data: trimmedFirstName ? { first_name: trimmedFirstName } : undefined,
-        },
+      // Account creation goes through our own route rather than straight to
+      // Supabase, so rate limiting, CAPTCHA verification and the email policy
+      // in lib/email-hygiene.ts all get a say before an account exists. The
+      // route calls supabase.auth.signUp with a cookie-backed client, so the
+      // PKCE verifier still lands in this browser and /auth/callback works.
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          password,
+          firstName: firstName.trim(),
+          captchaToken,
+          website,
+          formStartedAt: formStartedAt.current,
+          next: postVerifyRedirect,
+        }),
       });
-      if (signUpError) throw signUpError;
-      if (data.user) {
-        // The public.users row (including first_name, from the signUp
-        // metadata) is created atomically by the handle_new_user trigger —
-        // no client-side fallback call needed.
-        setUserEmail(email);
-        setSignupComplete(true);
+
+      const payload = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        throw new Error(
+          payload.error || 'Could not create your account. Please try again.',
+        );
       }
+
+      // The public.users row (including first_name, from the signUp metadata)
+      // is created atomically by the handle_new_user trigger.
+      setUserEmail(email);
+      setSignupComplete(true);
     } catch (err: unknown) {
       const e = err as { message?: string };
       console.error('Signup error:', err);
       setError(e.message || 'An error occurred. Please try again.');
+      resetCaptcha();
     } finally {
       setLoading(false);
     }
@@ -101,6 +127,9 @@ function SignupForm() {
       const { error: resendError } = await supabase.auth.resend({
         type: 'signup',
         email: userEmail,
+        // Required once CAPTCHA protection is enabled on the Supabase project,
+        // which applies to every auth endpoint, not just signup.
+        options: captchaToken ? { captchaToken } : undefined,
       });
       if (resendError) throw resendError;
       setResendSuccess(true);
@@ -120,6 +149,8 @@ function SignupForm() {
       console.error('Resend error:', err);
       setError(e.message || 'Failed to resend verification email. Please try again.');
     } finally {
+      // The token is spent either way; get a fresh one for the next attempt.
+      resetCaptcha();
       setResendLoading(false);
     }
   };
@@ -133,6 +164,9 @@ function SignupForm() {
     setError(null);
     setResendSuccess(false);
     setResendCooldown(0);
+    setWebsite('');
+    resetCaptcha();
+    formStartedAt.current = Date.now();
   };
 
   if (signupComplete) {
@@ -304,7 +338,7 @@ function SignupForm() {
         <AuthField
           label="Password"
           icon={<Lock size={16} />}
-          hint="Minimum 6 characters."
+          hint="Minimum 10 characters, with a mix of letters and numbers or symbols."
         >
           <input
             type="password"
@@ -314,12 +348,38 @@ function SignupForm() {
             placeholder="••••••••"
             className="mgm-input"
             style={authInputWithIcon}
-            minLength={6}
+            minLength={10}
             autoComplete="new-password"
           />
         </AuthField>
 
-        <Button variant="primary" type="submit" disabled={loading} style={{ width: '100%' }}>
+        {/*
+          Honeypot. Hidden from sighted users and from screen readers, and
+          skipped by keyboard navigation, so only an automated form-filler
+          will ever put something in it. The server discards any submission
+          that does — silently, so bots can't tell they were caught.
+        */}
+        <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', top: 0 }}>
+          <label htmlFor="website">Website</label>
+          <input
+            id="website"
+            name="website"
+            type="text"
+            tabIndex={-1}
+            autoComplete="off"
+            value={website}
+            onChange={(e) => setWebsite(e.target.value)}
+          />
+        </div>
+
+        <TurnstileWidget onToken={setCaptchaToken} resetSignal={captchaNonce} />
+
+        <Button
+          variant="primary"
+          type="submit"
+          disabled={loading || (isTurnstileEnabled() && !captchaToken)}
+          style={{ width: '100%' }}
+        >
           {loading ? (
             <>
               <Loader2 size={16} className="animate-spin" /> Creating account…

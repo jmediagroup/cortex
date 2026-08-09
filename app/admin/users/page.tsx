@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { Search, ChevronLeft, ChevronRight, Loader2, Trash2, Edit3, X, Check } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, Loader2, Trash2, Edit3, X, Check, ShieldAlert, MailWarning } from 'lucide-react';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { getTierDisplayName } from '@/lib/access-control';
 
@@ -15,6 +15,22 @@ interface User {
   stripe_subscription_id?: string | null;
   subscription_status?: string | null;
   created_at: string;
+  /** NULL until the account confirms its email address. */
+  email_verified_at?: string | null;
+  /** Canonical address — alias variants of one inbox share this value. */
+  email_normalized?: string | null;
+  /** Reason codes recorded at signup by lib/email-hygiene.ts. */
+  signup_flags?: string[] | null;
+  is_flagged?: boolean | null;
+}
+
+interface AbuseSummary {
+  total_users: number;
+  verified_users: number;
+  unverified_users: number;
+  flagged_users: number;
+  stale_unverified_users: number;
+  distinct_inboxes: number;
 }
 
 interface UsersResponse {
@@ -23,13 +39,24 @@ interface UsersResponse {
   page: number;
   limit: number;
   totalPages: number;
+  summary: AbuseSummary | null;
 }
+
+/** Human-readable labels for the reason codes in `signup_flags`. */
+const FLAG_LABELS: Record<string, string> = {
+  alias_address: 'Alias address',
+  machine_generated_name: 'Random-looking name',
+  disposable_domain: 'Disposable domain',
+  lookalike_domain: 'Lookalike domain',
+  invalid_email: 'Invalid email',
+};
 
 export default function AdminUsers() {
   const [data, setData] = useState<UsersResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [tierFilter, setTierFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
   const [page, setPage] = useState(1);
   const [editingUser, setEditingUser] = useState<string | null>(null);
   const [editTier, setEditTier] = useState('');
@@ -47,6 +74,7 @@ export default function AdminUsers() {
     const params = new URLSearchParams({ page: String(page), limit: '20' });
     if (search) params.set('search', search);
     if (tierFilter) params.set('tier', tierFilter);
+    if (statusFilter) params.set('status', statusFilter);
 
     try {
       const res = await fetch(`/api/admin/users?${params}`, {
@@ -59,7 +87,7 @@ export default function AdminUsers() {
     } finally {
       setLoading(false);
     }
-  }, [page, search, tierFilter, getToken]);
+  }, [page, search, tierFilter, statusFilter, getToken]);
 
   useEffect(() => {
     const timeout = setTimeout(() => fetchUsers(), search ? 300 : 0);
@@ -131,6 +159,46 @@ export default function AdminUsers() {
         </p>
       </div>
 
+      {/*
+        Signup-abuse summary. "Verified" is the only count that reflects real
+        people — a profile row is written the moment an account is created,
+        before the confirmation link is ever clicked, which is why bot signups
+        showed up here as ordinary FREE users.
+      */}
+      {data?.summary && (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {[
+            { label: 'Verified', value: data.summary.verified_users, tone: 'text-[var(--emerald-500)]' },
+            { label: 'Unverified', value: data.summary.unverified_users, tone: 'text-[var(--text-primary)]' },
+            { label: 'Unverified > 7d', value: data.summary.stale_unverified_users, tone: 'text-[var(--text-primary)]' },
+            { label: 'Flagged', value: data.summary.flagged_users, tone: 'text-[var(--text-primary)]' },
+          ].map((stat) => (
+            <div
+              key={stat.label}
+              className="rounded-[var(--radius-lg)] border border-[var(--border-primary)] bg-[var(--surface-primary)] px-4 py-3"
+            >
+              <div className={`text-xl font-bold tabular-nums ${stat.tone}`}>{stat.value}</div>
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)] mt-0.5">
+                {stat.label}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      {data?.summary && data.summary.total_users > data.summary.distinct_inboxes && (
+        <div className="flex items-start gap-2 rounded-[var(--radius-lg)] border border-[var(--border-primary)] bg-[var(--surface-secondary)] px-4 py-3 text-sm text-[var(--text-secondary)]">
+          <MailWarning size={16} className="mt-0.5 shrink-0 text-[var(--text-tertiary)]" />
+          <span>
+            <strong className="text-[var(--text-primary)]">
+              {data.summary.total_users - data.summary.distinct_inboxes}
+            </strong>{' '}
+            account{data.summary.total_users - data.summary.distinct_inboxes === 1 ? '' : 's'} share an
+            inbox with another account (Gmail dot/plus aliases). Inspect with{' '}
+            <code className="text-xs">select * from user_alias_clusters</code>.
+          </span>
+        </div>
+      )}
+
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
@@ -143,6 +211,16 @@ export default function AdminUsers() {
             className="w-full pl-9 pr-4 py-2.5 rounded-[var(--radius-lg)] border border-[var(--border-primary)] bg-[var(--surface-primary)] text-sm font-medium text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] outline-none focus:ring-2 focus:ring-[var(--color-accent)] transition-all"
           />
         </div>
+        <select
+          value={statusFilter}
+          onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
+          className="px-4 py-2.5 rounded-[var(--radius-lg)] border border-[var(--border-primary)] bg-[var(--surface-primary)] text-sm font-medium text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
+        >
+          <option value="">All accounts</option>
+          <option value="verified">Verified only</option>
+          <option value="unverified">Unverified only</option>
+          <option value="flagged">Flagged only</option>
+        </select>
         <select
           value={tierFilter}
           onChange={(e) => { setTierFilter(e.target.value); setPage(1); }}
@@ -174,6 +252,7 @@ export default function AdminUsers() {
                 <tr className="border-b border-[var(--border-secondary)] bg-[var(--surface-secondary)]">
                   <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Email</th>
                   <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Name</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Status</th>
                   <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Tier</th>
                   <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Subscription</th>
                   <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Joined</th>
@@ -188,6 +267,29 @@ export default function AdminUsers() {
                     </td>
                     <td className="px-4 py-3 text-[var(--text-secondary)]">
                       {[user.first_name, user.last_name].filter(Boolean).join(' ') || '—'}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        {user.email_verified_at ? (
+                          <span className="rounded-md bg-[var(--emerald-100)] px-2 py-0.5 text-[10px] font-semibold uppercase text-[var(--emerald-500)]">
+                            Verified
+                          </span>
+                        ) : (
+                          <span className="rounded-md bg-[var(--surface-tertiary)] px-2 py-0.5 text-[10px] font-semibold uppercase text-[var(--text-tertiary)]">
+                            Unverified
+                          </span>
+                        )}
+                        {user.is_flagged && (
+                          <span
+                            title={(user.signup_flags || [])
+                              .map((f) => FLAG_LABELS[f] || f)
+                              .join(', ')}
+                            className="inline-flex items-center gap-1 rounded-md bg-[var(--surface-tertiary)] px-1.5 py-0.5 text-[10px] font-semibold uppercase text-[var(--text-secondary)]"
+                          >
+                            <ShieldAlert size={11} /> Flagged
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-4 py-3">
                       {editingUser === user.id ? (

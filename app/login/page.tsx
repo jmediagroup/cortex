@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, ArrowRight, Loader2, Lock, Mail } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -17,6 +17,7 @@ import {
 } from '@/components/auth/AuthShell';
 import { Button } from '@/components/ui/Button';
 import { MarketingIcon } from '@/components/marketing/Icons';
+import { TurnstileWidget, isTurnstileEnabled } from '@/components/auth/TurnstileWidget';
 
 function AuthForm() {
   const [isForgotPassword, setIsForgotPassword] = useState(false);
@@ -28,9 +29,20 @@ function AuthForm() {
   const [needsVerification, setNeedsVerification] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
   const [resendMsg, setResendMsg] = useState<string | null>(null);
+  // Once CAPTCHA protection is switched on for the Supabase project it applies
+  // to every auth endpoint — sign-in and password recovery included, not just
+  // signup — so all three calls below carry a token.
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [captchaNonce, setCaptchaNonce] = useState(0);
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createBrowserClient();
+
+  // Tokens are single-use; a failed attempt needs a fresh one before retrying.
+  const resetCaptcha = useCallback(() => {
+    setCaptchaToken(null);
+    setCaptchaNonce((n) => n + 1);
+  }, []);
 
   const signupHref = useMemo(() => {
     const redirect = searchParams.get('redirect');
@@ -77,7 +89,11 @@ function AuthForm() {
     setResendMsg(null);
 
     try {
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+        options: captchaToken ? { captchaToken } : undefined,
+      });
       if (signInError) throw signInError;
       if (data.session) {
         await trackEvent('user_login', {}, true);
@@ -93,6 +109,7 @@ function AuthForm() {
       } else {
         setError(e.message || 'An error occurred. Please try again.');
       }
+      resetCaptcha();
       setLoading(false);
       await trackEvent(
         'error_occurred',
@@ -111,7 +128,11 @@ function AuthForm() {
     setResendLoading(true);
     setResendMsg(null);
     try {
-      const { error: resendError } = await supabase.auth.resend({ type: 'signup', email });
+      const { error: resendError } = await supabase.auth.resend({
+        type: 'signup',
+        email,
+        options: captchaToken ? { captchaToken } : undefined,
+      });
       if (resendError) throw resendError;
       setResendMsg('Verification email sent — check your inbox.');
       await trackEvent('resend_verification_requested', { context: 'login' }, true);
@@ -119,6 +140,7 @@ function AuthForm() {
       const e = err as { message?: string };
       setResendMsg(e.message || 'Could not resend right now. Please try again shortly.');
     } finally {
+      resetCaptcha();
       setResendLoading(false);
     }
   };
@@ -132,6 +154,7 @@ function AuthForm() {
         // Exchange the recovery code at /auth/callback first, then land on the
         // set-new-password screen with a live recovery session.
         redirectTo: `${siteUrl()}/auth/callback?next=${encodeURIComponent('/reset-password')}`,
+        ...(captchaToken ? { captchaToken } : {}),
       });
       if (resetError) throw resetError;
       setResetEmailSent(true);
@@ -140,6 +163,7 @@ function AuthForm() {
       const e = err as { message?: string };
       console.error('Password reset error:', err);
       setError(e.message || 'Failed to send reset email. Please try again.');
+      resetCaptcha();
     } finally {
       setLoading(false);
     }
@@ -255,7 +279,14 @@ function AuthForm() {
             />
           </AuthField>
 
-          <Button variant="primary" type="submit" disabled={loading} style={{ width: '100%' }}>
+          <TurnstileWidget onToken={setCaptchaToken} resetSignal={captchaNonce} />
+
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={loading || (isTurnstileEnabled() && !captchaToken)}
+            style={{ width: '100%' }}
+          >
             {loading ? (
               <>
                 <Loader2 size={16} className="animate-spin" /> Sending…
@@ -359,7 +390,14 @@ function AuthForm() {
           </button>
         </div>
 
-        <Button variant="primary" type="submit" disabled={loading} style={{ width: '100%' }}>
+        <TurnstileWidget onToken={setCaptchaToken} resetSignal={captchaNonce} />
+
+        <Button
+          variant="primary"
+          type="submit"
+          disabled={loading || (isTurnstileEnabled() && !captchaToken)}
+          style={{ width: '100%' }}
+        >
           {loading ? (
             <>
               <Loader2 size={16} className="animate-spin" /> Signing in…

@@ -152,4 +152,16 @@ export const RATE_LIMITS = {
 
   // "What's Your Why" AI synthesis: 5 reflections per 5 minutes per user
   whySynthesis: { limit: 5, windowSeconds: 300 },
+
+  // Signup burst: 2 account creations per minute per IP. Catches scripted
+  // hammering; a household behind one NAT still comfortably fits.
+  signupBurst: { limit: 2, windowSeconds: 60 },
+
+  // Signup sustained: 5 account creations per hour per IP.
+  signupIp: { limit: 5, windowSeconds: 3600 },
+
+  // Signup per normalized email: 3 attempts per hour. Keyed on the canonical
+  // address, so an alias farm (a.b.c@gmail.com, ab.c@gmail.com, …) all share
+  // one bucket instead of getting a fresh allowance per alias.
+  signupEmail: { limit: 3, windowSeconds: 3600 },
 } as const;
