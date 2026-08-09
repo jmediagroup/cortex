@@ -14,3 +14,4 @@ removing the line, so the topic isn't accidentally reused.
 | 2026-07-12 | capital-gains-tax-on-stocks | Capital gains tax on stocks |
 | 2026-07-19 | emergency-fund-how-much | Emergency fund |
 | 2026-07-26 | rent-vs-buy-a-home | Rent vs. buy decision |
+| 2026-08-09 | 50-30-20-budget-rule | 50/30/20 budget rule |
