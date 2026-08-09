@@ -23,6 +23,11 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(parseInt(searchParams.get('limit') || '20'), 100);
     const search = searchParams.get('search') || '';
     const tier = searchParams.get('tier') || '';
+    // Signup-abuse filters. `unverified` is the one that matters: a
+    // never-confirmed account is the signature of the bot signups that filled
+    // this list up, since the profile row is created at signup time — before
+    // anyone clicks the verification link.
+    const status = searchParams.get('status') || '';
     const offset = (page - 1) * limit;
 
     const supabase = createServiceClient();
@@ -39,6 +44,14 @@ export async function GET(request: NextRequest) {
       query = query.eq('tier', tier);
     }
 
+    if (status === 'verified') {
+      query = query.not('email_verified_at', 'is', null);
+    } else if (status === 'unverified') {
+      query = query.is('email_verified_at', null);
+    } else if (status === 'flagged') {
+      query = query.eq('is_flagged', true);
+    }
+
     const { data: users, count, error } = await query
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1) as {
@@ -52,12 +65,25 @@ export async function GET(request: NextRequest) {
       return errorResponse('Failed to fetch users', 500);
     }
 
+    // Headline abuse numbers, so the page can show "X unverified" without a
+    // second round trip. Non-fatal: the list still renders if this fails
+    // (e.g. before harden_signup_abuse.sql has been applied).
+    const { data: summaryRows, error: summaryError } = await supabase
+      .from('signup_abuse_summary')
+      .select('*')
+      .limit(1);
+
+    if (summaryError) {
+      console.error('[Admin Users] Summary query error:', summaryError);
+    }
+
     return NextResponse.json({
       users: users || [],
       total: count || 0,
       page,
       limit,
       totalPages: Math.ceil((count || 0) / limit),
+      summary: summaryRows?.[0] ?? null,
     });
   } catch (error: any) {
     console.error('[Admin Users] Unexpected error:', error);
