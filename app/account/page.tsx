@@ -12,9 +12,33 @@ import {
   TrendingDown,
   CheckCircle,
   XCircle,
+  CreditCard,
 } from 'lucide-react';
 import { DashboardShell } from '@/components/navigation';
 import { getTierDisplayName, getTierColor, type Tier } from '@/lib/access-control';
+
+type BillingState = {
+  tier: Tier;
+  hasBillingAccount: boolean;
+  subscription: {
+    id: string;
+    status: string;
+    cancelAtPeriodEnd: boolean;
+    cancelAt: number | null;
+    currentPeriodEnd: number | null;
+    interval: 'day' | 'week' | 'month' | 'year' | null;
+    amount: number | null;
+  } | null;
+};
+
+function formatUnixDate(ts: number | null | undefined): string | null {
+  if (!ts) return null;
+  return new Date(ts * 1000).toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
 
 export default function AccountPage() {
   const router = useRouter();
@@ -24,6 +48,9 @@ export default function AccountPage() {
   const [saving, setSaving] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [userTier, setUserTier] = useState<Tier>('free');
+  const [billing, setBilling] = useState<BillingState | null>(null);
+  const [billingError, setBillingError] = useState<string | null>(null);
+  const [portalLoading, setPortalLoading] = useState(false);
 
   // Form state
   const [firstName, setFirstName] = useState('');
@@ -65,6 +92,24 @@ export default function AccountPage() {
       }
 
       setLoading(false);
+
+      // Live billing state straight from Stripe. This also re-syncs the
+      // users row, so a missed webhook heals itself the moment the member
+      // opens their account page.
+      try {
+        const res = await fetch('/api/subscription', {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        });
+        if (res.ok) {
+          const state = (await res.json()) as BillingState;
+          setBilling(state);
+          setUserTier(state.tier);
+        } else {
+          setBillingError('Could not load billing details right now.');
+        }
+      } catch {
+        setBillingError('Could not load billing details right now.');
+      }
     };
 
     loadUserData();
@@ -153,7 +198,17 @@ export default function AccountPage() {
       // Immediate cancellations (no active sub / already gone in Stripe) flip to
       // free now; a scheduled cancel keeps Pro until the period ends.
       if (data.immediate) {
-        setUserTier('free');
+        setUserTier(data.tier ?? 'free');
+      }
+      if (billing?.subscription && !data.immediate) {
+        setBilling({
+          ...billing,
+          subscription: {
+            ...billing.subscription,
+            cancelAtPeriodEnd: true,
+            cancelAt: typeof data.cancelAt === 'number' ? data.cancelAt : billing.subscription.cancelAt,
+          },
+        });
       }
       const scheduledMsg =
         data.cancelAt && typeof data.cancelAt === 'number'
@@ -209,6 +264,31 @@ export default function AccountPage() {
       setErrorMessage(error.message || 'Failed to delete account');
       setSaving(false);
       setTimeout(() => setErrorMessage(''), 5000);
+    }
+  };
+
+  // Stripe's hosted billing portal: update card, download invoices, resume
+  // a scheduled cancellation.
+  const handleManageBilling = async () => {
+    setPortalLoading(true);
+    setErrorMessage('');
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Not authenticated');
+
+      const response = await fetch('/api/create-portal-session', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      const data = await response.json();
+      if (!response.ok || !data.url) {
+        throw new Error(data.error || 'Could not open the billing portal');
+      }
+      window.location.href = data.url;
+    } catch (error: unknown) {
+      setErrorMessage(error instanceof Error ? error.message : 'Could not open the billing portal');
+      setTimeout(() => setErrorMessage(''), 5000);
+      setPortalLoading(false);
     }
   };
 
@@ -375,9 +455,28 @@ export default function AccountPage() {
                 <p className="text-3xl font-bold text-[var(--text-primary)] uppercase">{getTierDisplayName(userTier)}</p>
               </div>
               <div className={`px-4 py-2 rounded-xl font-bold text-sm bg-${getTierColor(userTier)}-600 text-white`}>
-                {userTier === 'finance_pro' ? '$9/month' : '$0/month'}
+                {userTier === 'finance_pro'
+                  ? billing?.subscription?.amount != null && billing.subscription.interval
+                    ? `$${(billing.subscription.amount / 100).toFixed(0)}/${billing.subscription.interval}`
+                    : '$9/month'
+                  : '$0/month'}
               </div>
             </div>
+
+            {billing?.subscription && userTier !== 'free' && (
+              <p className="mt-4 text-sm text-[var(--text-secondary)]">
+                {billing.subscription.cancelAtPeriodEnd
+                  ? `Cancellation scheduled — you keep Finance Pro until ${formatUnixDate(billing.subscription.cancelAt ?? billing.subscription.currentPeriodEnd) ?? 'the end of the billing period'}.`
+                  : billing.subscription.status === 'past_due'
+                    ? 'Your last payment failed. Update your card in the billing portal to keep Finance Pro.'
+                    : billing.subscription.status === 'trialing'
+                      ? `Trial ends ${formatUnixDate(billing.subscription.currentPeriodEnd) ?? 'soon'}.`
+                      : `Renews ${formatUnixDate(billing.subscription.currentPeriodEnd) ?? 'at the end of the billing period'}.`}
+              </p>
+            )}
+            {billingError && (
+              <p className="mt-4 text-sm text-[var(--text-tertiary)]">{billingError}</p>
+            )}
           </div>
 
           {userTier === 'free' ? (
@@ -389,14 +488,28 @@ export default function AccountPage() {
               View Plans
             </button>
           ) : (
-            <button
-              onClick={handleDowngradeToFree}
-              disabled={saving}
-              className="w-full flex items-center justify-center gap-2 bg-[var(--bg-glass-strong)] text-[var(--text-secondary)] font-bold px-6 py-4 rounded-xl hover:bg-[var(--bg-glass-strong)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <TrendingDown size={20} />
-              {saving ? 'Processing...' : 'Cancel Subscription'}
-            </button>
+            <div className="flex flex-col gap-3">
+              {billing?.hasBillingAccount && (
+                <button
+                  onClick={handleManageBilling}
+                  disabled={portalLoading}
+                  className="w-full flex items-center justify-center gap-2 bg-[var(--emerald-500)] text-white font-bold px-6 py-4 rounded-xl hover:bg-[var(--emerald-500)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <CreditCard size={20} />
+                  {portalLoading ? 'Opening…' : 'Manage billing & invoices'}
+                </button>
+              )}
+              {!billing?.subscription?.cancelAtPeriodEnd && (
+                <button
+                  onClick={handleDowngradeToFree}
+                  disabled={saving}
+                  className="w-full flex items-center justify-center gap-2 bg-[var(--bg-glass-strong)] text-[var(--text-secondary)] font-bold px-6 py-4 rounded-xl hover:bg-[var(--bg-glass-strong)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <TrendingDown size={20} />
+                  {saving ? 'Processing...' : 'Cancel Subscription'}
+                </button>
+              )}
+            </div>
           )}
         </div>
 

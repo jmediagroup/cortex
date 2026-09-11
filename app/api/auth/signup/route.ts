@@ -9,6 +9,7 @@ import { sanitizeString } from '@/lib/validation';
 import { safeNextPath } from '@/lib/safe-redirect';
 import { siteUrl } from '@/lib/site-url';
 import { errorResponse } from '@/lib/auth-helpers';
+import { checkPassword } from '@/lib/password-policy';
 
 /**
  * POST /api/auth/signup
@@ -41,8 +42,6 @@ const MIN_FORM_FILL_MS = 2500;
 
 /** Upper bound guards against a stale tab replaying an ancient timestamp. */
 const MAX_FORM_AGE_MS = 6 * 60 * 60 * 1000;
-
-const MIN_PASSWORD_LENGTH = 10;
 
 /**
  * Hashes the client IP with a server-side salt so we can cluster signups by
@@ -112,15 +111,20 @@ export async function POST(request: NextRequest) {
       return decoySuccess();
     }
 
-    if (typeof formStartedAt === 'number' && Number.isFinite(formStartedAt)) {
-      const elapsed = Date.now() - formStartedAt;
-      if (elapsed >= 0 && elapsed < MIN_FORM_FILL_MS) {
-        console.warn('[Signup] Form submitted too fast', { ip: clientIP, elapsed });
-        return decoySuccess();
-      }
-      if (elapsed > MAX_FORM_AGE_MS) {
-        return errorResponse('This form expired. Please refresh the page and try again.', 400);
-      }
+    // Our form always sends `formStartedAt`; a client that omits it (or sends
+    // garbage) is deliberately dodging the timing check, so it gets the same
+    // silent decoy a too-fast submit does.
+    if (typeof formStartedAt !== 'number' || !Number.isFinite(formStartedAt)) {
+      console.warn('[Signup] Missing form timing', { ip: clientIP, normalizedEmail });
+      return decoySuccess();
+    }
+    const elapsed = Date.now() - formStartedAt;
+    if (elapsed >= 0 && elapsed < MIN_FORM_FILL_MS) {
+      console.warn('[Signup] Form submitted too fast', { ip: clientIP, elapsed });
+      return decoySuccess();
+    }
+    if (elapsed > MAX_FORM_AGE_MS) {
+      return errorResponse('This form expired. Please refresh the page and try again.', 400);
     }
 
     // --- 2. Rate limits --------------------------------------------------
@@ -164,17 +168,11 @@ export async function POST(request: NextRequest) {
     }
 
     // --- 5. Password strength -------------------------------------------
-    if (password.length < MIN_PASSWORD_LENGTH) {
-      return errorResponse(
-        `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`,
-        400,
-      );
-    }
-    if (/^\d+$/.test(password) || /^[a-z]+$/i.test(password)) {
-      return errorResponse(
-        'Please choose a password with a mix of letters, numbers or symbols.',
-        400,
-      );
+    // Single shared policy (lib/password-policy.ts) so the reset-password
+    // screen can't set something weaker than signup accepts.
+    const passwordCheck = checkPassword(password);
+    if (!passwordCheck.ok) {
+      return errorResponse(passwordCheck.message, 400);
     }
 
     // --- 6. Alias collision ----------------------------------------------

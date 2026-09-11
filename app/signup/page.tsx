@@ -15,6 +15,7 @@ import {
   authLinkStyle,
 } from '@/components/auth/AuthShell';
 import { Button } from '@/components/ui/Button';
+import { MIN_PASSWORD_LENGTH, PASSWORD_HINT } from '@/lib/password-policy';
 
 function SignupForm() {
   const [firstName, setFirstName] = useState('');
@@ -338,7 +339,7 @@ function SignupForm() {
         <AuthField
           label="Password"
           icon={<Lock size={16} />}
-          hint="Minimum 10 characters, with a mix of letters and numbers or symbols."
+          hint={PASSWORD_HINT}
         >
           <input
             type="password"
@@ -348,7 +349,7 @@ function SignupForm() {
             placeholder="••••••••"
             className="mgm-input"
             style={authInputWithIcon}
-            minLength={10}
+            minLength={MIN_PASSWORD_LENGTH}
             autoComplete="new-password"
           />
         </AuthField>

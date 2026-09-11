@@ -1,50 +1,48 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServiceClient, type Database } from '@/lib/supabase/client';
 import { createCustomerPortalSession } from '@/lib/stripe/server';
+import { createServiceClient } from '@/lib/supabase/client';
+import { authenticateRequest, isAuthError, errorResponse } from '@/lib/auth-helpers';
+import { checkRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 
+export const dynamic = 'force-dynamic';
+
+/**
+ * POST /api/create-portal-session
+ *
+ * Opens the Stripe Customer Portal for the signed-in user: update card,
+ * download invoices, resume a scheduled cancellation. Requires the portal to
+ * be configured once in the Stripe dashboard (Settings → Billing → Customer
+ * portal).
+ */
 export async function POST(request: NextRequest) {
   try {
-    // Get the authenticated user
+    const authResult = await authenticateRequest(request);
+    if (isAuthError(authResult)) {
+      return errorResponse(authResult.error, authResult.status);
+    }
+    const { user } = authResult;
+
+    const rateLimit = checkRateLimit(`portal:${user.id}`, RATE_LIMITS.portalSession);
+    if (!rateLimit.success) {
+      return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 });
+    }
+
     const supabase = createServiceClient();
-    const authHeader = request.headers.get('authorization');
-
-    if (!authHeader) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Get user data from database
-    const { data: userData, error: userError } = await supabase
+    const { data: row } = await supabase
       .from('users')
-      .select('*')
+      .select('stripe_customer_id')
       .eq('id', user.id)
-      .single();
+      .maybeSingle<{ stripe_customer_id: string | null }>();
 
-    if (userError || !userData) {
-      return NextResponse.json({ error: 'No subscription found' }, { status: 404 });
+    if (!row?.stripe_customer_id) {
+      return errorResponse('No billing account found', 404);
     }
 
-    const typedUserData = userData as Database['public']['Tables']['users']['Row'];
-
-    if (!typedUserData.stripe_customer_id) {
-      return NextResponse.json({ error: 'No subscription found' }, { status: 404 });
-    }
-
-    // Create Stripe portal session
-    const session = await createCustomerPortalSession(typedUserData.stripe_customer_id);
-
+    const session = await createCustomerPortalSession(row.stripe_customer_id);
     return NextResponse.json({ url: session.url });
-  } catch (error: any) {
-    console.error('Error creating portal session:', error);
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    );
+  } catch (error) {
+    const e = error as { message?: string };
+    console.error('Error creating portal session:', e.message ?? error);
+    return errorResponse('Could not open the billing portal. Please try again.', 500);
   }
 }

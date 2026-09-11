@@ -35,7 +35,9 @@ export async function authenticateRequest(
     return { error: 'Missing authorization header', status: 401 };
   }
 
-  const token = authHeader.replace('Bearer ', '');
+  // Case-insensitive scheme and tolerant of extra whitespace, per RFC 6750.
+  const match = /^\s*Bearer\s+(\S+)\s*$/i.exec(authHeader);
+  const token = match?.[1] ?? '';
 
   if (!token) {
     return { error: 'Invalid authorization header format', status: 401 };

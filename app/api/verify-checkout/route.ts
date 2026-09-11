@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type Stripe from 'stripe';
 import { stripe } from '@/lib/stripe/server';
-import { createServiceClient } from '@/lib/supabase/client';
+import { reconcileUserSubscription } from '@/lib/stripe/reconcile';
 import { authenticateRequest, isAuthError, errorResponse } from '@/lib/auth-helpers';
-import { tierForSubscription } from '@/lib/stripe/tier';
 import { checkRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
+
+export const dynamic = 'force-dynamic';
 
 /**
  * POST /api/verify-checkout  { sessionId }
@@ -16,6 +17,11 @@ import { checkRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
  *
  * Ownership is enforced by matching the session's `metadata.userId` to the
  * authenticated caller, so a user can't pass someone else's session id.
+ *
+ * The write goes through `reconcileUserSubscription`, which looks at the
+ * customer's whole subscription list — so replaying an OLD success URL (a
+ * bookmark, browser history) can never downgrade someone who has since
+ * started a newer subscription.
  */
 export async function POST(request: NextRequest) {
   const authResult = await authenticateRequest(request);
@@ -42,44 +48,38 @@ export async function POST(request: NextRequest) {
 
   let session: Stripe.Checkout.Session;
   try {
-    session = await stripe.checkout.sessions.retrieve(sessionId, { expand: ['subscription'] });
+    session = await stripe.checkout.sessions.retrieve(sessionId);
   } catch {
     return errorResponse('Checkout session not found', 404);
   }
 
   // Ownership: the session must belong to the authenticated user.
-  if (session.metadata?.userId !== user.id) {
+  const owner = session.metadata?.userId ?? session.client_reference_id;
+  if (owner !== user.id) {
     return errorResponse('This checkout session does not belong to you', 403);
   }
 
-  // Not paid yet (or abandoned) — report free without touching the row.
-  if (session.payment_status !== 'paid' && session.status !== 'complete') {
-    return NextResponse.json({ tier: 'free', reconciled: false, status: session.status });
-  }
+  const customerId = typeof session.customer === 'string' ? session.customer : session.customer?.id;
 
-  const subscription =
-    typeof session.subscription === 'string'
-      ? await stripe.subscriptions.retrieve(session.subscription)
-      : (session.subscription as Stripe.Subscription | null);
+  try {
+    const result = await reconcileUserSubscription({
+      userId: user.id,
+      customerIds: [customerId],
+      email: user.email,
+    });
 
-  if (!subscription) {
-    return NextResponse.json({ tier: 'free', reconciled: false });
-  }
+    const paid = session.payment_status === 'paid' || session.status === 'complete';
 
-  const tier = tierForSubscription(subscription);
-  const supabase = createServiceClient();
-  const { error } = await (supabase.from('users').update as any)({
-    tier,
-    stripe_customer_id: session.customer as string,
-    stripe_subscription_id: subscription.id,
-    subscription_status: subscription.status,
-    updated_at: new Date().toISOString(),
-  }).eq('id', user.id);
-
-  if (error) {
-    console.error('[Verify Checkout] Failed to reconcile tier:', error);
+    return NextResponse.json({
+      tier: result.tier,
+      reconciled: true,
+      status: session.status,
+      // Lets the dashboard tell "payment still processing" apart from "done".
+      pending: paid && result.tier === 'free',
+    });
+  } catch (error) {
+    const e = error as { message?: string };
+    console.error('[Verify Checkout] Failed to reconcile tier:', e.message ?? error);
     return errorResponse('Failed to reconcile subscription', 500);
   }
-
-  return NextResponse.json({ tier, reconciled: true });
 }
