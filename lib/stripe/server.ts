@@ -1,64 +1,64 @@
 import Stripe from 'stripe';
+import { siteUrl } from '@/lib/site-url';
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-02-24.acacia',
   typescript: true,
 });
 
-export async function createCheckoutSession(
-  customerId: string | null,
-  priceId: string,
-  userId: string,
-  userEmail: string
-) {
-  // Create or retrieve Stripe customer
-  let finalCustomerId = customerId;
+export interface CheckoutSessionResult {
+  session: Stripe.Checkout.Session;
+  /** The customer the session was created for. */
+  customerId: string;
+  /** True when this call had to create a new Stripe customer. */
+  createdCustomer: boolean;
+}
+
+export async function createCheckoutSession(opts: {
+  customerId: string | null;
+  priceId: string;
+  userId: string;
+  userEmail: string;
+}): Promise<CheckoutSessionResult> {
+  const { priceId, userId, userEmail } = opts;
+  let customerId = opts.customerId;
+  let createdCustomer = false;
 
   if (!customerId) {
-    // Create a new Stripe customer
     const customer = await stripe.customers.create({
       email: userEmail,
-      metadata: {
-        userId,
-      },
+      metadata: { userId },
     });
-    finalCustomerId = customer.id;
+    customerId = customer.id;
+    createdCustomer = true;
   }
 
-  // Create checkout session with metadata on both session and subscription
+  const origin = siteUrl();
+
   const session = await stripe.checkout.sessions.create({
-    customer: finalCustomerId as string,
+    customer: customerId,
     mode: 'subscription',
     payment_method_types: ['card'],
-    line_items: [
-      {
-        price: priceId,
-        quantity: 1,
-      },
-    ],
+    line_items: [{ price: priceId, quantity: 1 }],
     allow_promotion_codes: true,
     // Carry the session id back so /dashboard can reconcile the tier
     // server-side if the webhook is delayed or fails.
-    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?success=true&session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing?canceled=true`,
-    metadata: {
-      userId,
-    },
-    subscription_data: {
-      metadata: {
-        userId,
-      },
-    },
+    success_url: `${origin}/dashboard?success=true&session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${origin}/pricing?canceled=true`,
+    // Both metadata blocks AND client_reference_id carry the user id, so any
+    // Stripe object we get back (session, subscription, invoice) can be mapped
+    // to a Cortex user without a DB lookup.
+    client_reference_id: userId,
+    metadata: { userId },
+    subscription_data: { metadata: { userId } },
   });
 
-  return session;
+  return { session, customerId, createdCustomer };
 }
 
 export async function createCustomerPortalSession(customerId: string) {
-  const session = await stripe.billingPortal.sessions.create({
+  return stripe.billingPortal.sessions.create({
     customer: customerId,
-    return_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
+    return_url: `${siteUrl()}/account`,
   });
-
-  return session;
 }

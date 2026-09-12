@@ -12,6 +12,7 @@ import {
   authErrorStyle,
 } from '@/components/auth/AuthShell';
 import { Button } from '@/components/ui/Button';
+import { checkPassword, MIN_PASSWORD_LENGTH, PASSWORD_HINT } from '@/lib/password-policy';
 
 function ResetPasswordForm() {
   const [password, setPassword] = useState('');
@@ -43,8 +44,10 @@ function ResetPasswordForm() {
       setLoading(false);
       return;
     }
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters.');
+    // Same policy as signup, so a reset can't set a weaker password.
+    const check = checkPassword(password);
+    if (!check.ok) {
+      setError(check.message);
       setLoading(false);
       return;
     }
@@ -141,7 +144,7 @@ function ResetPasswordForm() {
         <AuthField
           label="New password"
           icon={<Lock size={16} />}
-          hint="Minimum 6 characters."
+          hint={PASSWORD_HINT}
         >
           <input
             type="password"
@@ -151,7 +154,7 @@ function ResetPasswordForm() {
             placeholder="••••••••"
             className="mgm-input"
             style={authInputWithIcon}
-            minLength={6}
+            minLength={MIN_PASSWORD_LENGTH}
             autoComplete="new-password"
           />
         </AuthField>
@@ -165,7 +168,7 @@ function ResetPasswordForm() {
             placeholder="••••••••"
             className="mgm-input"
             style={authInputWithIcon}
-            minLength={6}
+            minLength={MIN_PASSWORD_LENGTH}
             autoComplete="new-password"
           />
         </AuthField>
