@@ -1,5 +1,5 @@
 import { createHash } from 'crypto';
-import { NextRequest, NextResponse } from 'next/server';
+import { after, NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { createServiceClient } from '@/lib/supabase/client';
 import { checkRateLimit, getClientIP, RATE_LIMITS } from '@/lib/rate-limit';
@@ -10,6 +10,7 @@ import { safeNextPath } from '@/lib/safe-redirect';
 import { siteUrl } from '@/lib/site-url';
 import { errorResponse } from '@/lib/auth-helpers';
 import { checkPassword } from '@/lib/password-policy';
+import { sendNewUserNotification } from '@/lib/email';
 
 /**
  * POST /api/auth/signup
@@ -235,6 +236,32 @@ export async function POST(request: NextRequest) {
       if (flagError) {
         console.error('[Signup] Failed to record signup signals:', flagError);
       }
+    }
+
+    // --- 9. Notify the site owner ----------------------------------------
+    // Supabase obfuscates a repeat signup for an address that already exists by
+    // returning a user with an empty `identities` array instead of an error.
+    // Treat only that exact shape as "not a new registration", so an unexpected
+    // payload still alerts rather than silently going missing.
+    const identities = data.user?.identities;
+    const isRepeatSignup = Array.isArray(identities) && identities.length === 0;
+
+    if (data.user && !isRepeatSignup) {
+      // `after()` runs once the response has been flushed, so a slow or failing
+      // email provider can never delay signup or cost someone their account.
+      after(async () => {
+        const notification = await sendNewUserNotification({
+          email,
+          firstName: firstName || null,
+          userId: data.user?.id ?? null,
+          signupFlags: assessment.reasons,
+          isFlagged: assessment.decision === 'flag',
+        });
+
+        if (!notification.success) {
+          console.error('[Signup] New user notification failed:', notification.error);
+        }
+      });
     }
 
     return NextResponse.json({ success: true, requiresVerification: true });
