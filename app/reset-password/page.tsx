@@ -8,11 +8,13 @@ import { trackEvent } from '@/lib/analytics';
 import {
   AuthShell,
   AuthField,
+  authHintId,
   authInputWithIcon,
   authErrorStyle,
 } from '@/components/auth/AuthShell';
 import { Button } from '@/components/ui/Button';
 import { checkPassword, MIN_PASSWORD_LENGTH, PASSWORD_HINT } from '@/lib/password-policy';
+import { friendlyResetError } from '@/lib/auth-errors';
 
 function ResetPasswordForm() {
   const [password, setPassword] = useState('');
@@ -23,15 +25,22 @@ function ResetPasswordForm() {
   const router = useRouter();
   const supabase = createBrowserClient();
 
+  // The recovery link is exchanged for a session by /auth/callback before we
+  // land here. No session means the link was never exchanged (expired, or
+  // opened directly) — send them back to request a new one.
   useEffect(() => {
+    let active = true;
     (async () => {
       const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session && !window.location.hash.includes('type=recovery')) {
-        router.push('/login');
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (active && !user) {
+        router.replace('/login?notice=link_expired&mode=reset');
       }
     })();
+    return () => {
+      active = false;
+    };
   }, [router, supabase]);
 
   const handleResetPassword = async (e: React.FormEvent) => {
@@ -61,7 +70,7 @@ function ResetPasswordForm() {
     } catch (err: unknown) {
       const e = err as { message?: string };
       console.error('Password reset error:', err);
-      setError(e.message || 'Failed to reset password. Please try again.');
+      setError(friendlyResetError(e));
     } finally {
       setLoading(false);
     }
@@ -139,14 +148,22 @@ function ResetPasswordForm() {
           </p>
         </div>
 
-        {error && <div style={authErrorStyle}>{error}</div>}
+        {error && (
+          <div role="alert" style={authErrorStyle}>
+            {error}
+          </div>
+        )}
 
         <AuthField
+          id="reset-new-password"
           label="New password"
           icon={<Lock size={16} />}
           hint={PASSWORD_HINT}
         >
           <input
+            id="reset-new-password"
+            name="new-password"
+            aria-describedby={authHintId('reset-new-password')}
             type="password"
             required
             value={password}
@@ -159,8 +176,10 @@ function ResetPasswordForm() {
           />
         </AuthField>
 
-        <AuthField label="Confirm new password" icon={<Lock size={16} />}>
+        <AuthField id="reset-confirm-password" label="Confirm new password" icon={<Lock size={16} />}>
           <input
+            id="reset-confirm-password"
+            name="confirm-password"
             type="password"
             required
             value={confirmPassword}

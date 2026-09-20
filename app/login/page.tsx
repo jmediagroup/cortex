@@ -1,48 +1,67 @@
 'use client';
 
-import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, ArrowRight, Loader2, Lock, Mail } from 'lucide-react';
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ArrowLeft, ArrowRight, Check, Eye, EyeOff, Loader2, Lock, Mail } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { siteUrl } from '@/lib/site-url';
 import { safeNextPath } from '@/lib/safe-redirect';
 import { trackEvent } from '@/lib/analytics';
+import { callbackNotice, friendlyLoginError, friendlySignupError } from '@/lib/auth-errors';
 import {
   AuthShell,
   AuthField,
   authInputWithIcon,
   authErrorStyle,
+  authInfoStyle,
   authLinkStyle,
+  authSuccessStyle,
 } from '@/components/auth/AuthShell';
 import { Button } from '@/components/ui/Button';
 import { MarketingIcon } from '@/components/marketing/Icons';
 import { TurnstileWidget, isTurnstileEnabled } from '@/components/auth/TurnstileWidget';
 
 function AuthForm() {
-  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const supabase = createBrowserClient();
+
+  // `?mode=reset` opens the forgot-password view directly (linked from the
+  // "account already exists" message on signup). `?email=` pre-fills.
+  const [isForgotPassword, setIsForgotPassword] = useState(searchParams.get('mode') === 'reset');
   const [resetEmailSent, setResetEmailSent] = useState(false);
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(searchParams.get('email') ?? '');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [needsVerification, setNeedsVerification] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
-  const [resendMsg, setResendMsg] = useState<string | null>(null);
+  const [resendMsg, setResendMsg] = useState<{ ok: boolean; text: string } | null>(null);
   // Once CAPTCHA protection is switched on for the Supabase project it applies
   // to every auth endpoint — sign-in and password recovery included, not just
   // signup — so all three calls below carry a token.
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [captchaNonce, setCaptchaNonce] = useState(0);
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const supabase = createBrowserClient();
+  const errorRef = useRef<HTMLDivElement | null>(null);
 
   // Tokens are single-use; a failed attempt needs a fresh one before retrying.
   const resetCaptcha = useCallback(() => {
     setCaptchaToken(null);
     setCaptchaNonce((n) => n + 1);
   }, []);
+
+  // A message handed over by /auth/callback (expired link, "you're verified,
+  // log in", …). Cleared as soon as the person starts a fresh attempt.
+  const [notice, setNotice] = useState(() => callbackNotice(searchParams.get('notice')));
+  const noticeIsExpiredLink =
+    searchParams.get('notice') === 'link_expired' || searchParams.get('notice') === 'link_invalid';
+
+  const redirectTarget = useMemo(
+    () => safeNextPath(searchParams.get('redirect'), '/dashboard'),
+    [searchParams],
+  );
 
   const signupHref = useMemo(() => {
     const redirect = searchParams.get('redirect');
@@ -68,23 +87,31 @@ function AuthForm() {
     return qs ? `/signup?${qs}` : '/signup';
   }, [searchParams]);
 
+  // Already signed in? Go where they were headed. `getUser()` validates the
+  // token server-side so a revoked/stale cookie can't create a redirect loop
+  // with the middleware (which also uses getUser).
   useEffect(() => {
-    const checkSession = async () => {
+    let active = true;
+    (async () => {
       const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (session) {
-        const redirect = safeNextPath(searchParams.get('redirect'), '/dashboard');
-        router.push(redirect);
-      }
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (active && user) router.replace(redirectTarget);
+    })();
+    return () => {
+      active = false;
     };
-    checkSession();
-  }, [router, searchParams, supabase]);
+  }, [router, redirectTarget, supabase]);
+
+  useEffect(() => {
+    if (error && errorRef.current) errorRef.current.focus();
+  }, [error]);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setNotice(null);
     setNeedsVerification(false);
     setResendMsg(null);
 
@@ -97,18 +124,17 @@ function AuthForm() {
       if (signInError) throw signInError;
       if (data.session) {
         await trackEvent('user_login', {}, true);
-        const redirect = safeNextPath(searchParams.get('redirect'), '/dashboard');
-        router.push(redirect);
+        router.replace(redirectTarget);
+        return;
       }
+      throw new Error('No session returned');
     } catch (err: unknown) {
       const e = err as { message?: string; code?: string };
       console.error('Auth error:', err);
-      if (e.code === 'email_not_confirmed') {
+      if (e.code === 'email_not_confirmed' || /email not confirmed/i.test(e.message ?? '')) {
         setNeedsVerification(true);
-        setError('Your email isn’t verified yet. Check your inbox for the link, or resend it below.');
-      } else {
-        setError(e.message || 'An error occurred. Please try again.');
       }
+      setError(friendlyLoginError(e));
       resetCaptcha();
       setLoading(false);
       await trackEvent(
@@ -134,11 +160,10 @@ function AuthForm() {
         options: captchaToken ? { captchaToken } : undefined,
       });
       if (resendError) throw resendError;
-      setResendMsg('Verification email sent — check your inbox.');
+      setResendMsg({ ok: true, text: 'Verification email sent — check your inbox (and spam).' });
       await trackEvent('resend_verification_requested', { context: 'login' }, true);
     } catch (err: unknown) {
-      const e = err as { message?: string };
-      setResendMsg(e.message || 'Could not resend right now. Please try again shortly.');
+      setResendMsg({ ok: false, text: friendlySignupError(err as { message?: string; code?: string }) });
     } finally {
       resetCaptcha();
       setResendLoading(false);
@@ -149,9 +174,10 @@ function AuthForm() {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setNotice(null);
     try {
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-        // Exchange the recovery code at /auth/callback first, then land on the
+        // Exchange the recovery token at /auth/callback first, then land on the
         // set-new-password screen with a live recovery session.
         redirectTo: `${siteUrl()}/auth/callback?next=${encodeURIComponent('/reset-password')}`,
         ...(captchaToken ? { captchaToken } : {}),
@@ -160,9 +186,9 @@ function AuthForm() {
       setResetEmailSent(true);
       await trackEvent('password_reset_requested', {}, true);
     } catch (err: unknown) {
-      const e = err as { message?: string };
+      const e = err as { message?: string; code?: string };
       console.error('Password reset error:', err);
-      setError(e.message || 'Failed to send reset email. Please try again.');
+      setError(friendlySignupError(e));
       resetCaptcha();
     } finally {
       setLoading(false);
@@ -176,11 +202,36 @@ function AuthForm() {
     setPassword('');
   };
 
+  const captchaBlocksSubmit = isTurnstileEnabled() && !captchaToken;
+
+  const noticeBanner = notice ? (
+    <div
+      role={notice.tone === 'error' ? 'alert' : 'status'}
+      style={
+        notice.tone === 'error'
+          ? authErrorStyle
+          : notice.tone === 'success'
+            ? { ...authSuccessStyle, display: 'flex' }
+            : authInfoStyle
+      }
+    >
+      {notice.tone === 'success' && <Check size={14} aria-hidden="true" />}
+      <span>{notice.text}</span>
+    </div>
+  ) : null;
+
+  const errorBanner = error ? (
+    <div ref={errorRef} role="alert" tabIndex={-1} style={{ ...authErrorStyle, outline: 'none' }}>
+      {error}
+    </div>
+  ) : null;
+
   if (resetEmailSent) {
     return (
       <AuthShell>
         <div style={{ textAlign: 'center' }}>
           <div
+            aria-hidden="true"
             style={{
               margin: '0 auto 20px',
               width: 64,
@@ -210,6 +261,7 @@ function AuthForm() {
             We sent a reset link.
           </h1>
           <p
+            role="status"
             style={{
               fontSize: 15,
               color: 'var(--text-secondary)',
@@ -217,8 +269,9 @@ function AuthForm() {
               margin: '0 0 16px',
             }}
           >
-            We sent a password reset link to{' '}
-            <span style={{ color: 'var(--navy)', fontWeight: 700 }}>{email}</span>.
+            If an account exists for{' '}
+            <span style={{ color: 'var(--navy)', fontWeight: 700 }}>{email}</span>, a password
+            reset link is on its way. It works on any device.
           </p>
           <p
             style={{
@@ -227,14 +280,14 @@ function AuthForm() {
               margin: '0 0 24px',
             }}
           >
-            The link expires in 24 hours.
+            Can&apos;t find it? Check your spam or promotions folder.
           </p>
           <button
             type="button"
             onClick={handleBackToLogin}
             style={{ ...authLinkStyle, color: 'var(--navy)' }}
           >
-            <ArrowLeft size={14} /> Back to sign in
+            <ArrowLeft size={14} aria-hidden="true" /> Back to sign in
           </button>
         </div>
       </AuthShell>
@@ -265,10 +318,13 @@ function AuthForm() {
             </p>
           </div>
 
-          {error && <div style={authErrorStyle}>{error}</div>}
+          {noticeBanner}
+          {errorBanner}
 
-          <AuthField label="Email address" icon={<Mail size={16} />}>
+          <AuthField id="reset-email" label="Email address" icon={<Mail size={16} />}>
             <input
+              id="reset-email"
+              name="email"
               type="email"
               required
               value={email}
@@ -276,6 +332,11 @@ function AuthForm() {
               placeholder="name@example.com"
               className="mgm-input"
               style={authInputWithIcon}
+              autoComplete="email"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              inputMode="email"
             />
           </AuthField>
 
@@ -284,12 +345,12 @@ function AuthForm() {
           <Button
             variant="primary"
             type="submit"
-            disabled={loading || (isTurnstileEnabled() && !captchaToken)}
+            disabled={loading || captchaBlocksSubmit}
             style={{ width: '100%' }}
           >
             {loading ? (
               <>
-                <Loader2 size={16} className="animate-spin" /> Sending…
+                <Loader2 size={16} className="animate-spin" aria-hidden="true" /> Sending…
               </>
             ) : (
               <>
@@ -303,7 +364,7 @@ function AuthForm() {
             onClick={handleBackToLogin}
             style={{ ...authLinkStyle, color: 'var(--navy)', alignSelf: 'center' }}
           >
-            <ArrowLeft size={14} /> Back to sign in
+            <ArrowLeft size={14} aria-hidden="true" /> Back to sign in
           </button>
         </form>
       </AuthShell>
@@ -333,10 +394,13 @@ function AuthForm() {
           </p>
         </div>
 
-        {error && <div style={authErrorStyle}>{error}</div>}
+        {noticeBanner}
+        {errorBanner}
 
-        <AuthField label="Email address" icon={<Mail size={16} />}>
+        <AuthField id="login-email" label="Email address" icon={<Mail size={16} />}>
           <input
+            id="login-email"
+            name="email"
             type="email"
             required
             value={email}
@@ -345,36 +409,78 @@ function AuthForm() {
             className="mgm-input"
             style={authInputWithIcon}
             autoComplete="email"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
+            inputMode="email"
           />
         </AuthField>
 
-        <AuthField label="Password" icon={<Lock size={16} />}>
+        <AuthField
+          id="login-password"
+          label="Password"
+          icon={<Lock size={16} />}
+          trailing={
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              aria-pressed={showPassword}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              style={{
+                ...authLinkStyle,
+                fontSize: 11,
+                color: 'var(--gray-500)',
+                textTransform: 'uppercase',
+                letterSpacing: 'var(--tracking-label)',
+              }}
+            >
+              {showPassword ? <EyeOff size={13} aria-hidden="true" /> : <Eye size={13} aria-hidden="true" />}
+              {showPassword ? 'Hide' : 'Show'}
+            </button>
+          }
+        >
           <input
-            type="password"
+            id="login-password"
+            name="current-password"
+            type={showPassword ? 'text' : 'password'}
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
             className="mgm-input"
             style={authInputWithIcon}
+            // Older accounts may have shorter passwords than the current
+            // signup policy; never lock them out at the form.
             minLength={6}
             autoComplete="current-password"
           />
         </AuthField>
 
-        {needsVerification && (
+        {(needsVerification || noticeIsExpiredLink) && (
           <div style={{ marginTop: -6 }}>
             <button
               type="button"
               onClick={handleResendVerification}
-              disabled={resendLoading}
+              disabled={resendLoading || !email || captchaBlocksSubmit}
               style={{ ...authLinkStyle, fontSize: 13 }}
             >
-              {resendLoading ? 'Sending…' : 'Resend verification email'}
+              {resendLoading ? 'Sending…' : 'Send a new verification email'}
             </button>
-            {resendMsg && (
+            {!email && (
               <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 6 }}>
-                {resendMsg}
+                Enter your email above first.
+              </div>
+            )}
+            {resendMsg && (
+              <div
+                role="status"
+                style={{
+                  fontSize: 12,
+                  color: resendMsg.ok ? 'var(--teal-green)' : 'var(--crimson-500)',
+                  marginTop: 6,
+                }}
+              >
+                {resendMsg.text}
               </div>
             )}
           </div>
@@ -383,7 +489,10 @@ function AuthForm() {
         <div style={{ marginTop: -6, textAlign: 'right' }}>
           <button
             type="button"
-            onClick={() => setIsForgotPassword(true)}
+            onClick={() => {
+              setIsForgotPassword(true);
+              setError(null);
+            }}
             style={{ ...authLinkStyle, fontSize: 12 }}
           >
             Forgot password?
@@ -395,16 +504,16 @@ function AuthForm() {
         <Button
           variant="primary"
           type="submit"
-          disabled={loading || (isTurnstileEnabled() && !captchaToken)}
+          disabled={loading || captchaBlocksSubmit}
           style={{ width: '100%' }}
         >
           {loading ? (
             <>
-              <Loader2 size={16} className="animate-spin" /> Signing in…
+              <Loader2 size={16} className="animate-spin" aria-hidden="true" /> Signing in…
             </>
           ) : (
             <>
-              Log in <ArrowRight size={16} />
+              Log in <ArrowRight size={16} aria-hidden="true" />
             </>
           )}
         </Button>
@@ -422,7 +531,7 @@ function AuthForm() {
             href={signupHref}
             style={{ color: 'var(--orange)', fontWeight: 700, textDecoration: 'none' }}
           >
-            Create an account
+            Create a free account
           </Link>
         </div>
       </form>

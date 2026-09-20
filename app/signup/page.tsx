@@ -1,7 +1,17 @@
 'use client';
 
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowRight, Check, Loader2, Lock, Mail, User as UserIcon } from 'lucide-react';
+import {
+  ArrowRight,
+  Check,
+  Circle,
+  Eye,
+  EyeOff,
+  Loader2,
+  Lock,
+  Mail,
+  User as UserIcon,
+} from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createBrowserClient } from '@/lib/supabase/client';
@@ -9,38 +19,107 @@ import { TurnstileWidget, isTurnstileEnabled } from '@/components/auth/Turnstile
 import {
   AuthShell,
   AuthField,
+  authHintId,
   authInputWithIcon,
   authErrorStyle,
   authSuccessStyle,
   authLinkStyle,
 } from '@/components/auth/AuthShell';
 import { Button } from '@/components/ui/Button';
-import { MIN_PASSWORD_LENGTH, PASSWORD_HINT } from '@/lib/password-policy';
+import { MIN_PASSWORD_LENGTH, checkPassword } from '@/lib/password-policy';
+import { friendlySignupError } from '@/lib/auth-errors';
+import { safeNextPath } from '@/lib/safe-redirect';
+import { trackEvent } from '@/lib/analytics';
+
+type SignupResponse = {
+  success?: boolean;
+  requiresVerification?: boolean;
+  next?: string;
+  error?: string;
+  code?: string;
+  retryAfter?: number;
+};
+
+/** Live password checklist shown under the field. Mirrors lib/password-policy.ts. */
+function passwordRules(password: string) {
+  return [
+    {
+      key: 'length',
+      label: `At least ${MIN_PASSWORD_LENGTH} characters`,
+      ok: password.length >= MIN_PASSWORD_LENGTH,
+    },
+    {
+      key: 'mix',
+      label: 'Letters plus numbers or symbols',
+      ok: password.length > 0 && !/^\d+$/.test(password) && !/^[a-z]+$/i.test(password),
+    },
+  ];
+}
+
+function PasswordChecklist({ password, id }: { password: string; id: string }) {
+  const rules = passwordRules(password);
+  return (
+    <ul
+      id={id}
+      aria-live="polite"
+      style={{
+        listStyle: 'none',
+        padding: 0,
+        margin: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 4,
+        fontSize: 12,
+      }}
+    >
+      {rules.map((rule) => (
+        <li
+          key={rule.key}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            color: rule.ok ? 'var(--teal-green)' : 'var(--gray-500)',
+            fontWeight: rule.ok ? 700 : 500,
+          }}
+        >
+          {rule.ok ? <Check size={12} aria-hidden="true" /> : <Circle size={10} aria-hidden="true" />}
+          <span>{rule.label}</span>
+          <span className="sr-only">{rule.ok ? ' (done)' : ' (not yet)'}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 function SignupForm() {
   const [firstName, setFirstName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [accountExists, setAccountExists] = useState(false);
   const [signupComplete, setSignupComplete] = useState(false);
   const [userEmail, setUserEmail] = useState('');
   const [resendCooldown, setResendCooldown] = useState(0);
   const [resendLoading, setResendLoading] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
-  // Anti-bot state. `website` is a honeypot: hidden from humans, filled in by
-  // naive form-fillers. `formStartedAt` lets the server reject submissions
-  // that arrive faster than a person could type.
-  const [website, setWebsite] = useState('');
+  // Anti-bot state. `honeypot` is hidden from humans and named so no browser
+  // autofill heuristic will ever populate it. `formStartedAt` lets the server
+  // reject submissions that arrive faster than a page could be read.
+  const [honeypot, setHoneypot] = useState('');
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [captchaNonce, setCaptchaNonce] = useState(0);
   const formStartedAt = useRef<number>(Date.now());
+  const errorRef = useRef<HTMLDivElement | null>(null);
+  const resendTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createBrowserClient();
 
-  // Turnstile tokens are single-use — after a failed attempt the widget must
-  // hand us a fresh one before the next submit.
+  // Turnstile tokens are single-use — after any attempt the widget must hand
+  // us a fresh one before the next submit.
   const resetCaptcha = useCallback(() => {
     setCaptchaToken(null);
     setCaptchaNonce((n) => n + 1);
@@ -49,6 +128,7 @@ function SignupForm() {
   const plan = searchParams.get('plan');
   const billing = searchParams.get('billing');
   const hasProIntent = plan === 'finance_pro' || plan === 'pro';
+  const billingLabel = billing === 'annual' ? 'Annual' : 'Monthly';
 
   const postVerifyRedirect = useMemo(() => {
     if (!hasProIntent) return '/onboarding';
@@ -58,30 +138,68 @@ function SignupForm() {
   }, [hasProIntent, billing]);
 
   const signInHref = useMemo(() => {
-    if (!hasProIntent) return '/login';
-    return `/login?redirect=${encodeURIComponent(postVerifyRedirect)}`;
-  }, [hasProIntent, postVerifyRedirect]);
+    const params = new URLSearchParams();
+    if (hasProIntent) params.set('redirect', postVerifyRedirect);
+    if (accountExists && email) params.set('email', email);
+    const qs = params.toString();
+    return qs ? `/login?${qs}` : '/login';
+  }, [hasProIntent, postVerifyRedirect, accountExists, email]);
 
+  const resetHref = useMemo(() => {
+    const params = new URLSearchParams({ mode: 'reset' });
+    if (email) params.set('email', email);
+    return `/login?${params.toString()}`;
+  }, [email]);
+
+  // Already signed in? Skip the form. `getUser()` validates against the auth
+  // server, so a stale cookie can't bounce someone into a redirect loop.
   useEffect(() => {
+    let active = true;
     (async () => {
       const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (session) router.push(postVerifyRedirect);
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (active && user) router.replace(postVerifyRedirect);
     })();
+    return () => {
+      active = false;
+    };
   }, [router, supabase, postVerifyRedirect]);
+
+  // Clear the resend countdown if the page unmounts mid-count.
+  useEffect(
+    () => () => {
+      if (resendTimer.current) clearInterval(resendTimer.current);
+    },
+    [],
+  );
+
+  // Move focus to the error so keyboard and screen-reader users hear it.
+  useEffect(() => {
+    if (error && errorRef.current) errorRef.current.focus();
+  }, [error]);
+
+  const passwordOk = checkPassword(password).ok;
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError(null);
+    setAccountExists(false);
+
+    // Same policy as the server. Catching it here saves a round trip and a
+    // single-use CAPTCHA token.
+    const pw = checkPassword(password);
+    if (!pw.ok) {
+      setError(pw.message);
+      return;
+    }
+
+    setLoading(true);
 
     try {
       // Account creation goes through our own route rather than straight to
       // Supabase, so rate limiting, CAPTCHA verification and the email policy
-      // in lib/email-hygiene.ts all get a say before an account exists. The
-      // route calls supabase.auth.signUp with a cookie-backed client, so the
-      // PKCE verifier still lands in this browser and /auth/callback works.
+      // in lib/email-hygiene.ts all get a say before an account exists.
       const res = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -90,32 +208,59 @@ function SignupForm() {
           password,
           firstName: firstName.trim(),
           captchaToken,
-          website,
+          mgm_hp: honeypot,
           formStartedAt: formStartedAt.current,
           next: postVerifyRedirect,
         }),
       });
 
-      const payload = await res.json().catch(() => ({}));
+      const payload = (await res.json().catch(() => ({}))) as SignupResponse;
 
-      if (!res.ok) {
-        throw new Error(
-          payload.error || 'Could not create your account. Please try again.',
-        );
+      if (res.status === 409 || payload.code === 'account_exists') {
+        setAccountExists(true);
+        setError(payload.error || 'An account already exists for this email.');
+        return;
       }
 
-      // The public.users row (including first_name, from the signUp metadata)
-      // is created atomically by the handle_new_user trigger.
+      if (!res.ok) {
+        throw new Error(payload.error || 'We couldn’t create your account just now. Please try again.');
+      }
+
+      void trackEvent('user_signup', { plan: hasProIntent ? 'finance_pro' : 'free' });
+
+      // Email confirmations are off in Supabase: the route already set the
+      // session cookies, so go straight in.
+      if (payload.requiresVerification === false) {
+        router.replace(safeNextPath(payload.next, postVerifyRedirect));
+        return;
+      }
+
       setUserEmail(email);
       setSignupComplete(true);
     } catch (err: unknown) {
       const e = err as { message?: string };
       console.error('Signup error:', err);
-      setError(e.message || 'An error occurred. Please try again.');
-      resetCaptcha();
+      setError(e.message || 'We couldn’t create your account just now. Please try again.');
     } finally {
+      // The token is spent either way; get a fresh one for the next attempt.
+      resetCaptcha();
       setLoading(false);
     }
+  };
+
+  const startResendCooldown = () => {
+    setResendCooldown(60);
+    if (resendTimer.current) clearInterval(resendTimer.current);
+    resendTimer.current = setInterval(() => {
+      setResendCooldown((prev) => {
+        if (prev <= 1) {
+          if (resendTimer.current) clearInterval(resendTimer.current);
+          resendTimer.current = null;
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
   };
 
   const handleResend = async () => {
@@ -129,28 +274,18 @@ function SignupForm() {
         type: 'signup',
         email: userEmail,
         // Required once CAPTCHA protection is enabled on the Supabase project,
-        // which applies to every auth endpoint, not just signup.
+        // which applies to every auth endpoint, not just signup. The widget
+        // stays mounted on this screen so a fresh token is always available.
         options: captchaToken ? { captchaToken } : undefined,
       });
       if (resendError) throw resendError;
       setResendSuccess(true);
-      setResendCooldown(60);
-
-      const interval = setInterval(() => {
-        setResendCooldown((prev) => {
-          if (prev <= 1) {
-            clearInterval(interval);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+      startResendCooldown();
+      void trackEvent('resend_verification_requested', { context: 'signup' });
     } catch (err: unknown) {
-      const e = err as { message?: string };
       console.error('Resend error:', err);
-      setError(e.message || 'Failed to resend verification email. Please try again.');
+      setError(friendlySignupError(err as { message?: string; code?: string }));
     } finally {
-      // The token is spent either way; get a fresh one for the next attempt.
       resetCaptcha();
       setResendLoading(false);
     }
@@ -163,18 +298,26 @@ function SignupForm() {
     setEmail('');
     setPassword('');
     setError(null);
+    setAccountExists(false);
     setResendSuccess(false);
     setResendCooldown(0);
-    setWebsite('');
+    if (resendTimer.current) {
+      clearInterval(resendTimer.current);
+      resendTimer.current = null;
+    }
+    setHoneypot('');
     resetCaptcha();
     formStartedAt.current = Date.now();
   };
+
+  const captchaBlocksSubmit = isTurnstileEnabled() && !captchaToken;
 
   if (signupComplete) {
     return (
       <AuthShell>
         <div style={{ textAlign: 'center' }}>
           <div
+            aria-hidden="true"
             style={{
               margin: '0 auto 20px',
               width: 64,
@@ -204,6 +347,7 @@ function SignupForm() {
             Check your email.
           </h1>
           <p
+            role="status"
             style={{
               fontSize: 15,
               color: 'var(--text-secondary)',
@@ -212,31 +356,37 @@ function SignupForm() {
             }}
           >
             We sent a verification link to{' '}
-            <span style={{ color: 'var(--navy)', fontWeight: 700 }}>{userEmail}</span>.
+            <span style={{ color: 'var(--navy)', fontWeight: 700 }}>{userEmail}</span>. Open it on
+            any device — phone or computer — to activate your account.
           </p>
           {hasProIntent ? (
             <p style={{ fontSize: 14, color: 'var(--text-secondary)', margin: '0 0 12px' }}>
-              Once verified, we&apos;ll take you straight to checkout for{' '}
-              <strong style={{ color: 'var(--navy)' }}>
-                Finance Pro · {billing === 'annual' ? 'Annual' : 'Monthly'}
-              </strong>
-              .
+              Once verified, we&apos;ll bring you back to finish checkout for{' '}
+              <strong style={{ color: 'var(--navy)' }}>Finance Pro · {billingLabel}</strong>.
             </p>
           ) : null}
           <p style={{ fontSize: 13, color: 'var(--gray-500)', margin: '0 0 20px' }}>
-            The link expires in 24 hours.
+            Can&apos;t find it? Check your spam or promotions folder.
           </p>
 
           {resendSuccess && (
-            <div style={{ ...authSuccessStyle, width: '100%', marginBottom: 16 }}>
-              <Check size={14} /> Verification email sent.
+            <div role="status" style={{ ...authSuccessStyle, width: '100%', marginBottom: 16 }}>
+              <Check size={14} aria-hidden="true" /> Verification email sent.
             </div>
           )}
           {error && (
-            <div style={{ ...authErrorStyle, marginBottom: 16 }}>
+            <div
+              ref={errorRef}
+              role="alert"
+              tabIndex={-1}
+              style={{ ...authErrorStyle, marginBottom: 16, outline: 'none' }}
+            >
               {error}
             </div>
           )}
+
+          {/* Kept mounted so a resend always has a fresh single-use token. */}
+          <TurnstileWidget onToken={setCaptchaToken} resetSignal={captchaNonce} />
 
           <div style={{ marginBottom: 16 }}>
             <p style={{ fontSize: 14, color: 'var(--text-secondary)', margin: '0 0 6px' }}>
@@ -245,16 +395,20 @@ function SignupForm() {
             <button
               type="button"
               onClick={handleResend}
-              disabled={resendCooldown > 0 || resendLoading}
+              disabled={resendCooldown > 0 || resendLoading || captchaBlocksSubmit}
+              aria-disabled={resendCooldown > 0 || resendLoading || captchaBlocksSubmit}
               style={{
                 ...authLinkStyle,
-                opacity: resendCooldown > 0 || resendLoading ? 0.5 : 1,
-                cursor: resendCooldown > 0 || resendLoading ? 'not-allowed' : 'pointer',
+                opacity: resendCooldown > 0 || resendLoading || captchaBlocksSubmit ? 0.5 : 1,
+                cursor:
+                  resendCooldown > 0 || resendLoading || captchaBlocksSubmit
+                    ? 'not-allowed'
+                    : 'pointer',
               }}
             >
               {resendLoading ? (
                 <>
-                  <Loader2 size={12} className="animate-spin" /> Sending…
+                  <Loader2 size={12} className="animate-spin" aria-hidden="true" /> Sending…
                 </>
               ) : resendCooldown > 0 ? (
                 `Resend in ${resendCooldown}s`
@@ -284,7 +438,11 @@ function SignupForm() {
 
   return (
     <AuthShell>
-      <form onSubmit={handleSignup} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <form
+        onSubmit={handleSignup}
+        noValidate={false}
+        style={{ display: 'flex', flexDirection: 'column', gap: 20 }}
+      >
         <div>
           <div className="mgm-eyebrow" style={{ marginBottom: 10 }}>
             GET STARTED FREE
@@ -302,29 +460,52 @@ function SignupForm() {
           </h1>
           <p style={{ fontSize: 15, color: 'var(--text-secondary)', margin: 0 }}>
             {hasProIntent
-              ? `Verify your email, then checkout for Finance Pro · ${billing === 'annual' ? 'Annual' : 'Monthly'}.`
+              ? `Verify your email, then finish checkout for Finance Pro · ${billingLabel}.`
               : 'Thousands of Mutants are building wealth on purpose. Yes, it’s free.'}
           </p>
         </div>
 
-        {error && <div style={authErrorStyle}>{error}</div>}
+        {error && (
+          <div
+            ref={errorRef}
+            role="alert"
+            tabIndex={-1}
+            style={{ ...authErrorStyle, outline: 'none' }}
+          >
+            <div>{error}</div>
+            {accountExists && (
+              <div style={{ marginTop: 8, display: 'flex', gap: 14, flexWrap: 'wrap' }}>
+                <Link href={signInHref} style={{ color: 'inherit', textDecoration: 'underline' }}>
+                  Log in
+                </Link>
+                <Link href={resetHref} style={{ color: 'inherit', textDecoration: 'underline' }}>
+                  Reset password
+                </Link>
+              </div>
+            )}
+          </div>
+        )}
 
-        <AuthField label="First name" icon={<UserIcon size={16} />}>
+        <AuthField id="signup-first-name" label="First name" icon={<UserIcon size={16} />}>
           <input
+            id="signup-first-name"
+            name="given-name"
             type="text"
-            required
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
-            placeholder="Alex"
+            placeholder="Alex (optional)"
             className="mgm-input"
             style={authInputWithIcon}
             autoComplete="given-name"
+            autoCapitalize="words"
             maxLength={60}
           />
         </AuthField>
 
-        <AuthField label="Email address" icon={<Mail size={16} />}>
+        <AuthField id="signup-email" label="Email address" icon={<Mail size={16} />}>
           <input
+            id="signup-email"
+            name="email"
             type="email"
             required
             value={email}
@@ -333,24 +514,51 @@ function SignupForm() {
             className="mgm-input"
             style={authInputWithIcon}
             autoComplete="email"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
+            inputMode="email"
           />
         </AuthField>
 
         <AuthField
+          id="signup-password"
           label="Password"
           icon={<Lock size={16} />}
-          hint={PASSWORD_HINT}
+          hint={<PasswordChecklist password={password} id={authHintId('signup-password')} />}
+          trailing={
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              aria-pressed={showPassword}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              style={{
+                ...authLinkStyle,
+                fontSize: 11,
+                color: 'var(--gray-500)',
+                textTransform: 'uppercase',
+                letterSpacing: 'var(--tracking-label)',
+              }}
+            >
+              {showPassword ? <EyeOff size={13} aria-hidden="true" /> : <Eye size={13} aria-hidden="true" />}
+              {showPassword ? 'Hide' : 'Show'}
+            </button>
+          }
         >
           <input
-            type="password"
+            id="signup-password"
+            name="new-password"
+            type={showPassword ? 'text' : 'password'}
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
+            placeholder="••••••••••"
             className="mgm-input"
             style={authInputWithIcon}
             minLength={MIN_PASSWORD_LENGTH}
             autoComplete="new-password"
+            aria-describedby={authHintId('signup-password')}
+            aria-invalid={password.length > 0 && !passwordOk}
           />
         </AuthField>
 
@@ -361,15 +569,15 @@ function SignupForm() {
           that does — silently, so bots can't tell they were caught.
         */}
         <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', top: 0 }}>
-          <label htmlFor="website">Website</label>
+          <label htmlFor="mgm-hp">Leave this empty</label>
           <input
-            id="website"
-            name="website"
+            id="mgm-hp"
+            name="mgm_hp"
             type="text"
             tabIndex={-1}
             autoComplete="off"
-            value={website}
-            onChange={(e) => setWebsite(e.target.value)}
+            value={honeypot}
+            onChange={(e) => setHoneypot(e.target.value)}
           />
         </div>
 
@@ -378,16 +586,16 @@ function SignupForm() {
         <Button
           variant="primary"
           type="submit"
-          disabled={loading || (isTurnstileEnabled() && !captchaToken)}
+          disabled={loading || captchaBlocksSubmit}
           style={{ width: '100%' }}
         >
           {loading ? (
             <>
-              <Loader2 size={16} className="animate-spin" /> Creating account…
+              <Loader2 size={16} className="animate-spin" aria-hidden="true" /> Creating account…
             </>
           ) : (
             <>
-              Create account <ArrowRight size={16} />
+              Create free account <ArrowRight size={16} aria-hidden="true" />
             </>
           )}
         </Button>
@@ -407,7 +615,7 @@ function SignupForm() {
           >
             terms
           </Link>
-          .
+          . No credit card required.
         </p>
 
         <div

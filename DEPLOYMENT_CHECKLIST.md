@@ -246,40 +246,22 @@ Then update `lib/supabase/client.ts` to import the generated types instead of th
 
 ## 🔗 Supabase Email Redirect Configuration
 
-### Issue: Email verification redirects to localhost instead of production domain
+Email links (signup verification, password reset) all land on
+`/auth/callback`, which exchanges the token for a session and forwards the
+user. Configure Supabase to match:
 
-When users verify their email, Supabase redirects them to `localhost:3000` instead of your production domain. This needs to be configured in Supabase.
-
-**Fix:**
-
-1. Go to your Supabase project dashboard
-2. Navigate to **Authentication** → **URL Configuration**
-3. Update the following settings:
-
-   - **Site URL:** `https://cortex.vip` (your production domain)
-   - **Redirect URLs:** Add the following (one per line):
+1. **Authentication → URL Configuration**
+   - **Site URL:** `https://moneyguymutants.com`
+   - **Redirect URLs:**
      ```
-     https://cortex.vip/**
-     https://cortex.vip/dashboard
-     http://localhost:3000/**
-     http://localhost:3000/dashboard
+     https://moneyguymutants.com/auth/callback**
+     http://localhost:3000/auth/callback**
      ```
-
-4. Save the changes
-
-**Alternative: Configure in code**
-
-If you need different redirect URLs for development vs. production, you can also update the signup code to use an environment variable:
-
-```typescript
-// In app/login/page.tsx
-emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/dashboard`,
-```
-
-Then add to your Vercel environment variables:
-```
-NEXT_PUBLIC_APP_URL=https://cortex.vip
-```
+2. **Authentication → Email Templates** — paste `emails/verification-template.html`
+   (Confirm signup) and `emails/password-reset-template.html` (Reset password).
+   They use `{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=…`
+   so links work from any device. Full details in `SECURITY_SIGNUP_HARDENING.md`.
+3. Vercel env: `NEXT_PUBLIC_APP_URL=https://moneyguymutants.com`.
 
 ---
 

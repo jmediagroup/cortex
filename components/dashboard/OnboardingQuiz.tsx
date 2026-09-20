@@ -80,11 +80,13 @@ export default function OnboardingQuiz({ userId, onComplete, onSkip }: Onboardin
   );
 
   const handleComplete = useCallback(async () => {
+    if (saving) return;
     const finalAnswers = answers as OnboardingAnswers;
     setSaving(true);
 
     try {
-      await (supabase
+      // supabase-js returns errors instead of throwing, so check explicitly.
+      const { error } = await (supabase
         .from('users')
         .update as any)({
           has_completed_onboarding: true,
@@ -92,6 +94,9 @@ export default function OnboardingQuiz({ userId, onComplete, onSkip }: Onboardin
           updated_at: new Date().toISOString(),
         })
         .eq('id', userId);
+      if (error) {
+        console.error('[Onboarding] Failed to save answers:', error);
+      }
 
       trackEvent('onboarding_completed', {
         describes_you: finalAnswers.describes_you,
@@ -100,15 +105,14 @@ export default function OnboardingQuiz({ userId, onComplete, onSkip }: Onboardin
         own_or_rent: finalAnswers.own_or_rent,
         tool_familiarity: finalAnswers.tool_familiarity,
       }, true);
-
-      setShowResult(true);
-    } catch {
-      // Still show result even if save fails — we'll retry on next load
-      setShowResult(true);
+    } catch (err) {
+      console.error('[Onboarding] Failed to save answers:', err);
     } finally {
+      // Always show the result: the dashboard re-prompts if the save failed.
+      setShowResult(true);
       setSaving(false);
     }
-  }, [answers, supabase, userId]);
+  }, [answers, saving, supabase, userId]);
 
   const goNext = useCallback(() => {
     if (isLastStep) {
@@ -123,22 +127,33 @@ export default function OnboardingQuiz({ userId, onComplete, onSkip }: Onboardin
   }, []);
 
   const handleSkip = async () => {
-    await (supabase
-      .from('users')
-      .update as any)({
-        has_completed_onboarding: true,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', userId);
-
-    trackEvent('onboarding_skipped', {}, true);
-    onSkip();
+    if (saving) return;
+    setSaving(true);
+    try {
+      const { error } = await (supabase
+        .from('users')
+        .update as any)({
+          has_completed_onboarding: true,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', userId);
+      if (error) {
+        console.error('[Onboarding] Failed to record skip:', error);
+      }
+      trackEvent('onboarding_skipped', {}, true);
+    } catch (err) {
+      console.error('[Onboarding] Failed to record skip:', err);
+    } finally {
+      setSaving(false);
+      onSkip();
+    }
   };
 
+  // Answers are already saved by handleComplete; this only navigates. Don't
+  // also call onComplete (which pushes /dashboard) or we'd race two navigations.
   const handleStartRecommended = () => {
     const finalAnswers = answers as OnboardingAnswers;
     const recommended = getTopRecommendedApp(finalAnswers);
-    onComplete(finalAnswers);
     router.push(`/apps/${recommended.id}`);
   };
 

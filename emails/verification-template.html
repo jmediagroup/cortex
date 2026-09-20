@@ -3,9 +3,14 @@
   Copy this HTML into Supabase Dashboard > Authentication > Email Templates > "Confirm signup"
 
   Supabase variables used:
-  - {{ .ConfirmationURL }} — the confirmation link
+  - {{ .TokenHash }} — the one-time verification token, used as
+    {{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=signup
+    Unlike the default ConfirmationURL (a PKCE ?code= that only the browser
+    that started signup can exchange), this link is verified server-side by
+    /auth/callback and works from ANY device or mail app.
   - {{ .Email }} — the user’s email address
-  - {{ .SiteURL }} — your site URL (https://moneyguymutants.com)
+  - {{ .SiteURL }} — must be https://moneyguymutants.com
+    (Supabase → Authentication → URL Configuration → Site URL)
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -42,18 +47,18 @@
               <table role="presentation" cellspacing="0" cellpadding="0" border="0">
                 <tr>
                   <td style="border-radius:4px; background-color:#F26531;">
-                    <a href="{{ .ConfirmationURL }}" style="display:inline-block; background-color:#F26531; color:#FFFFFF; font-size:14px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; text-decoration:none; padding:14px 30px; border-radius:4px;">Confirm email</a>
+                    <a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=signup" style="display:inline-block; background-color:#F26531; color:#FFFFFF; font-size:14px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; text-decoration:none; padding:14px 30px; border-radius:4px;">Confirm email</a>
                   </td>
                 </tr>
               </table>
 
-              <p style="margin:28px 0 0 0; color:#8A9BA8; font-size:14px; line-height:1.6;">This link expires in <strong style="color:#C8C8C8;">24 hours</strong>. If you didn’t create a Money Guy Mutants account, you can safely ignore this email.</p>
+              <p style="margin:28px 0 0 0; color:#8A9BA8; font-size:14px; line-height:1.6;">This link expires in <strong style="color:#C8C8C8;">24 hours</strong> and works on any device. If you didn’t create a Money Guy Mutants account, you can safely ignore this email.</p>
 
               <!-- Fallback link -->
               <p style="margin:24px 0 8px 0; padding:16px; background-color:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.06); border-radius:10px; color:#8A9BA8; font-size:13px; line-height:1.5;">
                 <strong style="color:#C8C8C8;">Button not working?</strong><br>
                 Paste this link into your browser:<br>
-                <a href="{{ .ConfirmationURL }}" style="color:#4EC9F5; word-break:break-all;">{{ .ConfirmationURL }}</a>
+                <a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=signup" style="color:#4EC9F5; word-break:break-all;">{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=signup</a>
               </p>
             </td>
           </tr>

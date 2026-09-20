@@ -53,23 +53,55 @@ being used as an email relay, and it puts the sending reputation at risk.
 
 Layers applied, cheapest first:
 
-1. **Honeypot + timing** — a hidden `website` field, plus a rejection of any
-   form submitted in under 2.5s. Both return a *fake success* so bots can't
-   tell they were caught and tune around the rules.
-2. **Rate limits** — 2/min and 5/hour per IP, and 3/hour per *normalized*
+1. **Validation first** — email policy (disposable domains and provider
+   lookalikes are blocked; alias addresses and random-looking names are
+   flagged, not blocked) and password strength (10+ characters, not all-digit
+   or all-letter). Running these *before* the rate limiter and CAPTCHA means a
+   person who mistypes their email twice doesn't burn their rate-limit budget
+   or a single-use CAPTCHA token on mistakes we could have told them about
+   for free.
+2. **Honeypot + timing** — a hidden `mgm_hp` field (named so no browser
+   autofill heuristic will ever populate it) returns a *fake success* so bots
+   can't tell they were caught. A form submitted in under ~1.2s gets a
+   *visible* "that was quick, try again" instead: password managers can be
+   that fast, and a real person must never be left waiting for an email that
+   isn't coming.
+3. **Rate limits** — 2/min and 5/hour per IP, and 3/hour per *normalized*
    email, so an alias farm shares one bucket instead of getting a fresh
    allowance per alias.
-3. **Turnstile verification** (when configured).
-4. **Email policy** — disposable domains and provider lookalikes are blocked;
-   alias addresses and random-looking names are flagged, not blocked.
+4. **Turnstile verification** (when configured).
 5. **Alias-collision check** — an address whose canonical form already has an
-   account is rejected.
-6. **Password strength** — raised from 6 to 10 characters, and all-digit or
-   all-letter passwords are rejected.
+   account gets a 409 with a clear "you already have an account — log in or
+   reset your password" message and links (product decision: helpful beats
+   hiding whether an address is registered).
+6. **`supabase.auth.signUp`**, then a check that the `public.users` profile
+   row exists (repaired via the service role if the trigger swallowed an
+   error), then abuse metadata, then the owner notification.
 
-The route calls `supabase.auth.signUp` with a **cookie-backed** client, so the
-PKCE verifier still lands in the user's browser and `/auth/callback` keeps
-working unchanged.
+Every Supabase error string is mapped to plain-English copy in
+`lib/auth-errors.ts` before it reaches the UI.
+
+### Verification links work from any device
+
+The stock Supabase email link (`{{ .ConfirmationURL }}`) carries a PKCE
+`?code=` that can only be exchanged by the **same browser** that submitted the
+form. Sign up on a laptop, tap the link on your phone → dead end. The templates
+in `emails/` now use
+
+```
+{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=signup
+```
+
+which `app/auth/callback/route.ts` verifies server-side with `verifyOtp` — no
+browser state needed. The Pro-checkout intent survives because the signup
+route stores it in user metadata (`signup_next`). The callback still accepts
+the old `?code=` shape, and when that fails for the "different browser" reason
+it sends the person to `/login?notice=verified_login_required` (their address
+*is* confirmed by then) instead of a bare login page. Expired or already-used
+links land on `/login?notice=link_expired` with a one-click resend.
+
+**You must paste the updated templates into the Supabase dashboard** — see
+"Deploy steps" below.
 
 ### Database
 
@@ -93,10 +125,28 @@ for verified / unverified / flagged.
 
 ## Deploy steps
 
+### 0. Supabase dashboard settings (required for the new email links)
+
+1. **Authentication → Email Templates**: paste `emails/verification-template.html`
+   into *Confirm signup* and `emails/password-reset-template.html` into
+   *Reset password*. Both use `{{ .TokenHash }}` links (see above).
+2. **Authentication → URL Configuration**:
+   - *Site URL* = `https://moneyguymutants.com` (the templates build links from
+     `{{ .SiteURL }}`; if this still says an old domain, links will 404).
+   - *Redirect URLs* must include `https://moneyguymutants.com/auth/callback**`
+     (plus `http://localhost:3000/auth/callback**` for local dev).
+3. **Authentication → Providers → Email**: keep *Confirm email* ON (the flow
+   handles OFF too — signup returns a live session and skips the "check your
+   email" screen — but ON is the intended setup). Consider enabling *Leaked
+   password protection* while you're there.
+4. Vercel env: `NEXT_PUBLIC_APP_URL=https://moneyguymutants.com` so the
+   `redirect_to` on the legacy `?code=` path matches production.
+
 ### 1. Apply the migration
 
 Run `supabase/migrations/harden_signup_abuse.sql` in the Supabase SQL editor.
-Safe to run more than once.
+Safe to run more than once. (Already applied to the production project as of
+2026-09-12 — `supabase migration list` shows it.)
 
 ### 2. Turn on CAPTCHA protection in Supabase — this is the important one
 
@@ -172,7 +222,7 @@ select * from purge_unverified_users('7 days', true);
 - **`normalizeEmail` is a comparison key, never a delivery address.** Mail must
   always go to `users.email`, the address the person actually typed. The SQL
   and TypeScript implementations must be kept in sync.
-- **`/api/resend-verification` appears to be dead code.** Nothing in the app
+- **`/api/resend-verification` was dead code and has been deleted.** Nothing in the app
   calls it — both pages call `supabase.auth.resend()` directly. It is an
   unauthenticated endpoint that sends mail using the service-role key. It has
   been hardened to match the signup route, but if it is genuinely unused it
