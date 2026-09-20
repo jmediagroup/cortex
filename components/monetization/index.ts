@@ -1,21 +1,16 @@
 // Monetization Components
-export { default as AffiliateLink } from './AffiliateLink';
-export { default as ContextualAd } from './ContextualAd';
-export { default as RotatingAd } from './RotatingAd';
-export { default as AdContainer } from './AdContainer';
 
 // Pro Gating
 export { default as ProGatedPreview } from './ProGatedPreview';
 export { default as ProUpsellCard } from './ProUpsellCard';
 
-// IAB-Compliant Ad Components
+// Ads (admin-managed; see ADS.md)
 export { default as IABAd } from './IABAd';
-export { default as StickySidebarAd } from './StickySidebarAd';
+export { default as AdSlot } from './AdSlot';
 export { default as InlineAd } from './InlineAd';
-export { default as BelowResultsAd } from './BelowResultsAd';
-export { default as MobileBannerAd } from './MobileBannerAd';
+export { AdProvider, useAdVisibility, type AdVisibility } from './AdProvider';
 
-// Affiliate Configuration
+// Legacy affiliate configuration (now the fallback for lib/ads/fallback.ts)
 export {
   affiliates,
   contextAffiliates,
@@ -25,7 +20,7 @@ export {
   type ContextAffiliates,
 } from './affiliates';
 
-// Ad Copy Configuration
+// Legacy ad copy configuration (seed source + fallback)
 export {
   affiliateAdCopy,
   getAdCopy,

@@ -164,4 +164,8 @@ export const RATE_LIMITS = {
   // address, so an alias farm (a.b.c@gmail.com, ab.c@gmail.com, …) all share
   // one bucket instead of getting a fresh allowance per alias.
   signupEmail: { limit: 3, windowSeconds: 3600 },
+
+  // Ad impression/click beacons: 120 per minute per browser session (a page
+  // with several rotating slots stays well under this).
+  adEvents: { limit: 120, windowSeconds: 60 },
 } as const;

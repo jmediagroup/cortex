@@ -4,6 +4,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { createBrowserClient } from '@/lib/supabase/client';
 import type { Tier } from '@/lib/access-control';
+import { AdProvider } from '@/components/monetization/AdProvider';
 import { AppShell } from './AppShell';
 
 type User = { email: string; name?: string } | null;
@@ -17,6 +18,8 @@ export function AppShellClient({ children }: { children: ReactNode }) {
   const supabase = createBrowserClient();
   const [user, setUser] = useState<User>(null);
   const [userTier, setUserTier] = useState<Tier>('free');
+  // True once the session + tier lookup has settled (drives ad visibility).
+  const [authReady, setAuthReady] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -38,6 +41,7 @@ export function AppShellClient({ children }: { children: ReactNode }) {
 
         if (active && userData?.tier) setUserTier(userData.tier);
       }
+      if (active) setAuthReady(true);
     })();
     return () => {
       active = false;
@@ -50,8 +54,10 @@ export function AppShellClient({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AppShell user={user} userTier={userTier} onSignOut={handleSignOut}>
-      {children}
-    </AppShell>
+    <AdProvider tier={userTier} isLoggedIn={Boolean(user)} ready={authReady}>
+      <AppShell user={user} userTier={userTier} onSignOut={handleSignOut}>
+        {children}
+      </AppShell>
+    </AdProvider>
   );
 }

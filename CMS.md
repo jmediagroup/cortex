@@ -5,7 +5,7 @@ Admins manage content from the `/admin` panel; content lives in Supabase and is
 rendered from Markdown by the same pipeline used for Guides and Thinking.
 
 **Phase 1 (shipped):** Articles are fully CMS-backed — WordPress is no longer in
-the article read path. Guides, Thinking, and Ads follow in later phases (see
+the article read path. Ads are CMS-backed too (see ADS.md); Guides and Thinking follow in later phases (see
 _Roadmap_).
 
 ## How it works
@@ -87,7 +87,13 @@ those: extend `lib/cms/*` with type-aware readers, add admin screens (reuse
 `/guide` and `/daily-outlook` skills to POST to the admin API instead of
 committing Markdown.
 
+## Ads
+
+Affiliate ads are managed from `/admin/ads` and stored in Supabase
+(`ad_advertisers`, `ad_placements`, `ad_campaigns`, `ad_creatives`, `ad_events`).
+See [ADS.md](./ADS.md) for the schema, seed, caching model and admin workflow.
+
 ## Roadmap
 
 - **Phase 2 — Guides & Thinking → DB** (includes rewiring the content skills).
-- **Phase 3 — Ads/Affiliates → DB** (replaces `components/monetization/affiliates.ts`).
+- **Phase 3 — Ads/Affiliates → DB** — shipped; see [ADS.md](./ADS.md).
