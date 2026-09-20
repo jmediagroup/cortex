@@ -18,3 +18,4 @@ removing the line, so the topic isn't accidentally reused.
 | 2026-08-23 | index-fund-investing-for-beginners | Index fund investing |
 | 2026-09-13 | roth-ira-complete-guide | Roth IRA |
 | 2026-09-20 | hsa-triple-tax-advantage | Health Savings Account (HSA) |
+| 2026-09-20 | 50-30-20-budget-rule | 50/30/20 budgeting rule |
