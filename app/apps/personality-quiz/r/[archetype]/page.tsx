@@ -45,7 +45,8 @@ export async function generateMetadata({
   return {
     title,
     description,
-    alternates: { canonical: url },
+    // One canonical per archetype; the `?s=` secondary variants are near-duplicates.
+    alternates: { canonical: buildResultUrl(archetype) },
     openGraph: {
       title,
       description,

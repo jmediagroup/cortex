@@ -10,18 +10,11 @@ export const metadata: Metadata = {
     description: 'Track your net worth, assets, and liabilities. Analyze liquidity and visualize your financial trajectory.',
     type: 'website',
     url: 'https://moneyguymutants.com/apps/net-worth',
-    images: [{
-      url: '/og-net-worth.png',
-      width: 1200,
-      height: 630,
-      alt: 'Money Guy Mutants Net Worth Calculator',
-    }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Net Worth Calculator & Wealth Tracker',
     description: 'Track your net worth, assets, and liabilities with our free calculator.',
-    images: ['/og-net-worth.png'],
   },
   alternates: {
     canonical: 'https://moneyguymutants.com/apps/net-worth',

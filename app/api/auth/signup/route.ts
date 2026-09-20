@@ -129,7 +129,12 @@ export async function POST(request: NextRequest) {
       // Client timestamp of when the form was rendered.
       formStartedAt,
       next: rawNext,
+      // Attribution (`lp-<slug>` from a search landing page, or a campaign id).
+      source: rawSource,
     } = body as Record<string, unknown>;
+
+    const signupSource =
+      typeof rawSource === 'string' ? rawSource.toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 60) : '';
 
     // --- 1. Validation --------------------------------------------------------
     if (typeof rawEmail !== 'string' || typeof password !== 'string') {
@@ -246,6 +251,7 @@ export async function POST(request: NextRequest) {
         data: {
           ...(firstName ? { first_name: firstName } : {}),
           signup_next: next,
+          ...(signupSource ? { signup_source: signupSource } : {}),
         },
         captchaToken: typeof captchaToken === 'string' ? captchaToken : undefined,
       },

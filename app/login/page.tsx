@@ -70,6 +70,8 @@ function AuthForm() {
     const params = new URLSearchParams();
     if (plan) params.set('plan', plan);
     if (billing) params.set('billing', billing);
+    const ref = searchParams.get('ref');
+    if (ref) params.set('ref', ref);
     // If a redirect was provided, surface plan/billing it carries to signup
     // so the post-signup checkout flow stays intact.
     if (!plan && redirect && redirect.startsWith('/dashboard')) {

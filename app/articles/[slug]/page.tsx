@@ -470,15 +470,10 @@ function generateArticleSchema(article: Article) {
     ? {
         '@type': 'Person',
         name: article.author.name,
-        url: `https://moneyguymutants.com/articles?author=${article.author.slug}`,
         ...(article.author.bio ? { description: article.author.bio } : {}),
         ...(article.author.avatar ? { image: article.author.avatar } : {}),
       }
-    : {
-        '@type': 'Organization',
-        '@id': 'https://moneyguymutants.com/#organization',
-        name: 'Money Guy Mutants Technologies',
-      };
+    : { '@id': 'https://moneyguymutants.com/#organization' };
 
   return {
     '@context': 'https://schema.org',
@@ -499,12 +494,7 @@ function generateArticleSchema(article: Article) {
     datePublished: article.date,
     dateModified: article.modified,
     author,
-    publisher: {
-      '@type': 'Organization',
-      '@id': 'https://moneyguymutants.com/#organization',
-      name: 'Money Guy Mutants Technologies',
-      logo: { '@type': 'ImageObject', url: 'https://moneyguymutants.com/icon' },
-    },
+    publisher: { '@id': 'https://moneyguymutants.com/#organization' },
     mainEntityOfPage: {
       '@type': 'WebPage',
       '@id': articleUrl,

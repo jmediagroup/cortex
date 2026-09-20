@@ -37,6 +37,9 @@ export async function generateMetadata({ params }: SharedScenarioPageProps): Pro
   return {
     title,
     description,
+    // Shared scenarios are personal, unbounded in number, and near-duplicates
+    // of the tool page — keep them out of the index.
+    robots: { index: false, follow: true },
     openGraph: {
       title,
       description,

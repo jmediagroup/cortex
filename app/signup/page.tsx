@@ -127,6 +127,8 @@ function SignupForm() {
 
   const plan = searchParams.get('plan');
   const billing = searchParams.get('billing');
+  // Attribution for search landing pages / campaigns (`?ref=lp-<slug>`).
+  const signupSource = searchParams.get('ref') ?? searchParams.get('utm_campaign') ?? '';
   const hasProIntent = plan === 'finance_pro' || plan === 'pro';
   const billingLabel = billing === 'annual' ? 'Annual' : 'Monthly';
 
@@ -141,6 +143,7 @@ function SignupForm() {
     const params = new URLSearchParams();
     if (hasProIntent) params.set('redirect', postVerifyRedirect);
     if (accountExists && email) params.set('email', email);
+    if (signupSource) params.set('ref', signupSource);
     const qs = params.toString();
     return qs ? `/login?${qs}` : '/login';
   }, [hasProIntent, postVerifyRedirect, accountExists, email]);
@@ -211,6 +214,7 @@ function SignupForm() {
           mgm_hp: honeypot,
           formStartedAt: formStartedAt.current,
           next: postVerifyRedirect,
+          source: signupSource || undefined,
         }),
       });
 
@@ -226,7 +230,10 @@ function SignupForm() {
         throw new Error(payload.error || 'We couldn’t create your account just now. Please try again.');
       }
 
-      void trackEvent('user_signup', { plan: hasProIntent ? 'finance_pro' : 'free' });
+      void trackEvent('user_signup', {
+        plan: hasProIntent ? 'finance_pro' : 'free',
+        source: signupSource || undefined,
+      });
 
       // Email confirmations are off in Supabase: the route already set the
       // session cookies, so go straight in.

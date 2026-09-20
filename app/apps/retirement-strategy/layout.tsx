@@ -10,18 +10,11 @@ export const metadata: Metadata = {
     description: 'Advanced retirement calculator with RMD calculations and Roth conversion planning.',
     type: 'website',
     url: 'https://moneyguymutants.com/apps/retirement-strategy',
-    images: [{
-      url: '/og-retirement.png',
-      width: 1200,
-      height: 630,
-      alt: 'Money Guy Mutants Retirement Planning Calculator',
-    }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Retirement Planning Calculator',
     description: 'Advanced retirement calculator with RMD calculations and Roth conversion planning.',
-    images: ['/og-retirement.png'],
   },
   alternates: {
     canonical: 'https://moneyguymutants.com/apps/retirement-strategy',

@@ -10,18 +10,11 @@ export const metadata: Metadata = {
     description: 'Calculate how much car you can afford using the 20/3/8 rule with depreciation analysis.',
     type: 'website',
     url: 'https://moneyguymutants.com/apps/car-affordability',
-    images: [{
-      url: '/og-car.png',
-      width: 1200,
-      height: 630,
-      alt: 'Money Guy Mutants Car Affordability Calculator',
-    }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Car Affordability Calculator - 20/3/8 Rule',
     description: 'Calculate how much car you can afford using the 20/3/8 rule.',
-    images: ['/og-car.png'],
   },
   alternates: {
     canonical: 'https://moneyguymutants.com/apps/car-affordability',

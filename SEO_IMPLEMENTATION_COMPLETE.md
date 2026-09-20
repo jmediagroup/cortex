@@ -1,3 +1,5 @@
+> **Superseded (2026-09-20).** This document describes the January 2026 cortex.vip state and is kept for history only. Current SEO setup and conventions are in `SEO.md`.
+
 # ✅ SEO Implementation Complete - Cortex.vip
 
 **Date:** January 11, 2026

@@ -17,6 +17,8 @@ User-Agent: *
 Allow: /
 Allow: /articles/
 Allow: /apps/
+Allow: /calculators/
+Allow: /guides/
 Allow: /thinking/
 Disallow: /api/
 Disallow: /account

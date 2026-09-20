@@ -27,9 +27,9 @@ export const metadata: Metadata = {
   },
   description: "Free online financial calculators and budget planning tools. Retirement planning, compound interest calculator, budget optimizer, net worth tracker, and more. Make smarter money decisions with Money Guy Mutants.",
   keywords: ['money guy', 'moneyguy', 'money guy show', 'financial mutants', 'financial mutant', 'money guy show tools', 'financial order of operations', 'financial calculator', 'budget planner', 'retirement calculator', 'compound interest calculator', 'net worth tracker', 'budget optimizer', 'financial planning tool', 'money management app', 'investment calculator', 'debt payoff calculator', 'financial decision making', 'personal finance software'],
-  authors: [{ name: 'Cortex Technologies' }],
-  creator: 'Cortex Technologies',
-  publisher: 'Cortex Technologies',
+  authors: [{ name: 'Money Guy Mutants', url: 'https://moneyguymutants.com/about' }],
+  creator: 'Money Guy Mutants',
+  publisher: 'J Media Group LLC',
   robots: {
     index: true,
     follow: true,
@@ -64,6 +64,8 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: '/icon', sizes: '32x32', type: 'image/png' },
+      { url: '/icon1', sizes: '192x192', type: 'image/png' },
+      { url: '/icon2', sizes: '512x512', type: 'image/png' },
     ],
     apple: [
       { url: '/apple-icon', sizes: '180x180', type: 'image/png' },
@@ -80,6 +82,16 @@ export const metadata: Metadata = {
     email: false,
     address: false,
   },
+  // Search Console / Bing site verification. Set the env vars in Vercel and
+  // redeploy; nothing is emitted while they're empty.
+  verification: {
+    ...(process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION
+      ? { google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION }
+      : {}),
+    ...(process.env.NEXT_PUBLIC_BING_VERIFICATION
+      ? { other: { 'msvalidate.01': process.env.NEXT_PUBLIC_BING_VERIFICATION } }
+      : {}),
+  },
 };
 
 export const viewport: Viewport = {
@@ -90,28 +102,49 @@ export const viewport: Viewport = {
   themeColor: '#FFFFFF',
 };
 
+/**
+ * Site-wide structured data. One Organization node (`#organization`) that
+ * every article/guide/outlook/tool page references by id — so crawlers see a
+ * single publisher rather than three differently-named ones. No aggregate
+ * rating: Google treats self-serving, unverifiable ratings as spam.
+ */
 const jsonLd = {
   '@context': 'https://schema.org',
   '@graph': [
     {
       '@type': 'Organization',
       '@id': 'https://moneyguymutants.com/#organization',
-      name: 'Cortex Technologies',
+      name: 'Money Guy Mutants',
+      legalName: 'J Media Group LLC',
       url: 'https://moneyguymutants.com',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://moneyguymutants.com/icon',
+        '@id': 'https://moneyguymutants.com/#logo',
+        url: 'https://moneyguymutants.com/icon2',
+        contentUrl: 'https://moneyguymutants.com/icon2',
         width: 512,
         height: 512,
+        caption: 'Money Guy Mutants',
       },
-      description: 'Money Guy Mutants builds interactive decision-support tools for life\'s biggest choices, starting with personal finance.',
+      image: { '@id': 'https://moneyguymutants.com/#logo' },
+      description:
+        'Money Guy Mutants builds free, interactive decision-support tools for personal finance — calculators, guides, and a daily investment outlook.',
+      contactPoint: {
+        '@type': 'ContactPoint',
+        contactType: 'customer support',
+        email: 'hello@moneyguymutants.com',
+        availableLanguage: 'English',
+      },
+      // Add social profile URLs here (X, YouTube, Instagram, TikTok) when they exist:
+      // sameAs: ['https://x.com/…', 'https://www.youtube.com/@…'],
     },
     {
       '@type': 'WebSite',
       '@id': 'https://moneyguymutants.com/#website',
       url: 'https://moneyguymutants.com',
       name: 'Money Guy Mutants',
-      description: 'Tools for thinking clearly about life\'s biggest decisions.',
+      description: 'Free financial calculators, guides, and tools to help you build wealth on purpose.',
+      inLanguage: 'en-US',
       publisher: {
         '@id': 'https://moneyguymutants.com/#organization',
       },
@@ -119,7 +152,7 @@ const jsonLd = {
         '@type': 'SearchAction',
         target: {
           '@type': 'EntryPoint',
-          urlTemplate: 'https://moneyguymutants.com/dashboard?search={search_term_string}',
+          urlTemplate: 'https://moneyguymutants.com/articles?q={search_term_string}',
         },
         'query-input': 'required name=search_term_string',
       },
@@ -128,20 +161,16 @@ const jsonLd = {
       '@type': 'SoftwareApplication',
       '@id': 'https://moneyguymutants.com/#application',
       name: 'Money Guy Mutants Financial Tools',
+      url: 'https://moneyguymutants.com/apps',
       applicationCategory: 'FinanceApplication',
       operatingSystem: 'Web',
+      isAccessibleForFree: true,
       offers: {
         '@type': 'Offer',
         price: '0',
         priceCurrency: 'USD',
       },
-      aggregateRating: {
-        '@type': 'AggregateRating',
-        ratingValue: '4.8',
-        ratingCount: '150',
-        bestRating: '5',
-        worstRating: '1',
-      },
+      author: { '@id': 'https://moneyguymutants.com/#organization' },
     },
   ],
 };

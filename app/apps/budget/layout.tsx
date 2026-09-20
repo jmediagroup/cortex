@@ -10,18 +10,11 @@ export const metadata: Metadata = {
     description: 'Smart budget calculator with AI-powered optimization. Track monthly expenses and optimize your household budget.',
     type: 'website',
     url: 'https://moneyguymutants.com/apps/budget',
-    images: [{
-      url: '/og-budget.png',
-      width: 1200,
-      height: 630,
-      alt: 'Money Guy Mutants Budget Calculator',
-    }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Free Household Budget Calculator & AI Budget Optimizer',
     description: 'Smart budget calculator with AI-powered optimization.',
-    images: ['/og-budget.png'],
   },
   alternates: {
     canonical: 'https://moneyguymutants.com/apps/budget',

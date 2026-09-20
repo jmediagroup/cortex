@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Financial Personality Quiz — What Kind of Investor Are You? | Money Guy Mutants',
+  title: 'Financial Personality Quiz — What Kind of Investor Are You?',
   description:
     'Discover your investor archetype in 10 questions. Money Guy Mutants maps your money instincts to one of six personality types — from patient Accumulator to high-conviction Visionary. Free, no email required.',
   keywords: [
@@ -11,7 +11,6 @@ export const metadata: Metadata = {
     'money personality',
     'investing style quiz',
     'financial psychology',
-    'cortex quiz',
     'investor type',
     'risk tolerance quiz',
   ],

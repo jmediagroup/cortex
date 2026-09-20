@@ -28,6 +28,10 @@ export type EventType =
   | 'enterprise_page_view'
   | 'enterprise_form_submitted'
 
+  // Search landing pages (/calculators/*)
+  | 'landing_page_view'
+  | 'landing_cta_click'
+
   // Onboarding events
   | 'onboarding_started'
   | 'onboarding_step_completed'
@@ -52,6 +56,16 @@ export type EventType =
   | 'web_vital_inp';
 
 export interface EventData {
+  // Landing page attribution
+  landing_slug?: string;
+  cta_location?: string;
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
+  referrer?: string;
+  plan?: string;
+  source?: string;
+
   // Common fields
   app_name?: string;
   app_category?: string;
