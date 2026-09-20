@@ -10,18 +10,11 @@ export const metadata: Metadata = {
     description: 'Calculate S-Corp tax savings and find your ideal salary/distribution split.',
     type: 'website',
     url: 'https://moneyguymutants.com/apps/s-corp-optimizer',
-    images: [{
-      url: '/og-s-corp.png',
-      width: 1200,
-      height: 630,
-      alt: 'Money Guy Mutants S-Corp Tax Calculator',
-    }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'S-Corp Tax Calculator',
     description: 'Calculate S-Corp tax savings and find your ideal salary/distribution split.',
-    images: ['/og-s-corp.png'],
   },
   alternates: {
     canonical: 'https://moneyguymutants.com/apps/s-corp-optimizer',

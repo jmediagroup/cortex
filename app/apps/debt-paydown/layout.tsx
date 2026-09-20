@@ -10,18 +10,11 @@ export const metadata: Metadata = {
     description: 'Compare debt paydown strategies with psychological weighting and opportunity cost analysis.',
     type: 'website',
     url: 'https://moneyguymutants.com/apps/debt-paydown',
-    images: [{
-      url: '/og-debt.png',
-      width: 1200,
-      height: 630,
-      alt: 'Money Guy Mutants Debt Payoff Calculator',
-    }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Debt Payoff Calculator',
     description: 'Compare debt paydown strategies: avalanche vs snowball methods.',
-    images: ['/og-debt.png'],
   },
   alternates: {
     canonical: 'https://moneyguymutants.com/apps/debt-paydown',

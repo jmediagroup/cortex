@@ -10,18 +10,11 @@ export const metadata: Metadata = {
     description: 'Compare renting vs buying a home with opportunity cost, maintenance, and tax factors.',
     type: 'website',
     url: 'https://moneyguymutants.com/apps/rent-vs-buy',
-    images: [{
-      url: '/og-rent-vs-buy.png',
-      width: 1200,
-      height: 630,
-      alt: 'Money Guy Mutants Rent vs Buy Calculator',
-    }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Rent vs Buy Calculator',
     description: 'Compare renting vs buying a home with real-world factors.',
-    images: ['/og-rent-vs-buy.png'],
   },
   alternates: {
     canonical: 'https://moneyguymutants.com/apps/rent-vs-buy',

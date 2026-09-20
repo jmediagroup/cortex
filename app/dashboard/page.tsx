@@ -51,11 +51,16 @@ function DashboardInner() {
 
   useEffect(() => {
     const checkAuth = async () => {
+      // getUser() validates against the auth server; a stale cookie that the
+      // middleware already rejected can't bounce us back and forth.
+      const {
+        data: { user: authUser },
+      } = await supabase.auth.getUser();
       const {
         data: { session },
       } = await supabase.auth.getSession();
-      if (!session) {
-        router.push('/login');
+      if (!authUser || !session) {
+        router.replace('/login?redirect=%2Fdashboard');
         return;
       }
       const meta = session.user.user_metadata as { first_name?: string } | null;

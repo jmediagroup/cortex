@@ -28,8 +28,17 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
     interestRate: 4.0,
     currentMonthlyPayment: 0,
     downPaymentPercent: 20, // default to the 20/3/8 rule's recommended 20%
-    ...(initialValues || {}),
   });
+
+  // `initialValues` (shared link / dashboard load) arrives asynchronously, so apply it
+  // once when it shows up rather than only in the useState initializer. State is
+  // adjusted during render (React's "storing information from previous renders"
+  // pattern) so no effect is needed.
+  const [appliedInitialValues, setAppliedInitialValues] = useState<typeof initialValues>(undefined);
+  if (initialValues && initialValues !== appliedInitialValues) {
+    setAppliedInitialValues(initialValues);
+    setInputs(prev => ({ ...prev, ...(initialValues as Partial<typeof prev>) }));
+  }
 
   // Used by the down-payment range slider; numeric fields use <NumberInput>.
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -188,6 +197,8 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
                     value={inputs.interestRate}
                     onValueChange={(n) => setInputs(prev => ({ ...prev, interestRate: n }))}
                     step="0.1"
+                    min={0}
+                    max={30}
                     className="w-full pr-8 pl-4 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--emerald-500)] transition-colors"
                   />
                   <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] font-bold">%</span>

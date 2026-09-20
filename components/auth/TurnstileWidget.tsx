@@ -24,6 +24,7 @@ declare global {
           'expired-callback'?: () => void;
           theme?: 'light' | 'dark' | 'auto';
           appearance?: 'always' | 'execute' | 'interaction-only';
+          size?: 'normal' | 'compact' | 'flexible';
         },
       ) => string;
       reset: (widgetId?: string) => void;
@@ -85,6 +86,9 @@ export function TurnstileWidget({ onToken, resetSignal = 0 }: Props) {
   const widgetIdRef = useRef<string | null>(null);
   const onTokenRef = useRef(onToken);
   const [failed, setFailed] = useState(false);
+  // Bumped by the "Try again" button so a blocked/failed load can be retried
+  // without a full page refresh.
+  const [attempt, setAttempt] = useState(0);
   const siteKey = turnstileSiteKey();
 
   // Keep the latest callback without re-rendering the widget on every keystroke.
@@ -112,6 +116,9 @@ export function TurnstileWidget({ onToken, resetSignal = 0 }: Props) {
           },
           'expired-callback': () => emit(null),
           theme: 'light',
+          // Fill the card width instead of the fixed 300px, which overflows
+          // on narrow phones.
+          size: 'flexible',
         });
       })
       .catch(() => {
@@ -128,7 +135,7 @@ export function TurnstileWidget({ onToken, resetSignal = 0 }: Props) {
         widgetIdRef.current = null;
       }
     };
-  }, [siteKey, emit]);
+  }, [siteKey, emit, attempt]);
 
   // Single-use tokens: reset the widget whenever the form asks for a new one.
   useEffect(() => {
@@ -143,11 +150,33 @@ export function TurnstileWidget({ onToken, resetSignal = 0 }: Props) {
 
   return (
     <div>
-      <div ref={containerRef} />
+      <div ref={containerRef} style={{ width: '100%' }} />
       {failed && (
-        <p style={{ fontSize: 12, color: 'var(--gray-500)', margin: '8px 0 0' }}>
-          Couldn&apos;t load the security check. Disable any ad blocker for this page
-          and refresh.
+        <p role="alert" style={{ fontSize: 12, color: 'var(--gray-500)', margin: '8px 0 0' }}>
+          Couldn&apos;t load the security check. If you use an ad or script blocker,
+          allow <code>challenges.cloudflare.com</code> for this page, then{' '}
+          <button
+            type="button"
+            onClick={() => {
+              const el = document.getElementById(SCRIPT_ID);
+              if (el && !window.turnstile) el.remove();
+              setFailed(false);
+              setAttempt((n) => n + 1);
+            }}
+            style={{
+              background: 'none',
+              border: 0,
+              padding: 0,
+              font: 'inherit',
+              fontWeight: 700,
+              color: 'var(--orange)',
+              cursor: 'pointer',
+              textDecoration: 'underline',
+            }}
+          >
+            try again
+          </button>
+          .
         </p>
       )}
     </div>

@@ -16,13 +16,13 @@ export default function OnboardingPage() {
   useEffect(() => {
     (async () => {
       const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session) {
-        router.push('/login?redirect=/onboarding');
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        router.replace('/login?redirect=/onboarding');
         return;
       }
-      setUserId(session.user.id);
+      setUserId(user.id);
       trackEvent('onboarding_started');
       setLoading(false);
     })();

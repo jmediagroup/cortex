@@ -10,18 +10,11 @@ export const metadata: Metadata = {
     description: 'Calculate compound interest and visualize long-term wealth growth with custom contributions.',
     type: 'website',
     url: 'https://moneyguymutants.com/apps/compound-interest',
-    images: [{
-      url: '/og-compound-interest.png',
-      width: 1200,
-      height: 630,
-      alt: 'Money Guy Mutants Compound Interest Calculator',
-    }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Compound Interest Calculator',
     description: 'Calculate compound interest and visualize long-term wealth growth.',
-    images: ['/og-compound-interest.png'],
   },
   alternates: {
     canonical: 'https://moneyguymutants.com/apps/compound-interest',

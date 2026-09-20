@@ -1,63 +1,39 @@
-'use client';
-
-import { Suspense } from 'react';
-import dynamic from 'next/dynamic';
-import { useRouter } from 'next/navigation';
-import { InlineAd } from '@/components/monetization';
-import { Breadcrumb, CalculatorSkeleton } from '@/components/ui';
+import { Breadcrumb } from '@/components/ui';
 import CalculatorSEOContent from '@/components/seo/CalculatorSEOContent';
 import RelatedTools from '@/components/seo/RelatedTools';
 import { CALCULATOR_CONTENT, getRelatedTools } from '@/lib/calculator-content';
-import { ToolLayout, ToolUpsellCta } from '@/components/app/ToolLayout';
-import { useToolPageData } from '@/lib/useToolPageData';
+import { ToolLayout } from '@/components/app/ToolLayout';
+import { ToolIsland } from '@/components/app/ToolIsland';
 
-const GamblingRedirect = dynamic(() => import('@/components/apps/GamblingRedirect'), { ssr: false });
-
-function GamblingRedirectPageInner() {
-  const router = useRouter();
-  const { hasSession, isPro, initialValues } = useToolPageData({
-    toolId: 'gambling-redirect',
-    toolName: 'Gambling Spend Redirect',
-    toolPath: '/apps/gambling-redirect',
-  });
-
+/**
+ * Server component: the heading, intro, FAQ and related links render as
+ * static HTML for crawlers. Everything that needs the browser (session, saved
+ * scenario, the calculator itself) lives in <ToolIsland />.
+ */
+export default function GamblingRedirectPage() {
   return (
     <ToolLayout
       eyebrow="FINANCE · BEHAVIOR"
       title="Gambling spend redirect."
       sub="See the wealth gap between playing the odds and owning the market — then redirect toward real, boring compounding."
       breadcrumb={<Breadcrumb toolName="Gambling Spend Redirect" />}
-      cta={
-        !hasSession ? (
-          <ToolUpsellCta
-            headline="Redirect the spend. Track the growth."
-            sub="A free account lets you save the redirect scenario and watch the compounding in real time."
-          />
-        ) : null
-      }
       narration="Most scoreboards track the last bet. You just saw what that money would have been worth in twenty years."
       footer={
         <>
-          <CalculatorSEOContent content={CALCULATOR_CONTENT['gambling-redirect']} />
-          <RelatedTools tools={getRelatedTools('gambling-redirect')} />
+          <CalculatorSEOContent content={CALCULATOR_CONTENT["gambling-redirect"]} />
+          <RelatedTools tools={getRelatedTools("gambling-redirect")} />
         </>
       }
     >
-      <InlineAd context="gambling-redirect" className="mb-6" />
-      <GamblingRedirect
-        isPro={isPro}
-        onUpgrade={() => router.push('/pricing')}
-        isLoggedIn={hasSession}
-        initialValues={initialValues}
+      <ToolIsland
+        toolId="gambling-redirect"
+        toolName="Gambling Spend Redirect"
+        toolPath="/apps/gambling-redirect"
+        upsell={{
+          headline: "Redirect the spend. Track the growth.",
+          sub: "A free account lets you save the redirect scenario and watch the compounding in real time.",
+        }}
       />
     </ToolLayout>
-  );
-}
-
-export default function GamblingRedirectPage() {
-  return (
-    <Suspense fallback={<CalculatorSkeleton />}>
-      <GamblingRedirectPageInner />
-    </Suspense>
   );
 }

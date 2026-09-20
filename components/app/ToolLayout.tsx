@@ -180,7 +180,7 @@ export function ToolUpsellCta({
   sub,
   primaryHref = '/signup',
   primaryLabel = 'Create free account',
-  secondaryHref = '/pricing',
+  secondaryHref = '/apps',
   secondaryLabel = 'View all tools',
 }: CtaProps) {
   return (

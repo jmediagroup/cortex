@@ -444,8 +444,228 @@ export type Database = {
         };
         Relationships: [];
       };
+      // Ads — defined in supabase/migrations/20260920120000_create_ads_tables.sql.
+      ad_advertisers: {
+        Row: {
+          id: string;
+          slug: string;
+          name: string;
+          url: string;
+          description: string | null;
+          tagline: string | null;
+          cta: string | null;
+          category: string;
+          is_active: boolean;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          slug: string;
+          name: string;
+          url: string;
+          description?: string | null;
+          tagline?: string | null;
+          cta?: string | null;
+          category?: string;
+          is_active?: boolean;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          slug?: string;
+          name?: string;
+          url?: string;
+          description?: string | null;
+          tagline?: string | null;
+          cta?: string | null;
+          category?: string;
+          is_active?: boolean;
+          notes?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      ad_placements: {
+        Row: {
+          id: string;
+          slug: string;
+          name: string;
+          formats: string[];
+          rotation_interval_ms: number;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          slug: string;
+          name: string;
+          formats?: string[];
+          rotation_interval_ms?: number;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          name?: string;
+          formats?: string[];
+          rotation_interval_ms?: number;
+          is_active?: boolean;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      ad_campaigns: {
+        Row: {
+          id: string;
+          slug: string | null;
+          advertiser_id: string;
+          placement_id: string;
+          name: string;
+          status: 'draft' | 'active' | 'paused' | 'archived';
+          tool_ids: string[] | null;
+          exclude_tool_ids: string[];
+          weight: number;
+          priority: number;
+          starts_at: string | null;
+          ends_at: string | null;
+          hide_for_tiers: string[];
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          slug?: string | null;
+          advertiser_id: string;
+          placement_id: string;
+          name: string;
+          status?: 'draft' | 'active' | 'paused' | 'archived';
+          tool_ids?: string[] | null;
+          exclude_tool_ids?: string[];
+          weight?: number;
+          priority?: number;
+          starts_at?: string | null;
+          ends_at?: string | null;
+          hide_for_tiers?: string[];
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          slug?: string | null;
+          advertiser_id?: string;
+          placement_id?: string;
+          name?: string;
+          status?: 'draft' | 'active' | 'paused' | 'archived';
+          tool_ids?: string[] | null;
+          exclude_tool_ids?: string[];
+          weight?: number;
+          priority?: number;
+          starts_at?: string | null;
+          ends_at?: string | null;
+          hide_for_tiers?: string[];
+          notes?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      ad_creatives: {
+        Row: {
+          id: string;
+          campaign_id: string;
+          seed_key: string | null;
+          format: 'medium_rectangle' | 'leaderboard' | 'mobile_banner' | 'large_rectangle';
+          headline: string;
+          body: string | null;
+          body_line2: string | null;
+          cta: string;
+          weight: number;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          campaign_id: string;
+          seed_key?: string | null;
+          format: 'medium_rectangle' | 'leaderboard' | 'mobile_banner' | 'large_rectangle';
+          headline: string;
+          body?: string | null;
+          body_line2?: string | null;
+          cta: string;
+          weight?: number;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          campaign_id?: string;
+          seed_key?: string | null;
+          format?: 'medium_rectangle' | 'leaderboard' | 'mobile_banner' | 'large_rectangle';
+          headline?: string;
+          body?: string | null;
+          body_line2?: string | null;
+          cta?: string;
+          weight?: number;
+          is_active?: boolean;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      ad_events: {
+        Row: {
+          id: number;
+          event_type: 'impression' | 'click';
+          campaign_id: string | null;
+          creative_id: string | null;
+          advertiser_id: string | null;
+          placement_slug: string | null;
+          tool_id: string | null;
+          format: string | null;
+          session_id: string | null;
+          user_id: string | null;
+          tier: string | null;
+          page_path: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: never;
+          event_type: 'impression' | 'click';
+          campaign_id?: string | null;
+          creative_id?: string | null;
+          advertiser_id?: string | null;
+          placement_slug?: string | null;
+          tool_id?: string | null;
+          format?: string | null;
+          session_id?: string | null;
+          user_id?: string | null;
+          tier?: string | null;
+          page_path?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          event_type?: 'impression' | 'click';
+        };
+        Relationships: [];
+      };
     };
     Views: {
+      /** Daily impressions/clicks rollup of ad_events (20260920120000_create_ads_tables.sql). */
+      ad_stats_daily: {
+        Row: {
+          campaign_id: string | null;
+          creative_id: string | null;
+          advertiser_id: string | null;
+          day: string;
+          impressions: number;
+          clicks: number;
+        };
+        Relationships: [];
+      };
       // Defined in supabase/migrations/harden_signup_abuse.sql.
       signup_abuse_summary: {
         Row: {

@@ -63,12 +63,26 @@ export default function SCorpOptimizer({ isPro = false, onUpgrade, isLoggedIn = 
     // more in payroll tax than the sole proprietorship (e.g. salary > profit).
     const sCorpSavings = seTax - ficaTax;
 
+    // Reasonable-compensation check. The IRS requires an owner-employee to
+    // take a reasonable salary before distributions; there is no statutory
+    // floor, but a salary under ~40% of profit (or a token amount) is the
+    // profile that draws reclassification audits. Flag it and do not present
+    // that split as a recommendation.
+    const REASONABLE_SHARE = 0.40;
+    const REASONABLE_FLOOR = 10000;
+    const salaryShare = profit > 0 ? salary / profit : 0;
+    const belowReasonable = profit > 0 && (salaryShare < REASONABLE_SHARE || salary < REASONABLE_FLOOR);
+    const reasonableSalary = Math.round(profit * REASONABLE_SHARE);
+
     return {
       solePropTax: seTax,
       sCorpTax: ficaTax,
       savings: sCorpSavings,
       distributions,
-      efficiency: seTax > 0 ? (sCorpSavings / seTax) * 100 : 0
+      efficiency: seTax > 0 ? (sCorpSavings / seTax) * 100 : 0,
+      belowReasonable,
+      salaryShare,
+      reasonableSalary,
     };
   }, [profit, salary]);
 
@@ -105,7 +119,9 @@ export default function SCorpOptimizer({ isPro = false, onUpgrade, isLoggedIn = 
         <div className="mgm-band p-6 rounded-xl shadow-[var(--shadow-card)] text-white">
           <p className="text-[10px] font-bold text-white/70 uppercase tracking-widest mb-1">Tax Efficiency</p>
           <h4 className="text-3xl font-bold text-white">{Math.round(stats.efficiency)}%</h4>
-          <p className="text-xs font-bold text-white/80 mt-1">Reduction in SE Taxes</p>
+          <p className="text-xs font-bold text-white/80 mt-1">
+            {stats.belowReasonable ? 'Not a recommended split — salary below reasonable-compensation range' : 'Reduction in SE Taxes'}
+          </p>
         </div>
       </div>
 
@@ -134,12 +150,24 @@ export default function SCorpOptimizer({ isPro = false, onUpgrade, isLoggedIn = 
               </div>
             </div>
 
-            <div className="p-4 bg-[var(--color-warning-soft)] rounded-lg border border-[var(--border-default)] flex items-start gap-3">
-              <Info className="text-[var(--color-warning)] shrink-0" size={16} />
-              <p className="text-[10px] font-medium leading-relaxed text-[var(--color-warning)]">
-                IRS requires a "reasonable salary" based on your industry. Setting this too low may trigger an audit.
-              </p>
-            </div>
+            {stats.belowReasonable ? (
+              <div className="p-4 bg-[var(--crimson-50)] rounded-lg border border-[var(--crimson-border)] flex items-start gap-3">
+                <Info className="text-[var(--crimson-500)] shrink-0" size={16} />
+                <p className="text-[10px] font-medium leading-relaxed text-[var(--crimson-500)]">
+                  <strong>Reasonable-compensation risk:</strong> a salary of ${salary.toLocaleString()} is {Math.round(stats.salaryShare * 100)}% of profit.
+                  The IRS can reclassify distributions as wages (plus back payroll tax, penalties and interest) when an owner-employee&apos;s
+                  salary is not reasonable for the work performed. Most practitioners target roughly 40–60% of profit — about
+                  ${stats.reasonableSalary.toLocaleString()} here. The savings shown for this split are not a recommendation.
+                </p>
+              </div>
+            ) : (
+              <div className="p-4 bg-[var(--color-warning-soft)] rounded-lg border border-[var(--border-default)] flex items-start gap-3">
+                <Info className="text-[var(--color-warning)] shrink-0" size={16} />
+                <p className="text-[10px] font-medium leading-relaxed text-[var(--color-warning)]">
+                  IRS requires a "reasonable salary" based on your industry. Setting this too low may trigger an audit.
+                </p>
+              </div>
+            )}
 
             <div className="p-4 bg-[var(--bg-section)] rounded-lg border border-[var(--border-default)] flex items-start gap-3">
               <Info className="text-[var(--text-muted)] shrink-0" size={16} />

@@ -1,8 +1,11 @@
 import { getAllArticleSlugs, getArticleBySlug } from '@/lib/cms/articles';
 import { getAllOutlooksWithBody } from '@/lib/outlook/content';
+import { getAllGuidesWithBody } from '@/lib/guides/content';
+import { CALCULATOR_CONTENT } from '@/lib/calculator-content';
+import { LANDING_PAGES } from '@/lib/landing-pages';
 
-// /llms-full.txt — every article and market outlook concatenated as plain
-// text. AI crawlers and retrieval pipelines (RAG indexers, fine-tuning
+// /llms-full.txt — every guide, calculator explainer, article and market
+// outlook concatenated as plain text. AI crawlers and retrieval pipelines (RAG indexers, fine-tuning
 // corpora, AI search) prefer a single plain-text file over crawling the
 // HTML site.
 //
@@ -77,12 +80,17 @@ export async function GET() {
   ).filter((a): a is NonNullable<typeof a> => a !== null);
 
   const outlooks = getAllOutlooksWithBody();
+  const guides = getAllGuidesWithBody();
+  const calculators = Object.values(CALCULATOR_CONTENT);
 
   const header = [
     '# Money Guy Mutants — Full content corpus',
     '',
     `Source: ${BASE_URL}`,
     `Generated: ${new Date().toISOString()}`,
+    `Guides: ${guides.length}`,
+    `Calculators: ${calculators.length}`,
+    `Calculator explainers: ${LANDING_PAGES.length}`,
     `Articles: ${articles.length}`,
     `Market outlooks: ${outlooks.length}`,
     '',
@@ -93,6 +101,85 @@ export async function GET() {
     '---',
     '',
   ].join('\n');
+
+  // Evergreen guides first: local markdown, included verbatim.
+  const guideBody = guides
+    .map((g) => {
+      const url = `${BASE_URL}/guides/${g.slug}`;
+      const meta = [
+        `Title: ${g.title}`,
+        `Source: ${url}`,
+        `Published: ${g.date}`,
+        'Type: Guide',
+        'Author: Money Guy Mutants Research',
+        g.tags.length > 0 ? `Tags: ${g.tags.join(', ')}` : null,
+        g.relatedTools.length > 0
+          ? `Related tools: ${g.relatedTools.map((t) => `${BASE_URL}/apps/${t}`).join(', ')}`
+          : null,
+      ]
+        .filter(Boolean)
+        .join('\n');
+      return [`# ${g.title}`, '', meta, '', `> ${g.summary}`, '', g.body.trim(), '', '---', ''].join('\n');
+    })
+    .join('\n');
+
+  // Calculator pages: the model description and FAQ that render on each tool.
+  const calculatorBody = calculators
+    .map((c) => {
+      const url = `${BASE_URL}/apps/${c.slug}`;
+      const faq = c.faqs.map((f) => `### ${f.question}\n\n${f.answer}`).join('\n\n');
+      return [
+        `# ${c.name}`,
+        '',
+        `Source: ${url}`,
+        'Type: Free interactive calculator',
+        `Features: ${c.features.join('; ')}`,
+        '',
+        c.intro,
+        '',
+        '## FAQ',
+        '',
+        faq,
+        '',
+        '---',
+        '',
+      ].join('\n');
+    })
+    .join('\n');
+
+  // Calculator explainer pages (/calculators/*): long-form copy around a tool.
+  const landingBody = LANDING_PAGES.map((p) => {
+    const url = `${BASE_URL}/calculators/${p.slug}`;
+    const sections = p.sections
+      .map((sec) => {
+        const bullets = sec.bullets ? '\n\n' + sec.bullets.map((b) => `- ${b}`).join('\n') : '';
+        return `## ${sec.heading}\n\n${sec.paragraphs.join('\n\n')}${bullets}`;
+      })
+      .join('\n\n');
+    const faq = p.faqs.map((f) => `### ${f.question}\n\n${f.answer}`).join('\n\n');
+    return [
+      `# ${p.h1}`,
+      '',
+      `Source: ${url}`,
+      `Updated: ${p.updated}`,
+      'Type: Calculator explainer',
+      '',
+      `> ${p.subhead}`,
+      '',
+      '## How it works',
+      '',
+      ...p.howItWorks.map((step, i) => `${i + 1}. ${step}`),
+      '',
+      sections,
+      '',
+      '## FAQ',
+      '',
+      faq,
+      '',
+      '---',
+      '',
+    ].join('\n');
+  }).join('\n');
 
   // Market outlooks are stored as local markdown, which is already the ideal
   // plain-text format — include the body verbatim. Newest first.
@@ -172,7 +259,7 @@ export async function GET() {
     })
     .join('\n');
 
-  return new Response(header + outlookBody + body, {
+  return new Response(header + guideBody + calculatorBody + landingBody + outlookBody + body, {
     headers: {
       'Content-Type': 'text/plain; charset=utf-8',
       'Cache-Control': 'public, max-age=600, s-maxage=3600, stale-while-revalidate=86400',

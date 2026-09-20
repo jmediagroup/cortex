@@ -1,101 +1,46 @@
 import { getArticles, getCategories } from '@/lib/cms/articles';
 import { getAllOutlooks } from '@/lib/outlook/content';
+import { getAllGuides } from '@/lib/guides/content';
+import { CALCULATOR_CONTENT } from '@/lib/calculator-content';
+import { LANDING_PAGES } from '@/lib/landing-pages';
 
 // /llms.txt — curated, machine-readable index for LLMs and AI search engines.
 // Spec: https://llmstxt.org
 //
-// We hand-pick the highest-signal sections (calculators + recent articles)
-// rather than dumping the whole sitemap. The goal is: when an AI agent fetches
-// this file, it gets a clear map of what moneyguymutants.com is and what to read.
+// Everything listed here is derived from the same registries the site
+// renders from (calculator content, guides, landing pages, outlooks, CMS
+// articles), so a new tool or guide shows up here without a code change.
 
 export const revalidate = 3600; // 1 hour
 
 const BASE_URL = 'https://moneyguymutants.com';
 
-const CALCULATORS: Array<{ name: string; slug: string; summary: string }> = [
+/** Tools that live outside the calculator content registry. */
+const OTHER_TOOLS: Array<{ name: string; slug: string; summary: string }> = [
   {
-    name: 'Compound Interest Calculator',
-    slug: 'compound-interest',
+    name: 'Financial Personality Quiz',
+    slug: 'personality-quiz',
     summary:
-      'Project investment growth over time with custom contributions, compounding frequency, and inflation adjustments.',
+      'Ten questions that map money instincts to one of six investor archetypes (Accumulator, Optimizer, Fortress, Visionary, Tactician, Steward). Free, no email required.',
   },
   {
-    name: 'Budget Planner',
-    slug: 'budget',
+    name: "What's Your Why",
+    slug: 'whats-your-why',
     summary:
-      'Allocate a household budget across categories with tension-and-flexibility analysis and AI-assisted optimization.',
-  },
-  {
-    name: 'Retirement Strategy',
-    slug: 'retirement-strategy',
-    summary:
-      'Plan retirement withdrawals with RMDs, Roth conversions, sequence-of-returns risk, and tax-aware drawdown.',
-  },
-  {
-    name: 'Index Fund Visualizer',
-    slug: 'index-fund-visualizer',
-    summary:
-      'Compare long-term outcomes across index fund allocations and contribution schedules.',
-  },
-  {
-    name: 'Net Worth Tracker',
-    slug: 'net-worth',
-    summary:
-      'Track assets, liabilities, liquidity, and momentum to visualize your overall financial trajectory.',
-  },
-  {
-    name: 'Debt Paydown',
-    slug: 'debt-paydown',
-    summary:
-      'Compare avalanche, snowball, and hybrid debt-elimination strategies with payoff timelines and opportunity cost.',
-  },
-  {
-    name: 'Car Affordability',
-    slug: 'car-affordability',
-    summary:
-      'Apply the 20/3/8 rule with depreciation and opportunity cost to see what car you can actually afford.',
-  },
-  {
-    name: 'Rent vs. Buy',
-    slug: 'rent-vs-buy',
-    summary:
-      'Compare renting and buying a home with maintenance, taxes, mobility, and opportunity cost factored in.',
-  },
-  {
-    name: 'Geographic Arbitrage',
-    slug: 'geographic-arbitrage',
-    summary:
-      'Compare income, taxes, and cost of living across all 50 U.S. states to model relocation outcomes.',
-  },
-  {
-    name: 'Coast FIRE',
-    slug: 'coast-fire',
-    summary:
-      'Find the savings target after which compound growth alone funds retirement — no further contributions required.',
-  },
-  {
-    name: 'S-Corp Tax Optimizer',
-    slug: 's-corp-optimizer',
-    summary:
-      'Find the salary/distribution split that maximizes self-employment tax savings for an S-Corp owner.',
-  },
-  {
-    name: 'S-Corp Retirement Contributions',
-    slug: 's-corp-investment',
-    summary:
-      'Maximize Solo 401(k) deferrals, profit sharing, and employer matching for S-Corp owners.',
+      'An eight-question reflection that surfaces what actually drives your financial decisions, synthesized into a personal read on your relationship with money.',
   },
 ];
+
+function oneLine(text: string, max = 220): string {
+  return text.replace(/\s+/g, ' ').trim().slice(0, max);
+}
 
 export async function GET() {
   let articleSection = '';
   let topicsSection = '';
 
   try {
-    const [{ articles }, categories] = await Promise.all([
-      getArticles(50),
-      getCategories(),
-    ]);
+    const [{ articles }, categories] = await Promise.all([getArticles(50), getCategories()]);
 
     if (categories.length > 0) {
       topicsSection = [
@@ -112,12 +57,9 @@ export async function GET() {
       articleSection = [
         '## Articles',
         '',
-        '> The most recent long-form guides on personal finance, investing, retirement, and decision-making.',
+        '> Long-form articles on personal finance, investing, retirement, and decision-making.',
         '',
-        ...articles.map((a) => {
-          const excerpt = a.excerpt.replace(/\s+/g, ' ').trim().slice(0, 200);
-          return `- [${a.title}](${BASE_URL}/articles/${a.slug}): ${excerpt}`;
-        }),
+        ...articles.map((a) => `- [${a.title}](${BASE_URL}/articles/${a.slug}): ${oneLine(a.excerpt, 200)}`),
         '',
       ].join('\n');
     }
@@ -125,8 +67,29 @@ export async function GET() {
     console.error('llms.txt: failed to fetch articles or categories', error);
   }
 
+  // Evergreen guides from local Markdown — the site's cornerstone explainers.
+  let guideSection = '';
+  try {
+    const guides = getAllGuides();
+    if (guides.length > 0) {
+      guideSection = [
+        '## Guides',
+        '',
+        '> Cornerstone, evergreen explainers (2,000+ words each) on one personal-finance topic at a time, each linked to the calculator that runs the numbers.',
+        '',
+        ...guides.map((g) => `- [${g.title}](${BASE_URL}/guides/${g.slug}): ${oneLine(g.summary, 200)}`),
+        '',
+        `- [All guides](${BASE_URL}/guides)`,
+        `- [Guides RSS feed](${BASE_URL}/guides/rss.xml)`,
+        '',
+      ].join('\n');
+    }
+  } catch (error) {
+    console.error('llms.txt: failed to load guides', error);
+  }
+
   // Recent market outlooks from local markdown. These are the freshest pages
-  // on the site (published every weekday), so they lead the content sections.
+  // on the site (published every weekday).
   let outlookSection = '';
   try {
     const outlooks = getAllOutlooks().slice(0, 30);
@@ -136,10 +99,7 @@ export async function GET() {
         '',
         '> Money Guy Mutants Research publishes a daily investment outlook every weekday morning (plus a weekly recap) covering markets, the Fed, earnings, and specific tickers and sectors. Newest first.',
         '',
-        ...outlooks.map((o) => {
-          const summary = o.summary.replace(/\s+/g, ' ').trim().slice(0, 200);
-          return `- [${o.title}](${BASE_URL}/thinking/${o.slug}): ${o.date} — ${summary}`;
-        }),
+        ...outlooks.map((o) => `- [${o.title}](${BASE_URL}/thinking/${o.slug}): ${o.date} — ${oneLine(o.summary, 200)}`),
         '',
         `- [Full outlook archive](${BASE_URL}/thinking)`,
         `- [Outlook RSS feed](${BASE_URL}/thinking/rss.xml)`,
@@ -150,23 +110,32 @@ export async function GET() {
     console.error('llms.txt: failed to load outlooks', error);
   }
 
+  const calculators = Object.values(CALCULATOR_CONTENT);
+
   const body = [
     '# Money Guy Mutants',
     '',
-    '> Money Guy Mutants builds free, interactive decision-support tools for life\'s biggest choices, starting with personal finance. We pair interactive calculators (compound interest, retirement strategy, budget, debt paydown, S-Corp tax optimization, geographic arbitrage, and more) with long-form articles that explain the reasoning behind each tool, plus a daily investment outlook from Money Guy Mutants Research.',
+    '> Money Guy Mutants builds free, interactive decision-support tools for life\'s biggest choices, starting with personal finance. We pair interactive calculators (compound interest, Coast FIRE, retirement strategy, budget, debt paydown, rent vs. buy, S-Corp tax optimization, capital gains tax, geographic arbitrage, and more) with evergreen guides and long-form articles that explain the reasoning behind each tool, plus a daily investment outlook from Money Guy Mutants Research.',
     '',
-    'This site is operated by J Media Group LLC. Content is original, written for an English-speaking U.S. audience, and updated regularly. Calculators are free to use without an account; saving scenarios requires sign-in.',
+    'This site is operated by J Media Group LLC. Content is original, written for an English-speaking U.S. audience, and updated regularly. Calculators are free to use without an account; saving scenarios requires a free sign-in.',
     '',
-    'Disclosure: Money Guy Mutants provides educational tools only. Nothing on this site is financial, legal, or tax advice.',
+    'Disclosure: Money Guy Mutants provides educational tools only. Nothing on this site is financial, legal, or tax advice. It is an independent, fan-made project not affiliated with The Money Guy Show.',
     '',
     '## Calculators',
     '',
-    '> Free, interactive personal finance calculators. Each tool runs entirely in the browser; no signup required to use them.',
+    '> Free, interactive personal finance calculators. Each tool runs entirely in the browser; no signup required to use them. Every tool page includes an explanation of the model and an FAQ.',
     '',
-    ...CALCULATORS.map(
-      (c) => `- [${c.name}](${BASE_URL}/apps/${c.slug}): ${c.summary}`,
-    ),
+    ...calculators.map((c) => `- [${c.name}](${BASE_URL}/apps/${c.slug}): ${oneLine(c.description)}`),
+    ...OTHER_TOOLS.map((t) => `- [${t.name}](${BASE_URL}/apps/${t.slug}): ${t.summary}`),
+    `- [All tools](${BASE_URL}/apps)`,
     '',
+    '## Calculator explainers',
+    '',
+    '> Keyword-focused pages that embed a calculator inside a longer explanation: how the model works, what inputs to use, worked examples, and FAQs.',
+    '',
+    ...LANDING_PAGES.map((p) => `- [${p.metaTitle}](${BASE_URL}/calculators/${p.slug}): ${oneLine(p.metaDescription)}`),
+    '',
+    guideSection,
     outlookSection,
     topicsSection,
     articleSection,
@@ -174,10 +143,11 @@ export async function GET() {
     '',
     `- [Sitemap](${BASE_URL}/sitemap.xml): full machine-readable index of every public URL`,
     `- [Article RSS feed](${BASE_URL}/articles/rss.xml): subscribe to new articles`,
+    `- [Guides RSS feed](${BASE_URL}/guides/rss.xml): subscribe to new guides`,
     `- [Outlook RSS feed](${BASE_URL}/thinking/rss.xml): subscribe to the daily and weekly market outlook`,
-    `- [Full content corpus](${BASE_URL}/llms-full.txt): every article and market outlook concatenated as plain text, optimized for LLM ingestion`,
+    `- [Full content corpus](${BASE_URL}/llms-full.txt): every guide, calculator explainer, article and market outlook concatenated as plain text, optimized for LLM ingestion`,
     `- [Tools for Financial Mutants](${BASE_URL}/financial-mutants): calculators and decision engines for financial mutants and fans of the Money Guy Show, organized around the Financial Order of Operations`,
-    `- [The Money Guy Show tribute](${BASE_URL}/the-money-guy-show): an independent fan hub to subscribe on YouTube and watch the show's latest episodes, with links to run the numbers behind the Financial Order of Operations (not affiliated with the show)`,
+    `- [The Money Guy Show tribute](${BASE_URL}/the-money-guy-show): an independent fan hub to subscribe on YouTube and watch the show's latest episodes (not affiliated with the show)`,
     `- [About Money Guy Mutants](${BASE_URL}/about)`,
     `- [Pricing](${BASE_URL}/pricing)`,
     '',

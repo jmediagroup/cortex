@@ -2,6 +2,8 @@ import { MetadataRoute } from 'next';
 import { getAllArticleSlugs } from '@/lib/cms/articles';
 import { getAllOutlookSlugs } from '@/lib/outlook/content';
 import { getAllGuideSlugs } from '@/lib/guides/content';
+import { getAllLandingSlugs } from '@/lib/landing-pages';
+import { CALCULATOR_CONTENT } from '@/lib/calculator-content';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://moneyguymutants.com';
@@ -36,6 +38,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
+  // Search landing pages (/calculators/*) — keyword pages wrapping the tools.
+  const landingEntries: MetadataRoute.Sitemap = [
+    {
+      url: `${baseUrl}/calculators`,
+      lastModified: new Date('2026-09-20T12:00:00Z'),
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    },
+    ...getAllLandingSlugs().map((l) => ({
+      url: `${baseUrl}/calculators/${l.slug}`,
+      lastModified: new Date(`${l.updated}T12:00:00Z`),
+      changeFrequency: 'monthly' as const,
+      priority: 0.85,
+    })),
+  ];
+
   // Articles listing page
   const articlesListingEntry: MetadataRoute.Sitemap = [
     {
@@ -61,6 +79,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Use a stable date for static routes to avoid misleading crawlers with
   // new timestamps on every build. Update this date when content actually changes.
   const lastUpdated = new Date('2026-04-07');
+  // Tool pages: bumped whenever calculator logic or on-page content changes.
+  const toolsUpdated = new Date('2026-09-20');
 
   const staticRoutes: MetadataRoute.Sitemap = [
     // Core pages
@@ -133,95 +153,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly',
       priority: 0.9,
     },
-    // Public Financial Calculators - highest priority for SEO
-    {
-      url: `${baseUrl}/apps/compound-interest`,
-      lastModified: lastUpdated,
-      changeFrequency: 'weekly',
-      priority: 1.0,
-    },
-    {
-      url: `${baseUrl}/apps/budget`,
-      lastModified: lastUpdated,
-      changeFrequency: 'weekly',
-      priority: 1.0,
-    },
-    {
-      url: `${baseUrl}/apps/retirement-strategy`,
-      lastModified: lastUpdated,
-      changeFrequency: 'weekly',
-      priority: 1.0,
-    },
-    {
-      url: `${baseUrl}/apps/index-fund-visualizer`,
-      lastModified: lastUpdated,
-      changeFrequency: 'weekly',
-      priority: 1.0,
-    },
-    {
-      url: `${baseUrl}/apps/gambling-redirect`,
-      lastModified: lastUpdated,
-      changeFrequency: 'weekly',
-      priority: 1.0,
-    },
-    // Additional Financial Calculators
-    {
-      url: `${baseUrl}/apps/net-worth`,
-      lastModified: lastUpdated,
-      changeFrequency: 'weekly',
+    // Public financial calculators — derived from the content registry so a
+    // new tool can't be forgotten here. Highest priority for SEO.
+    ...Object.keys(CALCULATOR_CONTENT).map((slug) => ({
+      url: `${baseUrl}/apps/${slug}`,
+      lastModified: toolsUpdated,
+      changeFrequency: 'weekly' as const,
       priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/apps/car-affordability`,
-      lastModified: lastUpdated,
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/apps/rent-vs-buy`,
-      lastModified: lastUpdated,
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/apps/debt-paydown`,
-      lastModified: lastUpdated,
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/apps/geographic-arbitrage`,
-      lastModified: lastUpdated,
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    // Business Calculators
-    {
-      url: `${baseUrl}/apps/s-corp-optimizer`,
-      lastModified: lastUpdated,
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/apps/s-corp-investment`,
-      lastModified: lastUpdated,
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/apps/capital-gains-tax`,
-      lastModified: lastUpdated,
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    // Coast FIRE
-    {
-      url: `${baseUrl}/apps/coast-fire`,
-      lastModified: lastUpdated,
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    // Financial Personality Quiz
+    })),
     {
       url: `${baseUrl}/apps/personality-quiz`,
       lastModified: lastUpdated,

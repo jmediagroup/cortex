@@ -7,8 +7,23 @@ import {
 import {
   TrendingUp, TrendingDown, AlertTriangle, Info, Target, Calendar, ArrowUpRight, Lock, Zap, Clock, ArrowRight
 } from 'lucide-react';
+import SaveScenarioButton from './SaveScenarioButton';
+import NumberInput from '@/components/ui/NumberInput';
 import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 import ProGatedPreview from '@/components/monetization/ProGatedPreview';
+
+// Single set of loss assumptions, used by both the headline and the Pro
+// house-edge analysis so the two never disagree:
+//  - HOUSE_EDGE: ~8% realized hold (parlay-heavy books), vs ~4.55% for the
+//    classic two-way -110 vig.
+//  - DEPOSIT_CHURN: each deposited dollar is wagered ~10x before it is gone.
+//  - EXPECTED_LOSS_SHARE = min(1, edge x churn) = the share of the monthly
+//    budget the house statistically keeps (80%).
+// The headline "Wealth Gap" is the *alternative-use* comparison: the full
+// budget invested instead. It is labeled as such, not as an expected loss.
+const HOUSE_EDGE = 0.08;
+const DEPOSIT_CHURN = 10;
+const EXPECTED_LOSS_SHARE = Math.min(1, HOUSE_EDGE * DEPOSIT_CHURN);
 
 interface GamblingRedirectProps {
   isPro?: boolean;
@@ -22,8 +37,17 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
     monthlyBet: 250,
     years: 30,
     marketReturn: 10,
-    ...(initialValues || {}),
   });
+
+  // `initialValues` (shared link / ?scenario= load) arrives asynchronously —
+  // a one-shot useState initializer would ignore it. Apply it once when it
+  // shows up; state is adjusted during render (React's "storing information
+  // from previous renders" pattern, as in CoastFIRE) so no effect is needed.
+  const [appliedInitialValues, setAppliedInitialValues] = useState<typeof initialValues>(undefined);
+  if (initialValues && initialValues !== appliedInitialValues) {
+    setAppliedInitialValues(initialValues);
+    setInputs(prev => ({ ...prev, ...(initialValues as Partial<typeof prev>) }));
+  }
 
   const simulationData = useMemo(() => {
     const chartData = [];
@@ -50,10 +74,12 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
   }, [inputs]);
 
   const finalStats = simulationData[simulationData.length - 1];
-  // Under this tool's 100%-loss model, the end-wealth difference is the full invested balance:
-  // gambling leaves you at $0, investing leaves you at the portfolio value.
+  // "If you'd invested it all instead": the full budget goes to the market,
+  // so the end-wealth gap is the whole invested balance.
   const wealthGap = finalStats.invested;
   const compoundingGrowth = finalStats.invested - finalStats.burned;
+  // Statistical expectation of what the house keeps from the same budget.
+  const expectedLossOfBudget = finalStats.burned * EXPECTED_LOSS_SHARE;
 
   // PRO FEATURE: Advanced Analysis
   const proAnalysis = useMemo(() => {
@@ -76,10 +102,10 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
 
     const yearlyContribution = inputs.monthlyBet * 12;
 
-    // 1. House Edge Analysis - What the house actually takes
-    const houseEdge = 0.08; // ~8% realized hold (parlay-heavy), vs ~4.55% classic two-way vig at -110
-    const totalWagered = yearlyContribution * 10 * inputs.years; // Assumes 10x churn on deposits
-    const expectedLoss = totalWagered * houseEdge;
+    // 1. House Edge Analysis - What the house actually takes (same
+    // HOUSE_EDGE / DEPOSIT_CHURN assumptions as the headline).
+    const totalWagered = yearlyContribution * DEPOSIT_CHURN * inputs.years;
+    const expectedLoss = totalWagered * HOUSE_EDGE;
 
     // 2. Addiction cost multiplier - Illustrative scenario, not a measured statistic
     const addictionMultiplier = 3.5; // Illustrative: escalating play often far exceeds the stated "budget"
@@ -135,6 +161,18 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
+      {/* Save Scenario */}
+      <div className="flex justify-end">
+        <SaveScenarioButton
+          toolId="gambling-redirect"
+          toolName="Gambling Redirect Calculator"
+          getInputs={() => inputs}
+          getKeyResult={() => `${formatCurrency(inputs.monthlyBet)}/mo for ${inputs.years} yrs → ${formatCurrency(wealthGap)} invested instead`}
+          isLoggedIn={isLoggedIn}
+          onLoginPrompt={onUpgrade}
+        />
+      </div>
+
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-[var(--bg-card)] p-6 rounded-xl border border-[var(--border-default)] shadow-[var(--shadow-card)] relative overflow-hidden">
@@ -171,7 +209,9 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
           {formatCurrency(finalStats.burned)} you'd have spent gambling + {formatCurrency(compoundingGrowth)} compounding growth = {formatCurrency(wealthGap)} future value
         </p>
         <p className="text-xs text-[var(--text-muted)] font-medium max-w-md mx-auto mt-2">
-          This figure assumes every dollar wagered is eventually lost.
+          This is the &ldquo;if you&apos;d invested it all instead&rdquo; comparison: every dollar of the budget goes to the market.
+          Statistically, at ~{Math.round(HOUSE_EDGE * 100)}% house hold and ~{DEPOSIT_CHURN}x churn on deposits, the sportsbook keeps
+          about {Math.round(EXPECTED_LOSS_SHARE * 100)}% of that budget ({formatCurrency(expectedLossOfBudget)} over {inputs.years} years).
         </p>
       </div>
 
@@ -195,13 +235,25 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
                   min="10"
                   max="5000"
                   step="10"
-                  value={inputs.monthlyBet}
+                  value={Math.min(5000, inputs.monthlyBet)}
                   onChange={handleInputChange}
                   className="w-full h-2 bg-[var(--bg-glass-strong)] rounded-lg appearance-none cursor-pointer accent-emerald-600"
                 />
                 <div className="flex justify-between mt-1 text-[10px] text-[var(--text-muted)] font-bold">
                   <span>$10</span>
-                  <span>$5,000</span>
+                  <span>$5,000 (type a larger amount below)</span>
+                </div>
+                <div className="relative mt-2">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] font-bold z-10">$</span>
+                  <NumberInput
+                    name="monthlyBet"
+                    value={inputs.monthlyBet}
+                    onValueChange={(n) => setInputs(prev => ({ ...prev, monthlyBet: n }))}
+                    min={0}
+                    step="10"
+                    aria-label="Monthly betting budget"
+                    className="w-full pl-7 pr-4 py-2 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
+                  />
                 </div>
               </div>
 
@@ -434,12 +486,12 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
                     <p className="text-white/85 text-sm font-bold mb-2">Expected Loss to House Edge</p>
                     <p className="text-4xl font-bold">{formatCurrency(proAnalysis.expectedLoss)}</p>
                     <p className="text-white/85 text-xs font-medium mt-2">
-                      At ~8% realized hold over {inputs.years} years
+                      At ~{Math.round(HOUSE_EDGE * 100)}% realized hold over {inputs.years} years
                     </p>
                   </div>
                 </div>
                 <p className="text-white/85 text-xs font-medium mt-4">
-                  Unlike the "Wealth Gap" above—which assumes every dollar wagered is eventually lost—this figure is the statistical expectation from churn &times; house edge.
+                  The &ldquo;Wealth Gap&rdquo; above is the alternative-use comparison (the whole budget invested instead); this figure is the statistical expectation of what the house keeps: churn &times; house edge, about {Math.round(EXPECTED_LOSS_SHARE * 100)}% of the budget.
                 </p>
               </div>
             </div>

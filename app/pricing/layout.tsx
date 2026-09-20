@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Pricing - Money Guy Mutants Financial Tools',
   description: 'Simple, honest pricing for Money Guy Mutants financial decision tools. Start free, upgrade when the math matters. Plans from $0 to $29/month.',
-  keywords: ['cortex pricing', 'financial calculator pricing', 'budget tool pricing', 'financial planning software cost', 'retirement calculator subscription'],
+  keywords: ['money guy mutants pricing', 'financial calculator pricing', 'budget tool pricing', 'financial planning software cost', 'retirement calculator subscription'],
   openGraph: {
     title: 'Pricing - Money Guy Mutants Financial Tools',
     description: 'Simple, honest pricing. Start free, upgrade when the math matters.',

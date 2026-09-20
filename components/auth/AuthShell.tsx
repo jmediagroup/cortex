@@ -176,25 +176,44 @@ type FieldProps = {
   label: string;
   icon?: React.ReactNode;
   children: React.ReactNode;
-  hint?: string;
+  hint?: React.ReactNode;
   labelColor?: string;
+  /**
+   * Id of the input inside. Renders a real `<label htmlFor>` so screen
+   * readers announce the field name and clicking the label focuses the input.
+   * The hint (if any) gets `${id}-hint`; pass that as `aria-describedby`.
+   */
+  id?: string;
+  /** Optional element rendered at the right end of the label row (e.g. a show/hide toggle). */
+  trailing?: React.ReactNode;
 };
 
+/** Id used for a field's hint text, for `aria-describedby`. */
+export function authHintId(id: string): string {
+  return `${id}-hint`;
+}
+
 /** Labelled input wrapper used by login/signup/reset forms. */
-export function AuthField({ label, icon, children, hint, labelColor }: FieldProps) {
+export function AuthField({ label, icon, children, hint, labelColor, id, trailing }: FieldProps) {
+  const labelStyle: React.CSSProperties = {
+    fontSize: 12,
+    fontWeight: 700,
+    textTransform: 'uppercase',
+    letterSpacing: 'var(--tracking-label)',
+    color: labelColor ?? 'var(--navy)',
+  };
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-      <span
-        style={{
-          fontSize: 12,
-          fontWeight: 700,
-          textTransform: 'uppercase',
-          letterSpacing: 'var(--tracking-label)',
-          color: labelColor ?? 'var(--navy)',
-        }}
-      >
-        {label.toUpperCase()}
-      </span>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+        {id ? (
+          <label htmlFor={id} style={labelStyle}>
+            {label.toUpperCase()}
+          </label>
+        ) : (
+          <span style={labelStyle}>{label.toUpperCase()}</span>
+        )}
+        {trailing}
+      </div>
       <div style={{ position: 'relative' }}>
         {icon && (
           <span
@@ -215,7 +234,9 @@ export function AuthField({ label, icon, children, hint, labelColor }: FieldProp
         {children}
       </div>
       {hint && (
-        <span style={{ fontSize: 12, color: 'var(--gray-500)' }}>{hint}</span>
+        <span id={id ? authHintId(id) : undefined} style={{ fontSize: 12, color: 'var(--gray-500)' }}>
+          {hint}
+        </span>
       )}
     </div>
   );
@@ -228,6 +249,17 @@ export const authErrorStyle: React.CSSProperties = {
   background: 'var(--crimson-tint)',
   color: 'var(--crimson-500)',
   border: '1px solid var(--crimson-border)',
+  borderRadius: 'var(--radius-sm)',
+  padding: '12px 14px',
+  fontSize: 13,
+  fontWeight: 600,
+};
+
+/** Neutral notice (e.g. "your email is verified, log in to continue"). */
+export const authInfoStyle: React.CSSProperties = {
+  background: 'rgba(78, 201, 245, 0.12)',
+  color: 'var(--navy)',
+  border: '1px solid rgba(78, 201, 245, 0.45)',
   borderRadius: 'var(--radius-sm)',
   padding: '12px 14px',
   fontSize: 13,

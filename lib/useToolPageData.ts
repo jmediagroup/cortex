@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { trackToolVisit } from '@/lib/useRecentTools';
+import { useLoadScenario } from '@/lib/useLoadScenario';
 
 type ToolPageData = {
   hasSession: boolean;
@@ -22,7 +23,8 @@ type Args = {
 /**
  * Bundles the repeated per-tool page bootstrapping:
  * - Resolve the current session and Pro access.
- * - Hydrate a saved scenario from a `?scenario=<token>` query param.
+ * - Hydrate a saved scenario from a `?scenario=<token>` query param, or from the
+ *   sessionStorage entry written by the dashboard's "Load scenario" action.
  * - Track the tool visit for the "recent tools" list.
  */
 export function useToolPageData({ toolId, toolName, toolPath }: Args): ToolPageData {
@@ -30,7 +32,10 @@ export function useToolPageData({ toolId, toolName, toolPath }: Args): ToolPageD
   const [hasSession, setHasSession] = useState(false);
   const [isPro, setIsPro] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [initialValues, setInitialValues] = useState<Record<string, unknown> | undefined>();
+  const [sharedValues, setSharedValues] = useState<Record<string, unknown> | undefined>();
+  // Scenario handed over by the dashboard's "Load scenario" action (sessionStorage).
+  const loadedScenario = useLoadScenario(toolId);
+  const token = searchParams.get('scenario');
 
   useEffect(() => {
     let active = true;
@@ -58,19 +63,25 @@ export function useToolPageData({ toolId, toolName, toolPath }: Args): ToolPageD
   }, []);
 
   useEffect(() => {
-    const token = searchParams.get('scenario');
     if (!token) return;
     let active = true;
     fetch(`/api/scenarios/shared/${token}`)
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
-        if (active && data?.scenario?.inputs) setInitialValues(data.scenario.inputs);
+        // Only apply inputs that were saved for this tool; a token for another tool
+        // would otherwise inject foreign field names into this calculator.
+        if (active && data?.scenario?.inputs && data.scenario.tool_id === toolId) {
+          setSharedValues(data.scenario.inputs);
+        }
       })
       .catch(() => {});
     return () => {
       active = false;
     };
-  }, [searchParams]);
+  }, [token, toolId]);
+
+  // A share token wins; otherwise fall back to the dashboard hand-off.
+  const initialValues = token ? sharedValues : (loadedScenario ?? undefined);
 
   useEffect(() => {
     trackToolVisit(toolId, toolName, toolPath);

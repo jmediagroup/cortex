@@ -1,30 +1,42 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { createBrowserClient } from '@/lib/supabase/client';
-import { shouldShowAds, type Tier } from '@/lib/access-control';
-import { type AffiliateConfig } from './affiliates';
-import { getAdCopy, type AdCopy } from './ad-copy';
-
-type AdSize = 'medium-rectangle' | 'leaderboard' | 'mobile-banner' | 'large-rectangle';
+import type { ServedAd } from '@/lib/ads/types';
+import { splitHighlightSegments } from '@/lib/ads/select';
 
 interface IABAdProps {
-  affiliate: AffiliateConfig;
-  size: AdSize;
-  variationIndex?: number;
+  creative: ServedAd;
+  onClick?: () => void;
   className?: string;
 }
 
 /**
+ * Highlight money amounts / percentages in green. Renders React nodes, so
+ * admin-entered copy can never inject markup.
+ */
+function Highlighted({ text }: { text: string }) {
+  return (
+    <>
+      {splitHighlightSegments(text).map((seg, i) =>
+        seg.highlight ? (
+          <span key={i} className="text-[var(--emerald-500)] font-semibold">
+            {seg.text}
+          </span>
+        ) : (
+          <span key={i}>{seg.text}</span>
+        ),
+      )}
+    </>
+  );
+}
+
+const ctaStyle = { boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', borderRadius: '6px' } as const;
+const fontStyle = { fontFamily: 'Inter, system-ui, sans-serif' } as const;
+
+/**
  * IAB-Compliant Ad Component - Financial Minimalist Design
  *
- * Design System:
- * - Background: #FFFFFF (clean, trustworthy)
- * - Headline: #054C7D (Deep Navy - Slate 900)
- * - Body: #3D5666 (Mid-Slate)
- * - CTA: #2563EB (Trust Blue)
- * - Border: #E0DBDB (Light Gray)
- * - Success/Bonus: #16A34A (Growth Green)
+ * Purely presentational: takes one served creative and renders it in its
+ * IAB size. Visibility, rotation and tracking live in AdSlot.
  *
  * Supports standard IAB ad sizes:
  * - 300x250 (Medium Rectangle): Best for sidebars
@@ -32,119 +44,54 @@ interface IABAdProps {
  * - 320x100 (Large Mobile Banner): High-impact mobile
  * - 336x280 (Large Rectangle): Below results
  */
-export default function IABAd({
-  affiliate,
-  size,
-  variationIndex,
-  className = '',
-}: IABAdProps) {
-  const [showAd, setShowAd] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [adCopy, setAdCopy] = useState<AdCopy | null>(null);
+export default function IABAd({ creative, onClick, className = '' }: IABAdProps) {
+  const { advertiser, format } = creative;
+  const linkProps = {
+    href: advertiser.url,
+    target: '_blank',
+    rel: 'noopener noreferrer sponsored',
+    onClick,
+    style: fontStyle,
+    'aria-label': `${creative.headline} — ${advertiser.name}`,
+  } as const;
 
-  useEffect(() => {
-    async function checkAdVisibility() {
-      const supabase = createBrowserClient();
-      const { data: { session } } = await supabase.auth.getSession();
-
-      if (!session) {
-        setShowAd(true);
-        setIsLoading(false);
-        return;
-      }
-
-      const { data: user } = await supabase
-        .from('users')
-        .select('tier')
-        .eq('id', session.user.id)
-        .single<{ tier: Tier }>();
-
-      const userTier = user?.tier || 'free';
-      setShowAd(shouldShowAds(userTier, true));
-      setIsLoading(false);
-    }
-
-    checkAdVisibility();
-  }, []);
-
-  // Get ad copy based on size
-  useEffect(() => {
-    const sizeMap: Record<AdSize, 'mediumRectangle' | 'leaderboard' | 'mobileBanner' | 'largeRectangle'> = {
-      'medium-rectangle': 'mediumRectangle',
-      'leaderboard': 'leaderboard',
-      'mobile-banner': 'mobileBanner',
-      'large-rectangle': 'largeRectangle',
-    };
-
-    const copy = getAdCopy(affiliate.id, sizeMap[size], variationIndex);
-    setAdCopy(copy);
-  }, [affiliate.id, size, variationIndex]);
-
-  const handleClick = () => {
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('event', 'affiliate_click', {
-        affiliate_id: affiliate.id,
-        affiliate_name: affiliate.name,
-        ad_size: size,
-        ad_headline: adCopy?.headline || '',
-      });
-    }
-  };
-
-  if (isLoading || !showAd || !adCopy) {
-    return null;
-  }
-
-  // Helper to highlight numbers in green (for bonuses/cash back)
-  const highlightNumbers = (text: string) => {
-    return text.replace(/(\$[\d,]+(?:\.\d{2})?|\d+(?:\.\d+)?%)/g, '<span class="text-[var(--emerald-500)] font-semibold">$1</span>');
-  };
-
-  // Medium Rectangle (300x250) - F-Pattern Layout
-  if (size === 'medium-rectangle') {
+  // Medium Rectangle (300x250) / Large Rectangle (336x280) - F-Pattern Layout
+  if (format === 'medium_rectangle' || format === 'large_rectangle') {
+    const isLarge = format === 'large_rectangle';
     return (
       <a
-        href={affiliate.url}
-        target="_blank"
-        rel="noopener noreferrer sponsored"
-        onClick={handleClick}
-        className={`block w-[300px] h-[250px] bg-[var(--bg-card)] border border-[#E0DBDB] rounded-md overflow-hidden hover:shadow-lg transition-shadow group ${className}`}
-        style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
+        {...linkProps}
+        className={`block ${
+          isLarge ? 'w-full max-w-[336px] h-[280px]' : 'w-[300px] h-[250px]'
+        } bg-[var(--bg-card)] border border-[#E0DBDB] rounded-md overflow-hidden hover:shadow-lg transition-shadow group ${className}`}
       >
-        <div className="h-full flex flex-col p-5">
-          {/* Sponsored label - top left */}
-          <span className="text-[10px] text-[#48494A] uppercase tracking-wide font-normal">
-            Sponsored
-          </span>
-
-          {/* Content area - F-pattern: headline top-left, body below */}
+        <div className={`h-full flex flex-col ${isLarge ? 'p-6' : 'p-5'}`}>
+          <span className="text-[10px] text-[#48494A] uppercase tracking-wide font-normal">Sponsored</span>
           <div className="flex-1 flex flex-col justify-center mt-2">
             <h3
-              className="text-lg font-semibold text-[var(--navy)] leading-tight tracking-tight mb-3"
+              className={`${isLarge ? 'text-xl' : 'text-lg'} font-semibold text-[var(--navy)] leading-tight tracking-tight mb-3`}
               style={{ letterSpacing: '-0.02em' }}
-              dangerouslySetInnerHTML={{ __html: highlightNumbers(adCopy.headline) }}
-            />
+            >
+              <Highlighted text={creative.headline} />
+            </h3>
             <p className="text-sm text-[#3D5666] leading-relaxed">
-              <span dangerouslySetInnerHTML={{ __html: highlightNumbers(adCopy.body || '') }} />
-              {adCopy.bodyLine2 && (
+              <Highlighted text={creative.body || ''} />
+              {creative.bodyLine2 && (
                 <>
                   <br />
-                  <span dangerouslySetInnerHTML={{ __html: highlightNumbers(adCopy.bodyLine2) }} />
+                  <Highlighted text={creative.bodyLine2} />
                 </>
               )}
             </p>
           </div>
-
-          {/* CTA Button - bottom right aligned */}
           <div className="flex justify-end mt-4">
             <span
-              className="inline-block px-6 py-3 bg-[var(--orange)] hover:bg-[#d94f1e] text-white text-sm font-semibold rounded-md transition-colors group-hover:bg-[#d94f1e]"
-              style={{
-                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-                borderRadius: '6px'
-              }}
+              className={`inline-block px-6 py-3 bg-[var(--orange)] hover:bg-[#d94f1e] text-white ${
+                isLarge ? '' : 'text-sm '
+              }font-semibold rounded-md transition-colors group-hover:bg-[#d94f1e]`}
+              style={ctaStyle}
             >
-              {adCopy.cta}
+              {creative.cta}
             </span>
           </div>
         </div>
@@ -153,35 +100,27 @@ export default function IABAd({
   }
 
   // Leaderboard (728x90)
-  if (size === 'leaderboard') {
+  if (format === 'leaderboard') {
     return (
       <a
-        href={affiliate.url}
-        target="_blank"
-        rel="noopener noreferrer sponsored"
-        onClick={handleClick}
+        {...linkProps}
         className={`block w-full max-w-[728px] h-[90px] bg-[var(--bg-card)] border border-[#E0DBDB] rounded-md overflow-hidden hover:shadow-lg transition-shadow group ${className}`}
-        style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
       >
         <div className="h-full flex items-center justify-between px-6 gap-6">
           <div className="flex items-center gap-4 flex-1 min-w-0">
-            <span className="text-[10px] text-[#48494A] uppercase tracking-wide font-normal shrink-0">
-              Ad
-            </span>
+            <span className="text-[10px] text-[#48494A] uppercase tracking-wide font-normal shrink-0">Ad</span>
             <p
               className="text-[var(--navy)] font-medium text-sm lg:text-base truncate"
               style={{ letterSpacing: '-0.02em' }}
-              dangerouslySetInnerHTML={{ __html: highlightNumbers(adCopy.headline) }}
-            />
+            >
+              <Highlighted text={creative.headline} />
+            </p>
           </div>
           <span
             className="shrink-0 px-6 py-3 bg-[var(--orange)] hover:bg-[#d94f1e] text-white text-sm font-semibold rounded-md transition-colors group-hover:bg-[#d94f1e]"
-            style={{
-              boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-              borderRadius: '6px'
-            }}
+            style={ctaStyle}
           >
-            {adCopy.cta}
+            {creative.cta}
           </span>
         </div>
       </a>
@@ -189,90 +128,26 @@ export default function IABAd({
   }
 
   // Mobile Banner (320x100)
-  if (size === 'mobile-banner') {
-    return (
-      <a
-        href={affiliate.url}
-        target="_blank"
-        rel="noopener noreferrer sponsored"
-        onClick={handleClick}
-        className={`block w-full max-w-[320px] h-[100px] bg-[var(--bg-card)] border border-[#E0DBDB] rounded-md overflow-hidden hover:shadow-lg transition-shadow group mx-auto ${className}`}
-        style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
-      >
-        <div className="h-full flex flex-col items-center justify-center p-4 text-center">
-          <span className="text-[9px] text-[#48494A] uppercase tracking-wide font-normal mb-1">
-            Sponsored
-          </span>
-          <h3
-            className="text-[15px] font-semibold text-[var(--navy)] mb-2 leading-tight"
-            style={{ letterSpacing: '-0.02em' }}
-            dangerouslySetInnerHTML={{ __html: highlightNumbers(adCopy.headline) }}
-          />
-          <span
-            className="px-5 py-2 bg-[var(--orange)] hover:bg-[#d94f1e] text-white text-[13px] font-semibold rounded-md transition-colors group-hover:bg-[#d94f1e]"
-            style={{
-              boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-              borderRadius: '6px'
-            }}
-          >
-            {adCopy.cta}
-          </span>
-        </div>
-      </a>
-    );
-  }
-
-  // Large Rectangle (336x280) - F-Pattern Layout
-  if (size === 'large-rectangle') {
-    return (
-      <a
-        href={affiliate.url}
-        target="_blank"
-        rel="noopener noreferrer sponsored"
-        onClick={handleClick}
-        className={`block w-full max-w-[336px] h-[280px] bg-[var(--bg-card)] border border-[#E0DBDB] rounded-md overflow-hidden hover:shadow-lg transition-shadow group ${className}`}
-        style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
-      >
-        <div className="h-full flex flex-col p-6">
-          {/* Sponsored label - top left */}
-          <span className="text-[10px] text-[#48494A] uppercase tracking-wide font-normal">
-            Sponsored
-          </span>
-
-          {/* Content area - F-pattern */}
-          <div className="flex-1 flex flex-col justify-center mt-2">
-            <h3
-              className="text-xl font-semibold text-[var(--navy)] leading-tight tracking-tight mb-3"
-              style={{ letterSpacing: '-0.02em' }}
-              dangerouslySetInnerHTML={{ __html: highlightNumbers(adCopy.headline) }}
-            />
-            <p className="text-sm text-[#3D5666] leading-relaxed">
-              <span dangerouslySetInnerHTML={{ __html: highlightNumbers(adCopy.body || '') }} />
-              {adCopy.bodyLine2 && (
-                <>
-                  <br />
-                  <span dangerouslySetInnerHTML={{ __html: highlightNumbers(adCopy.bodyLine2) }} />
-                </>
-              )}
-            </p>
-          </div>
-
-          {/* CTA Button - bottom right aligned */}
-          <div className="flex justify-end mt-4">
-            <span
-              className="inline-block px-6 py-3 bg-[var(--orange)] hover:bg-[#d94f1e] text-white font-semibold rounded-md transition-colors group-hover:bg-[#d94f1e]"
-              style={{
-                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-                borderRadius: '6px'
-              }}
-            >
-              {adCopy.cta}
-            </span>
-          </div>
-        </div>
-      </a>
-    );
-  }
-
-  return null;
+  return (
+    <a
+      {...linkProps}
+      className={`block w-full max-w-[320px] h-[100px] bg-[var(--bg-card)] border border-[#E0DBDB] rounded-md overflow-hidden hover:shadow-lg transition-shadow group mx-auto ${className}`}
+    >
+      <div className="h-full flex flex-col items-center justify-center p-4 text-center">
+        <span className="text-[9px] text-[#48494A] uppercase tracking-wide font-normal mb-1">Sponsored</span>
+        <h3
+          className="text-[15px] font-semibold text-[var(--navy)] mb-2 leading-tight"
+          style={{ letterSpacing: '-0.02em' }}
+        >
+          <Highlighted text={creative.headline} />
+        </h3>
+        <span
+          className="px-5 py-2 bg-[var(--orange)] hover:bg-[#d94f1e] text-white text-[13px] font-semibold rounded-md transition-colors group-hover:bg-[#d94f1e]"
+          style={ctaStyle}
+        >
+          {creative.cta}
+        </span>
+      </div>
+    </a>
+  );
 }

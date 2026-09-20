@@ -10,6 +10,7 @@ import {
   ShieldCheck, Gauge, Flame, Coffee
 } from 'lucide-react';
 import SaveScenarioButton from './SaveScenarioButton';
+import { formatAxisMoney } from '@/lib/format-axis';
 import Tooltip from '@/components/ui/Tooltip';
 import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 import ProGatedPreview from '@/components/monetization/ProGatedPreview';
@@ -39,8 +40,17 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
     socialSecurityAge: 67,
     estimatedSocialSecurity: 2000,
     riskTolerance: 'moderate' as 'conservative' | 'moderate' | 'aggressive',
-    ...(initialValues || {}),
   });
+
+  // `initialValues` (shared link / dashboard load) arrives asynchronously, so apply it
+  // once when it shows up rather than only in the useState initializer. State is
+  // adjusted during render (React's "storing information from previous renders"
+  // pattern) so no effect is needed.
+  const [appliedInitialValues, setAppliedInitialValues] = useState<typeof initialValues>(undefined);
+  if (initialValues && initialValues !== appliedInitialValues) {
+    setAppliedInitialValues(initialValues);
+    setInputs(prev => ({ ...prev, ...(initialValues as Partial<typeof prev>) }));
+  }
 
   // --- Core Calculations ---
   const calculations = useMemo(() => {
@@ -157,7 +167,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
           { name: 'Lean FIRE', spendingMultiplier: 0.7, description: 'Minimalist lifestyle', icon: 'leaf', annualSpending: 28000, fireNumber: 700000, coastNumber: 180000, reached: true, progress: 100 },
           { name: 'Regular FIRE', spendingMultiplier: 1.0, description: 'Current lifestyle', icon: 'home', annualSpending: 40000, fireNumber: 1000000, coastNumber: 256000, reached: false, progress: 78 },
         ],
-        ssIntegration: { monthlyBenefit: 2000, annualBenefit: 24000, yearsUntilSS: 30, reducedAnnualNeed: 16000, reducedFIRENumber: 400000, reducedCoastNumber: 102000, ssAdjustedCoastReached: true },
+        ssIntegration: { monthlyBenefit: 2000, annualBenefit: 24000, yearsUntilSS: 30, reducedAnnualNeed: 16000, reducedFIRENumber: 400000, reducedCoastNumber: 102000, ssReducesTarget: true, ssAdjustedCoastReached: true },
         workOptionalTimeline: [
           { age: 35, balance: 200000, coastTarget: 256000, isCoastReached: false, monthlyRequired: 500, status: 'Building Phase' },
           { age: 40, balance: 350000, coastTarget: 320000, isCoastReached: true, monthlyRequired: 0, status: 'Work Optional' },
@@ -332,7 +342,8 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
         fireNumber: Math.round(adjustedFIRE),
         coastNumber: Math.round(adjustedCoast),
         reached,
-        progress: Math.min(100, (inputs.currentInvested / adjustedCoast) * 100)
+        // Guard 0/0 (no spending and nothing invested) so the card never shows "NaN%".
+        progress: adjustedCoast > 0 ? Math.min(100, (inputs.currentInvested / adjustedCoast) * 100) : 0
       };
     });
 
@@ -350,7 +361,12 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
     for (let y = 0; y < bridgeYears; y++) {
       requiredAtRetirement += inputs.annualSpending / Math.pow(1 + realGrowthRate, y);
     }
-    const reducedCoastNumber = requiredAtRetirement / Math.pow(1 + realGrowthRate, calculations.yearsToRetire);
+    // With a long bridge (early retirement, late SS) and a low real return, the PV of
+    // full-spending bridge years can exceed the plain 4%-rule coast number. SS can't
+    // make the target *larger* than the no-SS plan, so clamp to the base coast number.
+    const rawReducedCoastNumber = requiredAtRetirement / Math.pow(1 + realGrowthRate, calculations.yearsToRetire);
+    const reducedCoastNumber = Math.min(rawReducedCoastNumber, calculations.coastFIRENumber);
+    const ssReducesTarget = rawReducedCoastNumber < calculations.coastFIRENumber;
 
     const ssIntegration = {
       monthlyBenefit: inputs.estimatedSocialSecurity,
@@ -359,6 +375,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
       reducedAnnualNeed: inputs.annualSpending - (inputs.estimatedSocialSecurity * 12),
       reducedFIRENumber,
       reducedCoastNumber,
+      ssReducesTarget,
       ssAdjustedCoastReached: inputs.currentInvested >= reducedCoastNumber
     };
 
@@ -373,7 +390,9 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
         : calculations.targetFIRENumber;
 
       const isCoastReached = runningBalance >= coastAtAge;
-      const monthlyRequired = isCoastReached ? 0 : Math.round((coastAtAge - runningBalance) / (yearsRemaining * 12));
+      // At retirement age there are no months left, so the whole gap is due now.
+      const monthsRemaining = Math.max(1, yearsRemaining * 12);
+      const monthlyRequired = isCoastReached ? 0 : Math.round((coastAtAge - runningBalance) / monthsRemaining);
 
       workOptionalTimeline.push({
         age,
@@ -481,9 +500,13 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                   You need <strong className="text-[var(--text-primary)]">{formatCurrency(calculations.coastGap)}</strong> more to coast today.
                 </span>
               </div>
-              {calculations.yearsToCoast > 0 && (
+              {calculations.yearsToCoast > 0 ? (
                 <div className="bg-[var(--color-warning-soft)] text-[var(--color-warning)] px-4 py-2 rounded-full text-sm font-bold border border-[var(--glass-border-strong)]">
                   Coast FIRE in ~{calculations.yearsToCoast} years at current pace
+                </div>
+              ) : (
+                <div className="bg-[var(--color-warning-soft)] text-[var(--color-warning)] px-4 py-2 rounded-full text-sm font-bold border border-[var(--glass-border-strong)]">
+                  At {formatCurrency(inputs.monthlyContribution)}/mo you won&apos;t reach Coast FIRE before age {inputs.retirementAge}
                 </div>
               )}
             </div>
@@ -729,7 +752,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                   fontWeight={600}
                   tickLine={false}
                   axisLine={false}
-                  tickFormatter={(val) => `$${(val / 1000000).toFixed(1)}M`}
+                  tickFormatter={formatAxisMoney}
                 />
                 <ChartTooltip
                   contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.15)', fontWeight: 600 }}
@@ -1197,7 +1220,9 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
               <p className="text-sm font-medium text-white/90">
                 {proAnalytics.ssIntegration.ssAdjustedCoastReached
                   ? "When factoring in Social Security, you've already hit your adjusted Coast number! SS will cover part of your expenses, reducing what you need from investments."
-                  : `Social Security will cover ${formatCurrency(proAnalytics.ssIntegration.annualBenefit)}/year of your expenses. This reduces your Coast FIRE target by ${formatCurrency(calculations.coastFIRENumber - proAnalytics.ssIntegration.reducedCoastNumber)}.`}
+                  : proAnalytics.ssIntegration.ssReducesTarget
+                    ? `Social Security will cover ${formatCurrency(proAnalytics.ssIntegration.annualBenefit)}/year of your expenses. This reduces your Coast FIRE target by ${formatCurrency(calculations.coastFIRENumber - proAnalytics.ssIntegration.reducedCoastNumber)}.`
+                    : `Social Security will cover ${formatCurrency(proAnalytics.ssIntegration.annualBenefit)}/year once it starts at ${inputs.socialSecurityAge}, but with ${Math.max(0, inputs.socialSecurityAge - inputs.retirementAge)} bridge years of full spending before then it doesn't reduce your Coast FIRE target under these assumptions.`}
               </p>
             </div>
           </div>
@@ -1240,7 +1265,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
                     fontWeight={600}
                     tickLine={false}
                     axisLine={false}
-                    tickFormatter={(val) => `$${(val / 1000000).toFixed(1)}M`}
+                    tickFormatter={formatAxisMoney}
                   />
                   <ChartTooltip
                     contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.15)' }}

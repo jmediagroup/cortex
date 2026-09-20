@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "What's Your Why — Find Your Real Money Motivation | Money Guy Mutants",
+  title: "What's Your Why — Find Your Real Money Motivation",
   description:
     'A reflective, eight-question diagnostic that surfaces what actually drives your financial decisions, fears, and goals — then reflects it back as a personal, AI-synthesized read on your relationship with money. Free.',
   keywords: [

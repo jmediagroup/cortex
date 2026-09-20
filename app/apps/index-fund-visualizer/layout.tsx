@@ -10,18 +10,11 @@ export const metadata: Metadata = {
     description: 'Simulate long-term growth for popular index funds with historical returns and volatility modeling.',
     type: 'website',
     url: 'https://moneyguymutants.com/apps/index-fund-visualizer',
-    images: [{
-      url: '/og-index-fund-visualizer.png',
-      width: 1200,
-      height: 630,
-      alt: 'Money Guy Mutants Index Fund Growth Visualizer',
-    }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Index Fund Growth Visualizer',
     description: 'Simulate long-term growth for popular index funds with historical returns and volatility modeling.',
-    images: ['/og-index-fund-visualizer.png'],
   },
   alternates: {
     canonical: 'https://moneyguymutants.com/apps/index-fund-visualizer',

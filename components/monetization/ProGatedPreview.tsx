@@ -6,7 +6,7 @@ import { Lock, Sparkles, ArrowRight } from 'lucide-react';
 
 const TOOL_BENEFITS: Record<string, string[]> = {
   'capital-gains-tax': ['NIIT & additional-Medicare modeling', 'ACA subsidy-cliff and IRMAA detection', 'QBI / §199A deduction layer'],
-  'car-affordability': ['Lease vs. buy comparison', '10-year total cost of ownership', 'Opportunity cost modeling'],
+  'car-affordability': ['Save and revisit affordability scenarios', 'Share results with a link', 'Pro access across every Cortex calculator'],
   'coast-fire': ['Monte Carlo retirement simulations', 'Variable contribution modeling', 'Safe withdrawal rate analysis'],
   'compound-interest': ['Tax-advantaged account modeling', 'Inflation-adjusted projections', 'Multi-account comparison'],
   'debt-paydown': ['Hybrid paydown strategies', 'Refinancing scenario modeling', 'Net worth impact projections'],
@@ -14,7 +14,7 @@ const TOOL_BENEFITS: Record<string, string[]> = {
   'geographic-arbitrage': ['Side-by-side city comparisons', 'Tax burden breakdown by state', 'Real wage purchasing power'],
   'index-fund-visualizer': ['Custom fund basket builder', 'Dividend reinvestment modeling', 'Factor exposure analysis'],
   'net-worth': ['Liability paydown projections', 'Asset growth forecasting', 'Financial independence timeline'],
-  'rent-vs-buy': ['Neighborhood appreciation modeling', 'PMI and tax deduction analysis', 'Break-even timeline calculator'],
+  'rent-vs-buy': ['3-move lifecycle friction analysis', 'Market timing scenario range', 'Hidden ownership cost breakdown'],
   'retirement-strategy': ['Roth conversion ladder modeling', 'Social Security optimization', 'Sequence of returns risk'],
   's-corp-investment': ['Solo 401k contribution maximizer', 'Defined benefit plan modeling', 'After-tax return comparison'],
   's-corp-optimizer': ['State tax optimization', 'Benefits and deduction planning', 'Multi-year salary strategy'],

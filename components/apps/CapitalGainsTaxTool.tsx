@@ -5,12 +5,14 @@
    Imports the tested engine from @/lib/tax/taxEngine2026 (the source of
    truth for the math — do not edit the engine without re-running its tests).
    Styling maps to Money Guy Mutants's CSS-variable design tokens via `palette`.
-   The advanced modules (NIIT, QBI, ACA, IRMAA) are gated behind Finance Pro.
+   NIIT is mandatory tax, so it is always included in the total; the NIIT
+   headroom analysis and the QBI, ACA and IRMAA modules are Finance Pro.
    ===================================================================== */
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Lock } from "lucide-react";
 import { compute, C, type FilingStatus, type TaxInput } from "@/lib/tax/taxEngine2026";
+import SaveScenarioButton from "./SaveScenarioButton";
 
 type Form = TaxInput & Record<string, unknown>;
 
@@ -167,7 +169,7 @@ const FILING: [FilingStatus, string][] = [
   ["hoh", "Head of household"], ["mfs", "Married filing separately"],
 ];
 
-export default function CapitalGainsTaxTool({ isPro = false, onUpgrade, initialValues }: CapitalGainsTaxToolProps) {
+export default function CapitalGainsTaxTool({ isPro = false, isLoggedIn = false, onUpgrade, initialValues }: CapitalGainsTaxToolProps) {
   const [inp, setInp] = useState<Form>({
     status: "single", wages: 120000, k1: 0, interest: 1500, ordinaryDividends: 3000,
     qualifiedDividends: 2500, shortTermGains: 0, longTermGains: 40000, otherOrdinary: 0,
@@ -190,12 +192,17 @@ export default function CapitalGainsTaxTool({ isPro = false, onUpgrade, initialV
   const status = inp.status as FilingStatus;
   const upgrade = () => onUpgrade?.();
 
-  // Advanced modules are Finance Pro. For free users, force them off so the
-  // engine never computes (or reveals) gated layers — applied to every compute().
+  // Advanced modules (QBI, ACA, IRMAA) are Finance Pro. For free users, force
+  // them off so the engine never computes (or reveals) gated layers. NIIT is a
+  // mandatory tax, so it is ALWAYS computed into the total (like the 0.9%
+  // Additional Medicare tax); only its headroom analysis is Pro-gated.
   // Virginia personal exemptions follow filing status ($930 per person).
+  // The 65+ toggle stores a flag; the head-count is derived from filing
+  // status here so switching MFJ → Single never leaves a stale "2 seniors".
   const effInp = useMemo<Form>(() => {
-    const withVa = { ...inp, vaExemptions: inp.status === "mfj" ? 2 : 1 };
-    return isPro ? withVa : { ...withVa, includeNIIT: false, includeQBI: false, includeACA: false, includeIRMAA: false };
+    const seniors = inp.seniors ? (inp.status === "mfj" ? 2 : 1) : 0;
+    const withVa = { ...inp, seniors, vaExemptions: inp.status === "mfj" ? 2 : 1 };
+    return isPro ? withVa : { ...withVa, includeNIIT: true, includeQBI: false, includeACA: false, includeIRMAA: false };
   }, [inp, isPro]);
 
   const cur = useMemo(() => compute(effInp as TaxInput), [effInp]);
@@ -213,7 +220,7 @@ export default function CapitalGainsTaxTool({ isPro = false, onUpgrade, initialV
   const [b0] = C.ltcg[status];
   const room0 = Math.max(0, b0 - base.ordinaryTaxable - base.cg.at0);
   const niitThresh = C.niit[status];
-  const roomNIIT = Math.max(0, niitThresh - base.magi);
+  const roomNIIT = Math.max(0, niitThresh - base.agi);
   let roomIRMAA: number | null = null, irmaaLabel = "";
   if (effInp.includeIRMAA) {
     // MFS has its own two-tier IRMAA schedule (mirrors the engine).
@@ -242,6 +249,16 @@ export default function CapitalGainsTaxTool({ isPro = false, onUpgrade, initialV
         @media (max-width:820px){.cgtool-grid{grid-template-columns:1fr}}`}</style>
 
       <div className="cgtool">
+        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 14 }}>
+          <SaveScenarioButton
+            toolId="capital-gains-tax"
+            toolName="Capital Gains Tax Tool"
+            getInputs={() => inp}
+            getKeyResult={() => `LTCG ${$1(ltcg)} → tax on gains ${$1(cur.totalIncomeTax - base.totalIncomeTax)}`}
+            isLoggedIn={isLoggedIn}
+            onLoginPrompt={onUpgrade}
+          />
+        </div>
         <div className="cgtool-grid">
           {/* ============ INPUTS ============ */}
           <div style={{ background: palette.panel, border: `1px solid ${palette.hair}`, borderRadius: 14, padding: "4px 18px 18px" }}>
@@ -272,7 +289,7 @@ export default function CapitalGainsTaxTool({ isPro = false, onUpgrade, initialV
                 ))}
               </div>
               {inp.useStandard
-                ? <div style={{ fontSize: 12, color: palette.muted }}>2026 standard deduction: <b style={{ color: palette.ink }}>{$1(C.stdDed[status])}</b>{inp.seniors ? ` + ${$1((inp.seniors as number) * C.addlStd[status])} age 65+` : ""}.</div>
+                ? <div style={{ fontSize: 12, color: palette.muted }}>2026 standard deduction: <b style={{ color: palette.ink }}>{$1(C.stdDed[status])}</b>{effInp.seniors ? ` + ${$1((effInp.seniors as number) * C.addlStd[status])} age 65+` : ""}.</div>
                 : <Field label="Total itemized (SALT capped $40k)" value={inp.itemized as number} onChange={v => set("itemized", v)} hint="VA must match federal choice" />}
             </Section>
 
@@ -282,11 +299,11 @@ export default function CapitalGainsTaxTool({ isPro = false, onUpgrade, initialV
                 <Toggle label="QBI deduction (S-corp / 199A)" checked={!!effInp.includeQBI} onChange={v => set("includeQBI", v)} locked={!isPro} onLockedClick={upgrade} />
                 <Toggle label="ACA premium-tax-credit cliff" checked={!!effInp.includeACA} onChange={v => set("includeACA", v)} locked={!isPro} onLockedClick={upgrade} />
                 <Toggle label="Medicare IRMAA tiers" checked={!!effInp.includeIRMAA} onChange={v => set("includeIRMAA", v)} locked={!isPro} onLockedClick={upgrade} />
-                <Toggle label="Age 65+ (senior deductions)" checked={!!inp.seniors} onChange={v => set("seniors", v ? (status === "mfj" ? 2 : 1) : 0)} />
+                <Toggle label={`Age 65+ (senior deductions${status === "mfj" ? ", both spouses" : ""})`} checked={!!inp.seniors} onChange={v => set("seniors", v ? 1 : 0)} />
               </div>
               {!isPro &&
                 <div style={{ marginTop: 12, fontSize: 11.5, color: palette.muted, lineHeight: 1.45 }}>
-                  NIIT, QBI, ACA-cliff and IRMAA modeling are part of <b style={{ color: palette.accent }}>Finance Pro</b>. The core 0/15/20% picture and 0%-bracket headroom are free.
+                  The 3.8% NIIT is always included in your total. NIIT headroom, QBI, ACA-cliff and IRMAA modeling are part of <b style={{ color: palette.accent }}>Finance Pro</b>. The core 0/15/20% picture and 0%-bracket headroom are free.
                 </div>}
               {isPro && effInp.includeQBI &&
                 <div style={{ marginTop: 12, paddingTop: 10, borderTop: `1px dashed ${palette.hair}` }}>
@@ -347,7 +364,7 @@ export default function CapitalGainsTaxTool({ isPro = false, onUpgrade, initialV
 
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
               <Headroom label="Gains at 0% federal" value={room0} tone="good" sub="Most efficient slice — fills the 0% LTCG bracket." onSet={() => setLTCG(room0)} />
-              {effInp.includeNIIT && <Headroom label="Headroom before 3.8% NIIT" value={roomNIIT} tone={roomNIIT < 50000 ? "warn" : "ink"} sub={`MAGI crosses ${$1(niitThresh)} → 3.8% on investment income.`} onSet={() => setLTCG(roomNIIT)} />}
+              {isPro && effInp.includeNIIT && <Headroom label="Headroom before 3.8% NIIT" value={roomNIIT} tone={roomNIIT < 50000 ? "warn" : "ink"} sub={`MAGI crosses ${$1(niitThresh)} → 3.8% on investment income.`} onSet={() => setLTCG(roomNIIT)} />}
               {effInp.includeIRMAA && roomIRMAA != null && <Headroom label="Headroom before IRMAA jump" value={roomIRMAA} tone={roomIRMAA < 30000 ? "warn" : "ink"} sub={irmaaLabel} onSet={() => setLTCG(roomIRMAA!)} />}
               {effInp.includeACA && roomACA != null && <Headroom label="Headroom before ACA cliff" value={roomACA} tone="warn" sub="Crossing 400% FPL forfeits the entire premium credit." onSet={() => setLTCG(roomACA!)} />}
             </div>

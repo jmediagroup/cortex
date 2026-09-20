@@ -12,7 +12,7 @@ import ProUpsellCard from '@/components/monetization/ProUpsellCard';
  *
  * Helps S-Corp owners maximize retirement contributions across:
  * - Employee 401(k) deferrals (Traditional or Roth)
- * - Company 401(k) matching
+ * - Employer profit-sharing (up to 25% of W-2 wages)
  * - IRA contributions (Traditional or Roth)
  * - HSA contributions
  * - Taxable brokerage
@@ -39,8 +39,23 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
     growthRate: 7.0,
     inflationRate: 3.0,
     adjustInflation: false,
-    ...(initialValues || {}),
   });
+
+  // `initialValues` (shared link / ?scenario= load) arrives asynchronously —
+  // a one-shot useState initializer would ignore it. Apply it once when it
+  // shows up; state is adjusted during render (React's "storing information
+  // from previous renders" pattern, as in CoastFIRE) so no effect is needed.
+  const [appliedInitialValues, setAppliedInitialValues] = useState<typeof initialValues>(undefined);
+  if (initialValues && initialValues !== appliedInitialValues) {
+    setAppliedInitialValues(initialValues);
+    setInputs(prev => ({ ...prev, ...(initialValues as Partial<typeof prev>) }));
+  }
+
+  // 2026 Roth IRA MAGI phase-out, single filer (IRS Notice 2025-67):
+  // $153,000–$168,000. W-2 salary is used as the MAGI proxy, as with the
+  // traditional-IRA phase-out below.
+  const ROTH_IRA_PHASE_START = 153000;
+  const ROTH_IRA_PHASE_END = 168000;
 
   // 2026 IRS Limits
   const LIMITS = useMemo(() => {
@@ -96,6 +111,23 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
       }
     }
 
+    // Roth IRA phase-out: above $168k no direct contribution is allowed; in
+    // the window the limit scales down linearly (approximate — the IRS
+    // rounds to $10 with a $200 floor). Only the allowed amount is counted.
+    let rothIraAllowedFraction = 1;
+    if (inputs.annualSalary >= ROTH_IRA_PHASE_END) rothIraAllowedFraction = 0;
+    else if (inputs.annualSalary > ROTH_IRA_PHASE_START) {
+      rothIraAllowedFraction = (ROTH_IRA_PHASE_END - inputs.annualSalary) / (ROTH_IRA_PHASE_END - ROTH_IRA_PHASE_START);
+    }
+    const rothIraMonthlyCap = LIMITS.ira.monthly * rothIraAllowedFraction;
+    const countedMonthlyIra = inputs.taxStrategy === 'roth'
+      ? Math.min(inputs.monthlyIra, rothIraMonthlyCap)
+      : inputs.monthlyIra;
+
+    // Clamp the estimated tax rate to a sane range so a stray entry can't
+    // produce negative (or >100%) "tax savings".
+    const clampedTaxRate = Math.min(60, Math.max(0, inputs.estTaxRate));
+
     const allocations = [
       {
         name: 'HSA',
@@ -112,7 +144,7 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
         deductibleFraction: 1
       },
       {
-        name: '401(k) Company Match',
+        name: 'Employer profit-sharing (up to 25% of W-2)',
         monthly: inputs.monthlyCo401k,
         color: '#0A6FD1',
         isTaxDeductible: true,
@@ -120,7 +152,7 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
       },
       {
         name: `IRA (${inputs.taxStrategy === 'roth' ? 'Roth' : 'Traditional'})`,
-        monthly: inputs.monthlyIra,
+        monthly: countedMonthlyIra,
         color: inputs.taxStrategy === 'roth' ? '#F26531' : '#2E9E8D',
         isTaxDeductible: inputs.taxStrategy === 'traditional' && iraDeductibleFraction > 0,
         deductibleFraction: iraDeductibleFraction
@@ -135,7 +167,7 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
     ];
 
     const totalMonthly = allocations.reduce((sum, a) => sum + a.monthly, 0);
-    const taxRate = inputs.estTaxRate / 100;
+    const taxRate = clampedTaxRate / 100;
     const monthlyTaxDeduction = allocations
       .filter(a => a.isTaxDeductible)
       .reduce((sum, a) => sum + a.monthly * a.deductibleFraction, 0);
@@ -186,9 +218,12 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
       totalBalance,
       projectionData,
       taxRate,
-      iraDeductibleFraction
+      iraDeductibleFraction,
+      rothIraAllowedFraction,
+      rothIraMonthlyCap,
+      countedMonthlyIra
     };
-  }, [inputs]);
+  }, [inputs, LIMITS.ira.monthly]);
 
   // Pro feature gate
   if (!isPro) {
@@ -285,6 +320,8 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
                     name="estTaxRate"
                     value={inputs.estTaxRate}
                     onValueChange={(n) => setInputs(prev => ({ ...prev, estTaxRate: n }))}
+                    min={0}
+                    max={60}
                     step="1"
                     className="w-full px-3 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]"
                   />
@@ -333,7 +370,7 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
 
               <div>
                 <label className="flex justify-between text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">
-                  <span>Company 401(k) Match</span>
+                  <span>Employer profit-sharing (up to 25% of W-2)</span>
                   <span className="text-[10px] text-[var(--color-info)]">Max: ${Math.floor(LIMITS.co401k.monthly).toLocaleString()}</span>
                 </label>
                 <NumberInput
@@ -375,9 +412,11 @@ export default function SCorpInvestmentOptimizer({ isPro, onUpgrade, isLoggedIn 
                       : 'Your traditional IRA deduction is partially phased out ($81k–$91k salary, active 401(k) participant, 2026 single filer) — only the deductible portion is counted in tax savings.'}
                   </p>
                 )}
-                {inputs.taxStrategy === 'roth' && inputs.monthlyIra > 0 && inputs.annualSalary > 153000 && (
+                {inputs.taxStrategy === 'roth' && inputs.monthlyIra > 0 && calculations.rothIraAllowedFraction < 1 && (
                   <p className="mt-2 text-[10px] font-bold text-[var(--color-warning)]">
-                    Roth IRA eligibility phases out between roughly $153k and $168k MAGI (2026, single filer) — direct contributions may be limited or unavailable at this income.
+                    {calculations.rothIraAllowedFraction === 0
+                      ? 'Above the $168k Roth IRA MAGI limit (2026, single filer): no direct Roth IRA contribution is allowed, so $0/mo is counted. Consider a backdoor Roth with a CPA.'
+                      : `Roth IRA eligibility phases out between $153k and $168k MAGI (2026, single filer, approximate) — only $${Math.floor(calculations.rothIraMonthlyCap).toLocaleString()}/mo is counted at this income.`}
                   </p>
                 )}
               </div>

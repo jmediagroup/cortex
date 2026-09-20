@@ -7,7 +7,6 @@ import {
   RefreshCcw,
   ArrowRightLeft,
   TrendingUp,
-  Info,
   Lock,
   BrainCircuit,
   Crown,
@@ -19,6 +18,7 @@ import { InlineAd } from '@/components/monetization';
 import SaveScenarioButton from '@/components/apps/SaveScenarioButton';
 import { trackToolVisit } from '@/lib/useRecentTools';
 import { Breadcrumb, CalculatorSkeleton } from '@/components/ui';
+import Tooltip from '@/components/ui/Tooltip';
 import CalculatorSEOContent from '@/components/seo/CalculatorSEOContent';
 import RelatedTools from '@/components/seo/RelatedTools';
 import { CALCULATOR_CONTENT, getRelatedTools } from '@/lib/calculator-content';
@@ -177,6 +177,54 @@ const App = () => {
 
   useEffect(() => { trackToolVisit('budget', 'Household Budgeting System', '/apps/budget'); }, []);
 
+  // Hydrate saved inputs from a shared link (?scenario=<token>) or from the
+  // dashboard's "Load scenario" action (sessionStorage). Read from
+  // window.location rather than useSearchParams so the page stays statically
+  // renderable for SEO.
+  useEffect(() => {
+    const applyInputs = (inputs: Record<string, unknown>) => {
+      if (typeof inputs.grossIncome === 'number') setGrossIncome(inputs.grossIncome);
+      if (typeof inputs.taxMode === 'string' && inputs.taxMode in TAX_MODES) setTaxMode(inputs.taxMode);
+      if (inputs.viewMode === 'monthly' || inputs.viewMode === 'annual') setViewMode(inputs.viewMode);
+      if (inputs.allocations && typeof inputs.allocations === 'object') {
+        const saved = inputs.allocations as Record<string, unknown>;
+        setAllocations(prev => {
+          const next = { ...prev };
+          Object.keys(prev).forEach(id => {
+            const v = saved[id];
+            if (typeof v === 'number' && Number.isFinite(v) && v >= 0) next[id] = v;
+          });
+          return next;
+        });
+      }
+    };
+
+    let active = true;
+    const token = new URLSearchParams(window.location.search).get('scenario');
+    if (token) {
+      fetch(`/api/scenarios/shared/${token}`)
+        .then(res => (res.ok ? res.json() : null))
+        .then(data => {
+          if (active && data?.scenario?.tool_id === 'budget' && data.scenario.inputs) {
+            applyInputs(data.scenario.inputs);
+          }
+        })
+        .catch(() => {});
+      return () => { active = false; };
+    }
+
+    try {
+      const stored = sessionStorage.getItem('scenario_load_budget');
+      if (stored) {
+        sessionStorage.removeItem('scenario_load_budget');
+        applyInputs(JSON.parse(stored));
+      }
+    } catch {
+      // Invalid or unavailable sessionStorage — keep defaults.
+    }
+    return () => { active = false; };
+  }, []);
+
   // --- Calculations ---
   const taxRate = TAX_MODES[taxMode as keyof typeof TAX_MODES].rate;
   const grossIncomeNum = typeof grossIncome === 'string' ? parseFloat(grossIncome) || 0 : grossIncome;
@@ -232,9 +280,9 @@ const App = () => {
       return;
     }
 
-    // Store as-is to allow typing, validation happens on blur
-    const numValue = parseFloat(value);
-    if (!isNaN(numValue) && numValue >= 0) {
+    // Store as-is to allow typing (including a leading "." such as ".5");
+    // validation happens on blur
+    if (/^\d*\.?\d*$/.test(value)) {
       setAllocations(prev => ({ ...prev, [id]: value as any }));
     }
   };
@@ -271,14 +319,14 @@ const App = () => {
       // Get numeric values for calculations (normalized to monthly)
       const getCurrentValue = (id: string) => toMonthly(allocations[id]);
 
+      // Cut a category toward `floor`, but never raise it above its current
+      // level: a floor should stop a cut, not add spending.
+      const reduceToFloor = (current: number, floor: number, factor: number) =>
+        Math.min(current, Math.max(floor, current * factor));
+
       if (goal === 'Maximize Monthly Slack') {
         // Strategy: Minimize flexible spending, maximize unallocated funds.
-        // Reduce dining, personal, and sinking funds — but never raise a
-        // category above its current level: a floor should stop a cut,
-        // not add spending.
-        const reduceToFloor = (current: number, floor: number, factor: number) =>
-          Math.min(current, Math.max(floor, current * factor));
-
+        // Reduce dining, personal, and sinking funds.
         newAllocations.dining = reduceToFloor(getCurrentValue('dining'), 150, 0.6);
         newAllocations.personal = reduceToFloor(getCurrentValue('personal'), 100, 0.6);
         newAllocations.sinking = reduceToFloor(getCurrentValue('sinking'), 100, 0.5);
@@ -302,14 +350,13 @@ const App = () => {
         // Strategy: Aggressive future allocation — redirect exactly what the
         // cuts free up, so the optimization never allocates money that
         // doesn't exist.
-        const newDining = Math.max(150, getCurrentValue('dining') * 0.7);
-        const newPersonal = Math.max(80, getCurrentValue('personal') * 0.6);
-        const newTransport = Math.max(150, getCurrentValue('transport') * 0.85);
-        const freed = Math.max(0,
+        const newDining = reduceToFloor(getCurrentValue('dining'), 150, 0.7);
+        const newPersonal = reduceToFloor(getCurrentValue('personal'), 80, 0.6);
+        const newTransport = reduceToFloor(getCurrentValue('transport'), 150, 0.85);
+        const freed =
           (getCurrentValue('dining') - newDining) +
           (getCurrentValue('personal') - newPersonal) +
-          (getCurrentValue('transport') - newTransport)
-        );
+          (getCurrentValue('transport') - newTransport);
 
         newAllocations.dining = newDining;
         newAllocations.personal = newPersonal;
@@ -319,7 +366,9 @@ const App = () => {
         newAllocations.investing = getCurrentValue('investing') + (freed * 0.6);
         newAllocations.emergency = getCurrentValue('emergency') + (freed * 0.4);
 
-        reasoning = "Reduced flexible spending and redirected the freed-up cash toward future goals. 60% allocated to investing for wealth building, 40% to emergency buffer for resilience. This prioritizes long-term financial security.";
+        reasoning = freed > 0
+          ? `Reduced flexible spending and redirected the freed-up $${Math.round(freed).toLocaleString()}/mo toward future goals. 60% allocated to investing for wealth building, 40% to emergency buffer for resilience. This prioritizes long-term financial security.`
+          : "Dining, personal and transport are already at or below their recommended floors, so there was nothing to redirect. Allocations are unchanged.";
       }
       else if (goal === 'Minimize Fragility') {
         // Strategy: Balance across all categories, boost emergency fund
@@ -515,7 +564,10 @@ const App = () => {
               </div>
 
               <div>
-                <label className="block text-xs text-[var(--text-tertiary)] mb-1">Tax Reality Layer</label>
+                <label className="block text-xs text-[var(--text-tertiary)] mb-1 flex items-center gap-1">
+                  Tax Reality Layer
+                  <Tooltip content="Take-home is an estimate: gross income minus a single flat rate covering federal and state income tax plus FICA. Optimistic = 22%, Baseline = 26%, Conservative = 32%. No brackets, deductions or credits are modeled, so compare with a recent pay stub." />
+                </label>
                 <div className="grid grid-cols-3 gap-1 bg-[var(--bg-section)] p-1 rounded-lg">
                   {Object.entries(TAX_MODES).map(([key, mode]) => (
                     <button
@@ -551,7 +603,7 @@ const App = () => {
               <div>
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-xs font-medium text-[var(--text-secondary)] flex items-center gap-1">
-                    Budget Tension <Info size={12} className="text-[var(--text-muted)]" />
+                    Budget Tension <Tooltip content="How tightly your take-home is committed: rises when fixed costs exceed 60% of take-home, when little is left unallocated, and when savings categories are thin." />
                   </span>
                   <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${getTensionLabel(tensionScore).bg} ${getTensionLabel(tensionScore).color}`}>
                     {getTensionLabel(tensionScore).label}

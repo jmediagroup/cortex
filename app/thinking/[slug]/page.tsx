@@ -400,15 +400,11 @@ function generateArticleSchema(outlook: Outlook, url: string) {
     dateModified: outlook.date,
     author: {
       '@type': 'Organization',
+      '@id': 'https://moneyguymutants.com/#research',
       name: 'Money Guy Mutants Research',
-      '@id': 'https://moneyguymutants.com/#organization',
+      parentOrganization: { '@id': 'https://moneyguymutants.com/#organization' },
     },
-    publisher: {
-      '@type': 'Organization',
-      '@id': 'https://moneyguymutants.com/#organization',
-      name: 'Money Guy Mutants Technologies',
-      logo: { '@type': 'ImageObject', url: 'https://moneyguymutants.com/icon' },
-    },
+    publisher: { '@id': 'https://moneyguymutants.com/#organization' },
     mainEntityOfPage: { '@type': 'WebPage', '@id': url },
     timeRequired: `PT${outlook.readingTime}M`,
     articleSection: outlook.type === 'weekly' ? 'Weekly Outlook' : 'Daily Outlook',

@@ -16,8 +16,10 @@ import {
   HelpCircle,
   Lock,
   Gauge,
-  AlertTriangle
+  AlertTriangle,
+  Pencil
 } from 'lucide-react';
+import { parseLooseNumber } from '@/lib/parse-number';
 import SaveScenarioButton from './SaveScenarioButton';
 import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 import ProGatedPreview from '@/components/monetization/ProGatedPreview';
@@ -284,11 +286,20 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
     }
   };
 
+  // Reopen a submitted row for editing; it leaves the analysis until re-submitted.
+  const editNode = (type: 'asset' | 'liability', id: string) => {
+    if (type === 'asset') {
+      setAssets(prev => prev.map(a => a.id === id ? { ...a, submitted: false } : a));
+    } else {
+      setLiabilities(prev => prev.map(l => l.id === id ? { ...l, submitted: false } : l));
+    }
+  };
+
   const submitNode = (type: 'asset' | 'liability', id: string) => {
     if (type === 'asset') {
       setAssets(prev => prev.map(a => {
         if (a.id === id) {
-          const numValue = parseFloat(String(a.value));
+          const numValue = parseLooseNumber(a.value);
           return {
             ...a,
             value: isNaN(numValue) ? 0 : numValue,
@@ -300,9 +311,9 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
     } else {
       setLiabilities(prev => prev.map(l => {
         if (l.id === id) {
-          const numValue = parseFloat(String(l.value));
-          const numRate = parseFloat(String(l.rate));
-          const numTerm = parseFloat(String(l.term));
+          const numValue = parseLooseNumber(l.value);
+          const numRate = parseLooseNumber(l.rate);
+          const numTerm = parseLooseNumber(l.term);
           return {
             ...l,
             value: isNaN(numValue) ? 0 : numValue,
@@ -348,6 +359,11 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
     let optionality = 'Moderate';
     if (monthsOfRunway > 24) optionality = 'High';
     if (monthsOfRunway < 6) optionality = 'Low';
+    // Being debt-free doesn't create optionality on its own: with little or no
+    // liquid capital an income shock still forces illiquid sales (the narrative
+    // below calls this "brittle"), so cap the score by liquidity.
+    if (liquidityRatio < 0.25 && optionality === 'High') optionality = 'Moderate';
+    if (liquidAssets <= 0) optionality = 'Low';
 
     const highInterestDebts = submittedLiabilities.filter(l => Number(l.rate) >= 7 && Number(l.value) > 0)
       .sort((a, b) => Number(b.rate) - Number(a.rate));
@@ -499,8 +515,8 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
           getInputs={() => ({ assets, liabilities, monthlySavings, growthRate })}
           getKeyResult={() => {
             // Match the on-screen totals: only submitted rows count.
-            const totalAssets = assets.filter(a => a.submitted).reduce((s: number, a: any) => s + (typeof a.value === 'number' ? a.value : parseFloat(a.value) || 0), 0);
-            const totalLiabilities = liabilities.filter(l => l.submitted).reduce((s: number, l: any) => s + (typeof l.value === 'number' ? l.value : parseFloat(l.value) || 0), 0);
+            const totalAssets = assets.filter(a => a.submitted).reduce((s: number, a: any) => s + (typeof a.value === 'number' ? a.value : parseLooseNumber(a.value) || 0), 0);
+            const totalLiabilities = liabilities.filter(l => l.submitted).reduce((s: number, l: any) => s + (typeof l.value === 'number' ? l.value : parseLooseNumber(l.value) || 0), 0);
             return `Net worth: $${Math.round(totalAssets - totalLiabilities).toLocaleString()}`;
           }}
           isLoggedIn={isLoggedIn}
@@ -653,12 +669,24 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
                         ? 'bg-[var(--bg-card)] border-[var(--border-subtle)] hover:border-[var(--emerald-border)] hover:shadow-md'
                         : 'bg-[var(--emerald-50)]/30 border-[var(--emerald-border)] border-2'
                     }`}>
-                      <button
-                        onClick={() => removeNode('asset', asset.id)}
-                        className="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--crimson-500)] opacity-0 group-hover:opacity-100 transition-all p-1 z-10"
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                      <div className="absolute top-4 right-4 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all z-10">
+                        {asset.submitted && (
+                          <button
+                            onClick={() => editNode('asset', asset.id)}
+                            aria-label="Edit asset"
+                            className="text-[var(--text-muted)] hover:text-[var(--emerald-500)] p-1"
+                          >
+                            <Pencil size={16} />
+                          </button>
+                        )}
+                        <button
+                          onClick={() => removeNode('asset', asset.id)}
+                          aria-label="Remove asset"
+                          className="text-[var(--text-muted)] hover:text-[var(--crimson-500)] p-1"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                       {!asset.submitted && (
                         <div className="absolute top-2 right-2 text-[9px] font-bold text-[var(--emerald-500)] bg-[var(--emerald-100)] px-2 py-0.5 rounded-full border border-[var(--emerald-border)] uppercase tracking-widest">
                           Draft
@@ -747,12 +775,24 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
                         ? 'bg-[var(--bg-card)] border-[var(--border-subtle)] hover:border-[var(--crimson-border)] hover:shadow-md'
                         : 'bg-[var(--crimson-50)]/30 border-[var(--crimson-border)] border-2'
                     }`}>
-                      <button
-                        onClick={() => removeNode('liability', lib.id)}
-                        className="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--crimson-500)] opacity-0 group-hover:opacity-100 transition-all p-1 z-10"
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                      <div className="absolute top-4 right-4 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all z-10">
+                        {lib.submitted && (
+                          <button
+                            onClick={() => editNode('liability', lib.id)}
+                            aria-label="Edit liability"
+                            className="text-[var(--text-muted)] hover:text-[var(--emerald-500)] p-1"
+                          >
+                            <Pencil size={16} />
+                          </button>
+                        )}
+                        <button
+                          onClick={() => removeNode('liability', lib.id)}
+                          aria-label="Remove liability"
+                          className="text-[var(--text-muted)] hover:text-[var(--crimson-500)] p-1"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                       {!lib.submitted && (
                         <div className="absolute top-2 right-2 text-[9px] font-bold text-[var(--crimson-500)] bg-[var(--crimson-100)] px-2 py-0.5 rounded-full border border-[var(--crimson-border)] uppercase tracking-widest">
                           Draft
@@ -964,6 +1004,7 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
                 <div className="mb-12">
                   <h3 className="text-2xl font-bold tracking-tight mb-2">Long-Term Trajectory</h3>
                   <p className="text-sm text-[var(--text-tertiary)] font-medium">Visualizing the system state over a 10-year horizon.</p>
+                  <p className="text-xs text-[var(--text-muted)] font-medium mt-1">Assets compound at your growth rate plus savings; liabilities are held flat (no paydown modeled), so this is conservative if you&apos;re amortizing debt.</p>
                 </div>
 
                 <div className="h-72 w-full relative mb-16 flex items-end justify-between border-b border-l border-[var(--border-subtle)] px-8">
@@ -1228,12 +1269,12 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
               <h3 className="text-xl font-bold text-[var(--text-primary)]">Tipping Point Analysis</h3>
             </div>
             <p className="text-[var(--emerald-500)] font-medium mb-6 leading-relaxed">
-              The "tipping point" is the net worth level where your asset growth equals your annual savings. Beyond this threshold,
+              The "tipping point" is the total asset level where your asset growth equals your annual savings (liabilities are held flat in this model). Beyond this threshold,
               compound growth does the heavy lifting while you focus on other life priorities.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div className="bg-[var(--bg-card)] rounded-2xl p-6 border border-[var(--emerald-border-soft)]">
-                <p className="text-xs text-[var(--text-tertiary)] font-semibold uppercase tracking-wider mb-2">Tipping Point Net Worth</p>
+                <p className="text-xs text-[var(--text-tertiary)] font-semibold uppercase tracking-wider mb-2">Tipping Point Asset Base</p>
                 <p className="text-4xl font-bold text-[var(--emerald-500)] mb-2">
                   {isFinite(momentumIntelligence.tippingPointNetWorth)
                     ? `$${Math.round(momentumIntelligence.tippingPointNetWorth).toLocaleString()}`
@@ -1262,7 +1303,7 @@ export default function NetWorthEngine({ isPro, onUpgrade, isLoggedIn = false, i
                   <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">MUTANT INSIGHT</p>
                   <p className="text-[var(--mist-100)] text-sm font-medium leading-relaxed">
                     {!isFinite(momentumIntelligence.tippingPointNetWorth)
-                      ? `Set a positive growth rate and monthly savings to see your tipping point — the net worth where asset growth outpaces what you save.`
+                      ? `Set a positive growth rate and monthly savings to see your tipping point — the asset base where growth outpaces what you save.`
                       : metrics.totalAssets >= momentumIntelligence.tippingPointNetWorth
                       ? `Congratulations: You've crossed the tipping point. Asset growth now exceeds your annual savings. Your wealth compounds faster than you can manually add to it.`
                       : isFinite(momentumIntelligence.yearsToTippingPoint)

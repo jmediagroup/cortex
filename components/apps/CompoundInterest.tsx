@@ -10,6 +10,7 @@ import {
 import SaveScenarioButton from './SaveScenarioButton';
 import Tooltip from '@/components/ui/Tooltip';
 import NumberInput from '@/components/ui/NumberInput';
+import { formatAxisMoney } from '@/lib/format-axis';
 import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 import ProGatedPreview from '@/components/monetization/ProGatedPreview';
 
@@ -28,8 +29,17 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
     years: 30,
     currentAge: 30,
     compoundingFrequency: 12,
-    ...(initialValues || {}),
   });
+
+  // `initialValues` (shared link / dashboard load) arrives asynchronously, so apply it
+  // once when it shows up rather than only in the useState initializer. State is
+  // adjusted during render (React's "storing information from previous renders"
+  // pattern) so no effect is needed.
+  const [appliedInitialValues, setAppliedInitialValues] = useState<typeof initialValues>(undefined);
+  if (initialValues && initialValues !== appliedInitialValues) {
+    setAppliedInitialValues(initialValues);
+    setInputs(prev => ({ ...prev, ...(initialValues as Partial<typeof prev>) }));
+  }
 
   const simulationData = useMemo(() => {
     let data = [];
@@ -41,7 +51,10 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
     // then derive the equivalent monthly growth rate so contributions can be
     // deposited monthly (end of month), matching the "Monthly Contribution" label.
     const freq = inputs.compoundingFrequency || 1;
-    const ear = Math.pow(1 + (inputs.annualReturn / 100) / freq, freq) - 1;
+    // A per-period rate below -100% has no financial meaning (and a negative
+    // base makes Math.pow return NaN), so floor the per-period factor at 0.
+    const periodFactor = Math.max(0, 1 + (inputs.annualReturn / 100) / freq);
+    const ear = Math.pow(periodFactor, freq) - 1;
     const monthlyRate = Math.pow(1 + ear, 1 / 12) - 1;
 
     for (let year = 0; year <= years; year++) {
@@ -85,7 +98,10 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
     }
 
     const freq = inputs.compoundingFrequency || 1;
-    const ear = Math.pow(1 + (inputs.annualReturn / 100) / freq, freq) - 1;
+    // A per-period rate below -100% has no financial meaning (and a negative
+    // base makes Math.pow return NaN), so floor the per-period factor at 0.
+    const periodFactor = Math.max(0, 1 + (inputs.annualReturn / 100) / freq);
+    const ear = Math.pow(periodFactor, freq) - 1;
     const monthlyRate = Math.pow(1 + ear, 1 / 12) - 1;
     const totalYears = Math.max(0, Math.floor(inputs.years));
 
@@ -219,7 +235,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Avg. Return Rate (%)</label>
-                <NumberInput value={inputs.annualReturn} onValueChange={setField('annualReturn')} step={0.1} className="w-full px-3 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
+                <NumberInput value={inputs.annualReturn} onValueChange={setField('annualReturn')} step={0.1} min={-50} max={100} className="w-full px-3 py-2.5 bg-[var(--bg-section)] border border-[var(--border-default)] rounded-xl font-bold outline-none focus:ring-2 focus:ring-[var(--emerald-500)]" />
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Investment Horizon (Years)</label>
@@ -255,7 +271,9 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
             <p className="text-xs font-medium leading-relaxed">
               {inputs.annualReturn > 0
                 ? `At ${inputs.annualReturn}% return, your initial principal of $${inputs.principal.toLocaleString()} will double approximately every ${Math.round(72 / inputs.annualReturn)} years.`
-                : `At 0% return, your money never doubles — growth only comes from what you contribute.`}
+                : inputs.annualReturn === 0
+                  ? `At 0% return, your money never doubles — growth only comes from what you contribute.`
+                  : `At ${inputs.annualReturn}% return your balance shrinks instead of doubling — it would halve roughly every ${Math.round(72 / Math.abs(inputs.annualReturn))} years without new contributions.`}
             </p>
           </div>
         </aside>
@@ -280,7 +298,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
               <AreaChart data={simulationData}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-default)" />
                 <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{fill: 'var(--text-muted)', fontSize: 11, fontWeight: 'bold'}} />
-                <YAxis axisLine={false} tickLine={false} tick={{fill: 'var(--text-muted)', fontSize: 11, fontWeight: 'bold'}} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
+                <YAxis axisLine={false} tickLine={false} tick={{fill: 'var(--text-muted)', fontSize: 11, fontWeight: 'bold'}} tickFormatter={formatAxisMoney} />
                 <ChartTooltip
                   contentStyle={{ borderRadius: '8px', border: '1px solid var(--border-default)', boxShadow: 'var(--shadow-card-hover)' }}
                   formatter={(v) => `$${(v || 0).toLocaleString()}`}

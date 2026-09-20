@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServiceClient } from '@/lib/supabase/client';
 import { authenticateRequest, isAuthError, unauthorizedResponse } from '@/lib/auth-helpers';
+import { siteUrl } from '@/lib/site-url';
 
 // POST /api/scenarios/[id]/share - Make a scenario public and return its share URL
 export async function POST(
@@ -43,6 +44,6 @@ export async function POST(
 
   return NextResponse.json({
     share_token: data.share_token,
-    share_url: `https://moneyguymutants.com/s/${data.share_token}`,
+    share_url: `${siteUrl()}/s/${data.share_token}`,
   });
 }
