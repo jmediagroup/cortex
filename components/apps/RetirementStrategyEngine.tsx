@@ -24,6 +24,7 @@ import SaveScenarioButton from './SaveScenarioButton';
 import NumberInput from '@/components/ui/NumberInput';
 import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 import { C, bracketTax, ssTaxable } from '@/lib/tax/taxEngine2026';
+import { formatAxisMoney } from '@/lib/format-axis';
 
 // IRS Uniform Lifetime Table (simplified for RMD age 73+)
 const RMD_TABLE: Record<number, number> = {
@@ -45,6 +46,29 @@ const TAX_BRACKETS = SINGLE_BRACKETS.map(([, rate], i) => ({
 }));
 
 const STANDARD_DEDUCTION = C.stdDed.single;
+
+// Gross ordinary income (before the standard deduction) that lands exactly at
+// the top of a bracket: bracket cap + standard deduction, indexed for
+// inflation. 2026 single 12% → 50,400 + 16,100 = 66,500.
+const grossBracketCap = (bracketIndex: number, inflationFactor: number) =>
+  (TAX_BRACKETS[bracketIndex].cap + STANDARD_DEDUCTION) * inflationFactor;
+
+// Size a Roth conversion so that other ordinary income + the conversion +
+// the resulting taxable Social Security lands at `grossCap`. Converting
+// raises SS taxability (Pub 915 worksheet), so this is a fixed point, not a
+// subtraction; bisection on the monotone total finds it.
+const sizeConversionToCap = (grossCap: number, otherOrdinary: number, ss: number, maxConv: number) => {
+  const total = (c: number) => otherOrdinary + c + ssTaxable(ss, otherOrdinary + c, 0, 'single');
+  if (maxConv <= 0 || total(0) >= grossCap) return 0;
+  let lo = 0;
+  let hi = Math.min(maxConv, Math.max(0, grossCap - otherOrdinary));
+  if (total(hi) <= grossCap) return hi;
+  for (let i = 0; i < 40; i++) {
+    const mid = (lo + hi) / 2;
+    if (total(mid) > grossCap) hi = mid; else lo = mid;
+  }
+  return lo;
+};
 
 // Federal tax on ordinary income (single filer, 2026 base year via the tax
 // engine). `inflationFactor` indexes the bracket boundaries and standard
@@ -91,8 +115,21 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
     rothConvAmount: 40000,
     rothConvStartAge: 62,
     rothConvEndAge: 72,
-    ...(initialValues || {}),
+    // The model has no wage income, so converting while still working would
+    // be taxed from the bottom bracket up — far below the real marginal cost
+    // stacked on a salary. Off by default; opt in explicitly.
+    allowPreRetirementConversions: false,
   });
+
+  // `initialValues` (shared link / ?scenario= load) arrives asynchronously —
+  // a one-shot useState initializer would ignore it. Apply it once when it
+  // shows up; state is adjusted during render (React's "storing information
+  // from previous renders" pattern, as in CoastFIRE) so no effect is needed.
+  const [appliedInitialValues, setAppliedInitialValues] = useState<typeof initialValues>(undefined);
+  if (initialValues && initialValues !== appliedInitialValues) {
+    setAppliedInitialValues(initialValues);
+    setInputs(prev => ({ ...prev, ...(initialValues as Partial<typeof prev>) }));
+  }
 
   // Handles the select/checkbox controls ('strategy', 'sequenceRisk',
   // 'useAutoOptimize'); numeric fields use <NumberInput> with direct setters.
@@ -163,28 +200,9 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
         remainingNeed = Math.max(0, remainingNeed - takeRmd);
       }
 
-      // 3. Roth Conversion Logic (Enhanced with Pro Auto-Optimization)
-      if (age >= inputs.rothConvStartAge && age <= inputs.rothConvEndAge && currentBalances.traditional > 0) {
-        let potentialConv = 0;
-
-        if (inputs.useAutoOptimize && isPro) {
-          // Auto-optimize to fill tax bracket (caps indexed with inflation)
-          const targetCap = (TAX_BRACKETS[inputs.targetBracketIndex].cap + STANDARD_DEDUCTION) * inflationFactor;
-          const taxableSoFar = otherOrdinary + ssTaxable(yrRes.ssIncome, otherOrdinary, 0, 'single');
-          potentialConv = Math.max(0, targetCap - taxableSoFar);
-          potentialConv = Math.min(currentBalances.traditional, potentialConv);
-        } else {
-          // Manual conversion amount
-          potentialConv = Math.min(currentBalances.traditional, inputs.rothConvAmount);
-        }
-
-        currentBalances.traditional -= potentialConv;
-        currentBalances.roth += potentialConv;
-        yrRes.conversions = potentialConv;
-        otherOrdinary += potentialConv;
-      }
-
-      // 4. Fill remaining need based on Strategy
+      // 3. Fill remaining need based on Strategy — spending withdrawals come
+      // BEFORE the conversion so the auto-optimizer sizes the conversion on
+      // top of the traditional withdrawals the year actually needs.
       if (inputs.strategy === 'taxable-first') {
         ['taxable', 'traditional', 'roth'].forEach(type => {
             const take = Math.min(currentBalances[type as keyof typeof currentBalances], remainingNeed);
@@ -194,10 +212,13 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
             if (type === 'traditional') otherOrdinary += take;
         });
       } else if (inputs.strategy === 'bracket-filler') {
-        const targetIncome = 60000 * inflationFactor; // Target bottom of 22% bracket roughly
-        const taxableSoFar = otherOrdinary + ssTaxable(yrRes.ssIncome, otherOrdinary, 0, 'single');
-        const tradBuffer = Math.max(0, targetIncome - taxableSoFar);
-        const takeTrad = Math.min(currentBalances.traditional, tradBuffer, remainingNeed);
+        // Fill the 12% bracket with traditional withdrawals: gross cap from
+        // the engine (bracket top + standard deduction, inflation-indexed),
+        // solved against the SS-taxability feedback like the converter.
+        const takeTrad = Math.min(
+          remainingNeed,
+          sizeConversionToCap(grossBracketCap(1, inflationFactor), otherOrdinary, yrRes.ssIncome, currentBalances.traditional),
+        );
 
         yrRes.withdrawn.traditional += takeTrad;
         currentBalances.traditional -= takeTrad;
@@ -226,6 +247,32 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
       }
 
       yrRes.shortfall = remainingNeed;
+
+      // 4. Roth Conversion Logic (Enhanced with Pro Auto-Optimization).
+      // Gated to retirement unless the user opts in: no wages are modeled.
+      const conversionAllowed = isRetired || inputs.allowPreRetirementConversions;
+      if (conversionAllowed && age >= inputs.rothConvStartAge && age <= inputs.rothConvEndAge && currentBalances.traditional > 0) {
+        let potentialConv = 0;
+
+        if (inputs.useAutoOptimize && isPro) {
+          // Fill the target bracket: total taxable income (other ordinary +
+          // conversion + taxable SS after the conversion) ≈ the bracket cap.
+          potentialConv = sizeConversionToCap(
+            grossBracketCap(inputs.targetBracketIndex, inflationFactor),
+            otherOrdinary, yrRes.ssIncome, currentBalances.traditional,
+          );
+        } else {
+          // Manual conversion amount
+          potentialConv = Math.min(currentBalances.traditional, inputs.rothConvAmount);
+        }
+
+        potentialConv = Math.round(potentialConv);
+        currentBalances.traditional -= potentialConv;
+        currentBalances.roth += potentialConv;
+        yrRes.conversions = potentialConv;
+        otherOrdinary += potentialConv;
+      }
+
       // Taxable portion of Social Security via the IRC §86 / Pub 915
       // worksheet (single filer), given the year's other ordinary income.
       const taxableSS = ssTaxable(yrRes.ssIncome, otherOrdinary, 0, 'single');
@@ -275,7 +322,9 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
         age: d.age,
         year: d.year,
         amount: d.conversions,
-        taxableIncome: d.taxableIncome,
+        // After the (inflation-indexed) standard deduction — what the
+        // brackets are actually applied to.
+        taxableIncome: Math.max(0, d.taxableIncome - STANDARD_DEDUCTION * (d.inflationFactor ?? 1)),
         // Marginal tax attributable to the conversion itself — the year's
         // tax with vs. without the converted amount.
         taxes: estimateTax(d.taxableIncome, d.inflationFactor ?? 1)
@@ -337,6 +386,9 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
             <h3 className="text-lg font-bold mb-4 flex items-center gap-2 border-b pb-3">
               <Calendar size={20} className="text-[var(--emerald-400)]" /> Timeline
             </h3>
+            <p className="text-[10px] text-[var(--text-muted)] mb-4 leading-relaxed">
+              Tax math uses 2026 <strong>single-filer</strong> brackets and standard deduction, indexed for inflation. Wages before retirement are not modeled. Married filers will see higher tax than they would actually owe.
+            </p>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -497,6 +549,20 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
               </div>
             )}
 
+            {/* Pre-retirement conversions (off by default: no wages modeled) */}
+            <label className="flex items-start gap-2 mt-4 text-[10px] text-[var(--text-tertiary)] cursor-pointer">
+              <input
+                type="checkbox"
+                name="allowPreRetirementConversions"
+                checked={inputs.allowPreRetirementConversions}
+                onChange={handleInputChange}
+                className="mt-0.5 accent-emerald-600"
+              />
+              <span>
+                Allow conversions before retirement age. <strong>Wages aren&apos;t modeled</strong>, so pre-retirement conversions are taxed from the bottom bracket up — real cost on top of a salary is usually much higher.
+              </span>
+            </label>
+
             {/* Conversion Window (always shown) */}
             <div className="grid grid-cols-2 gap-4 mt-4">
               <div>
@@ -561,7 +627,7 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
                       <div>
                         <div className="font-bold text-[var(--text-primary)]">Convert ${conv.amount.toLocaleString()}</div>
                         <div className="text-xs text-[var(--text-tertiary)] font-medium">
-                          Taxable income: ${Math.round(conv.taxableIncome).toLocaleString()} • Tax on this conversion: ${Math.round(conv.taxes).toLocaleString()}
+                          Taxable income (after std. deduction): ${Math.round(conv.taxableIncome).toLocaleString()} • Tax on this conversion: ${Math.round(conv.taxes).toLocaleString()}
                         </div>
                       </div>
                     </div>
@@ -640,7 +706,7 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
                 <AreaChart data={simulationResults}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E0DBDB" />
                   <XAxis dataKey="age" axisLine={false} tickLine={false} tick={{fill: '#767676', fontSize: 11}} dy={10} />
-                  <YAxis axisLine={false} tickLine={false} tick={{fill: '#767676', fontSize: 11}} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
+                  <YAxis axisLine={false} tickLine={false} tick={{fill: '#767676', fontSize: 11}} tickFormatter={formatAxisMoney} />
                   <Tooltip
                       contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}}
                       formatter={(val) => [`$${Math.round(Number(val) || 0).toLocaleString()}`, 'Balance']}
@@ -660,7 +726,7 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
                   <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={simulationResults}>
                           <XAxis dataKey="age" axisLine={false} tickLine={false} tick={{fill: '#767676', fontSize: 11}} />
-                          <YAxis axisLine={false} tickLine={false} tick={{fill: '#767676', fontSize: 11}} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
+                          <YAxis axisLine={false} tickLine={false} tick={{fill: '#767676', fontSize: 11}} tickFormatter={formatAxisMoney} />
                           <Tooltip formatter={(v) => `$${Math.round(Number(v) || 0).toLocaleString()}`} />
                           <Legend verticalAlign="top" height={36} />
                           <Bar dataKey="ssIncome" stackId="a" fill="#E0DBDB" name="Social Security" />

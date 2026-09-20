@@ -1,19 +1,20 @@
 /* =====================================================================
-   Known-answer tests for taxEngine2026.ts (40 cases).
-   Run standalone:  npx tsx lib/tax/taxEngine2026.test.ts
-   Or adapt to Vitest: replace `check(...)` with expect(got).toBeCloseTo(want).
+   Known-answer tests for taxEngine2026.ts.
+   Runs as part of `npm test` via tests/tax-engine.test.mjs (node --test).
+   Each `check(...)` registers one node:test case.
    Keep these GREEN after any change to the engine.
    ===================================================================== */
+import { test } from "node:test";
+import assert from "node:assert/strict";
 import {
   C, bracketTax, ssTaxable, qbiDeduction, capGainsTax, niitTax, irmaa, acaPTC, acaApplicablePct, compute,
 } from "./taxEngine2026";
 
-let pass = 0, fail = 0;
 const near = (a: number, b: number, t = 0.5) => Math.abs(a - b) <= t;
 function check(name: string, got: number, want: number, t = 0.5) {
-  const ok = near(got, want, t);
-  console.log(`${ok ? "PASS" : "FAIL"}  ${name}  got=${(+got).toFixed(2)} want=${(+want).toFixed(2)}`);
-  ok ? pass++ : fail++;
+  test(name, () => {
+    assert.ok(near(got, want, t), `${name}: got=${(+got).toFixed(2)} want=${(+want).toFixed(2)}`);
+  });
 }
 
 // 1-2 ordinary brackets
@@ -127,6 +128,12 @@ check("ACA 140% FPL applicable%", acaApplicablePct(140), 3.14 + (4.19 - 3.14) * 
 check("addl Medicare with NIIT off",
   compute({ status:"single", wages:300000, useStandard:true, includeNIIT:false }).addlMedicare, 900);
 
-console.log(`\n${pass} passed, ${fail} failed`);
-const g = globalThis as unknown as { process?: { exit: (n: number) => void } };
-if (g.process) g.process.exit(fail ? 1 : 0);
+// 41 NIIT MAGI is AGI — tax-exempt muni interest is NOT added back (§1411(d))
+check("NIIT ignores muni interest",
+  compute({ status:"single", wages:190000, longTermGains:20000, taxExemptInterest:50000, useStandard:true, includeNIIT:true }).niit, 380);
+
+// 42-43 QBI thresholds match the 32% bracket starts (Rev. Proc. 2025-32)
+check("QBI thresh mfj", C.qbiThresh.mfj, C.ordinary.mfj[4][0], 0);
+check("QBI thresh mfs", C.qbiThresh.mfs, C.ordinary.mfs[4][0], 0);
+check("QBI mfj just under thresh — full 20%",
+  qbiDeduction({ qbi:100000, taxableBeforeQBI:403550, netCapGains:0, w2wages:0, status:"mfj" }), 20000);

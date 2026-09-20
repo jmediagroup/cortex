@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Bookmark, Check, Crown, Trash2, Loader2, Share2, Copy, Link as LinkIcon } from 'lucide-react';
 import { useScenarios, type Scenario } from '@/lib/useScenarios';
 import { createBrowserClient } from '@/lib/supabase/client';
@@ -29,6 +29,19 @@ export default function SaveScenarioButton({
     saveScenario,
     deleteScenario,
   } = useScenarios(toolId, toolName);
+
+  // `freeLimitReached` read inside handleSave is the value from the render
+  // that created the closure — stale by the time saveScenario resolves, so
+  // the upsell used to appear only on the second click. Watch the hook's
+  // state instead and open the upsell when it flips true.
+  const upsellShownFor = useRef(false);
+  useEffect(() => {
+    if (freeLimitReached && !upsellShownFor.current) {
+      upsellShownFor.current = true;
+      setShowUpsell(true);
+    }
+    if (!freeLimitReached) upsellShownFor.current = false;
+  }, [freeLimitReached]);
 
   const [justSaved, setJustSaved] = useState(false);
   const [lastSavedId, setLastSavedId] = useState<string | null>(null);
@@ -59,14 +72,11 @@ export default function SaveScenarioButton({
 
     if (success) {
       setJustSaved(true);
-      // Get the latest scenario ID (just saved, so it's first in the list after state updates)
-      // We read it from scenarios after the next render via a small delay
       setTimeout(() => {
         setJustSaved(false);
       }, 2000);
-    } else if (freeLimitReached) {
-      setShowUpsell(true);
     }
+    // The free-limit upsell is driven by the effect on `freeLimitReached`.
   };
 
   // Track last saved scenario: the most recent one for this tool

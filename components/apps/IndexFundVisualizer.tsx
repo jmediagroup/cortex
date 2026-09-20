@@ -135,13 +135,19 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
       return x - Math.floor(x);
     };
 
-    // Normal Distribution helper for Volatility (Box-Muller transform)
+    // Normal Distribution helper for Volatility (Box-Muller transform).
+    // Returns are drawn as log-normal factors with mean log-return ln(1+CAGR):
+    // a CAGR is a geometric mean, so this makes the *median* compounded path
+    // track the steady CAGR path. Using the CAGR as the arithmetic mean of
+    // monthly returns (the previous model) left the typical outcome ≈σ²/2 per
+    // month below the steady line.
     const getRandomReturn = (baseMonthlyReturn: number, annualVol: number, index: number) => {
       const u1 = Math.max(seededRandom(index * 2), 1e-10);
       const u2 = seededRandom(index * 2 + 1);
       const z = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
       const monthlyVol = (annualVol / 100) / Math.sqrt(12);
-      return baseMonthlyReturn + z * monthlyVol;
+      const logMean = Math.log(1 + baseMonthlyReturn);
+      return Math.exp(logMean + z * monthlyVol) - 1;
     };
 
     data.push({
@@ -245,7 +251,11 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
       return x - Math.floor(x);
     };
 
-    const NUM_PATHS = 200;
+    // Log-normal monthly returns calibrated so the median path tracks the CAGR
+    // (mean log-return = ln(1+r), CAGR being a geometric mean), matching the
+    // main chart's model.
+    const logMean = Math.log(1 + monthlyReturn);
+    const NUM_PATHS = 2000;
     const finals: number[] = [];
     for (let p = 0; p < NUM_PATHS; p++) {
       let bal = principal;
@@ -254,8 +264,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
         const u1 = Math.max(rand(idx * 2), 1e-10);
         const u2 = rand(idx * 2 + 1);
         const z = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
-        bal = (bal + monthlyContrib) * (1 + monthlyReturn + z * monthlyVol);
-        if (bal < 0) bal = 0;
+        bal = (bal + monthlyContrib) * Math.exp(logMean + z * monthlyVol);
       }
       finals.push(bal);
     }

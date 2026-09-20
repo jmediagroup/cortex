@@ -8,6 +8,7 @@ import {
   TrendingUp, Home, Calculator, Settings2, Info, AlertTriangle, ShieldCheck, Landmark, Lock, Zap, MapPin, Repeat, DollarSign
 } from 'lucide-react';
 import SaveScenarioButton from './SaveScenarioButton';
+import { formatAxisMoney } from '@/lib/format-axis';
 import Tooltip from '@/components/ui/Tooltip';
 import NumberInput from '@/components/ui/NumberInput';
 import ProUpsellCard from '@/components/monetization/ProUpsellCard';
@@ -166,6 +167,8 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
       // Sample data for blurred preview
       return {
         moves: {
+          purchases: 3,
+          sales: 2,
           transactionCosts: 72000,
           singleHomeTransactionCost: 36000,
           extraFriction: 36000
@@ -185,33 +188,43 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
     }
 
     // Scenario 1: 3-Move Lifecycle (Starter → Family Home → Downsize)
+    // Only the purchases/sales that happen inside the chosen horizon count, so the
+    // friction figure is comparable to the `years`-horizon net-worth comparison.
     const threeMoveSim = () => {
-      // Move 1: Starter home (years 0-7)
-      const starter = { price: purchasePrice * 0.7, years: 7, rent: monthlyRent * 0.8 };
-      // Move 2: Family home (years 7-22)
-      const family = { price: purchasePrice, years: 15, rent: monthlyRent };
-      // Move 3: Downsize (years 22-30)
-      const downsize = { price: purchasePrice * 0.6, years: 8, rent: monthlyRent * 0.7 };
+      const stages = [
+        // Move 1: Starter home (years 0-7)
+        { price: purchasePrice * 0.7, start: 0, end: 7 },
+        // Move 2: Family home (years 7-22)
+        { price: purchasePrice, start: 7, end: 22 },
+        // Move 3: Downsize (years 22-30) — never sold within the model
+        { price: purchasePrice * 0.6, start: 22, end: Infinity },
+      ];
+      const bought = stages.filter(st => st.start < years);
+      const sold = stages.filter(st => st.end <= years);
 
       // Simplified calculation: transaction costs eat wealth.
-      // 3 purchases, but only 2 sales — the downsize home isn't sold.
       const transactionCosts =
-        (starter.price + family.price + downsize.price) * (buyingCosts / 100) +
-        (starter.price + family.price) * (sellingCosts / 100);
+        bought.reduce((sum, st) => sum + st.price, 0) * (buyingCosts / 100) +
+        sold.reduce((sum, st) => sum + st.price, 0) * (sellingCosts / 100);
       const singleHomeTransactionCost = purchasePrice * (buyingCosts + sellingCosts) / 100;
 
       return {
+        purchases: bought.length,
+        sales: sold.length,
         transactionCosts,
         singleHomeTransactionCost,
-        extraFriction: transactionCosts - singleHomeTransactionCost
+        extraFriction: Math.max(0, transactionCosts - singleHomeTransactionCost)
       };
     };
 
     const moves = threeMoveSim();
 
     // Scenario 2: Market Timing (illustrative ±25% swing, not a historical guarantee)
-    const bestCase = currentYearData.buyNetWorth * 1.25; // +25% if bought at bottom
-    const worstCase = currentYearData.buyNetWorth * 0.75; // -25% if bought at peak
+    // Apply the swing to the home's value (net of selling costs), not to net worth,
+    // so best > worst even when the buyer's net worth is negative at this horizon.
+    const homeEquitySwing = currentYearData.homeValue * 0.25 * (1 - sellingCosts / 100);
+    const bestCase = currentYearData.buyNetWorth + homeEquitySwing; // bought at bottom → home worth 25% more
+    const worstCase = currentYearData.buyNetWorth - homeEquitySwing; // bought at peak → home worth 25% less
     const marketTimingRisk = bestCase - worstCase;
 
     // Scenario 3: Hidden Drag Calculator
@@ -250,7 +263,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
       mobilityPremium,
       mobilityAdjustedRentNW
     };
-  }, [isPro, purchasePrice, monthlyRent, years, currentYearData, buyingCosts, sellingCosts, maintenanceRate, propertyTax, appreciationRate]);
+  }, [isPro, purchasePrice, years, currentYearData, buyingCosts, sellingCosts, maintenanceRate, propertyTax, appreciationRate]);
 
   return (
     <div className="space-y-8">
@@ -444,7 +457,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                     axisLine={false}
                     tickLine={false}
                     tick={{fill: '#767676', fontSize: 12}}
-                    tickFormatter={(val) => `$${val/1000}k`}
+                    tickFormatter={formatAxisMoney}
                   />
                   <ChartTooltip
                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
@@ -596,7 +609,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                     <p className="text-white/85 text-sm font-bold mb-2">Total Transaction Friction</p>
                     <p className="text-4xl font-bold">{formatCurrency(lifecycleAnalysis.moves.transactionCosts)}</p>
                     <p className="text-white/85 text-xs font-medium mt-2">
-                      Closing costs + realtor fees across 3 purchases and 2 sales
+                      Closing costs + realtor fees across {lifecycleAnalysis.moves.purchases} purchase{lifecycleAnalysis.moves.purchases === 1 ? '' : 's'} and {lifecycleAnalysis.moves.sales} sale{lifecycleAnalysis.moves.sales === 1 ? '' : 's'} within your {years}-year horizon
                     </p>
                   </div>
                   <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
@@ -613,8 +626,8 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
               <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">MUTANT INSIGHT</p>
               <p className="font-medium text-white">
                 {winner === 'Rent'
-                  ? <>Over 3 expected moves, renting preserves {formatCurrency(lifecycleAnalysis.moves.extraFriction + nwDiff)} more wealth due to transaction costs and mobility value—even with "wasted" rent.</>
-                  : <>In your scenario, buying builds {formatCurrency(nwDiff)} more wealth despite transaction costs—but {formatCurrency(lifecycleAnalysis.moves.extraFriction)} of extra friction across 3 moves would eat into that lead.</>}
+                  ? <>Over {lifecycleAnalysis.moves.purchases} expected move{lifecycleAnalysis.moves.purchases === 1 ? '' : 's'} in {years} years, renting preserves {formatCurrency(lifecycleAnalysis.moves.extraFriction + nwDiff)} more wealth due to transaction costs and mobility value—even with "wasted" rent.</>
+                  : <>In your scenario, buying builds {formatCurrency(nwDiff)} more wealth despite transaction costs—but {formatCurrency(lifecycleAnalysis.moves.extraFriction)} of extra friction across {lifecycleAnalysis.moves.purchases} move{lifecycleAnalysis.moves.purchases === 1 ? '' : 's'} in {years} years would eat into that lead.</>}
               </p>
             </div>
           </div>

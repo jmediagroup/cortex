@@ -22,6 +22,7 @@ import {
   Repeat
 } from 'lucide-react';
 import SaveScenarioButton from './SaveScenarioButton';
+import { formatAxisMoney } from '@/lib/format-axis';
 import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 import ProGatedPreview from '@/components/monetization/ProGatedPreview';
 import NumberInput from '@/components/ui/NumberInput';
@@ -53,13 +54,18 @@ interface SimulationResult {
   paidOff: boolean;
 }
 
+// Long-term capital gains haircut used by the tax-adjusted comparison.
+const CAPITAL_GAINS_TAX = 0.15;
+
 const COLORS = ['#1D8072', '#1D8072', '#F26531', '#CD2026', '#FEBF14', '#FEBF14', '#1D8072', '#4EC9F5'];
 
 export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = false, initialValues }: DebtPaydownOptimizerProps) {
   const [debts, setDebts] = useState<Debt[]>([
-    { id: 1, name: 'Credit Card A', balance: 5000, rate: 24.99, minPayment: 150, isTaxDeductible: false },
-    { id: 2, name: 'Student Loan', balance: 15000, rate: 4.5, minPayment: 200, isTaxDeductible: true },
-    { id: 3, name: 'Auto Loan', balance: 8000, rate: 6.5, minPayment: 350, isTaxDeductible: false },
+    // Balance order and rate order deliberately differ so avalanche, snowball and
+    // hybrid produce distinct payoff schedules with the defaults.
+    { id: 1, name: 'Credit Card A', balance: 8000, rate: 24.99, minPayment: 240, isTaxDeductible: false },
+    { id: 2, name: 'Student Loan', balance: 18000, rate: 5.5, minPayment: 200, isTaxDeductible: true },
+    { id: 3, name: 'Personal Loan', balance: 3000, rate: 9.5, minPayment: 120, isTaxDeductible: false },
   ]);
 
   const [monthlyBudget, setMonthlyBudget] = useState(1200);
@@ -152,13 +158,20 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
       } else if (strategyType === 'snowball') {
         sorted.sort((a, b) => a.currentBalance - b.currentBalance);
       } else if (strategyType === 'hybrid') {
-        // Hybrid: Weighs interest rate and balance based on psychologicalWeight
-        // High rate = good for math. Low balance = good for momentum.
-        sorted.sort((a, b) => {
-          const scoreA = (a.rate * (100 - psychologicalWeight)) + ((1/a.currentBalance) * psychologicalWeight * 100000);
-          const scoreB = (b.rate * (100 - psychologicalWeight)) + ((1/b.currentBalance) * psychologicalWeight * 100000);
-          return scoreB - scoreA; // highest priority (high rate / small balance) first
-        });
+        // Hybrid: weighs interest rate against balance based on psychologicalWeight.
+        // Both components are min-max normalized to 0..1 across the open debts so
+        // the slider blends two comparable scores instead of raw %-points vs 1/$.
+        const rates = sorted.map(d => d.effectiveRate);
+        const bals = sorted.map(d => d.currentBalance);
+        const minR = Math.min(...rates), maxR = Math.max(...rates);
+        const minB = Math.min(...bals), maxB = Math.max(...bals);
+        const w = psychologicalWeight / 100;
+        const score = (d: typeof sorted[number]) => {
+          const rateScore = maxR > minR ? (d.effectiveRate - minR) / (maxR - minR) : 0.5; // high rate → 1
+          const balScore = maxB > minB ? (maxB - d.currentBalance) / (maxB - minB) : 0.5; // small balance → 1
+          return rateScore * (1 - w) + balScore * w;
+        };
+        sorted.sort((a, b) => score(b) - score(a)); // highest priority (high rate / small balance) first
       }
 
       for (let d of sorted) {
@@ -205,6 +218,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
       // Sample data for blurred preview
       return {
         investmentValue: 48000,
+        investmentValueAtRetirement: 96000,
         remainingDebtValue: 12000,
         netInvestStrategy: 36000,
         opportunityCostGap: 36000,
@@ -226,26 +240,41 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
     const totalMinPayments = debts.reduce((sum, d) => sum + d.minPayment, 0);
     const investableAmount = Math.max(0, monthlyBudget - totalMinPayments);
 
-    // Simulate investing the extra cash instead of aggressive paydown
-    const monthlyRate = (investmentRate / 100) / 12;
+    // Simulate investing the extra cash instead of aggressive paydown, at the
+    // after-tax return the "Tax-Adjusted Reality" card advertises (15% cap gains).
+    const afterTaxInvestmentRate = investmentRate * (1 - CAPITAL_GAINS_TAX);
+    const monthlyRate = (afterTaxInvestmentRate / 100) / 12;
     let investmentValue = 0;
     const paydownMonths = results.avalanche.months;
 
+    // Debts amortize at their minimums month by month; once a debt is gone its
+    // minimum is freed and rolls into the investment contribution, matching the
+    // cash-flow logic of the paydown simulation.
+    const minOnlyBalances = debts.map(d => d.balance);
     for (let i = 0; i < paydownMonths; i++) {
-      investmentValue = (investmentValue + investableAmount) * (1 + monthlyRate);
+      let freedMinimums = 0;
+      debts.forEach((d, idx) => {
+        if (minOnlyBalances[idx] <= 0) {
+          freedMinimums += d.minPayment;
+          return;
+        }
+        let balance = minOnlyBalances[idx] + (minOnlyBalances[idx] * (d.rate / 100)) / 12;
+        const payment = Math.min(balance, d.minPayment);
+        balance -= payment;
+        freedMinimums += d.minPayment - payment;
+        minOnlyBalances[idx] = balance;
+      });
+      investmentValue = (investmentValue + investableAmount + freedMinimums) * (1 + monthlyRate);
     }
+    const remainingDebtValue = minOnlyBalances.reduce((sum, b) => sum + Math.max(0, b), 0);
 
-    // Remaining debt after paying minimums only: real month-by-month
-    // amortization of each debt at its minimum payment over the same horizon
-    let remainingDebtValue = 0;
-    debts.forEach(d => {
-      let balance = d.balance;
-      for (let m = 0; m < paydownMonths && balance > 0; m++) {
-        balance += (balance * (d.rate / 100)) / 12;
-        balance -= Math.min(balance, d.minPayment);
-      }
-      remainingDebtValue += Math.max(0, balance);
-    });
+    // Continue the same surplus contribution from debt-freedom until age 65 (the
+    // life-stage copy's stated horizon) at the same after-tax rate.
+    const monthsToRetirement = age != null ? Math.max(0, (65 - age) * 12) : 0;
+    let investmentValueAtRetirement = investmentValue;
+    for (let i = paydownMonths; i < monthsToRetirement; i++) {
+      investmentValueAtRetirement = (investmentValueAtRetirement + investableAmount) * (1 + monthlyRate);
+    }
 
     const netInvestStrategy = investmentValue - remainingDebtValue;
     const netPaydownStrategy = 0; // All debt paid, but no investments
@@ -299,6 +328,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
 
     return {
       investmentValue,
+      investmentValueAtRetirement,
       remainingDebtValue,
       netInvestStrategy,
       opportunityCostGap,
@@ -312,7 +342,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
       lowRateDebts: lowRateDebts.length,
       highRateDebts2: highRateDebts2.length
     };
-  }, [isPro, debts, monthlyBudget, monthlyIncome, investmentRate, results, taxRate]);
+  }, [isPro, debts, monthlyBudget, monthlyIncome, investmentRate, results, taxRate, age]);
 
   return (
     <div className="space-y-8">
@@ -549,6 +579,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
             <h3 className="text-lg font-semibold mb-6 flex items-center gap-2">
               <TrendingDown className="w-5 h-5 text-[var(--emerald-400)]" />
               Balance Paydown Timeline
+              <span className="text-xs font-medium text-[var(--text-tertiary)] ml-auto">Avalanche strategy</span>
             </h3>
             <div className="h-72 w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -561,7 +592,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                   />
                   <YAxis
                     tick={{fontSize: 12}}
-                    tickFormatter={(value) => `$${value/1000}k`}
+                    tickFormatter={formatAxisMoney}
                   />
                   <Tooltip
                     formatter={(val: number) => `$${Math.round(val).toLocaleString()}`}
@@ -725,7 +756,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                         <h5 className="font-bold mb-3">Early-Career Opportunity Cost</h5>
                         <p className="text-white/85 text-sm font-medium leading-relaxed">
                           {debts.filter(d => d.rate < investmentRate).length > 0 ? (
-                            <>You have {debts.filter(d => d.rate < investmentRate).length} debt(s) with rates below {investmentRate}%. Every dollar of extra payment on these debts costs you decades of compound growth. With {results.avalanche.months} months to debt-freedom, investing your ${monthlyBudget - debts.reduce((s, d) => s + d.minPayment, 0)}/month surplus could become ${(opportunityAnalysis.investmentValue * 2).toLocaleString()} by retirement (age 65). Don't sacrifice 30+ years of market returns to rush debt payoff.</>
+                            <>You have {debts.filter(d => d.rate < investmentRate).length} debt(s) with rates below {investmentRate}%. Every dollar of extra payment on these debts costs you decades of compound growth. With {results.avalanche.months} months to debt-freedom, investing your ${monthlyBudget - debts.reduce((s, d) => s + d.minPayment, 0)}/month surplus could become ${Math.round(opportunityAnalysis.investmentValueAtRetirement).toLocaleString()} by retirement (age 65, at {(investmentRate * (1 - CAPITAL_GAINS_TAX)).toFixed(1)}% after tax). Don't sacrifice 30+ years of market returns to rush debt payoff.</>
                           ) : (
                             <>Your debts all exceed {investmentRate}% returns. At your age, eliminating these high-cost debts creates a guaranteed return better than the market. Clear your ${debts.filter(d => d.rate >= investmentRate).map(d => `${d.name} (${d.rate.toFixed(1)}%)`).join(', ')} aggressively, then redirect that ${monthlyBudget}/month into index funds for maximum compound growth over your {65 - age} working years remaining.</>
                           )}
@@ -744,7 +775,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                           {debts.filter(d => d.rate >= investmentRate).length > 0 && debts.filter(d => d.rate < investmentRate).length > 0 ? (
                             <>Your debt portfolio splits perfectly for a hybrid approach: crush your {debts.filter(d => d.rate >= investmentRate).map(d => `${d.name} ($${d.balance.toLocaleString()} at ${d.rate.toFixed(1)}%)`).join(' and ')} with aggressive payments while paying minimums on your {debts.filter(d => d.rate < investmentRate).map(d => d.name).join(' and ')}. This captures both debt-freedom momentum AND compound growth over your {65 - age} years until retirement. Your current ${monthlyBudget}/month strategy hits debt-free in {results.hybrid.months} months.</>
                           ) : debts.filter(d => d.rate >= investmentRate).length > 0 ? (
-                            <>All your debts exceed market returns. Focus on aggressive payoff of your ${debts[0].name} (highest balance: $${debts.reduce((max, d) => d.balance > max.balance ? d : max, debts[0]).balance.toLocaleString()}) first. At your career stage, eliminating debt creates financial flexibility for life changes while still leaving {65 - age} years for retirement investing after payoff.</>
+                            <>All your debts exceed market returns. Focus on aggressive payoff of your {debts.reduce((max, d) => d.balance > max.balance ? d : max, debts[0]).name} (highest balance: ${debts.reduce((max, d) => d.balance > max.balance ? d : max, debts[0]).balance.toLocaleString()}) first. At your career stage, eliminating debt creates financial flexibility for life changes while still leaving {65 - age} years for retirement investing after payoff.</>
                           ) : (
                             <>All your debts are below {investmentRate}% returns. At age {age}, you have {65 - age} years until traditional retirement. Paying minimums and investing the ${monthlyBudget - debts.reduce((s, d) => s + d.minPayment, 0)}/month difference captures market growth while maintaining liquidity for career moves, home upgrades, or family needs.</>
                           )}
@@ -763,7 +794,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                           {results.avalanche.months < (65 - age) * 12 ? (
                             <>Your current ${monthlyBudget}/month budget eliminates all debt in {results.avalanche.months} months (age {age + Math.floor(results.avalanche.months / 12)}). This gets you debt-free before retirement with {(65 - age) * 12 - results.avalanche.months} months to shift focus entirely to retirement savings. Priority: clear your ${debts.reduce((max, d) => d.rate > max.rate ? d : max, debts[0]).name} at ${debts.reduce((max, d) => d.rate > max.rate ? d : max, debts[0]).rate.toFixed(1)}% first—this ${debts.reduce((max, d) => d.rate > max.rate ? d : max, debts[0]).balance.toLocaleString()} balance costs you ${((debts.reduce((max, d) => d.rate > max.rate ? d : max, debts[0]).balance * debts.reduce((max, d) => d.rate > max.rate ? d : max, debts[0]).rate / 100) / 12).toFixed(0)}/month in interest you can't afford on fixed retirement income.</>
                           ) : (
-                            <>Your timeline to debt-freedom ({results.avalanche.months} months) extends past age 65. You need to increase your paydown budget or accept carrying your ${debts.filter(d => d.rate < 5).map(d => d.name).join(' and ')} into retirement. If increasing payments isn't possible, focus ruthlessly on eliminating your ${debts.filter(d => d.rate >= 8).length} high-rate debt(s) before retirement, then refinance or manage the low-rate remainder with pension/Social Security income.</>
+                            <>Your timeline to debt-freedom ({results.avalanche.months} months) extends past age 65. You need to increase your paydown budget or accept carrying {debts.filter(d => d.rate < 5).length > 0 ? `your ${debts.filter(d => d.rate < 5).map(d => d.name).join(' and ')}` : 'some of this debt'} into retirement. If increasing payments isn't possible, focus ruthlessly on eliminating your ${debts.filter(d => d.rate >= 8).length} high-rate debt(s) before retirement, then refinance or manage the low-rate remainder with pension/Social Security income.</>
                           )}
                         </p>
                       </div>
@@ -789,7 +820,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                   <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                     <p className="text-[var(--mist-100)] text-sm font-bold mb-2">Strategy A: Aggressive Paydown</p>
                     <p className="text-4xl font-bold mb-2">$0</p>
-                    <p className="text-[var(--mist-100)] text-xs font-medium">Debt-free but no investments after {results.avalanche.months} months</p>
+                    <p className="text-[var(--mist-100)] text-xs font-medium">{results.avalanche.paidOff ? `Debt-free but no investments after ${results.avalanche.months} months` : 'Not debt-free within 30 years at this budget'}</p>
                   </div>
                   <div className="bg-[var(--bg-card)]/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                     <p className="text-[var(--mist-100)] text-sm font-bold mb-2">Strategy B: Min Payments + Invest</p>
@@ -851,7 +882,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                   </div>
                   <div className="flex items-center justify-between p-4 bg-[var(--bg-section)] rounded-xl">
                     <span className="font-bold text-[var(--text-secondary)]">Investment Return (after 15% cap gains)</span>
-                    <span className="font-bold text-[var(--text-primary)] text-xl">{(investmentRate * 0.85).toFixed(1)}%</span>
+                    <span className="font-bold text-[var(--text-primary)] text-xl">{(investmentRate * (1 - CAPITAL_GAINS_TAX)).toFixed(1)}%</span>
                   </div>
                   <div className="flex items-center justify-between p-4 bg-[var(--emerald-50)] rounded-xl border border-[var(--emerald-border-soft)]">
                     <span className="font-bold text-[var(--text-secondary)]">Effective Debt Cost (after tax deduction)</span>
@@ -1020,7 +1051,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                   <div className="bg-[var(--emerald-50)] rounded-2xl p-6 border border-[var(--emerald-border-soft)]">
                     <p className="text-[var(--emerald-500)] text-sm font-bold mb-2">Months to Target</p>
                     <p className="text-4xl font-bold text-[var(--text-primary)]">{opportunityAnalysis.monthsToTargetDTI}</p>
-                    <p className="text-[var(--text-tertiary)] text-xs mt-2">Following hybrid strategy</p>
+                    <p className="text-[var(--text-tertiary)] text-xs mt-2">Following avalanche strategy</p>
                   </div>
                 </div>
               </div>

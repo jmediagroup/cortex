@@ -17,6 +17,8 @@ import { WHY_QUESTIONS, type WhyAnswers } from './questions';
 const MODEL = 'claude-sonnet-5';
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
 const ANTHROPIC_VERSION = '2023-06-01';
+/** Abort the upstream call if it hasn't answered in this long. */
+const REQUEST_TIMEOUT_MS = 25_000;
 
 /** One interpretive theme the model surfaced from the answers. */
 export interface WhySummaryTheme {
@@ -131,10 +133,14 @@ export async function synthesizeWhy(answers: WhyAnswers): Promise<WhySummary> {
     throw new SynthesisError('AI synthesis is not configured.', 500);
   }
 
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
   let res: Response;
   try {
     res = await fetch(ANTHROPIC_API_URL, {
       method: 'POST',
+      signal: controller.signal,
       headers: {
         'x-api-key': apiKey,
         'anthropic-version': ANTHROPIC_VERSION,
@@ -160,8 +166,14 @@ export async function synthesizeWhy(answers: WhyAnswers): Promise<WhySummary> {
         ],
       }),
     });
-  } catch {
+  } catch (err) {
+    clearTimeout(timer);
+    if (err instanceof Error && err.name === 'AbortError') {
+      throw new SynthesisError('The synthesis service took too long to respond. Please try again.', 504);
+    }
     throw new SynthesisError('Could not reach the synthesis service.', 502);
+  } finally {
+    clearTimeout(timer);
   }
 
   if (!res.ok) {
@@ -197,6 +209,14 @@ export async function synthesizeWhy(answers: WhyAnswers): Promise<WhySummary> {
 
   if (data.stop_reason === 'refusal') {
     throw new SynthesisError('The reflection could not be generated.', 422);
+  }
+  if (data.stop_reason === 'max_tokens') {
+    // The JSON is cut off mid-document; parsing would fail with a generic
+    // 502. Name the real cause so it can be fixed (raise max_tokens).
+    throw new SynthesisError(
+      'The reflection was cut off before it finished (output limit reached). Please try again with shorter answers.',
+      502,
+    );
   }
 
   const text = data.content?.find((b) => b.type === 'text')?.text;

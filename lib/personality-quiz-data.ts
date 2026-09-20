@@ -263,7 +263,7 @@ export const QUESTIONS: QuizQuestion[] = [
       {
         id: 'q3-d',
         label: '"High conviction + concentrated positions = real wealth."',
-        points: { visionary: 2 },
+        points: { visionary: 2, tactician: 1 },
       },
     ],
   },
@@ -275,7 +275,7 @@ export const QUESTIONS: QuizQuestion[] = [
       {
         id: 'q4-a',
         label: "Annual rebalancing review — I don’t need to watch daily.",
-        points: { accumulator: 2 },
+        points: { accumulator: 2, steward: 1 },
       },
       {
         id: 'q4-b',
@@ -302,12 +302,12 @@ export const QUESTIONS: QuizQuestion[] = [
       {
         id: 'q5-a',
         label: 'Permanent loss of capital — everything else is just volatility.',
-        points: { accumulator: 2, steward: 1 },
+        points: { steward: 2, accumulator: 1 },
       },
       {
         id: 'q5-b',
         label: 'Underperformance relative to a risk-adjusted benchmark.',
-        points: { optimizer: 2 },
+        points: { optimizer: 2, tactician: 1 },
       },
       {
         id: 'q5-c',
@@ -329,7 +329,7 @@ export const QUESTIONS: QuizQuestion[] = [
       {
         id: 'q6-a',
         label: 'Monthly or quarterly — checking more often just creates noise.',
-        points: { accumulator: 2 },
+        points: { accumulator: 2, steward: 1 },
       },
       {
         id: 'q6-b',
@@ -344,7 +344,7 @@ export const QUESTIONS: QuizQuestion[] = [
       {
         id: 'q6-d',
         label: 'Only when something major happens in the market.',
-        points: { fortress: 2 },
+        points: { fortress: 2, steward: 1 },
       },
     ],
   },
@@ -371,7 +371,7 @@ export const QUESTIONS: QuizQuestion[] = [
       {
         id: 'q7-d',
         label: 'Identifying the next major opportunity before the crowd.',
-        points: { visionary: 2 },
+        points: { visionary: 2, tactician: 1 },
       },
     ],
   },
@@ -383,7 +383,7 @@ export const QUESTIONS: QuizQuestion[] = [
       {
         id: 'q8-a',
         label: 'Warren Buffett — patient, long-term, compounding quietly.',
-        points: { accumulator: 2 },
+        points: { accumulator: 2, steward: 1 },
       },
       {
         id: 'q8-b',
@@ -398,7 +398,7 @@ export const QUESTIONS: QuizQuestion[] = [
       {
         id: 'q8-d',
         label: 'Cathie Wood or Peter Lynch — concentrated, high-conviction, growth.',
-        points: { visionary: 2 },
+        points: { visionary: 2, tactician: 1 },
       },
     ],
   },
@@ -420,7 +420,7 @@ export const QUESTIONS: QuizQuestion[] = [
       {
         id: 'q9-c',
         label: 'Security — knowing my family is protected no matter what.',
-        points: { fortress: 2, steward: 1 },
+        points: { steward: 2, fortress: 1 },
       },
       {
         id: 'q9-d',
@@ -438,7 +438,7 @@ export const QUESTIONS: QuizQuestion[] = [
       {
         id: 'q10-a',
         label: "Genuinely happy for them — I’m focused on my own plan.",
-        points: { accumulator: 2 },
+        points: { accumulator: 2, steward: 1 },
       },
       {
         id: 'q10-b',

@@ -91,7 +91,7 @@ export const CALCULATOR_CONTENT: Record<string, CalculatorContent> = {
       },
       {
         question: 'When do Required Minimum Distributions (RMDs) start?',
-        answer: 'As of 2024, RMDs from traditional IRAs and 401(k)s must begin at age 73 (increasing to 75 in 2033 under SECURE 2.0). Roth IRAs do not have RMDs during the owner\'s lifetime. Failing to take an RMD results in a 25% penalty on the amount not withdrawn.',
+        answer: 'As of 2026, RMDs from traditional IRAs and 401(k)s must begin at age 73 (increasing to 75 in 2033 under SECURE 2.0). Roth IRAs do not have RMDs during the owner\'s lifetime. Failing to take an RMD results in a 25% penalty on the amount not withdrawn.',
       },
       {
         question: 'Should I do a Roth conversion?',
@@ -297,13 +297,13 @@ export const CALCULATOR_CONTENT: Record<string, CalculatorContent> = {
     name: 'S-Corp Retirement Contribution Calculator',
     shortName: 'S-Corp Retirement',
     description: 'Maximize retirement savings through S-Corp contributions including employee deferrals and profit sharing.',
-    intro: 'The S-Corp Retirement Contribution Calculator helps S-Corp owners maximize their tax-advantaged retirement savings. It models employee deferrals (up to $23,000 in 2024, plus $7,500 catch-up for 50+), employer profit-sharing contributions (up to 25% of W-2 salary), and the combined limits under IRS Section 415. This tool is essential for S-Corp owners who want to shelter the maximum amount from taxes while building retirement wealth.',
+    intro: 'The S-Corp Retirement Contribution Calculator helps S-Corp owners maximize their tax-advantaged retirement savings. It models employee deferrals (up to $24,500 in 2026, plus $8,000 catch-up for 50+), employer profit-sharing contributions (up to 25% of W-2 salary), and the combined limits under IRS Section 415. This tool is essential for S-Corp owners who want to shelter the maximum amount from taxes while building retirement wealth.',
     category: 'FinanceApplication',
     features: ['401(k) deferral calculation', 'Profit sharing optimization', 'Catch-up contribution modeling', 'IRS Section 415 limit tracking'],
     faqs: [
       {
         question: 'How much can an S-Corp owner contribute to a 401(k)?',
-        answer: 'For 2024, an S-Corp owner can contribute up to $23,000 as an employee deferral ($30,500 if age 50+) plus up to 25% of W-2 salary as an employer profit-sharing contribution. The total combined limit is $69,000 ($76,500 with catch-up). This means an S-Corp owner with a $140,000 salary could contribute up to $58,000.',
+        answer: 'For 2026, an S-Corp owner can contribute up to $24,500 as an employee deferral ($32,500 if age 50+) plus up to 25% of W-2 salary as an employer profit-sharing contribution. The total combined limit is $72,000 ($80,000 with catch-up). This means an S-Corp owner with a $140,000 salary could contribute up to $59,500.',
       },
       {
         question: 'What is employer profit sharing in an S-Corp?',

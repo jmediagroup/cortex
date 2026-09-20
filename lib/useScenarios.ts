@@ -84,21 +84,19 @@ export function useScenarios(toolId: string, toolName: string): UseScenariosRetu
         body: JSON.stringify({ tool_id: toolId, tool_name: toolName, inputs, key_result: keyResult }),
       });
 
-      if (res.status === 403) {
-        const data = await res.json();
-        if (data.error === 'FREE_LIMIT_REACHED') {
-          setFreeLimitReached(true);
-          return false;
-        }
-      }
+      // Parse the body once — a response body can only be read a single time.
+      const data = await res.json().catch(() => ({}));
 
-      if (!res.ok) {
-        const data = await res.json();
-        setError(data.error || 'Failed to save scenario.');
+      if (res.status === 403 && data.error === 'FREE_LIMIT_REACHED') {
+        setFreeLimitReached(true);
         return false;
       }
 
-      const data = await res.json();
+      if (!res.ok) {
+        setError(data.message || data.error || 'Failed to save scenario.');
+        return false;
+      }
+
       setScenarios(prev => [data.scenario, ...prev]);
       return true;
     } catch {

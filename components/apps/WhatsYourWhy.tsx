@@ -7,6 +7,10 @@ import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 import { WHY_QUESTIONS } from '@/lib/why/questions';
 import type { WhySummary } from '@/lib/why/synthesis';
 
+// Mirrors MAX_ANSWER_CHARS in app/api/why/route.ts — the server truncates
+// anything longer, so cap (and count) in the UI rather than silently losing text.
+const MAX_ANSWER_CHARS = 1500;
+
 type Stage = 'intro' | 'reflect' | 'loading' | 'result' | 'error';
 
 interface Props {
@@ -232,12 +236,19 @@ function ReflectPanel({
       <textarea
         className="why-textarea"
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => onChange(e.target.value.slice(0, MAX_ANSWER_CHARS))}
         placeholder="Take your time. Write as much or as little as feels true."
         rows={6}
+        maxLength={MAX_ANSWER_CHARS}
         aria-label={prompt}
         autoFocus
       />
+      <div
+        className={`why-char-count${value.length >= MAX_ANSWER_CHARS ? ' why-char-count--limit' : ''}`}
+        aria-live="polite"
+      >
+        {value.length.toLocaleString()} / {MAX_ANSWER_CHARS.toLocaleString()}
+      </div>
 
       <div className="why-actions">
         <button
@@ -473,6 +484,14 @@ const whyCss = `
   box-shadow: 0 0 0 3px rgba(10,74,115,0.12);
 }
 .why-textarea::placeholder { color: var(--text-muted); }
+.why-char-count {
+  text-align: right;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 6px 0 0;
+  font-variant-numeric: tabular-nums;
+}
+.why-char-count--limit { color: var(--color-warning, #b45309); }
 .why-actions {
   display: flex;
   align-items: center;

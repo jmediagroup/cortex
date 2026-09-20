@@ -1,5 +1,12 @@
 "use client";
 
+/*
+ * NOTE: This component is NOT routed anywhere (no app/ page imports it).
+ * The live Roth-conversion / drawdown implementation is
+ * components/apps/RetirementStrategyEngine.tsx. Kept for reference only —
+ * do not extend this file; make changes in RetirementStrategyEngine.
+ */
+
 import React, { useState, useMemo } from 'react';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend

@@ -96,7 +96,7 @@ export const C = {
   addlStd: { single:2050, mfj:1650, hoh:2050, mfs:1650 } as Record<FilingStatus, number>,
   ltcg:    { single:[49450,545500], mfj:[98900,613700], hoh:[66200,579600], mfs:[49450,306850] } as Record<FilingStatus, [number,number]>,
   niit:    { single:200000, mfj:250000, hoh:200000, mfs:125000 } as Record<FilingStatus, number>,
-  qbiThresh:{ single:201775, mfj:403500, hoh:201775, mfs:201750 } as Record<FilingStatus, number>,
+  qbiThresh:{ single:201775, mfj:403550, hoh:201775, mfs:201775 } as Record<FilingStatus, number>,
   qbiPhase: { single:75000, mfj:150000, hoh:75000, mfs:75000 } as Record<FilingStatus, number>,
   senior:  { amount:6000, floor:{ single:75000, mfj:150000, hoh:75000, mfs:75000 } as Record<FilingStatus, number>, rate:.06 },
   ssBase:  { single:[25000,34000], mfj:[32000,44000], hoh:[25000,34000], mfs:[0,0] } as Record<FilingStatus, [number,number]>,
@@ -305,8 +305,11 @@ export function compute(inp: TaxInput): TaxResult {
   const fedIncomeTax = ordTax + cg.tax;
 
   const nii = interest + ordDiv + netCapGain + num(inp.otherNII);
+  // §1411(d) MAGI is AGI plus only the §911 foreign-earned-income exclusion
+  // (not modeled) — tax-exempt muni interest is NOT added back for NIIT.
+  // The `magi` below (AGI + tax-exempt interest) is the IRMAA definition.
   const magi = agi + exempt;
-  const niitAmt = inp.includeNIIT ? niitTax(nii, magi, s) : 0;
+  const niitAmt = inp.includeNIIT ? niitTax(nii, agi, s) : 0;
   // The 0.9% Additional Medicare Tax is mandatory payroll tax — it does not
   // hinge on the NIIT module toggle.
   const addlMed = addlMedicare(wages + num(inp.seIncome), s);

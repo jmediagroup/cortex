@@ -40,7 +40,13 @@ interface GeographicArbitrageCalculatorProps {
   initialValues?: Record<string, unknown>;
 }
 
-// Comprehensive Data for all 50 State Capitals + Major Hubs + DC + Custom Cities
+// Comprehensive Data for all 50 State Capitals + Major Hubs + DC + Custom Cities.
+// `taxRate` is an APPROXIMATE EFFECTIVE state (+ local, for NYC/DC) income tax
+// rate applied to the whole salary — a single-number estimate, not the
+// statutory top-marginal rate and not a bracket calculation. Flat-tax states
+// use their statutory rate; progressive states use a mid-bracket figure.
+// Verified 2026 changes (Tax Foundation, "2026 State Tax Changes"): Idaho 5.3%,
+// Nebraska 4.55%, Ohio flat 2.75%.
 const LOCATION_PRESETS: Record<string, LocationData> = {
   "Montgomery, AL": { taxRate: 0.05, colIndex: 0.85, housingBase: 1250, note: "Alabama Capital. High affordability in the Deep South." },
   "Juneau, AK": { taxRate: 0.0, colIndex: 1.3, housingBase: 2100, note: "Alaska Capital. 0% income tax but high cost of goods/services." },
@@ -57,7 +63,7 @@ const LOCATION_PRESETS: Record<string, LocationData> = {
   "Miami, FL": { taxRate: 0.0, colIndex: 1.2, housingBase: 2400, note: "Major Metro Hub. 0% state income tax. Significant housing demand and international appeal." },
   "Atlanta, GA": { taxRate: 0.0519, colIndex: 1.0, housingBase: 1900, note: "Georgia Capital. Major Inflow Hub. Corporate center with moderate housing." },
   "Honolulu, HI": { taxRate: 0.0825, colIndex: 1.8, housingBase: 3100, note: "Hawaii Capital. Extremely high COL and housing burden." },
-  "Boise, ID": { taxRate: 0.058, colIndex: 1.05, housingBase: 2000, note: "Idaho Capital. High recent Inflow from West Coast. Rising housing." },
+  "Boise, ID": { taxRate: 0.053, colIndex: 1.05, housingBase: 2000, note: "Idaho Capital. High recent Inflow from West Coast. Rising housing." },
   "Springfield, IL": { taxRate: 0.0495, colIndex: 0.85, housingBase: 1300, note: "Illinois Capital. Flat tax and high housing affordability." },
   "Indianapolis, IN": { taxRate: 0.03, colIndex: 0.9, housingBase: 1500, note: "Indiana Capital. Low flat state tax and stable housing costs." },
   "Des Moines, IA": { taxRate: 0.038, colIndex: 0.85, housingBase: 1300, note: "Iowa Capital. Flat 3.8% tax. Strong insurance/finance hub. High affordability." },
@@ -72,7 +78,7 @@ const LOCATION_PRESETS: Record<string, LocationData> = {
   "Jackson, MS": { taxRate: 0.044, colIndex: 0.8, housingBase: 1150, note: "Mississippi Capital. Lowest housing baseline in the dataset." },
   "Jefferson City, MO": { taxRate: 0.0495, colIndex: 0.82, housingBase: 1200, note: "Missouri Capital. High affordability and moderate state tax." },
   "Helena, MT": { taxRate: 0.059, colIndex: 1.0, housingBase: 1700, note: "Montana Capital. Increasing Inflow. No sales tax." },
-  "Lincoln, NE": { taxRate: 0.058, colIndex: 0.92, housingBase: 1450, note: "Nebraska Capital. High stability and low discretionary costs." },
+  "Lincoln, NE": { taxRate: 0.0455, colIndex: 0.92, housingBase: 1450, note: "Nebraska Capital. High stability and low discretionary costs." },
   "Carson City, NV": { taxRate: 0.0, colIndex: 1.05, housingBase: 1850, note: "Nevada Capital. 0% state income tax. High West Coast migration." },
   "Concord, NH": { taxRate: 0.0, colIndex: 1.1, housingBase: 1900, note: "New Hampshire Capital. 0% tax on earned income." },
   "Trenton, NJ": { taxRate: 0.0637, colIndex: 1.2, housingBase: 1900, note: "New Jersey Capital. High property taxes and progressive income tax." },
@@ -82,7 +88,7 @@ const LOCATION_PRESETS: Record<string, LocationData> = {
   "Raleigh, NC": { taxRate: 0.0399, colIndex: 0.95, housingBase: 1750, note: "North Carolina Capital. Flat tax and Research Triangle growth." },
   "Wilmington, NC": { taxRate: 0.0399, colIndex: 0.95, housingBase: 1650, note: "Coastal Destination. Favorable flat tax (3.99%) and high appeal for remote workers/retirees." },
   "Bismarck, ND": { taxRate: 0.025, colIndex: 0.9, housingBase: 1300, note: "North Dakota Capital. Very low state tax and stable economy." },
-  "Columbus, OH": { taxRate: 0.035, colIndex: 0.95, housingBase: 1650, note: "Ohio Capital. Rapidly growing tech/corporate hub." },
+  "Columbus, OH": { taxRate: 0.0275, colIndex: 0.95, housingBase: 1650, note: "Ohio Capital. Rapidly growing tech/corporate hub." },
   "Oklahoma City, OK": { taxRate: 0.0475, colIndex: 0.88, housingBase: 1400, note: "Oklahoma Capital. Rapidly growing with low cost of operations." },
   "Salem, OR": { taxRate: 0.0875, colIndex: 1.1, housingBase: 1850, note: "Oregon Capital. High income tax but no sales tax." },
   "Harrisburg, PA": { taxRate: 0.0307, colIndex: 0.95, housingBase: 1400, note: "Pennsylvania Capital. Low flat tax rate and moderate COL." },
@@ -119,6 +125,11 @@ interface SliderFieldProps {
 // new component type on every render, remounting the inputs and dropping
 // keyboard focus after each keystroke.
 const SliderField = ({ label, icon: Icon, value, onChange, min = 0, max = 100, suffix = "", tooltip }: SliderFieldProps) => {
+  // Raw text while the field is focused, so typing "100" into a min-50 field
+  // from blank isn't rejected at "1". Validation happens on blur.
+  const [text, setText] = useState<string | null>(null);
+  const [hint, setHint] = useState<string | null>(null);
+
   // Determine step size based on the range
   const getStep = () => {
     const range = max - min;
@@ -142,10 +153,31 @@ const SliderField = ({ label, icon: Icon, value, onChange, min = 0, max = 100, s
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = parseFloat(e.target.value.replace(/,/g, '')) || min;
-    if (newValue >= min && newValue <= max) {
-      onChange(newValue);
+    const raw = e.target.value;
+    setText(raw);
+    const parsed = parseFloat(raw.replace(/,/g, ''));
+    // Live-update only for in-range values; out-of-range intermediates are
+    // kept as text and validated on blur.
+    if (Number.isFinite(parsed) && parsed >= min && parsed <= max) {
+      onChange(parsed);
+      setHint(null);
     }
+  };
+
+  const handleBlur = () => {
+    if (text === null) return;
+    const parsed = parseFloat(text.replace(/,/g, ''));
+    if (!Number.isFinite(parsed)) {
+      setHint(`Enter a number between ${min.toLocaleString()} and ${max.toLocaleString()}${suffix}.`);
+    } else if (parsed < min || parsed > max) {
+      const clamped = Math.min(max, Math.max(min, parsed));
+      onChange(clamped);
+      setHint(`${parsed.toLocaleString()}${suffix} is outside ${min.toLocaleString()}–${max.toLocaleString()}${suffix}; using ${clamped.toLocaleString()}${suffix}.`);
+    } else {
+      onChange(parsed);
+      setHint(null);
+    }
+    setText(null);
   };
 
   return (
@@ -169,8 +201,11 @@ const SliderField = ({ label, icon: Icon, value, onChange, min = 0, max = 100, s
         <div className="flex-1 relative">
           <input
             type="text"
-            value={value.toLocaleString()}
+            inputMode="decimal"
+            value={text ?? value.toLocaleString()}
             onChange={handleInputChange}
+            onBlur={handleBlur}
+            aria-invalid={hint ? true : undefined}
             className="w-full px-4 py-2.5 text-center font-bold text-lg rounded-lg border-2 border-[var(--border-default)] bg-[var(--bg-section)] hover:bg-[var(--bg-card)] hover:border-[var(--emerald-border)] focus:outline-none focus:ring-2 focus:ring-[var(--emerald-500)] focus:border-[var(--emerald-border)] transition-all tabular-nums"
           />
           {suffix && (
@@ -192,6 +227,9 @@ const SliderField = ({ label, icon: Icon, value, onChange, min = 0, max = 100, s
         <span>Min: {min.toLocaleString()}</span>
         <span>Max: {max.toLocaleString()}</span>
       </div>
+      {hint && (
+        <p className="mt-1 text-xs text-[var(--color-warning)] font-medium" role="status">{hint}</p>
+      )}
     </div>
   );
 };
@@ -231,6 +269,9 @@ const LocationSelector = ({ label, value, onChange }: LocationSelectorProps) => 
 
 // 2026 Social Security wage base for employee-side FICA
 const SS_WAGE_BASE_2026 = 184500;
+// Salary the housing/cost-of-living model is calibrated for; lower values are
+// accepted but flagged as extrapolations rather than silently floored.
+const MIN_MODEL_INCOME = 40000;
 
 // Currency formatter that keeps the sign readable for deficits (e.g. -$1,200)
 const fmtUSD = (value: number) => `${value < 0 ? '-' : ''}$${Math.abs(Math.round(value)).toLocaleString()}`;
@@ -321,6 +362,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
         ],
         yearlyTaxWindfall: 8500,
         mobilityPremium: 125000,
+        mobilityPenalty: 45000,
         lifestyleScore: 72,
         compoundedArbitrageWealth: 485000,
         _isPreview: true
@@ -341,14 +383,23 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
       .slice(0, 5);
 
     // 2. Tax Migration Windfall (current vs target state tax, same
-    // top-marginal-rate model; negative means the target state taxes more)
+    // approximate-effective-rate model; negative means the target state taxes more)
     const currentLoc_data = LOCATION_PRESETS[currentLoc];
     const targetLoc_data = LOCATION_PRESETS[targetLoc];
     const yearlyTaxWindfall = incomeNum * (currentLoc_data.taxRate - targetLoc_data.taxRate);
 
     // 3. Career Mobility Premium
-    // Assumption: staying in expensive locations may boost salary trajectory by 5-10% over 10 years
-    const mobilityPenalty = incomeNum * 0.07 * years; // 7% of salary lost per year
+    // Assumption: staying in an expensive hub may boost salary trajectory by
+    // ~5-10% over 10 years. Leaving forgoes that premium, which ramps in
+    // linearly over the first 10 years and then holds — so the lost earnings
+    // in year y are income × 7.5% × min(y/10, 1) (midpoint of the 5–10%
+    // range), NOT 7% of salary every year from day one.
+    const MOBILITY_PREMIUM = 0.075;
+    const RAMP_YEARS = 10;
+    let mobilityPenalty = 0;
+    for (let y = 1; y <= years; y++) {
+      mobilityPenalty += incomeNum * MOBILITY_PREMIUM * Math.min(y / RAMP_YEARS, 1);
+    }
     const mobilityPremium = savingsDelta * years - mobilityPenalty;
 
     // 4. Lifestyle Compression Score (0-100)
@@ -370,6 +421,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
       destinations,
       yearlyTaxWindfall,
       mobilityPremium,
+      mobilityPenalty,
       lifestyleScore,
       compoundedArbitrageWealth
     };
@@ -402,7 +454,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
         <SaveScenarioButton
           toolId="geographic-arbitrage"
           toolName="Geographic Arbitrage Calculator"
-          getInputs={() => ({ currentLoc, targetLoc, annualIncome, incomeAdjustment, investmentReturn, years })}
+          getInputs={() => ({ currentLoc, targetLoc, annualIncome, incomeAdjustment, investmentReturn, years, lifestyle })}
           getKeyResult={() => `${currentLoc} → ${targetLoc}, Income: $${Number(annualIncome).toLocaleString()}`}
           isLoggedIn={isLoggedIn}
           onLoginPrompt={onUpgrade}
@@ -440,17 +492,24 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                     }
                   }}
                   onBlur={() => {
-                    const numValue = typeof annualIncome === 'string'
-                      ? Math.max(40000, parseFloat(annualIncome) || 40000)
-                      : Math.max(40000, annualIncome);
-                    setAnnualIncome(numValue);
+                    // Commit the typed number as-is (empty → the model's
+                    // reference salary). Low values are flagged below, not
+                    // silently rewritten.
+                    const parsed = typeof annualIncome === 'string' ? parseFloat(annualIncome) : annualIncome;
+                    setAnnualIncome(Number.isFinite(parsed) && parsed > 0 ? parsed : MIN_MODEL_INCOME);
                   }}
                   className="w-full pl-7 pr-4 py-2.5 bg-[var(--bg-section)] border-2 border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--emerald-500)] focus:border-[var(--emerald-border)] outline-none font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
               </div>
-              <div className="mt-1.5 text-xs text-[var(--text-muted)] font-medium">
-                <span>Min: 40,000</span>
-              </div>
+              {(typeof annualIncome === 'number' ? annualIncome : parseFloat(annualIncome) || 0) < MIN_MODEL_INCOME ? (
+                <p className="mt-1.5 text-xs text-[var(--color-warning)] font-medium" role="status">
+                  The cost-of-living and housing model is calibrated for salaries of ${MIN_MODEL_INCOME.toLocaleString()}+; results below that are rough extrapolations.
+                </p>
+              ) : (
+                <div className="mt-1.5 text-xs text-[var(--text-muted)] font-medium">
+                  <span>Calibrated for ${MIN_MODEL_INCOME.toLocaleString()}+</span>
+                </div>
+              )}
             </div>
 
             <SliderField label="Salary Adjustment" icon={ArrowRightLeft} value={incomeAdjustment} onChange={setIncomeAdjustment} min={50} max={150} suffix="%" tooltip="What percent of your current salary you would earn in the destination market. 100% means you keep your current pay (e.g. a fully remote role)." />
@@ -712,8 +771,11 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                     <p className="text-xs text-[var(--text-tertiary)] font-semibold uppercase tracking-wider mb-2">Annual Tax Savings</p>
                     <p className="text-4xl font-bold text-[var(--emerald-500)] mb-3">${Math.round(Math.max(0, multiCityAnalysis.yearlyTaxWindfall)).toLocaleString()}</p>
                     <p className="text-sm text-[var(--text-secondary)] font-medium">
-                      Top-marginal state rate: <span className="font-bold text-[var(--text-primary)]">{(LOCATION_PRESETS[currentLoc].taxRate * 100).toFixed(1)}%</span> current
+                      Approximate effective state income tax rate: <span className="font-bold text-[var(--text-primary)]">{(LOCATION_PRESETS[currentLoc].taxRate * 100).toFixed(1)}%</span> current
                       vs <span className="font-bold text-[var(--text-primary)]">{(LOCATION_PRESETS[targetLoc].taxRate * 100).toFixed(1)}%</span> target
+                    </p>
+                    <p className="text-xs text-[var(--text-muted)] font-medium mt-1">
+                      Estimate: a single blended rate applied to your whole salary (includes city tax for NYC/DC), not a bracket-by-bracket calculation. Rates change yearly — verify with your state&apos;s current schedule.
                     </p>
                     {multiCityAnalysis.yearlyTaxWindfall < 0 && (
                       <p className="text-sm text-[var(--crimson-500)] font-medium mt-2">
@@ -753,7 +815,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                       {multiCityAnalysis.mobilityPremium >= 0 ? '+' : ''}${Math.round(multiCityAnalysis.mobilityPremium).toLocaleString()}
                     </p>
                     <p className="text-sm text-[var(--text-secondary)] font-medium">
-                      Assumes ~7% of salary lost per year in trajectory over {years} years
+                      Assumes leaving a hub forgoes a salary premium that ramps to ~7.5% of pay over 10 years (≈{fmtUSD(multiCityAnalysis.mobilityPenalty)} over {years} years)
                     </p>
                   </div>
                   <div className="bg-[var(--crimson-500)] rounded-2xl p-5 text-white">
@@ -763,7 +825,7 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
                         <p className="text-xs font-bold text-white/85 uppercase tracking-widest mb-2">MUTANT INSIGHT</p>
                         <p className="text-white/85 text-sm font-medium leading-relaxed">
                           {multiCityAnalysis.mobilityPremium >= 0
-                            ? `Even accounting for career trajectory loss, arbitrage still nets you ${Math.abs(Math.round(multiCityAnalysis.mobilityPremium)).toLocaleString()} in extra wealth.`
+                            ? `Even accounting for career trajectory loss, arbitrage still nets you $${Math.abs(Math.round(multiCityAnalysis.mobilityPremium)).toLocaleString()} in extra wealth.`
                             : `The savings from arbitrage may not offset the career trajectory loss. Consider hybrid strategies like 5-year sprints in hubs.`}
                         </p>
                       </div>
