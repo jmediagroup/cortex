@@ -17,3 +17,4 @@ removing the line, so the topic isn't accidentally reused.
 | 2026-08-16 | 401k-guide | 401(k) plans |
 | 2026-08-23 | index-fund-investing-for-beginners | Index fund investing |
 | 2026-09-13 | roth-ira-complete-guide | Roth IRA |
+| 2026-09-20 | hsa-triple-tax-advantage | Health Savings Account (HSA) |
