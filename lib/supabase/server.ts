@@ -8,7 +8,7 @@ import type { Database } from '@/lib/supabase/client';
  * Use this in Route Handlers and Server Components that need the signed-in
  * user's session (e.g. the auth callback that exchanges a PKCE code for a
  * session and writes the auth cookies). This is the cookie-backed counterpart
- * to the browser client in `./client` and the edge client in `./middleware`.
+ * to the browser client in `./client` and the proxy client in `./middleware`.
  */
 export async function createServerSupabaseClient() {
   const cookieStore = await cookies();
@@ -30,8 +30,11 @@ export async function createServerSupabaseClient() {
             );
           } catch {
             // `set` throws when called from a Server Component (immutable cookie
-            // store). That's fine — the middleware refreshes the session cookie
-            // on the next request, so this can be safely ignored there.
+            // store), so a token refreshed there is never saved. That is only
+            // safe on paths where proxy.ts runs first and refreshes the cookie
+            // before the page renders — if a Server Component reads the
+            // session, add its path to the matcher in proxy.ts. Route Handlers
+            // can set cookies, so they are unaffected.
           }
         },
       },
