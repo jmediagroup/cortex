@@ -4,10 +4,12 @@ import type { NextRequest } from 'next/server';
 
 // Routes that require an authenticated user. Everything else is public.
 // Authorization (e.g. admin-only) is still enforced in the pages themselves;
-// the middleware only guarantees a valid session exists.
-const PROTECTED_PREFIXES = ['/dashboard', '/account', '/onboarding', '/admin'];
+// the proxy only guarantees a valid session exists. The `matcher` in
+// proxy.ts must list these same prefixes — the proxy only runs there —
+// and tests/proxy-matcher.test.mjs fails if the two drift apart.
+export const PROTECTED_PREFIXES = ['/dashboard', '/account', '/onboarding', '/admin'];
 
-function isProtected(pathname: string): boolean {
+export function isProtected(pathname: string): boolean {
   return PROTECTED_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
   );
@@ -44,8 +46,9 @@ export async function updateSession(request: NextRequest) {
   );
 
   // IMPORTANT: getUser() revalidates the token against the auth server and
-  // rotates the session cookie when needed — this is the edge session refresh
-  // that keeps a signed-in user logged in across requests. Do not remove.
+  // rotates the session cookie when needed — this is the server-side session
+  // refresh that keeps a signed-in user logged in across requests to the
+  // protected areas. Do not remove.
   const {
     data: { user },
   } = await supabase.auth.getUser();

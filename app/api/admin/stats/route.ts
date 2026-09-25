@@ -1,8 +1,74 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { unstable_cache } from 'next/cache';
 import { createServiceClient } from '@/lib/supabase/client';
 import { stripe } from '@/lib/stripe/server';
+import { computeMrr } from '@/lib/stripe/mrr';
 import { authenticateRequest, isAuthError, errorResponse } from '@/lib/auth-helpers';
 import { isAdmin } from '@/lib/admin';
+
+/** A total a temporary failure left incomplete: shown once, never cached. */
+class IncompleteMrrError extends Error {
+  readonly mrr: number;
+  constructor(mrr: number, reason: string) {
+    super(reason);
+    this.mrr = mrr;
+  }
+}
+
+// MRR takes one Stripe call per subscriber, so the total is cached for 10
+// minutes in Next's data cache, shared by every function instance. The GET
+// handler checks the admin before reading it, and nothing in here depends on
+// the request. When the cached copy is stale the admin still gets it
+// instantly while it refreshes in the background.
+const getCachedMrr = unstable_cache(
+  async (): Promise<number> => {
+    const supabase = createServiceClient();
+    const { data: subscribers, error } = (await supabase
+      .from('users')
+      .select('stripe_subscription_id')
+      .not('stripe_subscription_id', 'is', null)) as {
+      data: { stripe_subscription_id: string }[] | null;
+      error: { message: string } | null;
+    };
+    if (error) throw new IncompleteMrrError(0, `Could not load subscribers: ${error.message}`);
+
+    let failures = 0;
+    const subscriptions = await Promise.all(
+      (subscribers ?? []).map(async (u) => {
+        try {
+          return await stripe.subscriptions.retrieve(u.stripe_subscription_id);
+        } catch (err) {
+          // A subscription Stripe doesn't know counts as nothing; that answer
+          // won't change, so it is safe to cache. Anything else may be a blip.
+          if ((err as { code?: string }).code !== 'resource_missing') failures += 1;
+          return null;
+        }
+      }),
+    );
+
+    const mrr = computeMrr(subscriptions);
+    if (failures > 0) {
+      throw new IncompleteMrrError(mrr, `${failures} Stripe subscription lookup(s) failed`);
+    }
+    return mrr;
+  },
+  ['admin-stats-mrr'],
+  { revalidate: 600 },
+);
+
+async function getMrr(): Promise<number> {
+  try {
+    return await getCachedMrr();
+  } catch (err) {
+    if (err instanceof IncompleteMrrError) {
+      // Same number the dashboard always showed after a failed lookup; the
+      // next load tries again instead of serving it from the cache.
+      console.warn('[Admin Stats] MRR not cached:', err.message);
+      return err.mrr;
+    }
+    throw err;
+  }
+}
 
 /**
  * GET /api/admin/stats
@@ -49,33 +115,9 @@ export async function GET(request: NextRequest) {
       .select('*', { count: 'exact', head: true })
       .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()) as { count: number | null; error: any };
 
-    // Calculate MRR from database subscribers' actual Stripe subscription data
-    let mrr = 0;
-    const { data: allSubscribers } = await supabase
-      .from('users')
-      .select('stripe_subscription_id')
-      .not('stripe_subscription_id', 'is', null) as { data: { stripe_subscription_id: string }[] | null };
-
-    if (allSubscribers) {
-      const results = await Promise.all(
-        allSubscribers.map(async (u) => {
-          try {
-            return await stripe.subscriptions.retrieve(u.stripe_subscription_id);
-          } catch {
-            return null;
-          }
-        })
-      );
-      for (const sub of results) {
-        if (sub && sub.status === 'active') {
-          const price = sub.items.data[0]?.price;
-          if (price?.unit_amount && price?.recurring) {
-            const amount = price.unit_amount / 100;
-            mrr += price.recurring.interval === 'year' ? amount / 12 : amount;
-          }
-        }
-      }
-    }
+    // MRR from subscribers' Stripe subscriptions, cached (see getCachedMrr).
+    // Only reached once the admin check above has passed.
+    const mrr = await getMrr();
 
     return NextResponse.json({
       users: {
@@ -91,7 +133,7 @@ export async function GET(request: NextRequest) {
         last7d: eventsLast7d || 0,
       },
       revenue: {
-        mrr: Math.round(mrr * 100) / 100,
+        mrr,
       },
     });
   } catch (error: any) {

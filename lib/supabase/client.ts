@@ -691,7 +691,16 @@ export type Database = {
         Relationships: [];
       };
     };
-    Functions: Record<never, never>;
+    Functions: {
+      /**
+       * Deletes analytics events older than `retention_days` and returns how
+       * many rows it removed (supabase/migrations/20260925120000_events_retention.sql).
+       */
+      delete_old_events: {
+        Args: { retention_days: number };
+        Returns: number;
+      };
+    };
     Enums: Record<never, never>;
     CompositeTypes: Record<never, never>;
   };

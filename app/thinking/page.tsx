@@ -2,10 +2,12 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Clock, Calendar } from 'lucide-react';
 import { getAllOutlooks } from '@/lib/outlook/content';
-import type { OutlookListItem, OutlookType } from '@/lib/outlook/types';
+import { countOutlooks } from '@/lib/outlook/filter';
+import type { OutlookListItem } from '@/lib/outlook/types';
 import { MarketingIcon } from '@/components/marketing/Icons';
 import { FeaturedBanner } from '@/components/brand/FeaturedBanner';
 import { OutlookSubscribeForm } from './_components/OutlookSubscribeForm';
+import { OutlookFilterGrid, OutlookFilterNav } from './_components/OutlookFilter';
 
 export const metadata: Metadata = {
   title: 'Thinking — Daily & Weekly Investment Outlook',
@@ -40,27 +42,23 @@ export const metadata: Metadata = {
   },
 };
 
-type PageProps = {
-  searchParams: Promise<{ type?: string }>;
-};
+// Static: the page no longer reads `searchParams` on the server. It renders
+// every outlook once per build (each new post is a new deploy), and the
+// `?type=daily|weekly` filter runs in the browser — see
+// ./_components/OutlookFilter.tsx.
+export default function ThinkingPage() {
+  const outlooks = getAllOutlooks();
+  const counts = countOutlooks(outlooks);
+  const entries = outlooks.map((o) => ({
+    slug: o.slug,
+    type: o.type,
+    card: <OutlookCard key={o.slug} outlook={o} />,
+  }));
 
-const VALID_FILTERS: Array<OutlookType | 'all'> = ['all', 'daily', 'weekly'];
-
-export default async function ThinkingPage({ searchParams }: PageProps) {
-  const params = await searchParams;
-  const rawFilter = (params.type ?? 'all') as OutlookType | 'all';
-  const filter = VALID_FILTERS.includes(rawFilter) ? rawFilter : 'all';
-
-  const all = getAllOutlooks();
-  const outlooks = filter === 'all' ? all : all.filter((o) => o.type === filter);
-  const counts = {
-    all: all.length,
-    daily: all.filter((o) => o.type === 'daily').length,
-    weekly: all.filter((o) => o.type === 'weekly').length,
-  };
-
+  // Describes the full collection at the canonical /thinking URL. Filtered
+  // views share this static HTML and canonicalise to /thinking.
   const collectionSchema =
-    outlooks.length > 0 && filter === 'all'
+    outlooks.length > 0
       ? {
           '@context': 'https://schema.org',
           '@type': 'CollectionPage',
@@ -163,30 +161,7 @@ export default async function ThinkingPage({ searchParams }: PageProps) {
                 >
                   CADENCE
                 </div>
-                <ul
-                  style={{
-                    listStyle: 'none',
-                    padding: 0,
-                    margin: 0,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 2,
-                  }}
-                >
-                  <FilterLink href="/thinking" active={filter === 'all'} label="All outlooks" count={counts.all} />
-                  <FilterLink
-                    href="/thinking?type=daily"
-                    active={filter === 'daily'}
-                    label="Daily"
-                    count={counts.daily}
-                  />
-                  <FilterLink
-                    href="/thinking?type=weekly"
-                    active={filter === 'weekly'}
-                    label="Weekly"
-                    count={counts.weekly}
-                  />
-                </ul>
+                <OutlookFilterNav counts={counts} />
               </div>
 
               <div
@@ -201,87 +176,11 @@ export default async function ThinkingPage({ searchParams }: PageProps) {
           </aside>
 
           <div style={{ minWidth: 0 }}>
-            {outlooks.length === 0 ? (
-              <div
-                style={{
-                  textAlign: 'center',
-                  padding: '64px 24px',
-                  background: 'var(--bg-card)',
-                  border: '1px solid var(--border-default)',
-                  borderRadius: 'var(--radius-md)',
-                  color: 'var(--text-secondary)',
-                }}
-              >
-                <p style={{ fontSize: 16, marginBottom: 8 }}>
-                  {filter === 'all'
-                    ? 'No outlooks published yet.'
-                    : `No ${filter} outlooks yet.`}
-                </p>
-                <p style={{ color: 'var(--gray-500)', fontSize: 13 }}>
-                  Subscribe to be notified when the first one drops.
-                </p>
-              </div>
-            ) : (
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-                  gap: 16,
-                }}
-              >
-                {outlooks.map((o) => (
-                  <OutlookCard key={o.slug} outlook={o} />
-                ))}
-              </div>
-            )}
+            <OutlookFilterGrid entries={entries} />
           </div>
         </div>
       </div>
     </>
-  );
-}
-
-function FilterLink({
-  href,
-  active,
-  label,
-  count,
-}: {
-  href: string;
-  active: boolean;
-  label: string;
-  count: number;
-}) {
-  return (
-    <li>
-      <Link
-        href={href}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '8px 10px',
-          borderRadius: 'var(--radius-sm)',
-          fontSize: 13,
-          fontWeight: active ? 700 : 500,
-          textDecoration: 'none',
-          color: active ? 'var(--navy)' : 'var(--text-secondary)',
-          background: active ? 'var(--off-white)' : 'transparent',
-          border: `1px solid ${active ? 'var(--border-default)' : 'transparent'}`,
-        }}
-      >
-        <span>{label}</span>
-        <span
-          style={{
-            fontSize: 10,
-            fontWeight: 600,
-            color: active ? 'var(--navy)' : 'var(--text-muted)',
-          }}
-        >
-          {count}
-        </span>
-      </Link>
-    </li>
   );
 }
 

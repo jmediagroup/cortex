@@ -12,6 +12,7 @@ import {
   Plus,
   X,
   ExternalLink,
+  AlertTriangle,
 } from 'lucide-react';
 import { createBrowserClient } from '@/lib/supabase/client';
 import {
@@ -125,6 +126,10 @@ export default function ContentEditor({
   const [uploadingInline, setUploadingInline] = useState(false);
 
   const meta = getContentTypeMeta(type);
+  // Guides and outlooks can be stored here, but their public pages are still
+  // built from Markdown files (Phase 2 in CMS.md), so marking one published
+  // or scheduled would do nothing on the site.
+  const canPublish = meta.publicReadsFromDb;
   const isArticle = type === 'article';
   const isGuide = type === 'guide';
   const isOutlook = type === 'daily' || type === 'weekly';
@@ -413,6 +418,20 @@ export default function ContentEditor({
         </div>
       </div>
 
+      {!canPublish && (
+        <div className="flex gap-3 rounded-[var(--radius-md)] border border-[var(--color-warning)] bg-[var(--color-warning-soft)] px-4 py-3 text-sm text-[var(--text-secondary)]">
+          <AlertTriangle size={18} className="mt-0.5 shrink-0 text-[var(--color-warning)]" />
+          <p>
+            <strong className="text-[var(--text-primary)]">
+              This {typeLabel} won&rsquo;t appear on the site.
+            </strong>{' '}
+            The public {meta.pathPrefix} pages are still built from the site&rsquo;s Markdown files,
+            not from this CMS, so publishing is turned off for this type. You can still edit and
+            save it; nothing saved here changes the live site.
+          </p>
+        </div>
+      )}
+
       {error && (
         <div className="rounded-[var(--radius-md)] border border-[var(--crimson-border)] bg-[var(--crimson-50)] px-4 py-3 text-sm font-medium text-[var(--crimson-500)]">
           {error}
@@ -517,17 +536,21 @@ export default function ContentEditor({
               onChange={(e) => set('status', e.target.value as Status)}
             >
               <option value="draft">Draft</option>
-              <option value="published">Published</option>
-              <option value="scheduled">Scheduled</option>
+              <option value="published" disabled={!canPublish}>
+                Published
+              </option>
+              <option value="scheduled" disabled={!canPublish}>
+                Scheduled
+              </option>
               <option value="archived">Archived</option>
             </select>
-            {meta.publicReadsFromDb ? (
+            {canPublish ? (
               <p className="mt-2 text-xs text-[var(--text-tertiary)]">
                 Only <strong>published</strong> content is visible on the public site.
               </p>
             ) : (
               <p className="mt-2 text-xs text-[var(--text-tertiary)]">
-                Managed here in the CMS. Public {meta.pathPrefix} pages still render from the existing
+                Publishing is off: public {meta.pathPrefix} pages still render from the existing
                 content pipeline until that read path is migrated.
               </p>
             )}

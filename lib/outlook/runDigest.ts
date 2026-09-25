@@ -4,8 +4,7 @@ import { renderMarkdown } from '@/lib/outlook/markdown';
 import { getOutlookForDigest } from '@/lib/outlook/content';
 import { sendDigestEmail } from '@/lib/outlook/email';
 import type { OutlookType } from '@/lib/outlook/types';
-
-const CRON_SECRET = process.env.CRON_SECRET;
+import { isAuthorizedCronRequest } from '@/lib/cron-auth';
 
 // How many days back a post is still considered fresh enough to send. This
 // window means a post that deployed a little late — after the cron already
@@ -24,27 +23,13 @@ function todayInET(): string {
   }).format(new Date());
 }
 
-function authorized(request: NextRequest): boolean {
-  if (!CRON_SECRET) {
-    // Fail closed in production: without a secret, anyone who finds the URL
-    // could trigger (or ?force=1 re-blast) a send to the whole list. Vercel
-    // automatically attaches "Authorization: Bearer $CRON_SECRET" to cron
-    // invocations once the env var is set, so setting it is all that's needed.
-    if (process.env.NODE_ENV === 'production') {
-      console.error('[outlook] CRON_SECRET is not set — refusing to run in production');
-      return false;
-    }
-    return true; // Local dev convenience.
-  }
-  const header = request.headers.get('authorization');
-  return header === `Bearer ${CRON_SECRET}`;
-}
-
 export async function runDigest(
   request: NextRequest,
   type: OutlookType,
 ): Promise<NextResponse> {
-  if (!authorized(request)) {
+  // Fails closed in production without CRON_SECRET: otherwise anyone who
+  // finds the URL could trigger (or ?force=1 re-blast) a send to the whole list.
+  if (!isAuthorizedCronRequest(request, 'outlook')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

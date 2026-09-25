@@ -1,6 +1,7 @@
 import 'server-only';
 import fs from 'node:fs';
 import path from 'node:path';
+import { cache } from 'react';
 import matter from 'gray-matter';
 import readingTime from 'reading-time';
 import { extractLeadMarkdown, renderMarkdown, stripMarkdown } from './markdown';
@@ -75,7 +76,11 @@ function toListItem(p: ParsedFile): OutlookListItem {
   };
 }
 
-function loadAll(): ParsedFile[] {
+// Wrapped in React `cache()` so one render reads and parses the content
+// directory at most once, however many list helpers it calls. Outside a React
+// render (route handlers, the digest cron) `cache` simply calls through.
+// Callers must treat the result as read-only.
+const loadAll = cache((): ParsedFile[] => {
   const files: ParsedFile[] = [];
   for (const type of TYPES) {
     for (const filename of readDir(type)) {
@@ -86,7 +91,7 @@ function loadAll(): ParsedFile[] {
   // Newest first.
   files.sort((a, b) => (a.data.date < b.data.date ? 1 : a.data.date > b.data.date ? -1 : 0));
   return files;
-}
+});
 
 export function getAllOutlooks(): OutlookListItem[] {
   return loadAll().map(toListItem);
@@ -102,7 +107,9 @@ export function getAllOutlooksWithBody(): Array<OutlookListItem & { body: string
   return loadAll().map((p) => ({ ...toListItem(p), body: p.body }));
 }
 
-export async function getOutlookBySlug(slug: string): Promise<Outlook | null> {
+// Cached per render: /thinking/[slug] calls this from both generateMetadata
+// and the page, and the Markdown render only needs to happen once.
+export const getOutlookBySlug = cache(async (slug: string): Promise<Outlook | null> => {
   if (!VALID_SLUG.test(slug)) return null;
 
   for (const type of TYPES) {
@@ -127,7 +134,7 @@ export async function getOutlookBySlug(slug: string): Promise<Outlook | null> {
   }
 
   return null;
-}
+});
 
 export function getLatestOutlook(type: OutlookType, onDate?: string): ParsedFile | null {
   const all = loadAll().filter((p) => p.type === type);

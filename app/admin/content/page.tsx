@@ -11,10 +11,12 @@ import {
   CalendarRange,
   ExternalLink,
   ChevronDown,
+  AlertTriangle,
 } from 'lucide-react';
 import { createBrowserClient } from '@/lib/supabase/client';
 import {
   CONTENT_TYPES,
+  CREATABLE_CONTENT_TYPES,
   getContentTypeMeta,
   type ContentTypeKey,
 } from '@/lib/cms/content-types';
@@ -91,6 +93,12 @@ export default function AdminContentList() {
     return () => document.removeEventListener('mousedown', onClick);
   }, [newMenuOpen]);
 
+  // Types in this list that the public site doesn't read from the CMS yet.
+  const offSiteTypes = CONTENT_TYPES.filter(
+    (t) => !t.publicReadsFromDb && rows.some((r) => getContentTypeMeta(r.type).key === t.key),
+  );
+  const filterMeta = typeFilter ? getContentTypeMeta(typeFilter) : null;
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -112,7 +120,7 @@ export default function AdminContentList() {
           </button>
           {newMenuOpen && (
             <div className="absolute right-0 z-20 mt-2 w-56 overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-primary)] bg-[var(--surface-primary)] py-1 shadow-lg">
-              {CONTENT_TYPES.map((t) => {
+              {CREATABLE_CONTENT_TYPES.map((t) => {
                 const Icon = TYPE_ICONS[t.key];
                 return (
                   <Link
@@ -176,6 +184,20 @@ export default function AdminContentList() {
         </div>
       )}
 
+      {!loading && offSiteTypes.length > 0 && (
+        <div className="flex gap-3 rounded-[var(--radius-md)] border border-[var(--color-warning)] bg-[var(--color-warning-soft)] px-4 py-3 text-sm text-[var(--text-secondary)]">
+          <AlertTriangle size={18} className="mt-0.5 shrink-0 text-[var(--color-warning)]" />
+          <p>
+            <strong className="text-[var(--text-primary)]">
+              {offSiteTypes.map((t) => `${t.label}s`).join(', ')} don&rsquo;t publish to the site yet.
+            </strong>{' '}
+            Their public pages are still built from the site&rsquo;s Markdown files, so those rows
+            never appear on the site, even when marked published. Publishing them from here is
+            turned off until the site reads them from the CMS.
+          </p>
+        </div>
+      )}
+
       {loading ? (
         <div className="flex items-center justify-center py-20">
           <Loader2 className="animate-spin text-[var(--color-accent)]" size={28} />
@@ -186,13 +208,15 @@ export default function AdminContentList() {
           <p className="text-sm font-medium text-[var(--text-secondary)]">
             No {typeFilter ? getContentTypeMeta(typeFilter).label.toLowerCase() : 'content'} yet.
           </p>
-          <Link
-            href={`/admin/content/new${typeFilter ? `?type=${typeFilter}` : ''}`}
-            className="mt-3 inline-flex items-center gap-1.5 text-sm font-bold text-[var(--color-accent)]"
-          >
-            <Plus size={14} /> Create your first{' '}
-            {typeFilter ? getContentTypeMeta(typeFilter).label.toLowerCase() : 'piece of content'}
-          </Link>
+          {(!filterMeta || filterMeta.publicReadsFromDb) && (
+            <Link
+              href={`/admin/content/new${typeFilter ? `?type=${typeFilter}` : ''}`}
+              className="mt-3 inline-flex items-center gap-1.5 text-sm font-bold text-[var(--color-accent)]"
+            >
+              <Plus size={14} /> Create your first{' '}
+              {typeFilter ? getContentTypeMeta(typeFilter).label.toLowerCase() : 'piece of content'}
+            </Link>
+          )}
         </div>
       ) : (
         <div className="overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border-primary)] bg-[var(--surface-primary)]">
