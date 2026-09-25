@@ -19,8 +19,10 @@ export interface ContentTypeMeta {
   /**
    * Whether the public site currently reads this type from the CMS database.
    * Only `article` is DB-backed today; guides/outlook still render from the
-   * Markdown pipeline (Phase 2). Used to decide whether to surface a public
-   * "view" link (a fresh CMS slug for a non-DB type would 404).
+   * Markdown pipeline (Phase 2). Decides whether the admin offers a public
+   * "view" link (a fresh CMS slug for a non-DB type would 404), whether the
+   * type can be created from the "New" picker, and whether it can be marked
+   * published or scheduled.
    */
   publicReadsFromDb: boolean;
   /** Whether the generic categories/tags taxonomy applies to this type. */
@@ -73,6 +75,15 @@ export const CONTENT_TYPES: ContentTypeMeta[] = [
     badge: { bg: '#fef3c7', color: 'var(--color-warning)' },
   },
 ];
+
+/**
+ * Types the "New" picker offers: only those the public site reads from the
+ * CMS. A new guide or outlook created here would never appear on the site;
+ * each type comes back automatically once its `publicReadsFromDb` is true.
+ */
+export const CREATABLE_CONTENT_TYPES: ContentTypeMeta[] = CONTENT_TYPES.filter(
+  (t) => t.publicReadsFromDb,
+);
 
 export const CONTENT_TYPE_MAP: Record<ContentTypeKey, ContentTypeMeta> =
   CONTENT_TYPES.reduce(

@@ -45,8 +45,9 @@ filters `status = 'published'` explicitly.
 ## Admin usage
 
 - `/admin/content` — list, filter by **type** (article / guide / daily / weekly)
-  and **status**, create/edit/delete. The **New** button is a type picker; each
-  row shows a type badge and links to the right public path.
+  and **status**, create/edit/delete. The **New** button is a type picker that
+  offers only the types the public site reads from the CMS (articles today);
+  each row shows a type badge and links to the right public path.
 - The editor is **type-aware** (`components/admin/ContentEditor.tsx` +
   `lib/cms/content-types.ts`): Markdown + live preview, featured/inline-image
   uploads, and SEO overrides are shared by every type, while type-specific
@@ -57,10 +58,13 @@ filters `status = 'published'` explicitly.
 - Saving revalidates the public surfaces for that type (`revalidateContent` in
   `lib/cms/admin.ts`). Articles bust the article caches + `/articles`, home, and
   sitemap; guides/outlook revalidate their own routes only.
-- **Public read path:** only **articles** are served from the CMS today. Guides
-  and Thinking (daily/weekly) can be authored and stored here, but their public
-  pages still render from the Markdown pipeline until Phase 2 migrates those
-  reads — the editor notes this inline for non-article types.
+- **Public read path:** only **articles** are served from the CMS today. Existing
+  guide and Thinking (daily/weekly) rows can still be opened, edited and saved,
+  but their public pages render from the Markdown pipeline until Phase 2
+  migrates those reads, so the list and the editor show a warning banner and
+  the Published/Scheduled statuses are disabled for them. A type becomes
+  creatable and publishable again once its `publicReadsFromDb` flag in
+  `lib/cms/content-types.ts` is turned on.
 
 ## WordPress import (historical — retired)
 
