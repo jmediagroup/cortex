@@ -1,4 +1,11 @@
 import { createBrowserClient } from './supabase/client';
+import {
+  EVENT_COLUMNS,
+  KEEPALIVE_MAX_BYTES,
+  isTokenUsable,
+  toEventRows,
+  type QueuedEvent,
+} from './analytics-batch';
 
 // Event type definitions
 export type EventType =
@@ -124,11 +131,61 @@ export function getSessionId(): string {
   return sessionId;
 }
 
-// Event queue for batching
-let eventQueue: AnalyticsEvent[] = [];
-let flushTimeout: NodeJS.Timeout | null = null;
-const FLUSH_INTERVAL = 5000; // Flush every 5 seconds
-const BATCH_SIZE = 10; // Or when we have 10 events
+// ---------------------------------------------------------------------------
+// Batching
+//
+// Events wait in memory and go to Supabase in ONE insert when the page is
+// hidden (tab switch, close or navigation away), so a page view and its Web
+// Vitals cost one request instead of one each — and a very short visit still
+// records its page_view. `immediate` events (errors, sign-in, checkout) flush
+// the queue right away, and a long-lived tab also flushes every
+// MAX_QUEUED_EVENTS events.
+// ---------------------------------------------------------------------------
+
+const MAX_QUEUED_EVENTS = 25;
+let eventQueue: QueuedEvent[] = [];
+
+// The signed-in user, read once per page load from the session stored in the
+// browser's cookies (no auth request per event, unlike the old getUser() call)
+// and then kept current by the auth client's own events (token refresh,
+// sign-in, sign-out). Inserts are sent with this user's access token, like
+// supabase-js would, so the `events` insert policy
+// (auth.uid() = user_id OR user_id IS NULL) accepts rows carrying their id.
+interface Identity {
+  userId: string;
+  accessToken: string;
+  /** Supabase `expires_at`, in seconds. */
+  expiresAt: number | null;
+}
+let identity: Identity | null = null;
+let identityKnown = false;
+let identityWatched = false;
+
+function watchIdentity(): void {
+  if (identityWatched) return;
+  identityWatched = true;
+  try {
+    createBrowserClient().auth.onAuthStateChange((_event, session) => {
+      const next: Identity | null =
+        session?.user && session.access_token
+          ? {
+              userId: session.user.id,
+              accessToken: session.access_token,
+              expiresAt: session.expires_at ?? null,
+            }
+          : null;
+      // Signed out or switched accounts: send what the previous user queued
+      // with their token first, so those rows keep their user_id.
+      if (identity && identity.userId !== next?.userId) void flushEvents();
+      identity = next;
+      identityKnown = true;
+    });
+  } catch (error) {
+    // Supabase isn't configured; events are recorded anonymously.
+    identityKnown = true;
+    console.error('Failed to read the session for analytics:', error);
+  }
+}
 
 // Track web vitals
 export async function trackWebVital(
@@ -146,7 +203,8 @@ export async function trackWebVital(
   });
 }
 
-// Main tracking function
+// Main tracking function. Queues synchronously — nothing is awaited before
+// the event is in the queue — so it survives an immediate page close.
 export async function trackEvent(
   eventType: EventType,
   eventData?: EventData,
@@ -155,103 +213,84 @@ export async function trackEvent(
   if (typeof window === 'undefined') return;
 
   try {
-    const supabase = createBrowserClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    watchIdentity();
 
-    const event: AnalyticsEvent = {
-      user_id: user?.id,
+    eventQueue.push({
+      // `undefined` until the stored session has been read; filled in when sent.
+      user_id: identityKnown ? (identity?.userId ?? null) : undefined,
       session_id: getSessionId(),
       event_type: eventType,
       event_data: eventData,
       page_url: window.location.href,
       user_agent: navigator.userAgent,
-    };
+    });
 
-    if (immediate) {
-      // Send immediately for critical events
-      await sendEvents([event]);
-    } else {
-      // Add to queue for batching
-      eventQueue.push(event);
-
-      // Flush if batch is full
-      if (eventQueue.length >= BATCH_SIZE) {
-        await flushEvents();
-      } else {
-        // Schedule flush
-        scheduleFlush();
-      }
+    if (immediate || eventQueue.length >= MAX_QUEUED_EVENTS) {
+      await flushEvents();
     }
   } catch (error) {
     console.error('Failed to track event:', error);
   }
 }
 
-// Flush events to Supabase
-async function flushEvents(): Promise<void> {
-  if (eventQueue.length === 0) return;
+// Sends everything queued so far as one insert.
+function flushEvents(): Promise<void> {
+  if (eventQueue.length === 0) return Promise.resolve();
 
-  const eventsToSend = [...eventQueue];
+  const events = eventQueue;
   eventQueue = [];
-
-  if (flushTimeout) {
-    clearTimeout(flushTimeout);
-    flushTimeout = null;
-  }
-
-  await sendEvents(eventsToSend);
+  return sendEvents(events);
 }
 
-// Send events to Supabase
-async function sendEvents(events: AnalyticsEvent[]): Promise<void> {
-  if (events.length === 0) return;
+// A direct PostgREST insert — the same request supabase-js makes — so it can
+// use `keepalive` and still complete while the page unloads. The request is
+// built synchronously from the current identity.
+function sendEvents(events: QueuedEvent[]): Promise<void> {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !anonKey || events.length === 0) return Promise.resolve();
 
-  try {
-    const supabase = createBrowserClient();
-    const { error } = await (supabase
-      .from('events')
-      .insert as any)(events);
+  const sender = identity && isTokenUsable(identity.expiresAt, Date.now()) ? identity : null;
+  const rows = toEventRows(
+    events,
+    sender?.userId ?? null,
+    identityKnown ? (identity?.userId ?? null) : null,
+  );
+  const body = JSON.stringify(rows);
 
-    if (error) {
+  return fetch(`${supabaseUrl}/rest/v1/events?columns=${EVENT_COLUMNS.join(',')}`, {
+    method: 'POST',
+    headers: {
+      apikey: anonKey,
+      Authorization: `Bearer ${sender?.accessToken ?? anonKey}`,
+      'Content-Type': 'application/json',
+      Prefer: 'return=minimal',
+    },
+    body,
+    keepalive: new TextEncoder().encode(body).length <= KEEPALIVE_MAX_BYTES,
+  })
+    .then((res) => {
+      if (!res.ok) console.error('Failed to send events:', res.status);
+    })
+    .catch((error) => {
       console.error('Failed to send events:', error);
-      // Optionally: retry logic here
-    }
-  } catch (error) {
-    console.error('Failed to send events:', error);
-  }
+    });
 }
 
-// Schedule flush
-function scheduleFlush(): void {
-  if (flushTimeout) return;
-
-  flushTimeout = setTimeout(() => {
-    flushEvents();
-  }, FLUSH_INTERVAL);
-}
-
-// Flush on page unload
 if (typeof window !== 'undefined') {
-  window.addEventListener('beforeunload', () => {
-    if (eventQueue.length > 0) {
-      // Use sendBeacon for reliability
-      const supabase = createBrowserClient();
-      const events = [...eventQueue];
-
-      // Try to send via fetch with keepalive
-      fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/events`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-        },
-        body: JSON.stringify(events),
-        keepalive: true,
-      }).catch(() => {
-        // Silent fail on unload
-      });
-    }
+  // Registered on window in the bubble phase, so it runs after web-vitals'
+  // capture-phase listeners have queued the page's final CLS/INP/LCP values.
+  window.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') void flushEvents();
+  });
+  // Closing the tab or leaving the page fires `pagehide` first and then
+  // `visibilitychange` (the spec order, which Chrome follows), so a
+  // still-visible page is flushed once by the visibilitychange handler above,
+  // after web-vitals has queued its final values. Flush here only when the
+  // page is already hidden, e.g. in browsers that fire the events the other
+  // way round.
+  window.addEventListener('pagehide', () => {
+    if (document.visibilityState === 'hidden') void flushEvents();
   });
 }
 
