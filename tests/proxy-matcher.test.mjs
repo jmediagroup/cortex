@@ -36,11 +36,14 @@ register(
 );
 
 const require = createRequire(import.meta.url);
-const { unstable_doesMiddlewareMatch } = require('next/experimental/testing/server');
+const testing = require('next/experimental/testing/server');
+// Next 16.1/16.2 export the helper under its old name; the docs already call
+// it unstable_doesProxyMatch, so accept either.
+const doesMatch = testing.unstable_doesProxyMatch ?? testing.unstable_doesMiddlewareMatch;
 const { config } = await import('../proxy.ts');
 const { PROTECTED_PREFIXES, isProtected } = await import('../lib/supabase/middleware.ts');
 
-const runsOn = (url) => unstable_doesMiddlewareMatch({ config, url });
+const runsOn = (url) => doesMatch({ config, url });
 
 const PUBLIC_PATHS = [
   '/',
