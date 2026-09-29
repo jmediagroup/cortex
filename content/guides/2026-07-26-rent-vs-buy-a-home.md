@@ -35,7 +35,7 @@ The price-to-rent ratio tells you about a market; the 5% rule translates that in
 Monthly breakeven rent = (Home price × 5%) ÷ 12
 ```
 
-That 5% figure is a rough stand-in for the annual cost of owning that isn't reflected in a mortgage payment alone: roughly 1% for property taxes, 1% for maintenance, and 3% representing the opportunity cost of having a down payment tied up in a house instead of invested elsewhere. If the rent on a comparable property is below that breakeven number, renting is likely the better financial move for now; if it's above, buying starts to look more attractive. Comparing your own numbers side by side is exactly what Cortex's [Rent vs. Buy Calculator](/apps/rent-vs-buy) is built to do — it takes your specific home price, rent, rate, and time horizon and shows the full comparison rather than a single rule-of-thumb percentage.
+That 5% figure is a rough stand-in for the annual cost of owning that isn't reflected in a mortgage payment alone: roughly 1% for property taxes, 1% for maintenance, and 3% representing the opportunity cost of having a down payment tied up in a house instead of invested elsewhere. If the rent on a comparable property is below that breakeven number, renting is likely the better financial move for now; if it's above, buying starts to look more attractive. Comparing your own numbers side by side is exactly what our [Rent vs. Buy Calculator](/apps/rent-vs-buy) is built to do — it takes your specific home price, rent, rate, and time horizon and shows the full comparison rather than a single rule-of-thumb percentage.
 
 ## How long you'll stay matters more than the mortgage rate
 
