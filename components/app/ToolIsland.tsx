@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { CalculatorSkeleton } from '@/components/ui';
 import { InlineAd } from '@/components/monetization';
 import { ToolUpsellCta } from '@/components/app/ToolLayout';
+import { ToolFunnel } from '@/components/app/ToolFunnel';
 import { useToolPageData } from '@/lib/useToolPageData';
 
 export type ToolProps = {
@@ -88,14 +89,16 @@ function ToolIslandInner({
         </div>
       ) : null}
       {!hideAd && <InlineAd context={toolId} className="mb-6" />}
-      <Tool
-        isPro={isPro}
-        isLoggedIn={hasSession}
-        initialValues={initialValues}
-        onUpgrade={() =>
-          router.push((hasSession ? upgradeHref : guestUpgradeHref ?? upgradeHref) ?? '/pricing')
-        }
-      />
+      <ToolFunnel toolId={toolId} fromScenario={initialValues !== undefined}>
+        <Tool
+          isPro={isPro}
+          isLoggedIn={hasSession}
+          initialValues={initialValues}
+          onUpgrade={() =>
+            router.push((hasSession ? upgradeHref : guestUpgradeHref ?? upgradeHref) ?? '/pricing')
+          }
+        />
+      </ToolFunnel>
     </>
   );
 }

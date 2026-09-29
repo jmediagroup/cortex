@@ -18,6 +18,7 @@ import {
   type ArchetypeId,
   type ScoreMap,
 } from '@/lib/personality-quiz-data';
+import { useToolFunnel } from '@/components/app/ToolFunnel';
 import { ShareBar } from './personality-quiz/ShareBar';
 
 type Stage = 'intro' | 'quiz' | 'result';
@@ -27,6 +28,11 @@ export default function PersonalityQuiz() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [transitioning, setTransitioning] = useState(false);
+  const { markCompleted } = useToolFunnel('personality-quiz');
+
+  useEffect(() => {
+    if (stage === 'result') markCompleted();
+  }, [stage, markCompleted]);
 
   const total = QUESTIONS.length;
   const question = QUESTIONS[currentIndex];

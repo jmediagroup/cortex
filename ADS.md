@@ -75,8 +75,11 @@ Copy is rendered as React text (money amounts and percentages are highlighted by
 3. Deploy. Until the migration is applied, `/api/ads` serves the fallback config so the
    site keeps showing exactly what it showed before.
 
-Env: nothing new. Admin access uses the existing `NEXT_PUBLIC_ADMIN_EMAILS` allowlist and
-the service role key already configured for the CMS.
+Env: `NEXT_PUBLIC_BANNER_ADS_ENABLED` is the site-wide kill switch, and it is **off unless
+set to `true`** (`lib/ads/flags.ts`). While it's off, `AdSlot` renders and fetches nothing,
+so neither the DB campaigns nor the hard-coded fallback show. It is read at build time, so
+changing it needs a redeploy. Admin access uses the existing `NEXT_PUBLIC_ADMIN_EMAILS`
+allowlist and the service role key already configured for the CMS.
 
 ## Admin usage
 

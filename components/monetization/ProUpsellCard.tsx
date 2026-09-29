@@ -57,6 +57,7 @@ export default function ProUpsellCard({ toolId, isLoggedIn }: ProUpsellCardProps
           ))}
         </div>
         <button
+          data-funnel-ignore
           onClick={() => router.push('/pricing')}
           className="bg-white text-[var(--navy)] px-6 py-3 rounded-lg font-bold text-sm hover:bg-[var(--bg-card-hover)] transition-all shadow-md hover:scale-105 active:scale-95"
         >

@@ -1,9 +1,10 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { createBrowserClient } from '@/lib/supabase/client';
 import ProUpsellCard from '@/components/monetization/ProUpsellCard';
+import { useToolFunnel } from '@/components/app/ToolFunnel';
 import { WHY_QUESTIONS } from '@/lib/why/questions';
 import type { WhySummary } from '@/lib/why/synthesis';
 
@@ -26,6 +27,11 @@ export default function WhatsYourWhy({ isPro, isLoggedIn }: Props) {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [summary, setSummary] = useState<WhySummary | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const { markCompleted } = useToolFunnel('whats-your-why');
+
+  useEffect(() => {
+    if (stage === 'result' && summary) markCompleted();
+  }, [stage, summary, markCompleted]);
 
   const total = WHY_QUESTIONS.length;
   const question = WHY_QUESTIONS[currentIndex];

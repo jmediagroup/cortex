@@ -1,4 +1,5 @@
 import { createBrowserClient } from './supabase/client';
+import { isAdmin } from './admin';
 import {
   EVENT_COLUMNS,
   KEEPALIVE_MAX_BYTES,
@@ -6,9 +7,19 @@ import {
   toEventRows,
   type QueuedEvent,
 } from './analytics-batch';
+import {
+  buildAttribution,
+  isFunnelEvent,
+  sanitizeFunnelData,
+  type FunnelEvent,
+  type SessionAttribution,
+} from './tool-funnel';
 
 // Event type definitions
 export type EventType =
+  // Monetization funnel (lib/tool-funnel.ts); payloads are sanitized there
+  | FunnelEvent
+
   // User events
   | 'user_signup'
   | 'user_login'
@@ -131,6 +142,61 @@ export function getSessionId(): string {
   return sessionId;
 }
 
+// Where this browser session came from (external referrer host + UTM tags),
+// read from the landing page once and reused for the rest of the session.
+// Call it on the first page load — after client-side navigation the URL no
+// longer carries the UTM tags.
+const ATTRIBUTION_KEY = 'mgm_attribution';
+
+export function captureSessionAttribution(): SessionAttribution {
+  if (typeof window === 'undefined') return {};
+  try {
+    const stored = sessionStorage.getItem(ATTRIBUTION_KEY);
+    if (stored) return JSON.parse(stored) as SessionAttribution;
+    const attribution = buildAttribution(
+      document.referrer,
+      window.location.search,
+      window.location.hostname,
+    );
+    sessionStorage.setItem(ATTRIBUTION_KEY, JSON.stringify(attribution));
+    return attribution;
+  } catch {
+    return {};
+  }
+}
+
+// "Internal" browsers (the owner's, testers') tag every event with
+// `internal: true`; the scorecard views leave those sessions out. Set
+// automatically when an admin signs in, and switchable on /admin/monetization.
+const INTERNAL_KEY = 'mgm_internal_traffic';
+let internalTraffic: boolean | null = null;
+
+export function isInternalTraffic(): boolean {
+  if (internalTraffic === null) {
+    try {
+      internalTraffic = localStorage.getItem(INTERNAL_KEY) === '1';
+    } catch {
+      internalTraffic = false;
+    }
+  }
+  return internalTraffic;
+}
+
+export function setInternalTraffic(on: boolean): void {
+  internalTraffic = on;
+  try {
+    if (on) localStorage.setItem(INTERNAL_KEY, '1');
+    else localStorage.removeItem(INTERNAL_KEY);
+  } catch {
+    // Storage blocked: the flag lasts for this page load only.
+  }
+}
+
+/** Whether a user is signed in, as far as analytics has seen. */
+export function isSignedIn(): boolean {
+  return identity !== null;
+}
+
 // ---------------------------------------------------------------------------
 // Batching
 //
@@ -179,6 +245,9 @@ function watchIdentity(): void {
       if (identity && identity.userId !== next?.userId) void flushEvents();
       identity = next;
       identityKnown = true;
+      // An admin's browser stays marked as internal after they sign out, so
+      // the owner's own visits never count toward the monetization scorecard.
+      if (session?.user && isAdmin(session.user.email)) setInternalTraffic(true);
     });
   } catch (error) {
     // Supabase isn't configured; events are recorded anonymously.
@@ -215,12 +284,20 @@ export async function trackEvent(
   try {
     watchIdentity();
 
+    let data: EventData | undefined = eventData;
+    if (isFunnelEvent(eventType)) {
+      const safe = sanitizeFunnelData(eventType, eventData);
+      if (!safe) return;
+      data = safe;
+    }
+    if (isInternalTraffic()) data = { ...data, internal: true };
+
     eventQueue.push({
       // `undefined` until the stored session has been read; filled in when sent.
       user_id: identityKnown ? (identity?.userId ?? null) : undefined,
       session_id: getSessionId(),
       event_type: eventType,
-      event_data: eventData,
+      event_data: data,
       page_url: window.location.href,
       user_agent: navigator.userAgent,
     });

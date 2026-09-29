@@ -78,6 +78,7 @@ test('tokens are used only while they have time left', () => {
 
 process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://project.supabase.co';
 process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'anon-key';
+process.env.NEXT_PUBLIC_ADMIN_EMAILS = 'owner@example.com';
 
 const storage = new Map();
 globalThis.window = new EventTarget();
@@ -216,4 +217,54 @@ test('a long-lived tab also flushes every 25 events', async () => {
   await analytics.trackEvent('app_opened', { i: 24 });
   assert.equal(requests.length, 1);
   assert.equal(requests[0].rows.length, 25);
+});
+
+// ---------------------------------------------------------------------------
+// Monetization funnel events (lib/tool-funnel.ts)
+// ---------------------------------------------------------------------------
+
+test('funnel events are sanitized before they are queued', async () => {
+  requests.length = 0;
+  await analytics.trackEvent('tool_calculation_completed', {
+    tool_id: 'coast-fire',
+    is_logged_in: false,
+    email: 'someone@example.com',
+    birth_date: '1990-01-01',
+    current_savings: 250000,
+  });
+  hidePage();
+  assert.equal(requests.length, 1);
+  assert.deepEqual(requests[0].rows[0].event_data, { tool_id: 'coast-fire', is_logged_in: false });
+});
+
+test('a funnel event for an unknown tool is not recorded at all', async () => {
+  requests.length = 0;
+  await analytics.trackEvent('tool_viewed', { tool_id: 'not-a-tool' });
+  hidePage();
+  assert.equal(requests.length, 0);
+});
+
+test('an internal browser tags every event so the scorecard can leave it out', async () => {
+  requests.length = 0;
+  analytics.setInternalTraffic(true);
+  await analytics.trackEvent('tool_viewed', { tool_id: 'budget' });
+  await analytics.trackPageView('/apps/budget');
+  hidePage();
+  analytics.setInternalTraffic(false);
+  assert.deepEqual(
+    requests[0].rows.map((r) => r.event_data.internal),
+    [true, true],
+  );
+});
+
+test('an admin signing in marks the browser as internal', () => {
+  assert.equal(analytics.isInternalTraffic(), false);
+  globalThis.__authCallback('SIGNED_IN', {
+    user: { id: 'owner', email: 'Owner@Example.com' },
+    access_token: 'token-owner',
+    expires_at: future(),
+  });
+  assert.equal(analytics.isSignedIn(), true);
+  assert.equal(analytics.isInternalTraffic(), true);
+  analytics.setInternalTraffic(false);
 });
