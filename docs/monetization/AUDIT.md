@@ -71,6 +71,7 @@ Several overlapping lists exist, and none of them is the single source of truth:
   - `app/pricing/page.tsx:52-55` has $9/mo and $90/yr.
   - The same figures are repeated in the dashboard, the account page, `PricingPreview`, the pricing OG image, the budget page and six "Upgrade to Pro — $9/month" buttons.
   - The price helpers in `lib/access-control.ts` are never imported.
+- The budget page's upgrade modal still advertises an **"Elite (Best Value) $29/month"** plan that no longer exists (`app/apps/budget/page.tsx`, upgrade modal). Its footer also still says "Cortex Technologies".
 - Badges are inconsistent across the lists. `DEFAULT_TOOLS` tags car-affordability, rent-vs-buy, debt-paydown and others as `PRO`. `AppLibrary` marks every tool except `whats-your-why` as `free`. The pricing page lists Car Affordability as a free feature.
 - **Users cannot write their own `tier`.** Production column grants give `authenticated` UPDATE only on `birth_date, first_name, gender, has_completed_onboarding, last_name, onboarding_answers, updated_at` (verified in `information_schema.column_privileges`).
 
@@ -197,7 +198,9 @@ Several overlapping lists exist, and none of them is the single source of truth:
 - 195 page views came from `localhost` or `*.vercel.app` (dev and preview).
 - 47 page views carried UTM parameters.
 - **No referrer is stored anywhere**, so acquisition source is unknown today.
-- No `page_url` contains an `@`.
+- No `page_url` contains an `@`, an `access_token` or a `refresh_token`.
+- `page_url` stores the **full URL, including the query string**. 15 stored URLs carry a `?code=` parameter, most likely Supabase's one-time sign-in codes; these expire within minutes, but they are credential-like values sitting in analytics. 5 carry `?scenario=` share tokens, which are meant to be shareable.
+- Stripping query strings (except UTM tags and `plan`/`billing`) from `page_url` is a worthwhile follow-up. It is out of Phase 0 scope because it changes existing metrics, such as the `/signup?plan=` count.
 
 **PII check of existing payloads:**
 - `user_signup` sends `{plan, source}`. `enterprise_form_submitted` sends `{company_size}`. `error_occurred` sends error text.
@@ -213,7 +216,15 @@ Several overlapping lists exist, and none of them is the single source of truth:
   - `find_pending_invite(lookup_email)` returns names and a Stripe customer id for a pending invite matching any email.
   - These are pre-existing and out of Phase 0 scope. They're queued as a separate cleanup task.
 
-Phase 0 adds one table and two views. Advisors were re-run after the migration — see the PR.
+Phase 0 adds one table (`analytics_excluded_users`) and four views. The migration is **not applied to production yet**, so the advisors can't see these objects; re-run them right after applying.
+
+The migration was written to pass the checks above:
+- the new table has RLS on and an explicit service-role policy;
+- the views are `security_invoker`;
+- `anon` and `authenticated` have every privilege revoked;
+- no new functions.
+
+It was tested end to end on a local Postgres 16 with Supabase's roles recreated: run twice, checked against sample data, and verified that `anon` and `authenticated` are refused. The view queries were also run read-only against production (Postgres 17).
 
 ## 11. SEO facts relevant to Phase 5
 
@@ -245,4 +256,5 @@ Phase 0 adds one table and two views. Advisors were re-run after the migration �
 | 13 | `webhook_events` for idempotency | Correct, but `processed_at` is never written | Noted for Phase 2 |
 | 14 | "Admin gate?" | Two layers: browser layout check plus server 403 on every admin API | Reused for `/admin/monetization` |
 | 15 | Owner exclusion via "IP hashes" | Events go browser → Supabase directly; no server ever sees the IP | Exclusion uses admin user ids (env), a per-browser "internal" flag, bot user agents and non-production hosts |
-| 16 | Lint must be green | `npm run lint` already reports 186 errors / 78 warnings on `main` | New and changed files lint clean; pre-existing errors untouched |
+| 16 | Pilot tools: `index-fund-visualizer`, `rent-vs-buy`, `car-affordability` | `car-affordability` had 1 view in 30 days; `coast-fire` has two-thirds of current traffic | Proposal swaps in `coast-fire` (`PILOT-TOOLS.md`) |
+| 17 | Lint must be green | `npm run lint` already reports 186 errors / 78 warnings on `main` | New and changed files lint clean; pre-existing errors untouched |

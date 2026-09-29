@@ -11,6 +11,7 @@ import {
   CreditCard,
   FileText,
   Megaphone,
+  CircleDollarSign,
   ArrowLeft,
   Shield,
   Loader2,
@@ -24,6 +25,7 @@ const adminNav = [
   { label: 'Ads', href: '/admin/ads', icon: Megaphone },
   { label: 'Users', href: '/admin/users', icon: Users },
   { label: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
+  { label: 'Monetization', href: '/admin/monetization', icon: CircleDollarSign },
   { label: 'Subscriptions', href: '/admin/subscriptions', icon: CreditCard },
 ];
 

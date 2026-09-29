@@ -9,6 +9,11 @@ const ADMIN_EMAILS: string[] = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '')
   .map(email => email.trim().toLowerCase())
   .filter(Boolean);
 
+/** The admin allowlist (lower-cased). */
+export function getAdminEmails(): string[] {
+  return [...ADMIN_EMAILS];
+}
+
 /**
  * Check if an email address belongs to an admin
  */

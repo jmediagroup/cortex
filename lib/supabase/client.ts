@@ -444,6 +444,24 @@ export type Database = {
         };
         Relationships: [];
       };
+      // Users whose sessions the monetization scorecard leaves out
+      // (20260929120000_monetization_scorecard.sql). Service role only.
+      analytics_excluded_users: {
+        Row: {
+          user_id: string;
+          reason: 'admin' | 'env';
+          created_at: string;
+        };
+        Insert: {
+          user_id: string;
+          reason?: 'admin' | 'env';
+          created_at?: string;
+        };
+        Update: {
+          reason?: 'admin' | 'env';
+        };
+        Relationships: [];
+      };
       // Ads — defined in supabase/migrations/20260920120000_create_ads_tables.sql.
       ad_advertisers: {
         Row: {
@@ -654,6 +672,45 @@ export type Database = {
       };
     };
     Views: {
+      // Monetization scorecard — 20260929120000_monetization_scorecard.sql.
+      // Service role only; bigint counts may arrive as strings (see toCount).
+      v_site_traffic: {
+        Row: { time_window: string; page_views: number; sessions: number };
+        Relationships: [];
+      };
+      v_tool_funnel: {
+        Row: {
+          tool_id: string;
+          time_window: string;
+          page_views: number;
+          views: number;
+          sessions: number;
+          completions: number;
+          completing_sessions: number;
+          exits_after_result: number;
+          offer_impressions: number;
+          offer_clicks: number;
+          report_requests: number;
+          reports_sent: number;
+          unlock_views: number;
+          unlock_clicks: number;
+          purchases: number;
+          advisor_requests: number;
+          completion_rate: number | null;
+        };
+        Relationships: [];
+      };
+      v_revenue_by_line: {
+        Row: {
+          line: string;
+          sort_order: number;
+          time_window: string;
+          units: number;
+          revenue_cents: number | null;
+          source_note: string;
+        };
+        Relationships: [];
+      };
       /** Daily impressions/clicks rollup of ad_events (20260920120000_create_ads_tables.sql). */
       ad_stats_daily: {
         Row: {
