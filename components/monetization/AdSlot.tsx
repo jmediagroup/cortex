@@ -28,6 +28,7 @@ const MIN_HEIGHT: Record<AdFormat, number> = {
   mobile_banner: 100,
   medium_rectangle: 250,
   large_rectangle: 280,
+  offer_card: 0, // never served by a banner placement
 };
 
 const SESSION_KEY = 'mgm_ad_session';

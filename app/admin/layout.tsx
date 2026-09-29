@@ -12,6 +12,7 @@ import {
   FileText,
   Megaphone,
   CircleDollarSign,
+  HandCoins,
   ArrowLeft,
   Shield,
   Loader2,
@@ -23,6 +24,7 @@ const adminNav = [
   { label: 'Overview', href: '/admin', icon: LayoutDashboard },
   { label: 'Content', href: '/admin/content', icon: FileText },
   { label: 'Ads', href: '/admin/ads', icon: Megaphone },
+  { label: 'Offers', href: '/admin/offers', icon: HandCoins },
   { label: 'Users', href: '/admin/users', icon: Users },
   { label: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
   { label: 'Monetization', href: '/admin/monetization', icon: CircleDollarSign },
@@ -123,14 +125,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </aside>
 
         {/* Mobile nav tabs */}
-        <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[var(--surface-primary)] border-t border-[var(--border-primary)] flex">
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[var(--surface-primary)] border-t border-[var(--border-primary)] flex overflow-x-auto">
           {adminNav.map((item) => {
             const active = isActive(item.href);
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex-1 flex flex-col items-center gap-1 py-3 text-[10px] font-bold transition-colors ${
+                className={`flex-1 min-w-[64px] shrink-0 flex flex-col items-center gap-1 py-3 px-1 text-[10px] font-bold transition-colors ${
                   active ? 'text-navy' : 'text-[var(--text-tertiary)]'
                 }`}
               >

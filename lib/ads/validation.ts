@@ -5,10 +5,12 @@
  */
 import {
   AD_FORMATS,
+  AD_NETWORKS,
   AD_TIERS,
   ADVERTISER_CATEGORIES,
   CAMPAIGN_STATUSES,
   CREATIVE_LIMITS,
+  PROGRAM_STATUSES,
   TOOL_IDS,
   type AdFormat,
 } from './types';
@@ -80,7 +82,7 @@ function timestamp(value: unknown, field: string): string | null {
   return new Date(t).toISOString();
 }
 
-function isHttpUrl(value: string): boolean {
+export function isHttpUrl(value: string): boolean {
   try {
     const u = new URL(value);
     return u.protocol === 'http:' || u.protocol === 'https:';
@@ -88,6 +90,18 @@ function isHttpUrl(value: string): boolean {
     return false;
   }
 }
+
+/**
+ * True for text still holding a <<PASTE_…>> placeholder (standing rule 6):
+ * such a link or copy is never rendered. Placeholders are accepted when
+ * saving, so a program can be tracked before its link exists.
+ */
+export function hasPlaceholder(value: string | null | undefined): boolean {
+  return typeof value === 'string' && /<<\s*PASTE/i.test(value);
+}
+
+/** Tokens a sub-id template may use; nothing that could carry PII. */
+export const SUB_ID_TOKENS = ['{tool_id}', '{session_short}'] as const;
 
 // ---------------------------------------------------------------------------
 // Advertisers
@@ -103,6 +117,11 @@ export const ADVERTISER_FIELDS = [
   'category',
   'is_active',
   'notes',
+  'network',
+  'program_status',
+  'terms_verified_at',
+  'disclosure_text',
+  'payout_note',
 ] as const;
 
 /** Whitelist + validate advertiser columns. `partial` = PATCH semantics. */
@@ -115,7 +134,7 @@ export function pickAdvertiserFields(body: Body, { partial = false } = {}): Body
   else if (!partial) out.slug = slugify(String(out.name ?? ''));
   if (has('url') || !partial) {
     const url = str(body.url, 'url', { required: true, max: 2000 })!;
-    if (!isHttpUrl(url)) throw new AdsValidationError('url must be an http(s) URL');
+    if (!isHttpUrl(url) && !hasPlaceholder(url)) throw new AdsValidationError('url must be an http(s) URL');
     out.url = url;
   }
   if (has('description')) out.description = str(body.description, 'description', { max: 500 });
@@ -130,6 +149,22 @@ export function pickAdvertiserFields(body: Body, { partial = false } = {}): Body
   }
   if (has('is_active')) out.is_active = bool(body.is_active, 'is_active');
   if (has('notes')) out.notes = str(body.notes, 'notes', { max: 2000 });
+  if (has('network')) {
+    const network = str(body.network, 'network');
+    if (network !== null && !AD_NETWORKS.includes(network as (typeof AD_NETWORKS)[number])) {
+      throw new AdsValidationError('Invalid network');
+    }
+    out.network = network;
+  }
+  if (has('program_status')) {
+    if (!PROGRAM_STATUSES.includes(body.program_status as (typeof PROGRAM_STATUSES)[number])) {
+      throw new AdsValidationError('Invalid program status');
+    }
+    out.program_status = body.program_status;
+  }
+  if (has('terms_verified_at')) out.terms_verified_at = timestamp(body.terms_verified_at, 'terms_verified_at');
+  if (has('disclosure_text')) out.disclosure_text = str(body.disclosure_text, 'disclosure_text', { max: 500 });
+  if (has('payout_note')) out.payout_note = str(body.payout_note, 'payout_note', { max: 1000 });
   return out;
 }
 
@@ -171,6 +206,8 @@ export const CAMPAIGN_FIELDS = [
   'ends_at',
   'hide_for_tiers',
   'notes',
+  'tracking_url',
+  'sub_id_template',
 ] as const;
 
 export function pickCampaignFields(body: Body, { partial = false } = {}): Body {
@@ -210,6 +247,23 @@ export function pickCampaignFields(body: Body, { partial = false } = {}): Body {
     out.hide_for_tiers = body.hide_for_tiers === null ? [] : stringArray(body.hide_for_tiers, 'hide_for_tiers', AD_TIERS);
   }
   if (has('notes')) out.notes = str(body.notes, 'notes', { max: 2000 });
+  if (has('tracking_url')) {
+    const url = str(body.tracking_url, 'tracking_url', { max: 2000 });
+    if (url !== null && !isHttpUrl(url) && !hasPlaceholder(url)) {
+      throw new AdsValidationError('tracking_url must be an http(s) URL or a <<PASTE_AFFILIATE_URL>> placeholder');
+    }
+    out.tracking_url = url;
+  }
+  if (has('sub_id_template')) {
+    const template = str(body.sub_id_template, 'sub_id_template', { max: 100 });
+    if (template !== null) {
+      const withoutTokens = SUB_ID_TOKENS.reduce((t, token) => t.split(token).join(''), template);
+      if (!/^[A-Za-z0-9_.-]*$/.test(withoutTokens)) {
+        throw new AdsValidationError(`sub_id_template may use letters, digits, - _ . and ${SUB_ID_TOKENS.join(' ')}`);
+      }
+    }
+    out.sub_id_template = template;
+  }
   return out;
 }
 

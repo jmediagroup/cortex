@@ -151,6 +151,18 @@ export function buildAttribution(referrer: string, search: string, ownHost: stri
   return attribution;
 }
 
+/**
+ * Crawlers, link previews and headless browsers. Keep in step with the
+ * user-agent filter in v_scorecard_events
+ * (supabase/migrations/20260929120000_monetization_scorecard.sql).
+ */
+export const BOT_USER_AGENT =
+  /(bot|crawl|spider|slurp|headless|lighthouse|pagespeed|preview|facebookexternalhit|embedly|python|curl|wget|httpclient|puppeteer|playwright|selenium|phantomjs)/i;
+
+export function isLikelyBot(userAgent: string | null | undefined): boolean {
+  return BOT_USER_AGENT.test(userAgent ?? '');
+}
+
 // ---------------------------------------------------------------------------
 // Completion timing
 // ---------------------------------------------------------------------------

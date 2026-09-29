@@ -45,6 +45,7 @@ const PRIVATE_PATHS = [
   '/signup',
   '/reset-password',
   '/design',
+  '/go/', // affiliate redirects: a crawler following them would log fake clicks
 ];
 
 // AI search and answer engines we explicitly want to be visible to.

@@ -18,7 +18,8 @@ export const FALLBACK_PLACEMENT_FORMATS: Record<string, AdFormat[]> = {
   'tool-sidebar': ['medium_rectangle'],
 };
 
-const LEGACY_FORMAT_KEY: Record<AdFormat, keyof AdCopySet> = {
+// Banner formats only; the offer card has no legacy copy.
+const LEGACY_FORMAT_KEY: Partial<Record<AdFormat, keyof AdCopySet>> = {
   medium_rectangle: 'mediumRectangle',
   leaderboard: 'leaderboard',
   mobile_banner: 'mobileBanner',
@@ -49,7 +50,8 @@ export function buildFallbackAds(placementSlug: string, toolId: string): ServedA
     const copySet = affiliateAdCopy[advertiser.id];
     if (!copySet) continue;
     for (const format of formats) {
-      const copies = copySet[LEGACY_FORMAT_KEY[format]] ?? [];
+      const key = LEGACY_FORMAT_KEY[format];
+      const copies = key ? (copySet[key] ?? []) : [];
       for (const copy of copies) {
         ads.push({
           campaignId: null,
