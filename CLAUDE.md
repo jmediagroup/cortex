@@ -4,7 +4,7 @@ Money Guy Mutants (repo `cortex`): Next.js 16, Supabase, Vercel, Stripe, Resend.
 
 - Tests: `npm test` (Node's built-in runner over `tests/**/*.test.mjs`; `.ts` files are imported directly).
 - Lint: `npm run lint`. Typecheck: `npx tsc --noEmit`.
-- Monetization plan: `docs/monetization/HANDOFF.md`. What the code actually does today: `docs/monetization/AUDIT.md`.
+- Monetization plan: `docs/monetization/HANDOFF.md`. What the code actually does today: `docs/monetization/AUDIT.md`. Drew's answers to the plan's open decisions (these override its defaults): `docs/monetization/DECISIONS.md`.
 
 ## Monetization work — standing rules (Drew Jenkinson approves everything)
 1. Work one phase per branch/PR from docs/monetization/HANDOFF.md. Stop at each "STOP — Drew" line.

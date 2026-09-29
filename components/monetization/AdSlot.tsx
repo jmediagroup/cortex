@@ -6,6 +6,7 @@ import { shouldShowAds, type Tier } from '@/lib/access-control';
 import type { AdEventPayload, AdFormat, AdsResponse, ServedAd } from '@/lib/ads/types';
 import { orderForRotation, pickWeighted } from '@/lib/ads/select';
 import { buildFallbackAds, FALLBACK_ROTATION_MS } from '@/lib/ads/fallback';
+import { bannerAdsEnabled } from '@/lib/ads/flags';
 import { useAdVisibility } from './AdProvider';
 import IABAd from './IABAd';
 
@@ -156,8 +157,15 @@ function TrackedAd({
  *
  * Renders both the desktop and mobile format (hidden/flex by breakpoint) so
  * the markup mirrors the original InlineAd behaviour.
+ *
+ * Renders nothing — and fetches nothing — unless the banner-ads kill switch
+ * is on (lib/ads/flags.ts).
  */
-export default function AdSlot({ placement, toolId, className = '' }: AdSlotProps) {
+export default function AdSlot(props: AdSlotProps) {
+  return bannerAdsEnabled() ? <LiveAdSlot {...props} /> : null;
+}
+
+function LiveAdSlot({ placement, toolId, className = '' }: AdSlotProps) {
   const ctx = useAdVisibility();
   const [selfVisibility, setSelfVisibility] = useState<{ showAds: boolean; tier: Tier | null; ready: boolean }>({
     showAds: false,

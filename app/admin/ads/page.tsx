@@ -16,6 +16,7 @@ import {
 } from 'recharts';
 import { useAdminApi, readError } from '@/components/admin/useAdminApi';
 import { CAMPAIGN_STATUSES, type CampaignStatus } from '@/lib/ads/types';
+import { bannerAdsEnabled } from '@/lib/ads/flags';
 
 interface CampaignListRow {
   id: string;
@@ -159,6 +160,12 @@ export default function AdminAdsList() {
           <p className="mt-1 text-sm text-[var(--text-tertiary)] font-medium">
             Campaigns, creatives and advertisers served on the calculators
           </p>
+          {!bannerAdsEnabled() && (
+            <p className="mt-2 text-sm font-semibold text-[var(--color-warning)]">
+              Banner ads are switched off site-wide. Nothing here is shown to visitors until
+              NEXT_PUBLIC_BANNER_ADS_ENABLED is set to &ldquo;true&rdquo; in Vercel and the site is redeployed.
+            </p>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <Link

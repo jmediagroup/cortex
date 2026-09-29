@@ -10,7 +10,7 @@ Where the repo and `HANDOFF.md` disagree, the repo wins (standing rule 13). Ever
 
 1. **No tool makes anyone log in before they see an answer.** Every calculator works for anonymous visitors, and the numbers update live as you type. There is no "Calculate" button. So the offer, report and unlock moments the plan depends on can already be reached. Two tools are fully locked for free users (S-Corp Investment Optimizer and What's Your Why). The rest show a free result plus a blurred "Pro" section.
 2. **Traffic collapsed in August.** Page views ran 1,000–2,300 a month from April to July. They fell to 167 in August and 273 in September. The drop starts a few weeks after the switch from `cortex.vip` to `moneyguymutants.com` (early July). That timing matches search rankings not carrying over, though it could also be a launch spike wearing off. Checking this in Google Search Console is the first Phase 5 lead.
-3. **Banner ads are live in production today.** They show to every visitor who isn't Pro, above the calculator, before any result. They link to what look like **personal refer-a-friend links** (Rakuten, Chase, Capital One, Discover, SoFi, Cash App and others). This already conflicts with the D1 default ("monetization OFF in production") and with standing rule 9. **Pausing the campaigns in the admin does not stop them.** When the database has no active campaign, the code falls back to a hard-coded copy of the same links. Only a code change can turn them off. **This is Drew's call; Phase 0 does not change it.**
+3. **Banner ads are live in production today.** They show to every visitor who isn't Pro, above the calculator, before any result. They link to what look like **personal refer-a-friend links** (Rakuten, Chase, Capital One, Discover, SoFi, Cash App and others). This already conflicts with the D1 default ("monetization OFF in production") and with standing rule 9. **Pausing the campaigns in the admin does not stop them.** When the database has no active campaign, the code falls back to a hard-coded copy of the same links. Only a code change can turn them off. **Update, Sep 29:** Drew chose to switch them off. A kill switch (`NEXT_PUBLIC_BANNER_ADS_ENABLED`, off by default) now covers both paths; see `DECISIONS.md`.
 4. **Nothing records a finished calculation today.** A `calculation_completed` event name exists but nothing fires it: there are 0 rows. Phase 0 adds `tool_calculation_completed`.
 5. **The donation popup is gone.** Its last event was Jan 20, 2026, and no code fires it now. It can't compete with the result page.
 6. **There is no cookie/consent banner**, while Google Analytics 4 (`G-0PQ1RZVNTS`) loads on every page. This is worth a decision before affiliate tracking goes live.
@@ -116,7 +116,7 @@ Several overlapping lists exist, and none of them is the single source of truth:
 
 **Fallback:**
 - If the DB returns nothing or the request fails, `lib/ads/fallback.ts` builds ads from the hard-coded `components/monetization/affiliates.ts` and `ad-copy.ts`. These carry the same 11 referral URLs.
-- **So there is no way to switch ads off from the admin.** There is also no env kill switch.
+- **So there was no way to switch ads off from the admin**, and there was no env kill switch. Since Sep 29, `NEXT_PUBLIC_BANNER_ADS_ENABLED` (`lib/ads/flags.ts`) gates `AdSlot`, and with it the fallback. It is off unless set to `true`.
 
 **Tracking:**
 - Impressions fire when the ad is at least 50% visible for 1 second. Clicks fire `onClick`, sent via `sendBeacon` to `POST /api/ads/events`, which is rate-limited in memory.
@@ -216,7 +216,7 @@ Several overlapping lists exist, and none of them is the single source of truth:
   - `find_pending_invite(lookup_email)` returns names and a Stripe customer id for a pending invite matching any email.
   - These are pre-existing and out of Phase 0 scope. They're queued as a separate cleanup task.
 
-Phase 0 adds one table (`analytics_excluded_users`) and four views. The migration is **not applied to production yet**, so the advisors can't see these objects; re-run them right after applying.
+Phase 0 adds one table (`analytics_excluded_users`) and four views. The migration was applied to production on Sep 29, 2026, and the security advisors run afterwards returned **exactly the baseline above**: no new findings.
 
 The migration was written to pass the checks above:
 - the new table has RLS on and an explicit service-role policy;
@@ -242,7 +242,7 @@ It was tested end to end on a local Postgres 16 with Supabase's roles recreated:
 | # | Handoff says | Repo / production says | What Phase 0 did |
 |---|---|---|---|
 | 1 | Branch `monetization/phase-0-measure` | This session is required to use `claude/money-guy-monetization-npoo9b` | Used the required branch |
-| 2 | "Apply migrations to a Supabase branch" | Supabase branching is billed per hour, and rule 5 says no spend. No branch exists. | Migration is committed to the repo but **not applied anywhere**. Its SELECT bodies were checked read-only against production. Applying it is Drew's step (see the PR checklist). |
+| 2 | "Apply migrations to a Supabase branch" | Supabase branching is billed per hour, and rule 5 says no spend. No branch exists. | Tested on a local Postgres, then **applied to production on Sep 29 at Drew's instruction** (`DECISIONS.md`). It is additive only, and the advisors are unchanged. |
 | 3 | `ad_events`: "only `impression` exists today; add `click`" | `click` is already allowed by the CHECK constraint and accepted by `/api/ads/events` | Nothing to add for `click`; Phase 1 only needs `outbound` |
 | 4 | "Ad system exists but click tracking does not" | Click tracking exists; 0 clicks on 53 impressions | Noted |
 | 5 | "A donation popup already exists" | Removed; no code fires it; last event Jan 20, 2026 | Nothing to reconcile with result screens |

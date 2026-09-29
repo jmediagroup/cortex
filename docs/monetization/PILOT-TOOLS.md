@@ -1,6 +1,6 @@
 # Pilot tools for Phases 1–3 — proposal (task 0.7)
 
-**Status:** proposal for Drew to approve. Numbers are from `BASELINE-2026-09-29.md`.
+**Status:** **approved by Drew on Sep 29, 2026** (`DECISIONS.md`). Numbers are from `BASELINE-2026-09-29.md`.
 
 ## Recommendation
 

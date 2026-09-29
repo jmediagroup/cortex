@@ -265,3 +265,28 @@ test('advertiser fields: slug derived from name, url must be http(s)', () => {
   );
   assert.throws(() => pickAdvertiserFields({ name: 'X', url: 'https://x.com', category: 'nope' }), AdsValidationError);
 });
+
+// ---------------------------------------------------------------------------
+// Kill switch (lib/ads/flags.ts)
+// ---------------------------------------------------------------------------
+
+const { bannerAdsEnabled } = await import('../lib/ads/flags.ts');
+
+test('banner ads are off unless the flag is exactly "true"', () => {
+  assert.equal(bannerAdsEnabled(undefined), false);
+  assert.equal(bannerAdsEnabled(''), false);
+  for (const value of ['false', '0', '1', 'yes', 'TRUE', ' true']) {
+    assert.equal(bannerAdsEnabled(value), false, value);
+  }
+  assert.equal(bannerAdsEnabled('true'), true);
+});
+
+test('every ad placement goes through the kill switch', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const slot = await readFile(new URL('../components/monetization/AdSlot.tsx', import.meta.url), 'utf8');
+  assert.match(slot, /export default function AdSlot\(props: AdSlotProps\) \{\s*return bannerAdsEnabled\(\) \?/);
+  // InlineAd (tool pages, budget) renders AdSlot rather than ads of its own.
+  const inline = await readFile(new URL('../components/monetization/InlineAd.tsx', import.meta.url), 'utf8');
+  assert.match(inline, /<AdSlot /);
+  assert.doesNotMatch(inline, /IABAd/);
+});
