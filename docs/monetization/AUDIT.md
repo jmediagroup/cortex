@@ -116,6 +116,7 @@ Several overlapping lists exist, and none of them is the single source of truth:
 
 **Fallback:**
 - If the DB returns nothing or the request fails, `lib/ads/fallback.ts` builds ads from the hard-coded `components/monetization/affiliates.ts` and `ad-copy.ts`. These carry the same 11 referral URLs.
+- If the banners are ever switched back on, note that banner serving (`lib/ads/public.ts`) and its hard-coded fallback do not check `program_status`. The Phase 1 approval rules apply to the after-the-result offers only.
 - **So there was no way to switch ads off from the admin**, and there was no env kill switch. Since Sep 29, `NEXT_PUBLIC_BANNER_ADS_ENABLED` (`lib/ads/flags.ts`) gates `AdSlot`, and with it the fallback. It is off unless set to `true`.
 
 **Tracking:**
@@ -258,3 +259,8 @@ It was tested end to end on a local Postgres 16 with Supabase's roles recreated:
 | 15 | Owner exclusion via "IP hashes" | Events go browser → Supabase directly; no server ever sees the IP | Exclusion uses admin user ids (env), a per-browser "internal" flag, bot user agents and non-production hosts |
 | 16 | Pilot tools: `index-fund-visualizer`, `rent-vs-buy`, `car-affordability` | `car-affordability` had 1 view in 30 days; `coast-fire` has two-thirds of current traffic | Proposal swaps in `coast-fire` (`PILOT-TOOLS.md`) |
 | 17 | Lint must be green | `npm run lint` already reports 186 errors / 78 warnings on `main` | New and changed files lint clean; pre-existing errors untouched |
+| 18 | Phase 1: add `ad_campaigns.context` (`post_result`) | The placement already says it: campaigns on `tool-post-result` are the after-the-result offers | No `context` column; the placement is the context |
+| 19 | Phase 1: kill switch `OFFERS_ENABLED` | The offer card is a browser component, and Next.js only exposes `NEXT_PUBLIC_*` variables to the browser (inlined at build time) | Named `NEXT_PUBLIC_OFFERS_ENABLED`; changing it needs a redeploy |
+| 20 | Phase 1: `ad_events` "allow `click` and `outbound`" | `click` was already allowed | Added `outbound` only; `ad_stats_daily` now counts both as clicks |
+| 21 | Phase 1: tool → offer map (mortgage for Rent vs Buy) | `ad_advertisers.category` had no mortgage option | Added the `mortgage` category |
+| 22 | Phase 1: where offer copy lives (not specified) | The ad system keeps copy in `ad_creatives` with per-format limits | New creative format `offer_card` (headline 70, body 160, CTA 30 characters) |
