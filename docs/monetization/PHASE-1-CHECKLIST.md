@@ -3,7 +3,7 @@
 Everything below is off until you do these steps, in this order. Each step is safe to stop after.
 
 ## 1. Before merging the Phase 1 PR
-- [ ] **Apply the two migrations** (Claude can do this when you say so):
+- [x] **Apply the two migrations.** Done on Sep 29, 2026 at Drew's go (`DECISIONS.md`):
   - `20260929140000_offers_engine.sql`
   - `20260929140100_seed_offer_placeholders.sql`
 
