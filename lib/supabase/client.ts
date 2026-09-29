@@ -475,6 +475,11 @@ export type Database = {
           category: string;
           is_active: boolean;
           notes: string | null;
+          network: 'impact' | 'direct' | 'other' | null;
+          program_status: 'draft' | 'applied' | 'approved' | 'paused' | 'rejected';
+          terms_verified_at: string | null;
+          disclosure_text: string | null;
+          payout_note: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -489,6 +494,11 @@ export type Database = {
           category?: string;
           is_active?: boolean;
           notes?: string | null;
+          network?: 'impact' | 'direct' | 'other' | null;
+          program_status?: 'draft' | 'applied' | 'approved' | 'paused' | 'rejected';
+          terms_verified_at?: string | null;
+          disclosure_text?: string | null;
+          payout_note?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -502,6 +512,11 @@ export type Database = {
           category?: string;
           is_active?: boolean;
           notes?: string | null;
+          network?: 'impact' | 'direct' | 'other' | null;
+          program_status?: 'draft' | 'applied' | 'approved' | 'paused' | 'rejected';
+          terms_verified_at?: string | null;
+          disclosure_text?: string | null;
+          payout_note?: string | null;
           updated_at?: string;
         };
         Relationships: [];
@@ -552,6 +567,8 @@ export type Database = {
           ends_at: string | null;
           hide_for_tiers: string[];
           notes: string | null;
+          tracking_url: string | null;
+          sub_id_template: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -570,6 +587,8 @@ export type Database = {
           ends_at?: string | null;
           hide_for_tiers?: string[];
           notes?: string | null;
+          tracking_url?: string | null;
+          sub_id_template?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -587,6 +606,8 @@ export type Database = {
           ends_at?: string | null;
           hide_for_tiers?: string[];
           notes?: string | null;
+          tracking_url?: string | null;
+          sub_id_template?: string | null;
           updated_at?: string;
         };
         Relationships: [];
@@ -596,7 +617,7 @@ export type Database = {
           id: string;
           campaign_id: string;
           seed_key: string | null;
-          format: 'medium_rectangle' | 'leaderboard' | 'mobile_banner' | 'large_rectangle';
+          format: 'medium_rectangle' | 'leaderboard' | 'mobile_banner' | 'large_rectangle' | 'offer_card';
           headline: string;
           body: string | null;
           body_line2: string | null;
@@ -610,7 +631,7 @@ export type Database = {
           id?: string;
           campaign_id: string;
           seed_key?: string | null;
-          format: 'medium_rectangle' | 'leaderboard' | 'mobile_banner' | 'large_rectangle';
+          format: 'medium_rectangle' | 'leaderboard' | 'mobile_banner' | 'large_rectangle' | 'offer_card';
           headline: string;
           body?: string | null;
           body_line2?: string | null;
@@ -623,7 +644,7 @@ export type Database = {
         Update: {
           campaign_id?: string;
           seed_key?: string | null;
-          format?: 'medium_rectangle' | 'leaderboard' | 'mobile_banner' | 'large_rectangle';
+          format?: 'medium_rectangle' | 'leaderboard' | 'mobile_banner' | 'large_rectangle' | 'offer_card';
           headline?: string;
           body?: string | null;
           body_line2?: string | null;
@@ -637,7 +658,7 @@ export type Database = {
       ad_events: {
         Row: {
           id: number;
-          event_type: 'impression' | 'click';
+          event_type: 'impression' | 'click' | 'outbound';
           campaign_id: string | null;
           creative_id: string | null;
           advertiser_id: string | null;
@@ -652,7 +673,7 @@ export type Database = {
         };
         Insert: {
           id?: never;
-          event_type: 'impression' | 'click';
+          event_type: 'impression' | 'click' | 'outbound';
           campaign_id?: string | null;
           creative_id?: string | null;
           advertiser_id?: string | null;
@@ -666,7 +687,46 @@ export type Database = {
           created_at?: string;
         };
         Update: {
-          event_type?: 'impression' | 'click';
+          event_type?: 'impression' | 'click' | 'outbound';
+        };
+        Relationships: [];
+      };
+      // Affiliate conversions and payouts (20260929140000_offers_engine.sql).
+      // Service role only; amounts come from the network's own report.
+      offer_conversions: {
+        Row: {
+          id: string;
+          campaign_id: string | null;
+          tool_id: string | null;
+          occurred_on: string;
+          status: 'pending' | 'confirmed' | 'reversed';
+          amount_cents: number | null;
+          source: 'manual' | 'csv' | 'network';
+          external_id: string | null;
+          note: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          campaign_id?: string | null;
+          tool_id?: string | null;
+          occurred_on: string;
+          status?: 'pending' | 'confirmed' | 'reversed';
+          amount_cents?: number | null;
+          source?: 'manual' | 'csv' | 'network';
+          external_id?: string | null;
+          note?: string | null;
+        };
+        Update: {
+          campaign_id?: string | null;
+          tool_id?: string | null;
+          occurred_on?: string;
+          status?: 'pending' | 'confirmed' | 'reversed';
+          amount_cents?: number | null;
+          source?: 'manual' | 'csv' | 'network';
+          external_id?: string | null;
+          note?: string | null;
         };
         Relationships: [];
       };

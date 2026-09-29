@@ -30,6 +30,7 @@ const LINK_GROUPS: LinkGroup[] = [
     links: [
       { label: 'Terms', href: '/terms' },
       { label: 'Privacy', href: '/terms' },
+      { label: 'Disclosure', href: '/disclosure' },
       { label: 'Security', href: '/security' },
     ],
   },

@@ -7,6 +7,7 @@ import { CalculatorSkeleton } from '@/components/ui';
 import { InlineAd } from '@/components/monetization';
 import { ToolUpsellCta } from '@/components/app/ToolLayout';
 import { ToolFunnel } from '@/components/app/ToolFunnel';
+import ResultOffer from '@/components/offers/ResultOffer';
 import { useToolPageData } from '@/lib/useToolPageData';
 
 export type ToolProps = {
@@ -78,7 +79,7 @@ function ToolIslandInner({
   hideAd,
 }: Props) {
   const router = useRouter();
-  const { hasSession, isPro, initialValues } = useToolPageData({ toolId, toolName, toolPath });
+  const { hasSession, isPro, loading: sessionLoading, initialValues } = useToolPageData({ toolId, toolName, toolPath });
   const Tool = TOOL_COMPONENTS[toolId];
 
   return (
@@ -98,6 +99,7 @@ function ToolIslandInner({
             router.push((hasSession ? upgradeHref : guestUpgradeHref ?? upgradeHref) ?? '/pricing')
           }
         />
+        <ResultOffer toolId={toolId} tier={isPro ? 'finance_pro' : hasSession ? 'free' : null} ready={!sessionLoading} />
       </ToolFunnel>
     </>
   );

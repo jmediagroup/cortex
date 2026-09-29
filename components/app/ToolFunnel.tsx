@@ -1,6 +1,15 @@
 'use client';
 
-import { useCallback, useEffect, useRef, type MouseEvent, type ReactNode } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type MouseEvent,
+  type ReactNode,
+} from 'react';
 import { captureSessionAttribution, isSignedIn, trackEvent } from '@/lib/analytics';
 import { COMPLETION_SETTLE_MS, timeAfterResultBucket } from '@/lib/tool-funnel';
 
@@ -20,6 +29,8 @@ type Options = {
  * - `result_exit_intent` once, if the visitor leaves after completing.
  *
  * Payloads carry the tool id, booleans and buckets only — never the inputs.
+ * `completed` turns true at the same moment, for what may only appear after
+ * a result (the Phase 1 offer card).
  */
 export function useToolFunnel(toolId: string, { fromScenario = false }: Options = {}) {
   const viewed = useRef(false);
@@ -27,6 +38,7 @@ export function useToolFunnel(toolId: string, { fromScenario = false }: Options 
   const exitSent = useRef(false);
   const settleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const scenario = useRef(fromScenario);
+  const [completed, setCompleted] = useState(false);
 
   useEffect(() => {
     scenario.current = fromScenario;
@@ -35,6 +47,7 @@ export function useToolFunnel(toolId: string, { fromScenario = false }: Options 
   const markCompleted = useCallback(() => {
     if (completedAt.current !== null) return;
     completedAt.current = Date.now();
+    setCompleted(true);
     void trackEvent('tool_calculation_completed', {
       tool_id: toolId,
       is_logged_in: isSignedIn(),
@@ -79,7 +92,14 @@ export function useToolFunnel(toolId: string, { fromScenario = false }: Options 
     };
   }, [toolId]);
 
-  return { noteInteraction, markCompleted };
+  return { noteInteraction, markCompleted, completed };
+}
+
+const ResultShownContext = createContext(false);
+
+/** True once the visitor inside the nearest <ToolFunnel> has a result on screen. */
+export function useResultShown(): boolean {
+  return useContext(ResultShownContext);
 }
 
 type Props = Options & {
@@ -94,7 +114,7 @@ type Props = Options & {
  * (`display: contents`), so layout is unchanged.
  */
 export function ToolFunnel({ toolId, fromScenario, children }: Props) {
-  const { noteInteraction } = useToolFunnel(toolId, { fromScenario });
+  const { noteInteraction, completed } = useToolFunnel(toolId, { fromScenario });
 
   const onClick = useCallback(
     (event: MouseEvent<HTMLDivElement>) => {
@@ -106,7 +126,7 @@ export function ToolFunnel({ toolId, fromScenario, children }: Props) {
 
   return (
     <div style={{ display: 'contents' }} onInput={noteInteraction} onChange={noteInteraction} onClick={onClick}>
-      {children}
+      <ResultShownContext.Provider value={completed}>{children}</ResultShownContext.Provider>
     </div>
   );
 }

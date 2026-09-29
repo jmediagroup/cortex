@@ -153,7 +153,11 @@ export function ToolLayout({
         >
           Money Guy Mutants is an independent, fan-made project and is not
           affiliated with, endorsed by, or sponsored by The Money Guy Show or
-          Abound Wealth Management, LLC.
+          Abound Wealth Management, LLC.{' '}
+          <Link href="/disclosure" style={{ color: 'inherit', textDecoration: 'underline' }}>
+            How we make money
+          </Link>
+          .
         </p>
       </footer>
     </div>

@@ -5,7 +5,7 @@
  * both the public ad components and the admin editors.
  */
 
-export const AD_FORMATS = ['medium_rectangle', 'leaderboard', 'mobile_banner', 'large_rectangle'] as const;
+export const AD_FORMATS = ['medium_rectangle', 'leaderboard', 'mobile_banner', 'large_rectangle', 'offer_card'] as const;
 export type AdFormat = (typeof AD_FORMATS)[number];
 
 export const AD_FORMAT_LABELS: Record<AdFormat, string> = {
@@ -13,9 +13,13 @@ export const AD_FORMAT_LABELS: Record<AdFormat, string> = {
   leaderboard: 'Leaderboard (728×90)',
   mobile_banner: 'Mobile banner (320×100)',
   large_rectangle: 'Large rectangle (336×280)',
+  offer_card: 'Offer card (after the result)',
 };
 
-export const PLACEMENT_SLUGS = ['tool-inline-top', 'tool-below-results', 'tool-sidebar'] as const;
+export const PLACEMENT_SLUGS = ['tool-inline-top', 'tool-below-results', 'tool-sidebar', 'tool-post-result'] as const;
+
+/** The placement for the single, disclosed offer shown after a result (Phase 1). */
+export const POST_RESULT_PLACEMENT = 'tool-post-result';
 export type PlacementSlug = (typeof PLACEMENT_SLUGS)[number];
 
 export const CAMPAIGN_STATUSES = ['draft', 'active', 'paused', 'archived'] as const;
@@ -32,10 +36,18 @@ export const ADVERTISER_CATEGORIES = [
   'security',
   'rewards',
   'credit-cards',
+  'mortgage',
 ] as const;
 export type AdvertiserCategory = (typeof ADVERTISER_CATEGORIES)[number];
 
 export const AD_TIERS = ['free', 'finance_pro'] as const;
+
+/** Where Drew's application with an affiliate program stands. Only 'approved' renders. */
+export const PROGRAM_STATUSES = ['draft', 'applied', 'approved', 'paused', 'rejected'] as const;
+export type ProgramStatus = (typeof PROGRAM_STATUSES)[number];
+
+export const AD_NETWORKS = ['impact', 'direct', 'other'] as const;
+export type AdNetwork = (typeof AD_NETWORKS)[number];
 
 /** Every tool under /apps that can host an ad slot. */
 export const TOOL_IDS = [
@@ -64,6 +76,7 @@ export const CREATIVE_LIMITS: Record<AdFormat, { headline: number; body: number;
   mobile_banner: { headline: 40, body: 0, cta: 30 },
   medium_rectangle: { headline: 40, body: 60, cta: 30 },
   large_rectangle: { headline: 40, body: 60, cta: 30 },
+  offer_card: { headline: 70, body: 160, cta: 30 },
 };
 
 /** The shape handed to the ad components — one renderable creative. */
@@ -91,7 +104,7 @@ export interface AdsResponse {
   source: 'db' | 'fallback';
 }
 
-export type AdEventType = 'impression' | 'click';
+export type AdEventType = 'impression' | 'click' | 'outbound';
 
 export interface AdEventPayload {
   type: AdEventType;
@@ -120,6 +133,12 @@ export interface AdvertiserRow {
   category: AdvertiserCategory;
   is_active: boolean;
   notes: string | null;
+  network: AdNetwork | null;
+  program_status: ProgramStatus;
+  terms_verified_at: string | null;
+  disclosure_text: string | null;
+  /** Internal free-text note about the payout terms. Never rendered or parsed. */
+  payout_note: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -150,6 +169,10 @@ export interface CampaignRow {
   ends_at: string | null;
   hide_for_tiers: string[];
   notes: string | null;
+  /** Approved affiliate link, or a <<PASTE_AFFILIATE_URL>> placeholder. May contain {sub_id}. */
+  tracking_url: string | null;
+  /** e.g. {tool_id}-{session_short}; fills {sub_id} in tracking_url. */
+  sub_id_template: string | null;
   created_at: string;
   updated_at: string;
 }
