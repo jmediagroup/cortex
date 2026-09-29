@@ -6,12 +6,15 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, Copy, Loader2, Plus, Save, Trash2, X, Eye } from 'lucide-react';
 import { useAdminApi, readError } from './useAdminApi';
 import IABAd from '@/components/monetization/IABAd';
+import { OfferCard } from '@/components/offers/ResultOffer';
+import { offerBlockers, offersEnabled } from '@/lib/offers/eligibility';
 import {
   AD_FORMATS,
   AD_FORMAT_LABELS,
   AD_TIERS,
   CAMPAIGN_STATUSES,
   CREATIVE_LIMITS,
+  POST_RESULT_PLACEMENT,
   TOOL_IDS,
   type AdFormat,
   type AdvertiserRow,
@@ -46,6 +49,8 @@ interface FormState {
   ends_at: string; // datetime-local
   hide_for_tiers: string[];
   notes: string;
+  tracking_url: string;
+  sub_id_template: string;
   creatives: CreativeForm[];
 }
 
@@ -63,6 +68,8 @@ const EMPTY: FormState = {
   ends_at: '',
   hide_for_tiers: ['finance_pro'],
   notes: '',
+  tracking_url: '',
+  sub_id_template: '{tool_id}-{session_short}',
   creatives: [],
 };
 
@@ -167,6 +174,8 @@ export default function CampaignEditor({
             ends_at: isoToLocal(campaign.ends_at),
             hide_for_tiers: campaign.hide_for_tiers ?? [],
             notes: campaign.notes ?? '',
+            tracking_url: campaign.tracking_url ?? '',
+            sub_id_template: campaign.sub_id_template ?? '',
             creatives,
           });
           setShowExclude((campaign.exclude_tool_ids ?? []).length > 0);
@@ -195,6 +204,7 @@ export default function CampaignEditor({
   const placement = placements.find((p) => p.id === form.placement_id) ?? null;
   const advertiser = advertisers.find((a) => a.id === form.advertiser_id) ?? null;
   const placementFormats: AdFormat[] = placement?.formats?.length ? placement.formats : [...AD_FORMATS];
+  const isOfferPlacement = placement?.slug === POST_RESULT_PLACEMENT;
   const otherFormats = AD_FORMATS.filter((f) => !placementFormats.includes(f));
 
   // ----- creatives ---------------------------------------------------------
@@ -259,6 +269,51 @@ export default function CampaignEditor({
     };
   }, [previewCreative, advertiser, campaignId]);
 
+  // What still keeps this after-the-result offer from showing, against the
+  // same rules the site applies (lib/offers/eligibility.ts), as currently edited.
+  const offerIssues = useMemo(() => {
+    if (!isOfferPlacement) return [];
+    const offerCreatives = form.creatives.filter((c) => c.format === 'offer_card' && c.is_active);
+    const base = {
+      enabled: offersEnabled(),
+      placementSlug: placement?.slug ?? null,
+      advertiser: advertiser
+        ? {
+            id: advertiser.id,
+            name: advertiser.name,
+            is_active: advertiser.is_active,
+            program_status: advertiser.program_status ?? 'draft',
+            disclosure_text: advertiser.disclosure_text ?? null,
+          }
+        : null,
+      campaign: {
+        id: campaignId ?? 'new',
+        slug: null,
+        status: form.status,
+        starts_at: localToIso(form.starts_at),
+        ends_at: localToIso(form.ends_at),
+        tracking_url: form.tracking_url.trim() || null,
+        sub_id_template: form.sub_id_template.trim() || null,
+        tool_ids: form.allTools ? null : form.tool_ids,
+        hide_for_tiers: form.hide_for_tiers,
+        weight: form.weight,
+        priority: form.priority,
+      },
+    };
+    const issues = new Set<string>();
+    if (!offerCreatives.length) {
+      offerBlockers({ ...base, creative: null }).forEach((r) => issues.add(r));
+    } else {
+      for (const c of offerCreatives) {
+        offerBlockers({
+          ...base,
+          creative: { id: c.localId, format: c.format, headline: c.headline, body: c.body || null, cta: c.cta, weight: c.weight, is_active: c.is_active },
+        }).forEach((r) => issues.add(r));
+      }
+    }
+    return [...issues];
+  }, [isOfferPlacement, form, placement, advertiser, campaignId]);
+
   // ----- save / delete -----------------------------------------------------
   function validateLocally(): string | null {
     if (!form.name.trim()) return 'Name is required';
@@ -293,12 +348,14 @@ export default function CampaignEditor({
       ends_at: localToIso(form.ends_at),
       hide_for_tiers: form.hide_for_tiers,
       notes: form.notes.trim() || null,
+      tracking_url: form.tracking_url.trim() || null,
+      sub_id_template: form.sub_id_template.trim() || null,
       creatives: form.creatives.map((c) => ({
         id: c.id,
         format: c.format,
         headline: c.headline.trim(),
         body: CREATIVE_LIMITS[c.format].body > 0 ? c.body.trim() || null : null,
-        body_line2: CREATIVE_LIMITS[c.format].body > 0 ? c.body_line2.trim() || null : null,
+        body_line2: CREATIVE_LIMITS[c.format].body > 0 && c.format !== 'offer_card' ? c.body_line2.trim() || null : null,
         cta: c.cta.trim(),
         weight: c.weight,
         is_active: c.is_active,
@@ -466,13 +523,15 @@ export default function CampaignEditor({
                         </div>
                         <input className={inputClass} value={c.body} onChange={(e) => updateCreative(c.localId, { body: e.target.value })} placeholder="First line of supporting copy" />
                       </div>
-                      <div>
-                        <div className="mb-1 flex items-center justify-between">
-                          <label className={`${labelClass} mb-0`}>Body line 2</label>
-                          <Counter format={format} field="body" value={c.body_line2} />
+                      {format !== 'offer_card' && (
+                        <div>
+                          <div className="mb-1 flex items-center justify-between">
+                            <label className={`${labelClass} mb-0`}>Body line 2</label>
+                            <Counter format={format} field="body" value={c.body_line2} />
+                          </div>
+                          <input className={inputClass} value={c.body_line2} onChange={(e) => updateCreative(c.localId, { body_line2: e.target.value })} placeholder="Optional second line" />
                         </div>
-                        <input className={inputClass} value={c.body_line2} onChange={(e) => updateCreative(c.localId, { body_line2: e.target.value })} placeholder="Optional second line" />
-                      </div>
+                      )}
                     </>
                   )}
                 </div>
@@ -536,6 +595,53 @@ export default function CampaignEditor({
             <input className={inputClass} value={form.name} onChange={(e) => set('name', e.target.value)} placeholder="SoFi — inline top" />
           </div>
 
+          {isOfferPlacement && (
+            <div className={cardClass}>
+              <h2 className="text-base font-bold text-[var(--text-primary)] mb-3">Offer link</h2>
+              <label className={labelClass}>Affiliate link</label>
+              <input
+                className={inputClass}
+                value={form.tracking_url}
+                onChange={(e) => set('tracking_url', e.target.value)}
+                placeholder="<<PASTE_AFFILIATE_URL>>"
+              />
+              <p className="mt-1 text-xs text-[var(--text-tertiary)]">
+                Paste the link exactly as the network gives it. To pass a sub-ID, put <code>{'{sub_id}'}</code> where the
+                network&apos;s sub-ID parameter goes. Visitors never see this link; they go through /go/.
+              </p>
+              <label className={`${labelClass} mt-4`}>Sub-ID template</label>
+              <input
+                className={inputClass}
+                value={form.sub_id_template}
+                onChange={(e) => set('sub_id_template', e.target.value)}
+                placeholder="{tool_id}-{session_short}"
+              />
+              <p className="mt-1 text-xs text-[var(--text-tertiary)]">
+                Only <code>{'{tool_id}'}</code> and <code>{'{session_short}'}</code> (a short hash — no personal data).
+              </p>
+              <div
+                className={`mt-4 rounded-[var(--radius-md)] border px-4 py-3 text-sm ${
+                  offerIssues.length
+                    ? 'border-[var(--border-primary)] bg-[var(--surface-secondary)] text-[var(--text-secondary)]'
+                    : 'border-[var(--emerald-border)] bg-[var(--emerald-50)] text-[var(--emerald-600)]'
+                }`}
+              >
+                {offerIssues.length ? (
+                  <>
+                    <p className="font-bold text-[var(--text-primary)] mb-1">Not showing on the site yet, because:</p>
+                    <ul className="list-disc pl-5 space-y-0.5">
+                      {offerIssues.map((r) => (
+                        <li key={r}>{r}</li>
+                      ))}
+                    </ul>
+                  </>
+                ) : (
+                  <p className="font-bold">Ready: once saved, this offer can show after a result on its tools.</p>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Live preview */}
           <div className={cardClass}>
             <div className="mb-3 flex items-center justify-between">
@@ -544,7 +650,20 @@ export default function CampaignEditor({
                 <span className="text-xs text-[var(--text-tertiary)]">{AD_FORMAT_LABELS[previewCreative.format]}</span>
               )}
             </div>
-            {previewAd ? (
+            {previewAd && previewCreative?.format === 'offer_card' ? (
+              <div className="rounded-[var(--radius-md)] bg-[var(--surface-secondary)] p-6">
+                <OfferCard
+                  offer={{
+                    advertiserName: previewAd.advertiser.name,
+                    headline: previewAd.headline,
+                    body: previewAd.body ?? null,
+                    cta: previewAd.cta,
+                    disclosure: advertiser?.disclosure_text ?? null,
+                  }}
+                  href="#"
+                />
+              </div>
+            ) : previewAd ? (
               <div className="flex justify-center overflow-x-auto rounded-[var(--radius-md)] bg-[var(--surface-secondary)] p-6">
                 <IABAd creative={previewAd} onClick={() => {}} />
               </div>

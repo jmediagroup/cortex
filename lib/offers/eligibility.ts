@@ -30,6 +30,7 @@ export interface OfferAdvertiser {
 export interface OfferCampaign {
   id: string;
   slug: string | null;
+  name?: string;
   status: string;
   starts_at: string | null;
   ends_at: string | null;

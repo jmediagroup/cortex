@@ -5,7 +5,14 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Loader2, Save, Trash2, Plus, ExternalLink } from 'lucide-react';
 import { useAdminApi, readError } from './useAdminApi';
-import { ADVERTISER_CATEGORIES, type AdvertiserCategory } from '@/lib/ads/types';
+import {
+  AD_NETWORKS,
+  ADVERTISER_CATEGORIES,
+  PROGRAM_STATUSES,
+  type AdNetwork,
+  type AdvertiserCategory,
+  type ProgramStatus,
+} from '@/lib/ads/types';
 import { slugify } from '@/lib/ads/validation';
 
 interface FormState {
@@ -18,6 +25,12 @@ interface FormState {
   cta: string;
   is_active: boolean;
   notes: string;
+  program_status: ProgramStatus;
+  network: AdNetwork | '';
+  /** YYYY-MM-DD, or '' when never verified. */
+  terms_verified_at: string;
+  disclosure_text: string;
+  payout_note: string;
 }
 
 const EMPTY: FormState = {
@@ -30,6 +43,19 @@ const EMPTY: FormState = {
   cta: '',
   is_active: true,
   notes: '',
+  program_status: 'draft',
+  network: '',
+  terms_verified_at: '',
+  disclosure_text: '',
+  payout_note: '',
+};
+
+const PROGRAM_STATUS_HELP: Record<ProgramStatus, string> = {
+  draft: 'Not applied yet.',
+  applied: 'Application sent; waiting to hear back.',
+  approved: 'Approved — its campaigns may show offers once everything else is filled in.',
+  paused: 'On hold; nothing shows.',
+  rejected: 'The program said no; nothing shows.',
 };
 
 const inputClass =
@@ -66,6 +92,11 @@ export default function AdvertiserEditor({ advertiserId }: { advertiserId?: stri
           cta: advertiser.cta ?? '',
           is_active: Boolean(advertiser.is_active),
           notes: advertiser.notes ?? '',
+          program_status: advertiser.program_status ?? 'draft',
+          network: advertiser.network ?? '',
+          terms_verified_at: advertiser.terms_verified_at ? String(advertiser.terms_verified_at).slice(0, 10) : '',
+          disclosure_text: advertiser.disclosure_text ?? '',
+          payout_note: advertiser.payout_note ?? '',
         });
         setSlugTouched(true);
       } catch (e) {
@@ -101,6 +132,11 @@ export default function AdvertiserEditor({ advertiserId }: { advertiserId?: stri
         cta: form.cta.trim() || null,
         is_active: form.is_active,
         notes: form.notes.trim() || null,
+        program_status: form.program_status,
+        network: form.network || null,
+        terms_verified_at: form.terms_verified_at ? `${form.terms_verified_at}T00:00:00Z` : null,
+        disclosure_text: form.disclosure_text.trim() || null,
+        payout_note: form.payout_note.trim() || null,
       };
       const res = advertiserId
         ? await api(`/api/admin/ads/advertisers/${advertiserId}`, { method: 'PATCH', body: JSON.stringify(payload) })
@@ -238,6 +274,20 @@ export default function AdvertiserEditor({ advertiserId }: { advertiserId?: stri
               <input className={inputClass} value={form.cta} onChange={(e) => set('cta', e.target.value.slice(0, 30))} placeholder="Try it free" />
               <p className="mt-1 text-xs text-[var(--text-tertiary)]">{30 - form.cta.length} characters left. Creatives each carry their own CTA; this is the suggested default.</p>
             </div>
+            <div className="mt-4">
+              <label className={labelClass}>Offer disclosure (optional)</label>
+              <textarea
+                className={inputClass}
+                rows={3}
+                maxLength={500}
+                value={form.disclosure_text}
+                onChange={(e) => set('disclosure_text', e.target.value)}
+                placeholder="Leave empty to use the standard wording."
+              />
+              <p className="mt-1 text-xs text-[var(--text-tertiary)]">
+                Shown right next to the offer&apos;s button. Only fill this in if the program requires its own wording.
+              </p>
+            </div>
           </div>
         </div>
 
@@ -256,6 +306,48 @@ export default function AdvertiserEditor({ advertiserId }: { advertiserId?: stri
               Active
             </label>
             <p className="mt-1 text-xs text-[var(--text-tertiary)]">Inactive advertisers stop serving every campaign, regardless of campaign status.</p>
+          </div>
+          <div className={cardClass}>
+            <label className={labelClass}>Affiliate program</label>
+            <select
+              className={inputClass}
+              value={form.program_status}
+              onChange={(e) => set('program_status', e.target.value as ProgramStatus)}
+            >
+              {PROGRAM_STATUSES.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+            <p className="mt-1 text-xs text-[var(--text-tertiary)]">{PROGRAM_STATUS_HELP[form.program_status]}</p>
+            <label className={`${labelClass} mt-4`}>Network</label>
+            <select className={inputClass} value={form.network} onChange={(e) => set('network', e.target.value as AdNetwork | '')}>
+              <option value="">—</option>
+              {AD_NETWORKS.map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </select>
+            <label className={`${labelClass} mt-4`}>Terms verified on</label>
+            <input
+              type="date"
+              className={inputClass}
+              value={form.terms_verified_at}
+              onChange={(e) => set('terms_verified_at', e.target.value)}
+            />
+            <p className="mt-1 text-xs text-[var(--text-tertiary)]">The day you checked the program&apos;s current terms yourself.</p>
+            <label className={`${labelClass} mt-4`}>Payout note (internal)</label>
+            <textarea
+              className={inputClass}
+              rows={3}
+              maxLength={1000}
+              value={form.payout_note}
+              onChange={(e) => set('payout_note', e.target.value)}
+              placeholder="What the program pays, in its own words."
+            />
+            <p className="mt-1 text-xs text-[var(--text-tertiary)]">Never shown to visitors and never used in any calculation.</p>
           </div>
           <div className={cardClass}>
             <label className={labelClass}>Notes</label>

@@ -21,7 +21,7 @@ export interface OfferCampaignRow {
 }
 
 const CAMPAIGN_SELECT =
-  'id,slug,status,starts_at,ends_at,tracking_url,sub_id_template,tool_ids,exclude_tool_ids,hide_for_tiers,weight,priority,' +
+  'id,slug,name,status,starts_at,ends_at,tracking_url,sub_id_template,tool_ids,exclude_tool_ids,hide_for_tiers,weight,priority,' +
   'ad_placements(slug),' +
   'ad_advertisers(id,name,is_active,program_status,disclosure_text),' +
   'ad_creatives(id,format,headline,body,cta,weight,is_active)';

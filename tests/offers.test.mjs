@@ -212,3 +212,75 @@ test('the disclosure wording says what the rules guarantee', async () => {
   assert.match(DEFAULT_OFFER_DISCLOSURE, /doesn't change what you pay/);
   assert.match(DEFAULT_OFFER_DISCLOSURE, /not financial advice/);
 });
+
+// ---------------------------------------------------------------------------
+// Conversion import (lib/offers/conversions.ts)
+// ---------------------------------------------------------------------------
+
+const { parseConversionsCsv, parseCsv } = await import('../lib/offers/conversions.ts');
+
+test('a network report imports with its own status words and amounts', () => {
+  const { rows, errors } = parseConversionsCsv(
+    [
+      'Date,Campaign,Status,Amount,ID,Tool,Note',
+      '2026-10-01,offer-brokerage-pilot,Approved,$1,200.50,IMP-1,coast-fire,',
+      '10/2/2026,offer-mortgage-pilot,pending,,IMP-2,,"lead, not funded"',
+      '2026-10-03,offer-brokerage-pilot,Declined,12,IMP-3,index-fund-visualizer,',
+    ].join('\r\n'),
+  );
+  // An unquoted "$1,200.50" splits into two cells and shifts every later
+  // column; the row is refused rather than imported as $1.00 with a wrong id.
+  assert.deepEqual(errors, [
+    'Row 2: has 8 columns but the header has 7; put quotes around values with commas (e.g. "1,200.50").',
+  ]);
+  assert.equal(rows.length, 2);
+  assert.deepEqual(rows[0], {
+    campaignSlug: 'offer-mortgage-pilot',
+    occurred_on: '2026-10-02',
+    status: 'pending',
+    amount_cents: null,
+    external_id: 'IMP-2',
+    tool_id: null,
+    note: 'lead, not funded',
+  });
+  assert.equal(rows[1].status, 'reversed');
+  assert.equal(rows[1].amount_cents, 1200);
+});
+
+test('a split amount is refused even when no other column would catch it', () => {
+  const { rows, errors } = parseConversionsCsv('date,campaign,status,amount,id\n2026-10-01,a,confirmed,$1,200.50,X');
+  assert.equal(rows.length, 0);
+  assert.match(errors[0], /^Row 2: has 6 columns but the header has 5/);
+});
+
+test('quoted amounts with thousands separators become exact cents', () => {
+  const { rows, errors } = parseConversionsCsv('date,campaign,status,amount,id\n2026-10-01,a,confirmed,"$1,200.50",X\n2026-10-01,a,paid,0.1,Y');
+  assert.deepEqual(errors, []);
+  assert.deepEqual(rows.map((r) => r.amount_cents), [120050, 10]);
+  assert.deepEqual(rows.map((r) => r.status), ['confirmed', 'confirmed']);
+});
+
+test('bad rows are reported by line and never guessed at', () => {
+  const { rows, errors } = parseConversionsCsv(
+    'date,campaign,status,amount\n2026-02-30,a,confirmed,5\n2026-10-01,A B,confirmed,5\n2026-10-01,a,maybe,5\n2026-10-01,a,confirmed,-5\n2026-10-01,a,confirmed,1.234',
+  );
+  assert.equal(rows.length, 0);
+  assert.equal(errors.length, 5);
+  assert.match(errors[0], /^Row 2: needs a date/);
+  assert.match(errors[2], /status/);
+});
+
+test('missing columns and empty files are explained', () => {
+  assert.deepEqual(parseConversionsCsv('').errors, ['The file is empty.']);
+  assert.deepEqual(parseConversionsCsv('date,amount\n2026-10-01,5').errors, [
+    'Missing the "campaign" column.',
+    'Missing the "status" column.',
+  ]);
+});
+
+test('the CSV reader handles quotes, escaped quotes and blank lines', () => {
+  assert.deepEqual(parseCsv('a,"b ""c"", d",e\n\n1,2,3\n'), [
+    ['a', 'b "c", d', 'e'],
+    ['1', '2', '3'],
+  ]);
+});
