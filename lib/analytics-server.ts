@@ -1,4 +1,5 @@
 import { createServiceClient } from './supabase/client';
+import { isFunnelEvent, sanitizeFunnelData } from './tool-funnel';
 import type { EventType, EventData } from './analytics';
 
 /**
@@ -12,13 +13,20 @@ export async function trackServerEvent(
   sessionId?: string
 ): Promise<void> {
   try {
+    let data: EventData | undefined = eventData;
+    if (isFunnelEvent(eventType)) {
+      const safe = sanitizeFunnelData(eventType, eventData);
+      if (!safe) return;
+      data = safe;
+    }
+
     const supabase = createServiceClient();
 
     const event = {
       user_id: userId,
       session_id: sessionId || `server-${Date.now()}`,
       event_type: eventType,
-      event_data: eventData,
+      event_data: data,
       page_url: null,
       user_agent: null,
     };

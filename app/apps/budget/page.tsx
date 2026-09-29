@@ -16,6 +16,7 @@ import { createBrowserClient } from '@/lib/supabase/client';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { InlineAd } from '@/components/monetization';
 import SaveScenarioButton from '@/components/apps/SaveScenarioButton';
+import { ToolFunnel } from '@/components/app/ToolFunnel';
 import { trackToolVisit } from '@/lib/useRecentTools';
 import { Breadcrumb, CalculatorSkeleton } from '@/components/ui';
 import Tooltip from '@/components/ui/Tooltip';
@@ -522,6 +523,7 @@ const App = () => {
         {/* Inline Ad - Full width above calculator */}
         <InlineAd context="budget" className="mb-8" />
 
+        <ToolFunnel toolId="budget">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
         {/* Sidebar / Controls */}
@@ -799,6 +801,7 @@ const App = () => {
 
         </div>
         </div>
+        </ToolFunnel>
 
       {/* Optimization Modal */}
       {showOptimizer && (

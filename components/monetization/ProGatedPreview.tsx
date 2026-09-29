@@ -67,6 +67,7 @@ export default function ProGatedPreview({ isLocked, toolId, previewLabel, childr
             ))}
           </div>
           <button
+            data-funnel-ignore
             onClick={() => router.push('/pricing')}
             className="w-full bg-[var(--orange)] text-white px-6 py-3 rounded-lg font-bold text-sm hover:bg-[#d94f1e] transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
           >
