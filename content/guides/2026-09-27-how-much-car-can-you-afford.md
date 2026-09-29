@@ -33,7 +33,7 @@ The most widely cited affordability guideline is the **20/4/10 rule**:
 
 The third number is the one people misread. It isn't 10% for the car payment; it's 10% for everything the car costs you each month. On a $75,000 salary, that's $625 a month total — and if insurance and fuel run $300 of that, the payment has to fit in the remaining $325.
 
-Cortex's [Car Affordability Calculator](/apps/car-affordability) uses a tighter variant, the **20/3/8 rule**: 20% down, a three-year maximum term, and 8% of gross income for total vehicle costs. The shorter term and lower income share are deliberately conservative — they keep you ahead of depreciation and leave more room in your budget for goals that build wealth instead of losing it. Run both thresholds and treat the gap between them as your risk tolerance, not as a rule you're failing.
+Our [Car Affordability Calculator](/apps/car-affordability) uses a tighter variant, the **20/3/8 rule**: 20% down, a three-year maximum term, and 8% of gross income for total vehicle costs. The shorter term and lower income share are deliberately conservative — they keep you ahead of depreciation and leave more room in your budget for goals that build wealth instead of losing it. Run both thresholds and treat the gap between them as your risk tolerance, not as a rule you're failing.
 
 ## Running the numbers on your own income
 
