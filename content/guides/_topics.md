@@ -20,3 +20,4 @@ removing the line, so the topic isn't accidentally reused.
 | 2026-09-20 | hsa-triple-tax-advantage | Health Savings Account (HSA) |
 | 2026-09-20 | 50-30-20-budget-rule | 50/30/20 budgeting rule |
 | 2026-09-27 | how-much-car-can-you-afford | Car affordability |
+| 2026-10-04 | how-to-calculate-net-worth | Net worth |
