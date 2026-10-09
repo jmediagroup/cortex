@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Plus, Loader2, Megaphone, Building2, Pause, Play, Eye, MousePointerClick, Percent } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Building2, ChevronRight, Megaphone, Plus } from 'lucide-react';
 import {
   ResponsiveContainer,
   ComposedChart,
@@ -17,6 +18,25 @@ import {
 import { useAdminApi, readError } from '@/components/admin/useAdminApi';
 import { CAMPAIGN_STATUSES, type CampaignStatus } from '@/lib/ads/types';
 import { bannerAdsEnabled } from '@/lib/ads/flags';
+import {
+  AdminPage,
+  Button,
+  Callout,
+  Card,
+  CardTitle,
+  DataTable,
+  EmptyState,
+  FilterChips,
+  IconTile,
+  ListGroup,
+  ListRow,
+  Pill,
+  SkeletonList,
+  StatTile,
+  Switch,
+  useToast,
+  type Tone,
+} from '@/components/admin/ui';
 
 interface CampaignListRow {
   id: string;
@@ -48,47 +68,40 @@ interface StatsResponse {
   creatives: Record<string, Totals>;
 }
 
-const STATUS_STYLES: Record<CampaignStatus, { bg: string; color: string }> = {
-  active: { bg: '#dcfce7', color: 'var(--color-positive)' },
-  draft: { bg: 'var(--surface-tertiary)', color: 'var(--text-tertiary)' },
-  paused: { bg: '#fef3c7', color: 'var(--color-warning)' },
-  archived: { bg: '#fee2e2', color: 'var(--crimson-500)' },
+const STATUS_TONE: Record<CampaignStatus, Tone> = {
+  active: 'green',
+  draft: 'gray',
+  paused: 'amber',
+  archived: 'red',
 };
 
 const fmtDate = (iso: string | null) =>
   iso ? new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : null;
-
 const fmtPct = (v: number) => `${(v * 100).toFixed(2)}%`;
 const fmtInt = (v: number) => v.toLocaleString('en-US');
+const fmtAxis = (v: number) => (v >= 1000 ? `${Number((v / 1000).toFixed(1))}k` : String(v));
 
-function TargetingChip({ row }: { row: CampaignListRow }) {
+function targetingLabel(row: CampaignListRow) {
   if (row.tool_ids === null) {
-    return (
-      <span className="inline-block rounded-full bg-sky px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-navy">
-        All tools{row.exclude_tool_ids.length ? ` −${row.exclude_tool_ids.length}` : ''}
-      </span>
-    );
+    return `All tools${row.exclude_tool_ids.length ? ` −${row.exclude_tool_ids.length}` : ''}`;
   }
-  const list = row.tool_ids;
-  return (
-    <span className="group relative inline-block">
-      <span className="inline-block cursor-default rounded-full bg-[var(--surface-tertiary)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
-        {list.length} {list.length === 1 ? 'tool' : 'tools'}
-      </span>
-      {list.length > 0 && (
-        <span className="pointer-events-none absolute left-0 top-full z-20 mt-1 hidden w-56 rounded-[var(--radius-md)] border border-[var(--border-primary)] bg-[var(--surface-primary)] p-2 text-xs text-[var(--text-secondary)] shadow-lg group-hover:block">
-          {list.join(', ')}
-          {row.exclude_tool_ids.length > 0 && (
-            <span className="mt-1 block text-[var(--crimson-500)]">excluding {row.exclude_tool_ids.join(', ')}</span>
-          )}
-        </span>
-      )}
-    </span>
-  );
+  return `${row.tool_ids.length} ${row.tool_ids.length === 1 ? 'tool' : 'tools'}`;
+}
+
+function targetingTitle(row: CampaignListRow) {
+  const parts = [row.tool_ids === null ? 'All tools' : row.tool_ids.join(', ') || 'No tools'];
+  if (row.exclude_tool_ids.length) parts.push(`excluding ${row.exclude_tool_ids.join(', ')}`);
+  return parts.join(' · ');
+}
+
+function scheduleLabel(row: CampaignListRow) {
+  return row.starts_at || row.ends_at ? `${fmtDate(row.starts_at) ?? '…'} → ${fmtDate(row.ends_at) ?? '…'}` : 'Always on';
 }
 
 export default function AdminAdsList() {
   const api = useAdminApi();
+  const router = useRouter();
+  const toast = useToast();
   const [rows, setRows] = useState<CampaignListRow[]>([]);
   const [stats, setStats] = useState<StatsResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -97,7 +110,6 @@ export default function AdminAdsList() {
   const [busyId, setBusyId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    setLoading(true);
     setError(null);
     try {
       const qs = statusFilter ? `?status=${statusFilter}` : '';
@@ -116,7 +128,8 @@ export default function AdminAdsList() {
   }, [api, statusFilter]);
 
   useEffect(() => {
-    load();
+    setLoading(true);
+    void load();
   }, [load]);
 
   async function toggleStatus(row: CampaignListRow) {
@@ -130,6 +143,7 @@ export default function AdminAdsList() {
       });
       if (!res.ok) throw new Error(await readError(res, 'Failed to update campaign'));
       setRows((rs) => rs.map((r) => (r.id === row.id ? { ...r, status: next } : r)));
+      toast(next === 'active' ? 'Campaign activated' : 'Campaign paused');
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to update campaign');
     } finally {
@@ -146,213 +160,219 @@ export default function AdminAdsList() {
     [stats],
   );
 
-  const kpis = [
-    { label: 'Impressions (30d)', value: fmtInt(stats?.totals.impressions ?? 0), icon: Eye, color: 'var(--color-info)', bg: '#dbeafe' },
-    { label: 'Clicks (30d)', value: fmtInt(stats?.totals.clicks ?? 0), icon: MousePointerClick, color: 'var(--color-positive)', bg: '#dcfce7' },
-    { label: 'CTR (30d)', value: fmtPct(stats?.totals.ctr ?? 0), icon: Percent, color: 'var(--color-warning)', bg: '#fef3c7' },
-  ];
+  const toggleable = (row: CampaignListRow) => row.status === 'active' || row.status === 'paused';
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">Ads</h1>
-          <p className="mt-1 text-sm text-[var(--text-tertiary)] font-medium">
-            Campaigns, creatives and advertisers served on the calculators
-          </p>
-          {!bannerAdsEnabled() && (
-            <p className="mt-2 text-sm font-semibold text-[var(--color-warning)]">
-              Banner ads are switched off site-wide. Nothing here is shown to visitors until
-              NEXT_PUBLIC_BANNER_ADS_ENABLED is set to &ldquo;true&rdquo; in Vercel and the site is redeployed.
-            </p>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          <Link
-            href="/admin/ads/advertisers"
-            className="inline-flex items-center gap-2 rounded-[var(--radius-md)] border border-[var(--border-primary)] bg-[var(--surface-primary)] px-4 py-2 text-sm font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-          >
-            <Building2 size={16} /> Advertisers
-          </Link>
-          <Link
-            href="/admin/ads/campaigns/new"
-            className="inline-flex items-center gap-2 rounded-[var(--radius-md)] bg-navy px-4 py-2 text-sm font-bold text-white hover:opacity-90"
-          >
-            <Plus size={16} /> New campaign
-          </Link>
-        </div>
-      </div>
+    <AdminPage
+      title="Ads"
+      subtitle="Campaigns, creatives and advertisers on the calculators"
+      onRefresh={load}
+      actions={[
+        { label: 'Advertisers', icon: Building2, href: '/admin/ads/advertisers' },
+        { label: 'New campaign', icon: Plus, variant: 'primary', href: '/admin/ads/campaigns/new' },
+      ]}
+    >
+      <div className="space-y-6">
+        {!bannerAdsEnabled() && (
+          <Callout tone="warning" title="Banner ads are switched off site-wide.">
+            Nothing here is shown to visitors until NEXT_PUBLIC_BANNER_ADS_ENABLED is set to &ldquo;true&rdquo; in Vercel and the
+            site is redeployed.
+          </Callout>
+        )}
 
-      {/* KPIs + chart */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[repeat(3,minmax(0,1fr))]">
-        {kpis.map((kpi) => (
-          <div
-            key={kpi.label}
-            className="rounded-[var(--radius-xl)] border border-[var(--border-primary)] bg-[var(--surface-primary)] p-5"
-            style={{ boxShadow: 'var(--shadow-card)' }}
-          >
-            <div className="mb-3 flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-tertiary)]">{kpi.label}</span>
-              <div
-                className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-md)]"
-                style={{ backgroundColor: kpi.bg, color: kpi.color }}
-              >
-                <kpi.icon size={16} />
-              </div>
-            </div>
-            <p className="text-2xl font-bold text-[var(--text-primary)]">{kpi.value}</p>
+        <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
+          <StatTile compact label="Impressions" value={fmtInt(stats?.totals.impressions ?? 0)} sub="Last 30 days" />
+          <StatTile compact label="Clicks" value={fmtInt(stats?.totals.clicks ?? 0)} sub="Last 30 days" />
+          <StatTile compact label="CTR" value={fmtPct(stats?.totals.ctr ?? 0)} sub="Last 30 days" />
+        </div>
+
+        <Card>
+          <CardTitle>Daily impressions and clicks</CardTitle>
+          <div className="-mx-1 h-[200px] sm:h-[240px]">
+            <ResponsiveContainer>
+              <ComposedChart data={chartData} margin={{ top: 4, right: 0, left: -6, bottom: 0 }}>
+                <CartesianGrid stroke="var(--ad-sep)" vertical={false} />
+                <XAxis dataKey="label" tick={{ fontSize: 11, fill: 'var(--ad-label-3)' }} tickLine={false} axisLine={false} minTickGap={28} />
+                <YAxis yAxisId="left" tick={{ fontSize: 11, fill: 'var(--ad-label-3)' }} tickLine={false} axisLine={false} allowDecimals={false} width={40} tickFormatter={fmtAxis} />
+                <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11, fill: 'var(--ad-label-3)' }} tickLine={false} axisLine={false} allowDecimals={false} width={32} />
+                <Tooltip
+                  cursor={{ fill: 'rgba(5,76,125,0.05)' }}
+                  contentStyle={{ background: '#fff', border: '0.5px solid var(--ad-sep-strong)', borderRadius: 12, fontSize: 12, boxShadow: 'var(--ad-shadow-lg)' }}
+                />
+                <Legend wrapperStyle={{ fontSize: 12 }} iconType="circle" iconSize={8} />
+                <Bar yAxisId="left" dataKey="impressions" name="Impressions" fill="var(--ad-blue)" radius={[4, 4, 0, 0]} />
+                <Line yAxisId="right" type="monotone" dataKey="clicks" name="Clicks" stroke="var(--ad-green)" strokeWidth={2.5} dot={false} />
+              </ComposedChart>
+            </ResponsiveContainer>
           </div>
-        ))}
-      </div>
+        </Card>
 
-      <div
-        className="rounded-[var(--radius-xl)] border border-[var(--border-primary)] bg-[var(--surface-primary)] p-5"
-        style={{ boxShadow: 'var(--shadow-card)' }}
-      >
-        <h2 className="mb-3 text-base font-bold text-[var(--text-primary)]">Daily impressions and clicks</h2>
-        <div style={{ width: '100%', height: 220 }}>
-          <ResponsiveContainer>
-            <ComposedChart data={chartData} margin={{ top: 4, right: 8, left: -12, bottom: 0 }}>
-              <CartesianGrid stroke="var(--border-primary)" vertical={false} />
-              <XAxis dataKey="label" tick={{ fontSize: 11, fill: 'var(--text-tertiary)' }} tickLine={false} axisLine={false} minTickGap={24} />
-              <YAxis yAxisId="left" tick={{ fontSize: 11, fill: 'var(--text-tertiary)' }} tickLine={false} axisLine={false} allowDecimals={false} />
-              <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11, fill: 'var(--text-tertiary)' }} tickLine={false} axisLine={false} allowDecimals={false} />
-              <Tooltip
-                contentStyle={{
-                  background: 'var(--surface-primary)',
-                  border: '1px solid var(--border-primary)',
-                  borderRadius: 8,
-                  fontSize: 12,
-                }}
-              />
-              <Legend wrapperStyle={{ fontSize: 12 }} />
-              <Bar yAxisId="left" dataKey="impressions" name="Impressions" fill="var(--chart-blue)" radius={[3, 3, 0, 0]} />
-              <Line yAxisId="right" type="monotone" dataKey="clicks" name="Clicks" stroke="var(--chart-green)" strokeWidth={2} dot={false} />
-            </ComposedChart>
-          </ResponsiveContainer>
+        <div className="space-y-3">
+          <h2 className="px-1 text-[20px] font-bold tracking-[-0.01em]">Campaigns</h2>
+          <FilterChips
+            groups={[
+              {
+                label: 'Status',
+                value: statusFilter,
+                onChange: setStatusFilter,
+                options: [{ value: '', label: 'All' }, ...CAMPAIGN_STATUSES.map((s) => ({ value: s, label: s[0].toUpperCase() + s.slice(1) }))],
+              },
+            ]}
+          />
         </div>
-      </div>
 
-      {/* Status filter */}
-      <div className="flex flex-wrap items-center gap-2">
-        {['', ...CAMPAIGN_STATUSES].map((s) => (
-          <button
-            key={s || 'all'}
-            onClick={() => setStatusFilter(s)}
-            className={`rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider transition-colors ${
-              statusFilter === s
-                ? 'bg-sky text-navy'
-                : 'bg-[var(--surface-tertiary)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)]'
-            }`}
-          >
-            {s || 'All statuses'}
-          </button>
-        ))}
-      </div>
+        {error && <Callout tone="error">{error}</Callout>}
 
-      {error && (
-        <div className="rounded-[var(--radius-md)] border border-[var(--crimson-border)] bg-[var(--crimson-50)] px-4 py-3 text-sm font-medium text-[var(--crimson-500)]">
-          {error}
-        </div>
-      )}
-
-      {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="animate-spin text-[var(--color-accent)]" size={28} />
-        </div>
-      ) : rows.length === 0 ? (
-        <div className="rounded-[var(--radius-xl)] border border-[var(--border-primary)] bg-[var(--surface-primary)] p-12 text-center">
-          <Megaphone className="mx-auto mb-3 text-[var(--text-tertiary)]" size={28} />
-          <p className="text-sm font-medium text-[var(--text-secondary)]">
-            No {statusFilter || ''} campaigns yet. Until a campaign is live, tools show the legacy fallback ads.
-          </p>
-          <Link href="/admin/ads/campaigns/new" className="mt-3 inline-flex items-center gap-1.5 text-sm font-bold text-[var(--color-accent)]">
-            <Plus size={14} /> Create your first campaign
-          </Link>
-        </div>
-      ) : (
-        <div className="overflow-x-auto rounded-[var(--radius-xl)] border border-[var(--border-primary)] bg-[var(--surface-primary)]">
-          <table className="w-full min-w-[900px] text-sm">
-            <thead>
-              <tr className="border-b border-[var(--border-primary)] text-left text-xs font-bold uppercase tracking-wider text-[var(--text-tertiary)]">
-                <th className="px-5 py-3">Campaign</th>
-                <th className="px-5 py-3">Targeting</th>
-                <th className="px-5 py-3">Status</th>
-                <th className="px-5 py-3">Weight</th>
-                <th className="px-5 py-3">Schedule</th>
-                <th className="px-5 py-3 text-right">Impr.</th>
-                <th className="px-5 py-3 text-right">Clicks</th>
-                <th className="px-5 py-3 text-right">CTR</th>
-                <th className="px-5 py-3"></th>
-              </tr>
-            </thead>
-            <tbody>
+        {loading ? (
+          <SkeletonList rows={4} />
+        ) : rows.length === 0 ? (
+          <EmptyState
+            icon={Megaphone}
+            title={`No ${statusFilter || ''} campaigns yet`}
+            message="Until a campaign is live, tools show the legacy fallback ads."
+            action={
+              <Button variant="primary" icon={Plus} href="/admin/ads/campaigns/new">
+                Create a campaign
+              </Button>
+            }
+          />
+        ) : (
+          <>
+            {/* Phones & tablets: one card per campaign */}
+            <div className="grid gap-3 md:grid-cols-2 lg:hidden">
               {rows.map((row) => {
-                const badge = STATUS_STYLES[row.status] ?? STATUS_STYLES.draft;
                 const s = stats?.campaigns[row.id];
-                const schedule =
-                  row.starts_at || row.ends_at
-                    ? `${fmtDate(row.starts_at) ?? '…'} → ${fmtDate(row.ends_at) ?? '…'}`
-                    : 'Always on';
                 return (
-                  <tr key={row.id} className="border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--surface-secondary)]">
-                    <td className="px-5 py-3">
-                      <Link href={`/admin/ads/campaigns/${row.id}`} className="font-semibold text-[var(--text-primary)] hover:text-[var(--color-accent)]">
-                        {row.name || '(untitled)'}
+                  <article key={row.id} className="ad-group">
+                    <div className="flex items-start gap-3 px-4 pb-3 pt-4">
+                      <Link href={`/admin/ads/campaigns/${row.id}`} className="min-w-0 flex-1">
+                        <span className="flex items-center gap-2">
+                          <Pill tone={STATUS_TONE[row.status] ?? 'gray'}>{row.status}</Pill>
+                          <span className="truncate text-[12.5px] text-[var(--ad-label-3)]" title={targetingTitle(row)}>
+                            {targetingLabel(row)}
+                          </span>
+                        </span>
+                        <span className="mt-1.5 block text-[17px] font-bold leading-snug text-[var(--ad-label)]">{row.name || '(untitled)'}</span>
+                        <span className="mt-0.5 block truncate text-[13.5px] text-[var(--ad-label-2)]">
+                          {row.advertiser?.name ?? 'No advertiser'} · {row.placement?.slug ?? 'no placement'}
+                          {row.advertiser && !row.advertiser.is_active && <span className="text-[var(--ad-red)]"> (advertiser inactive)</span>}
+                        </span>
                       </Link>
-                      <div className="text-xs text-[var(--text-tertiary)]">
-                        {row.advertiser?.name ?? 'No advertiser'} · {row.placement?.slug ?? 'no placement'} · {row.creative_count}{' '}
-                        {row.creative_count === 1 ? 'creative' : 'creatives'}
-                        {row.advertiser && !row.advertiser.is_active && (
-                          <span className="ml-1 text-[var(--crimson-500)]">(advertiser inactive)</span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-5 py-3">
-                      <TargetingChip row={row} />
-                    </td>
-                    <td className="px-5 py-3">
-                      <span
-                        className="inline-block rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider"
-                        style={{ backgroundColor: badge.bg, color: badge.color }}
-                      >
-                        {row.status}
-                      </span>
-                    </td>
-                    <td className="px-5 py-3 text-[var(--text-secondary)]">
-                      {row.weight}
-                      {row.priority !== 0 && <span className="ml-1 text-xs text-[var(--text-tertiary)]">p{row.priority}</span>}
-                    </td>
-                    <td className="px-5 py-3 text-xs text-[var(--text-tertiary)]">{schedule}</td>
-                    <td className="px-5 py-3 text-right tabular-nums text-[var(--text-secondary)]">{fmtInt(s?.impressions ?? 0)}</td>
-                    <td className="px-5 py-3 text-right tabular-nums text-[var(--text-secondary)]">{fmtInt(s?.clicks ?? 0)}</td>
-                    <td className="px-5 py-3 text-right tabular-nums text-[var(--text-secondary)]">{fmtPct(s?.ctr ?? 0)}</td>
-                    <td className="px-5 py-3 text-right">
-                      {(row.status === 'active' || row.status === 'paused') && (
-                        <button
-                          onClick={() => toggleStatus(row)}
+                      {toggleable(row) && (
+                        <Switch
+                          checked={row.status === 'active'}
                           disabled={busyId === row.id}
-                          className="inline-flex items-center gap-1 rounded-[var(--radius-md)] border border-[var(--border-primary)] px-2.5 py-1.5 text-xs font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] disabled:opacity-50"
-                          title={row.status === 'active' ? 'Pause campaign' : 'Activate campaign'}
-                        >
-                          {busyId === row.id ? (
-                            <Loader2 size={12} className="animate-spin" />
-                          ) : row.status === 'active' ? (
-                            <Pause size={12} />
-                          ) : (
-                            <Play size={12} />
-                          )}
-                          {row.status === 'active' ? 'Pause' : 'Activate'}
-                        </button>
+                          onChange={() => toggleStatus(row)}
+                          label={row.status === 'active' ? `Pause ${row.name}` : `Activate ${row.name}`}
+                        />
                       )}
-                    </td>
-                  </tr>
+                    </div>
+                    <Link
+                      href={`/admin/ads/campaigns/${row.id}`}
+                      className="flex items-center border-t-[0.5px] border-[var(--ad-sep-strong)] px-4 py-3 transition-colors active:bg-[var(--ad-pressed)]"
+                      aria-label={`Open ${row.name}`}
+                    >
+                      <dl className="grid flex-1 grid-cols-3 gap-2">
+                        {[
+                          ['Impr.', fmtInt(s?.impressions ?? 0)],
+                          ['Clicks', fmtInt(s?.clicks ?? 0)],
+                          ['CTR', fmtPct(s?.ctr ?? 0)],
+                        ].map(([k, v]) => (
+                          <div key={k}>
+                            <dt className="text-[11.5px] font-semibold uppercase tracking-[0.04em] text-[var(--ad-label-3)]">{k}</dt>
+                            <dd className="text-[16px] font-bold tabular-nums text-[var(--ad-label)]">{v}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                      <ChevronRight size={18} className="shrink-0 text-[var(--ad-label-3)] opacity-60" aria-hidden="true" />
+                    </Link>
+                  </article>
                 );
               })}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
+            </div>
+
+            {/* Desktop: table */}
+            <div className="hidden lg:block">
+              <DataTable
+                rows={rows}
+                rowKey={(r) => r.id}
+                onRowClick={(r) => router.push(`/admin/ads/campaigns/${r.id}`)}
+                columns={[
+                  {
+                    key: 'name',
+                    header: 'Campaign',
+                    cell: (row) => (
+                      <span className="block min-w-0">
+                        <span className="block max-w-[280px] truncate font-semibold text-[var(--ad-label)]">{row.name || '(untitled)'}</span>
+                        <span className="block max-w-[280px] truncate text-[13px] text-[var(--ad-label-3)]">
+                          {row.advertiser?.name ?? 'No advertiser'} · {row.placement?.slug ?? 'no placement'} · {row.creative_count}{' '}
+                          {row.creative_count === 1 ? 'creative' : 'creatives'}
+                          {row.advertiser && !row.advertiser.is_active && <span className="text-[var(--ad-red)]"> (advertiser inactive)</span>}
+                        </span>
+                      </span>
+                    ),
+                  },
+                  {
+                    key: 'targeting',
+                    header: 'Targeting',
+                    cell: (row) => (
+                      <span title={targetingTitle(row)}>
+                        <Pill tone={row.tool_ids === null ? 'sky' : 'gray'}>{targetingLabel(row)}</Pill>
+                      </span>
+                    ),
+                  },
+                  {
+                    key: 'status',
+                    header: 'Status',
+                    cell: (row) => (
+                      <span className="block">
+                        <Pill tone={STATUS_TONE[row.status] ?? 'gray'}>{row.status}</Pill>
+                        <span className="mt-1 block whitespace-nowrap text-[12px] text-[var(--ad-label-3)]">{scheduleLabel(row)}</span>
+                      </span>
+                    ),
+                  },
+                  {
+                    key: 'weight',
+                    header: 'Weight',
+                    cell: (row) => (
+                      <>
+                        {row.weight}
+                        {row.priority !== 0 && <span className="ml-1 text-[12px] text-[var(--ad-label-3)]">p{row.priority}</span>}
+                      </>
+                    ),
+                  },
+                  { key: 'impr', header: 'Impr.', align: 'right', cell: (row) => fmtInt(stats?.campaigns[row.id]?.impressions ?? 0) },
+                  { key: 'clicks', header: 'Clicks', align: 'right', cell: (row) => fmtInt(stats?.campaigns[row.id]?.clicks ?? 0) },
+                  { key: 'ctr', header: 'CTR', align: 'right', cell: (row) => fmtPct(stats?.campaigns[row.id]?.ctr ?? 0) },
+                  {
+                    key: 'live',
+                    header: 'Live',
+                    align: 'right',
+                    cell: (row) =>
+                      toggleable(row) ? (
+                        <Switch
+                          checked={row.status === 'active'}
+                          disabled={busyId === row.id}
+                          onChange={() => toggleStatus(row)}
+                          label={row.status === 'active' ? `Pause ${row.name}` : `Activate ${row.name}`}
+                        />
+                      ) : null,
+                  },
+                ]}
+              />
+            </div>
+          </>
+        )}
+
+        <ListGroup className="lg:hidden">
+          <ListRow
+            href="/admin/ads/advertisers"
+            leading={<IconTile icon={Building2} tone="orange" />}
+            title="Advertisers"
+            subtitle="Affiliate partners whose campaigns run on the site"
+          />
+        </ListGroup>
+      </div>
+    </AdminPage>
   );
 }

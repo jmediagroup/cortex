@@ -1,8 +1,7 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  Loader2,
   MousePointerClick,
   Mail,
   HandCoins,
@@ -10,7 +9,6 @@ import {
   UserCheck,
   CircleDollarSign,
   ShieldOff,
-  AlertCircle,
 } from 'lucide-react';
 import { useAdminApi, readError } from '@/components/admin/useAdminApi';
 import { isInternalTraffic, setInternalTraffic } from '@/lib/analytics';
@@ -29,6 +27,18 @@ import {
   type TimeWindow,
   type ToolFunnelRow,
 } from '@/lib/monetization/scorecard';
+import {
+  AdminPage,
+  Callout,
+  DataTable,
+  IconTile,
+  ListGroup,
+  ListRow,
+  PageSkeleton,
+  SegmentedControl,
+  Switch,
+  type Tone,
+} from '@/components/admin/ui';
 
 interface ScorecardResponse {
   setupRequired?: boolean;
@@ -41,43 +51,44 @@ interface ScorecardResponse {
 
 const TOOL_NAMES = new Map(DEFAULT_TOOLS.map((t) => [t.href.replace('/apps/', ''), t.title]));
 
-const card = 'rounded-[var(--radius-xl)] border border-[var(--border-primary)] bg-[var(--surface-primary)]';
-const cardShadow = { boxShadow: 'var(--shadow-card)' };
+const fmtNum = (v: string | number) => (typeof v === 'number' ? v.toLocaleString('en-US') : v);
+
+const WINDOW_SHORT: Record<TimeWindow, string> = { '7d': '7 days', '30d': '30 days', all: 'All time' };
 
 function Tile({
   label,
   value,
-  icon: Icon,
+  icon,
+  tone,
   details,
   pending,
 }: {
   label: string;
   value: string | number;
   icon: typeof Mail;
+  tone: Tone;
   details: [string, string | number][];
   /** Which phase turns this item on, while it isn't built yet. */
   pending?: string;
 }) {
   return (
-    <div className={`${card} p-5`} style={cardShadow}>
-      <div className="flex items-center justify-between mb-3 gap-2">
-        <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-tertiary)]">{label}</span>
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[var(--surface-tertiary)] text-[var(--text-secondary)]">
-          <Icon size={16} />
-        </div>
+    <div className="ad-group flex flex-col p-4 sm:p-5">
+      <div className="flex items-center gap-2.5">
+        <IconTile icon={icon} tone={tone} size={28} />
+        <span className="min-w-0 text-[14px] font-semibold leading-tight text-[var(--ad-label-2)]">{label}</span>
       </div>
-      <p className="text-2xl font-bold text-[var(--text-primary)]">{value}</p>
-      {pending && (
-        <p className="mt-1 text-xs font-semibold text-[var(--text-tertiary)]">Not live yet · {pending}</p>
+      <p className="mt-3 text-[30px] font-bold tabular-nums tracking-[-0.02em] text-[var(--ad-label)]">{fmtNum(value)}</p>
+      {pending && <p className="text-[12.5px] font-semibold text-[var(--ad-label-3)]">Not live yet · {pending}</p>}
+      {details.length > 0 && (
+        <dl className="mt-3 space-y-1.5 border-t-[0.5px] border-[var(--ad-sep-strong)] pt-3">
+          {details.map(([k, v]) => (
+            <div key={k} className="flex items-center justify-between gap-3 text-[14px]">
+              <dt className="text-[var(--ad-label-2)]">{k}</dt>
+              <dd className="font-semibold tabular-nums text-[var(--ad-label)]">{fmtNum(v)}</dd>
+            </div>
+          ))}
+        </dl>
       )}
-      <dl className="mt-3 space-y-1">
-        {details.map(([k, v]) => (
-          <div key={k} className="flex items-center justify-between gap-3 text-sm">
-            <dt className="text-[var(--text-secondary)]">{k}</dt>
-            <dd className="font-semibold text-[var(--text-primary)]">{v}</dd>
-          </div>
-        ))}
-      </dl>
     </div>
   );
 }
@@ -94,24 +105,22 @@ export default function AdminMonetization() {
     setInternal(isInternalTraffic());
   }, []);
 
-  useEffect(() => {
-    let active = true;
-    (async () => {
-      try {
-        const res = await api('/api/admin/monetization');
-        if (!res.ok) throw new Error(await readError(res, 'Failed to load the scorecard'));
-        const json = (await res.json()) as ScorecardResponse;
-        if (active) setData(json);
-      } catch (e) {
-        if (active) setError(e instanceof Error ? e.message : 'Failed to load the scorecard');
-      } finally {
-        if (active) setLoading(false);
-      }
-    })();
-    return () => {
-      active = false;
-    };
+  const load = useCallback(async () => {
+    try {
+      const res = await api('/api/admin/monetization');
+      if (!res.ok) throw new Error(await readError(res, 'Failed to load the scorecard'));
+      setData((await res.json()) as ScorecardResponse);
+      setError(null);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to load the scorecard');
+    } finally {
+      setLoading(false);
+    }
   }, [api]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
 
   const tools = useMemo(() => toolLines(data?.funnel ?? [], timeWindow), [data, timeWindow]);
   const totals = useMemo(() => funnelTotals(tools), [tools]);
@@ -121,216 +130,176 @@ export default function AdminMonetization() {
   const knownRevenue = revenue.filter((r) => r.revenue_cents !== null);
   const revenueTotal = knownRevenue.reduce((sum, r) => sum + (r.revenue_cents ?? 0), 0);
 
-  const toggleInternal = () => {
-    setInternalTraffic(!internal);
-    setInternal(!internal);
+  const toggleInternal = (next: boolean) => {
+    setInternalTraffic(next);
+    setInternal(next);
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="animate-spin text-[var(--color-accent)]" size={28} />
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">Monetization</h1>
-          <p className="text-sm text-[var(--text-tertiary)] font-medium mt-1">
-            The weekly scorecard: visits to revenue, by tool and by line
-          </p>
-        </div>
-        <select
+    <AdminPage title="Monetization" subtitle="The weekly scorecard: visits to revenue, by tool and by line" onRefresh={load}>
+      <div className="space-y-7">
+        <SegmentedControl<TimeWindow>
+          label="Time window"
           value={timeWindow}
-          onChange={(e) => setTimeWindow(e.target.value as TimeWindow)}
-          className="px-3 py-2 rounded-[var(--radius-lg)] border border-[var(--border-primary)] bg-[var(--surface-primary)] text-sm font-medium outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
-          aria-label="Time window"
+          onChange={setTimeWindow}
+          options={TIME_WINDOWS.map((w) => ({ value: w, label: WINDOW_SHORT[w] }))}
+          className="sm:max-w-sm"
+        />
+
+        {error && <Callout tone="error">{error}</Callout>}
+
+        {data?.setupRequired && (
+          <Callout tone="warning" title="The scorecard views aren’t in this database yet.">
+            Apply <code>supabase/migrations/20260929120000_monetization_scorecard.sql</code> in the Supabase SQL Editor, then reload
+            this page. Tracking already works without it — events are being recorded.
+          </Callout>
+        )}
+
+        {/* This browser */}
+        <ListGroup
+          footer={`Admin sign-ins exclude a browser automatically. Bots, previews and localhost never count${
+            data?.excludedUsers ? `; ${data.excludedUsers} admin account${data.excludedUsers === 1 ? '' : 's'} excluded` : ''
+          }.`}
         >
-          {TIME_WINDOWS.map((w) => (
-            <option key={w} value={w}>
-              {TIME_WINDOW_LABELS[w]}
-            </option>
-          ))}
-        </select>
+          <ListRow
+            leading={<IconTile icon={ShieldOff} tone="gray" />}
+            title="Exclude this browser"
+            subtitle={internal ? 'Not counted in the numbers' : 'Counted as a real visitor'}
+            trailing={<Switch checked={internal} onChange={toggleInternal} label="Exclude this browser from the numbers" />}
+          />
+        </ListGroup>
+
+        {loading ? (
+          <PageSkeleton tiles={6} rows={5} />
+        ) : (
+          !data?.setupRequired &&
+          data && (
+            <>
+              {/* The six scorecard items (HANDOFF.md §14) */}
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                <Tile
+                  label="1 · Visits & completions"
+                  value={totals.completions}
+                  icon={MousePointerClick}
+                  tone="navy"
+                  details={[
+                    ['Site sessions', toCount(traffic?.sessions)],
+                    ['Page views', toCount(traffic?.page_views)],
+                    ['Tool views', totals.views],
+                    ['Completion rate', formatRate(totals.completion_rate)],
+                  ]}
+                />
+                <Tile
+                  label="2 · Results emailed"
+                  value={totals.reports_sent}
+                  icon={Mail}
+                  tone="blue"
+                  pending="Phase 3"
+                  details={[['Report requests', totals.report_requests]]}
+                />
+                <Tile
+                  label="3 · Affiliate clicks & payouts"
+                  value={totals.offer_clicks}
+                  icon={HandCoins}
+                  tone="amber"
+                  pending="Phase 1"
+                  details={[
+                    ['Offer impressions', totals.offer_impressions],
+                    ['Confirmed payouts', units('affiliate')],
+                  ]}
+                />
+                <Tile
+                  label="4 · Purchases"
+                  value={units('lifetime') + units('monthly_subscription')}
+                  icon={ShoppingCart}
+                  tone="violet"
+                  details={[
+                    ['Lifetime (Phase 2)', units('lifetime')],
+                    ['Monthly / annual Pro', units('monthly_subscription')],
+                    ['Unlock prompts seen', totals.unlock_views],
+                  ]}
+                />
+                <Tile label="5 · Advisor requests" value={units('advisor_referral')} icon={UserCheck} tone="sky" pending="Phase 4" details={[]} />
+                <Tile
+                  label="6 · Revenue"
+                  value={knownRevenue.length ? `$${(revenueTotal / 100).toFixed(2)}` : '—'}
+                  icon={CircleDollarSign}
+                  tone="green"
+                  pending={knownRevenue.length ? undefined : 'amounts arrive with Phases 1–2'}
+                  details={[]}
+                />
+              </div>
+
+              {/* By tool */}
+              <section className="space-y-3">
+                <div className="px-1">
+                  <h2 className="text-[20px] font-bold tracking-[-0.01em]">By tool</h2>
+                  <p className="mt-1 text-[13px] leading-snug text-[var(--ad-label-3)]">
+                    &ldquo;Page views&rdquo; counts /apps page loads and goes back to January. The funnel columns start when Phase 0
+                    tracking shipped. A calculation is &ldquo;completed&rdquo; when a visitor changes an input and leaves the result
+                    on screen.
+                  </p>
+                </div>
+                <DataTable
+                  rows={tools}
+                  rowKey={(t) => t.tool_id}
+                  minWidth={900}
+                  mobileRow={(t) => (
+                    <ListRow
+                      title={TOOL_NAMES.get(t.tool_id) ?? t.tool_id}
+                      subtitle={`${t.views} tool views · ${t.completions} completed`}
+                      meta={`${t.page_views} page views · ${t.sessions} sessions · ${t.exits_after_result} left after result · ${t.offer_clicks} offer clicks · ${t.reports_sent} reports · ${t.unlock_views} unlock views · ${t.purchases} purchases`}
+                      detail={<span className="font-semibold text-[var(--ad-label)]">{formatRate(t.completion_rate)}</span>}
+                    />
+                  )}
+                  columns={[
+                    {
+                      key: 'tool',
+                      header: 'Tool',
+                      cell: (t) => <span className="whitespace-nowrap font-semibold text-[var(--ad-label)]">{TOOL_NAMES.get(t.tool_id) ?? t.tool_id}</span>,
+                    },
+                    { key: 'pv', header: 'Page views', align: 'right', cell: (t) => t.page_views },
+                    { key: 'v', header: 'Tool views', align: 'right', cell: (t) => t.views },
+                    { key: 's', header: 'Sessions', align: 'right', cell: (t) => t.sessions },
+                    { key: 'c', header: 'Completed', align: 'right', cell: (t) => t.completions },
+                    { key: 'r', header: 'Rate', align: 'right', cell: (t) => formatRate(t.completion_rate) },
+                    { key: 'x', header: 'Left after result', align: 'right', cell: (t) => t.exits_after_result },
+                    { key: 'o', header: 'Offer clicks', align: 'right', cell: (t) => t.offer_clicks },
+                    { key: 'rep', header: 'Reports', align: 'right', cell: (t) => t.reports_sent },
+                    { key: 'u', header: 'Unlock views', align: 'right', cell: (t) => t.unlock_views },
+                    { key: 'p', header: 'Purchases', align: 'right', cell: (t) => t.purchases },
+                  ]}
+                />
+              </section>
+
+              {/* By revenue line */}
+              <ListGroup header={`By revenue line · ${TIME_WINDOW_LABELS[timeWindow]}`}>
+                {revenue.map((r) => (
+                  <ListRow
+                    key={r.line}
+                    title={REVENUE_LINE_LABELS[r.line] ?? r.line}
+                    subtitle={r.source_note}
+                    detail={
+                      <span className="block leading-tight">
+                        <span className="block font-semibold text-[var(--ad-label)]">
+                          {r.revenue_cents === null ? '—' : `$${(r.revenue_cents / 100).toFixed(2)}`}
+                        </span>
+                        <span className="block text-[12.5px] text-[var(--ad-label-3)]">
+                          {r.units} unit{r.units === 1 ? '' : 's'}
+                        </span>
+                      </span>
+                    }
+                  />
+                ))}
+              </ListGroup>
+
+              {data.generatedAt && (
+                <p className="px-1 text-[12.5px] text-[var(--ad-label-3)]">Updated {new Date(data.generatedAt).toLocaleString()}</p>
+              )}
+            </>
+          )
+        )}
       </div>
-
-      {error && (
-        <div className={`${card} p-4 flex items-start gap-3 text-sm text-[var(--color-negative)]`}>
-          <AlertCircle size={18} className="shrink-0 mt-0.5" />
-          {error}
-        </div>
-      )}
-
-      {data?.setupRequired && (
-        <div className={`${card} p-5 text-sm text-[var(--text-secondary)] space-y-2`} style={cardShadow}>
-          <p className="font-bold text-[var(--text-primary)]">The scorecard views aren&apos;t in this database yet.</p>
-          <p>
-            Apply <code>supabase/migrations/20260929120000_monetization_scorecard.sql</code> in the Supabase SQL
-            Editor, then reload this page. Tracking already works without it — events are being recorded.
-          </p>
-        </div>
-      )}
-
-      {/* This browser */}
-      <div className={`${card} p-4 flex flex-wrap items-center justify-between gap-3`} style={cardShadow}>
-        <div className="flex items-start gap-3 text-sm">
-          <ShieldOff size={18} className="shrink-0 mt-0.5 text-[var(--text-tertiary)]" />
-          <div>
-            <p className="font-semibold text-[var(--text-primary)]">
-              {internal ? 'This browser is excluded from the numbers.' : 'This browser counts as a real visitor.'}
-            </p>
-            <p className="text-[var(--text-tertiary)]">
-              Admin sign-ins exclude a browser automatically. Bots, previews and localhost never count
-              {data?.excludedUsers ? `; ${data.excludedUsers} admin account${data.excludedUsers === 1 ? '' : 's'} excluded` : ''}.
-            </p>
-          </div>
-        </div>
-        <button
-          onClick={toggleInternal}
-          className="px-3 py-2 rounded-[var(--radius-lg)] border border-[var(--border-primary)] text-sm font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-tertiary)]"
-        >
-          {internal ? 'Count this browser' : 'Exclude this browser'}
-        </button>
-      </div>
-
-      {!data?.setupRequired && data && (
-        <>
-          {/* The six scorecard items (HANDOFF.md §14) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            <Tile
-              label="1 · Visits & completions"
-              value={totals.completions}
-              icon={MousePointerClick}
-              details={[
-                ['Site sessions', toCount(traffic?.sessions)],
-                ['Page views', toCount(traffic?.page_views)],
-                ['Tool views', totals.views],
-                ['Completion rate', formatRate(totals.completion_rate)],
-              ]}
-            />
-            <Tile
-              label="2 · Results emailed"
-              value={totals.reports_sent}
-              icon={Mail}
-              pending="Phase 3"
-              details={[['Report requests', totals.report_requests]]}
-            />
-            <Tile
-              label="3 · Affiliate clicks & payouts"
-              value={totals.offer_clicks}
-              icon={HandCoins}
-              pending="Phase 1"
-              details={[
-                ['Offer impressions', totals.offer_impressions],
-                ['Confirmed payouts', units('affiliate')],
-              ]}
-            />
-            <Tile
-              label="4 · Purchases"
-              value={units('lifetime') + units('monthly_subscription')}
-              icon={ShoppingCart}
-              details={[
-                ['Lifetime (Phase 2)', units('lifetime')],
-                ['Monthly / annual Pro', units('monthly_subscription')],
-                ['Unlock prompts seen', totals.unlock_views],
-              ]}
-            />
-            <Tile
-              label="5 · Advisor requests"
-              value={units('advisor_referral')}
-              icon={UserCheck}
-              pending="Phase 4"
-              details={[]}
-            />
-            <Tile
-              label="6 · Revenue"
-              value={knownRevenue.length ? `$${(revenueTotal / 100).toFixed(2)}` : '—'}
-              icon={CircleDollarSign}
-              pending={knownRevenue.length ? undefined : 'amounts arrive with Phases 1–2'}
-              details={[]}
-            />
-          </div>
-
-          {/* By tool */}
-          <div className={`${card} p-6`} style={cardShadow}>
-            <h2 className="text-base font-bold text-[var(--text-primary)] mb-1">By tool</h2>
-            <p className="text-xs text-[var(--text-tertiary)] mb-4">
-              &ldquo;Page views&rdquo; counts /apps page loads and goes back to January. The funnel columns start
-              when Phase 0 tracking shipped. A calculation is &ldquo;completed&rdquo; when a visitor changes an
-              input and leaves the result on screen.
-            </p>
-            <div className="overflow-x-auto -mx-2">
-              <table className="w-full text-sm min-w-[760px]">
-                <thead>
-                  <tr className="text-left text-xs uppercase tracking-wider text-[var(--text-tertiary)]">
-                    {['Tool', 'Page views', 'Tool views', 'Sessions', 'Completed', 'Rate', 'Left after result', 'Offer clicks', 'Reports', 'Unlock views', 'Purchases'].map((h) => (
-                      <th key={h} className="px-2 py-2 font-bold whitespace-nowrap">{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {tools.map((t) => (
-                    <tr key={t.tool_id} className="border-t border-[var(--border-primary)]">
-                      <td className="px-2 py-2 font-semibold text-[var(--text-primary)] whitespace-nowrap">
-                        {TOOL_NAMES.get(t.tool_id) ?? t.tool_id}
-                      </td>
-                      <td className="px-2 py-2">{t.page_views}</td>
-                      <td className="px-2 py-2">{t.views}</td>
-                      <td className="px-2 py-2">{t.sessions}</td>
-                      <td className="px-2 py-2">{t.completions}</td>
-                      <td className="px-2 py-2">{formatRate(t.completion_rate)}</td>
-                      <td className="px-2 py-2">{t.exits_after_result}</td>
-                      <td className="px-2 py-2">{t.offer_clicks}</td>
-                      <td className="px-2 py-2">{t.reports_sent}</td>
-                      <td className="px-2 py-2">{t.unlock_views}</td>
-                      <td className="px-2 py-2">{t.purchases}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* By revenue line */}
-          <div className={`${card} p-6`} style={cardShadow}>
-            <h2 className="text-base font-bold text-[var(--text-primary)] mb-4">By revenue line</h2>
-            <div className="overflow-x-auto -mx-2">
-              <table className="w-full text-sm min-w-[520px]">
-                <thead>
-                  <tr className="text-left text-xs uppercase tracking-wider text-[var(--text-tertiary)]">
-                    {['Line', 'Units', 'Revenue', 'Source'].map((h) => (
-                      <th key={h} className="px-2 py-2 font-bold">{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {revenue.map((r) => (
-                    <tr key={r.line} className="border-t border-[var(--border-primary)]">
-                      <td className="px-2 py-2 font-semibold text-[var(--text-primary)] whitespace-nowrap">
-                        {REVENUE_LINE_LABELS[r.line] ?? r.line}
-                      </td>
-                      <td className="px-2 py-2">{r.units}</td>
-                      <td className="px-2 py-2">
-                        {r.revenue_cents === null ? '—' : `$${(r.revenue_cents / 100).toFixed(2)}`}
-                      </td>
-                      <td className="px-2 py-2 text-[var(--text-tertiary)]">{r.source_note}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {data.generatedAt && (
-            <p className="text-xs text-[var(--text-tertiary)]">
-              Updated {new Date(data.generatedAt).toLocaleString()}
-            </p>
-          )}
-        </>
-      )}
-    </div>
+    </AdminPage>
   );
 }

@@ -1,8 +1,18 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Loader2, TrendingUp, MousePointerClick, AlertCircle } from 'lucide-react';
-import { createBrowserClient } from '@/lib/supabase/client';
+import { useCallback, useEffect, useState } from 'react';
+import { Activity, MousePointerClick, TrendingUp } from 'lucide-react';
+import { useAdminApi, readError } from '@/components/admin/useAdminApi';
+import {
+  AdminPage,
+  Callout,
+  Card,
+  CardTitle,
+  DataTable,
+  ListRow,
+  PageSkeleton,
+  SegmentedControl,
+} from '@/components/admin/ui';
 
 interface AnalyticsData {
   eventCounts: Record<string, number>;
@@ -17,190 +27,177 @@ interface AnalyticsData {
 }
 
 const EVENT_CATEGORIES: Record<string, { label: string; color: string }> = {
-  user_signup: { label: 'Signups', color: 'var(--color-positive)' },
-  user_login: { label: 'Logins', color: 'var(--color-info)' },
-  page_view: { label: 'Page Views', color: 'var(--color-accent)' },
-  dashboard_visit: { label: 'Dashboard Visits', color: '#8b5cf6' },
-  app_opened: { label: 'App Opens', color: '#f59e0b' },
-  calculation_completed: { label: 'Calculations', color: '#10b981' },
-  pricing_page_view: { label: 'Pricing Views', color: '#ec4899' },
-  subscription_upgrade: { label: 'Upgrades', color: '#14b8a6' },
-  error_occurred: { label: 'Errors', color: 'var(--color-negative)' },
+  user_signup: { label: 'Signups', color: 'var(--ad-green)' },
+  user_login: { label: 'Logins', color: 'var(--ad-blue)' },
+  page_view: { label: 'Page views', color: 'var(--ad-tint)' },
+  dashboard_visit: { label: 'Dashboard visits', color: '#5b4bc4' },
+  app_opened: { label: 'App opens', color: '#c98a0b' },
+  calculation_completed: { label: 'Calculations', color: '#2e9e8d' },
+  pricing_page_view: { label: 'Pricing views', color: 'var(--ad-orange)' },
+  subscription_upgrade: { label: 'Upgrades', color: '#1f9ccc' },
+  error_occurred: { label: 'Errors', color: 'var(--ad-red)' },
+};
+
+const DAY_OPTIONS = [
+  { value: '7', label: '7 days' },
+  { value: '30', label: '30 days' },
+  { value: '90', label: '90 days' },
+];
+
+const shortDate = (d: string) => new Date(`${d}T00:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+const timeAgo = (iso: string) => {
+  const mins = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.round(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 };
 
 export default function AdminAnalytics() {
+  const api = useAdminApi();
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [days, setDays] = useState(30);
+  const [error, setError] = useState<string | null>(null);
+  const [days, setDays] = useState('30');
+
+  const load = useCallback(async () => {
+    try {
+      const res = await api(`/api/admin/analytics?days=${days}`);
+      if (!res.ok) throw new Error(await readError(res, 'Failed to fetch analytics'));
+      setData(await res.json());
+      setError(null);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to fetch analytics');
+    } finally {
+      setLoading(false);
+    }
+  }, [api, days]);
 
   useEffect(() => {
-    const fetchAnalytics = async () => {
-      setLoading(true);
-      const supabase = createBrowserClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
-
-      try {
-        const res = await fetch(`/api/admin/analytics?days=${days}`, {
-          headers: { Authorization: `Bearer ${session.access_token}` },
-        });
-        if (!res.ok) throw new Error('Failed to fetch analytics');
-        setData(await res.json());
-      } catch {
-        // Error handled by empty state
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchAnalytics();
-  }, [days]);
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="animate-spin text-[var(--color-accent)]" size={28} />
-      </div>
-    );
-  }
+    setLoading(true);
+    void load();
+  }, [load]);
 
   const totalEvents = Object.values(data?.eventCounts || {}).reduce((a, b) => a + b, 0);
-
-  // Sort events by count descending
-  const sortedEvents = Object.entries(data?.eventCounts || {})
-    .sort(([, a], [, b]) => b - a);
-
+  const sortedEvents = Object.entries(data?.eventCounts || {}).sort(([, a], [, b]) => b - a);
   const maxEventCount = sortedEvents.length > 0 ? sortedEvents[0][1] : 1;
+  const signups = data?.signupsByDay ?? [];
+  const maxSignups = Math.max(1, ...signups.map((d) => d.count));
+  const totalSignups = signups.reduce((s, d) => s + d.count, 0);
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">Analytics</h1>
-          <p className="text-sm text-[var(--text-tertiary)] font-medium mt-1">
-            {totalEvents.toLocaleString()} events in the last {days} days
-          </p>
-        </div>
-        <select
-          value={days}
-          onChange={(e) => setDays(parseInt(e.target.value))}
-          className="px-3 py-2 rounded-[var(--radius-lg)] border border-[var(--border-primary)] bg-[var(--surface-primary)] text-sm font-medium outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
-        >
-          <option value={7}>Last 7 days</option>
-          <option value={30}>Last 30 days</option>
-          <option value={90}>Last 90 days</option>
-        </select>
-      </div>
+    <AdminPage
+      title="Analytics"
+      subtitle={data ? `${totalEvents.toLocaleString('en-US')} events in the last ${days} days` : undefined}
+      onRefresh={load}
+    >
+      <div className="space-y-6">
+        <SegmentedControl label="Time range" value={days} onChange={setDays} options={DAY_OPTIONS} className="sm:max-w-sm" />
 
-      {/* Signup Trend */}
-      {data?.signupsByDay && data.signupsByDay.length > 0 && (
-        <div
-          className="rounded-[var(--radius-xl)] border border-[var(--border-primary)] bg-[var(--surface-primary)] p-6"
-          style={{ boxShadow: 'var(--shadow-card)' }}
-        >
-          <div className="flex items-center gap-2 mb-4">
-            <TrendingUp size={18} className="text-[var(--color-positive)]" />
-            <h2 className="text-base font-bold text-[var(--text-primary)]">Signups Over Time</h2>
-          </div>
-          <div className="flex items-end gap-1 h-32">
-            {data.signupsByDay.map((day) => {
-              const maxSignups = Math.max(...data.signupsByDay.map(d => d.count));
-              const height = maxSignups > 0 ? (day.count / maxSignups) * 100 : 0;
-              return (
-                <div key={day.date} className="flex-1 flex flex-col items-center gap-1" title={`${day.date}: ${day.count}`}>
-                  <span className="text-[9px] font-bold text-[var(--text-tertiary)]">{day.count}</span>
-                  <div
-                    className="w-full rounded-t-sm bg-[var(--color-accent)] transition-all min-h-[2px]"
-                    style={{ height: `${Math.max(height, 2)}%` }}
-                  />
-                </div>
-              );
-            })}
-          </div>
-          <div className="flex justify-between mt-2">
-            <span className="text-[9px] text-[var(--text-tertiary)]">{data.signupsByDay[0]?.date}</span>
-            <span className="text-[9px] text-[var(--text-tertiary)]">{data.signupsByDay[data.signupsByDay.length - 1]?.date}</span>
-          </div>
-        </div>
-      )}
+        {error && <Callout tone="error">{error}</Callout>}
 
-      {/* Event Breakdown */}
-      <div
-        className="rounded-[var(--radius-xl)] border border-[var(--border-primary)] bg-[var(--surface-primary)] p-6"
-        style={{ boxShadow: 'var(--shadow-card)' }}
-      >
-        <div className="flex items-center gap-2 mb-4">
-          <MousePointerClick size={18} className="text-[var(--color-accent)]" />
-          <h2 className="text-base font-bold text-[var(--text-primary)]">Events by Type</h2>
-        </div>
-        {sortedEvents.length === 0 ? (
-          <p className="text-sm text-[var(--text-tertiary)] text-center py-8">No events recorded</p>
+        {loading ? (
+          <PageSkeleton rows={6} />
         ) : (
-          <div className="space-y-2.5">
-            {sortedEvents.map(([type, count]) => {
-              const category = EVENT_CATEGORIES[type];
-              const pct = (count / maxEventCount) * 100;
-              return (
-                <div key={type} className="flex items-center gap-3">
-                  <span className="text-xs font-semibold text-[var(--text-secondary)] w-40 truncate">
-                    {category?.label || type}
-                  </span>
-                  <div className="flex-1 h-5 rounded-full bg-[var(--surface-tertiary)] overflow-hidden">
+          <>
+            {signups.length > 0 && (
+              <Card>
+                <CardTitle icon={TrendingUp} action={<span className="text-[13px] font-semibold text-[var(--ad-label-3)]">{totalSignups.toLocaleString('en-US')} total</span>}>
+                  Signups
+                </CardTitle>
+                <div className="flex h-36 items-end gap-[3px] sm:gap-1" role="img" aria-label={`Signups per day, ${shortDate(signups[0].date)} to ${shortDate(signups[signups.length - 1].date)}`}>
+                  {signups.map((day) => (
                     <div
-                      className="h-full rounded-full transition-all duration-500"
-                      style={{
-                        width: `${Math.max(pct, 2)}%`,
-                        backgroundColor: category?.color || 'var(--color-accent)',
-                      }}
+                      key={day.date}
+                      title={`${shortDate(day.date)}: ${day.count}`}
+                      className="min-h-[3px] flex-1 rounded-t-[4px] bg-[var(--ad-green)] opacity-90 transition-[height] duration-500"
+                      style={{ height: `${Math.max((day.count / maxSignups) * 100, 2)}%` }}
                     />
-                  </div>
-                  <span className="text-xs font-bold text-[var(--text-primary)] w-16 text-right">
-                    {count.toLocaleString()}
-                  </span>
+                  ))}
                 </div>
-              );
-            })}
-          </div>
+                <div className="mt-2 flex justify-between text-[12px] text-[var(--ad-label-3)]">
+                  <span>{shortDate(signups[0].date)}</span>
+                  <span>{shortDate(signups[signups.length - 1].date)}</span>
+                </div>
+              </Card>
+            )}
+
+            <Card>
+              <CardTitle icon={MousePointerClick}>Events by type</CardTitle>
+              {sortedEvents.length === 0 ? (
+                <p className="py-6 text-center text-[14px] text-[var(--ad-label-3)]">No events recorded</p>
+              ) : (
+                <ul className="space-y-3.5">
+                  {sortedEvents.map(([type, count]) => {
+                    const category = EVENT_CATEGORIES[type];
+                    return (
+                      <li key={type}>
+                        <div className="mb-1.5 flex items-baseline justify-between gap-3 text-[14px]">
+                          <span className="truncate font-medium text-[var(--ad-label-2)]">{category?.label || type}</span>
+                          <span className="font-bold tabular-nums text-[var(--ad-label)]">{count.toLocaleString('en-US')}</span>
+                        </div>
+                        <div className="h-2 overflow-hidden rounded-full bg-[var(--ad-fill)]">
+                          <div
+                            className="h-full rounded-full transition-[width] duration-500"
+                            style={{ width: `${Math.max((count / maxEventCount) * 100, 2)}%`, background: category?.color || 'var(--ad-tint)' }}
+                          />
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </Card>
+
+            <div className="space-y-3">
+              <h2 className="flex items-center gap-2 px-1 text-[20px] font-bold tracking-[-0.01em]">
+                <Activity size={18} className="text-[var(--ad-label-3)]" aria-hidden="true" /> Recent events
+              </h2>
+              {(data?.recentEvents ?? []).length === 0 ? (
+                <p className="px-1 text-[14px] text-[var(--ad-label-3)]">No recent events.</p>
+              ) : (
+                <DataTable
+                  rows={(data?.recentEvents ?? []).slice(0, 20)}
+                  rowKey={(e) => String(e.id)}
+                  mobileRow={(e) => (
+                    <ListRow
+                      leading={
+                        <span
+                          aria-hidden="true"
+                          className="h-2.5 w-2.5 shrink-0 rounded-full"
+                          style={{ background: EVENT_CATEGORIES[e.event_type]?.color || 'var(--ad-label-3)' }}
+                        />
+                      }
+                      title={EVENT_CATEGORIES[e.event_type]?.label || e.event_type}
+                      subtitle={e.page_url || '—'}
+                      detail={<span className="text-[13px]">{timeAgo(e.created_at)}</span>}
+                    />
+                  )}
+                  columns={[
+                    {
+                      key: 'type',
+                      header: 'Type',
+                      cell: (e) => (
+                        <span className="flex items-center gap-2 font-semibold text-[var(--ad-label)]">
+                          <span
+                            aria-hidden="true"
+                            className="h-2 w-2 rounded-full"
+                            style={{ background: EVENT_CATEGORIES[e.event_type]?.color || 'var(--ad-label-3)' }}
+                          />
+                          {EVENT_CATEGORIES[e.event_type]?.label || e.event_type}
+                        </span>
+                      ),
+                    },
+                    { key: 'page', header: 'Page', cell: (e) => <span className="block max-w-[420px] truncate">{e.page_url || '—'}</span> },
+                    { key: 'time', header: 'Time', align: 'right', cell: (e) => new Date(e.created_at).toLocaleString() },
+                  ]}
+                />
+              )}
+            </div>
+          </>
         )}
       </div>
-
-      {/* Recent Events */}
-      <div
-        className="rounded-[var(--radius-xl)] border border-[var(--border-primary)] bg-[var(--surface-primary)] overflow-hidden"
-        style={{ boxShadow: 'var(--shadow-card)' }}
-      >
-        <div className="flex items-center gap-2 px-6 py-4 border-b border-[var(--border-secondary)]">
-          <AlertCircle size={18} className="text-[var(--color-warning)]" />
-          <h2 className="text-base font-bold text-[var(--text-primary)]">Recent Events</h2>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-[var(--surface-secondary)] border-b border-[var(--border-secondary)]">
-                <th className="text-left px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Type</th>
-                <th className="text-left px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Page</th>
-                <th className="text-left px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Time</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(data?.recentEvents || []).slice(0, 20).map((event) => (
-                <tr key={event.id} className="border-b border-[var(--border-secondary)] last:border-0 hover:bg-[var(--surface-secondary)] transition-colors">
-                  <td className="px-4 py-2.5">
-                    <span className="text-xs font-semibold">
-                      {EVENT_CATEGORIES[event.event_type]?.label || event.event_type}
-                    </span>
-                  </td>
-                  <td className="px-4 py-2.5 text-xs text-[var(--text-tertiary)] truncate max-w-[250px]">
-                    {event.page_url || '—'}
-                  </td>
-                  <td className="px-4 py-2.5 text-xs text-[var(--text-tertiary)]">
-                    {new Date(event.created_at).toLocaleString()}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+    </AdminPage>
   );
 }

@@ -1,25 +1,31 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
-import {
-  Plus,
-  Loader2,
-  FileText,
-  BookOpen,
-  Newspaper,
-  CalendarRange,
-  ExternalLink,
-  ChevronDown,
-  AlertTriangle,
-} from 'lucide-react';
-import { createBrowserClient } from '@/lib/supabase/client';
+import { useCallback, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { BookOpen, CalendarRange, ExternalLink, FileText, Newspaper, Plus } from 'lucide-react';
+import { useAdminApi, readError } from '@/components/admin/useAdminApi';
 import {
   CONTENT_TYPES,
   CREATABLE_CONTENT_TYPES,
   getContentTypeMeta,
   type ContentTypeKey,
 } from '@/lib/cms/content-types';
+import {
+  AdminPage,
+  Button,
+  Callout,
+  DataTable,
+  EmptyState,
+  FilterChips,
+  IconTile,
+  ListGroup,
+  ListRow,
+  Pill,
+  Sheet,
+  SkeletonList,
+  type PageAction,
+  type Tone,
+} from '@/components/admin/ui';
 
 interface ContentRow {
   id: string;
@@ -31,11 +37,11 @@ interface ContentRow {
   updated_at: string;
 }
 
-const STATUS_STYLES: Record<ContentRow['status'], { bg: string; color: string }> = {
-  published: { bg: '#dcfce7', color: 'var(--color-positive)' },
-  draft: { bg: 'var(--surface-tertiary)', color: 'var(--text-tertiary)' },
-  scheduled: { bg: '#dbeafe', color: 'var(--color-info)' },
-  archived: { bg: '#fef3c7', color: 'var(--color-warning)' },
+const STATUS_TONE: Record<ContentRow['status'], Tone> = {
+  published: 'green',
+  draft: 'gray',
+  scheduled: 'blue',
+  archived: 'amber',
 };
 
 const TYPE_ICONS: Record<ContentTypeKey, typeof FileText> = {
@@ -45,53 +51,46 @@ const TYPE_ICONS: Record<ContentTypeKey, typeof FileText> = {
   weekly: CalendarRange,
 };
 
+const TYPE_TONE: Record<ContentTypeKey, Tone> = {
+  article: 'blue',
+  guide: 'green',
+  daily: 'violet',
+  weekly: 'amber',
+};
+
+const fmtDate = (iso: string) => new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
 export default function AdminContentList() {
+  const api = useAdminApi();
+  const router = useRouter();
   const [rows, setRows] = useState<ContentRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [typeFilter, setTypeFilter] = useState<string>('');
-  const [newMenuOpen, setNewMenuOpen] = useState(false);
-  const newMenuRef = useRef<HTMLDivElement>(null);
+  const [newOpen, setNewOpen] = useState(false);
+
+  const load = useCallback(async () => {
+    try {
+      const params = new URLSearchParams();
+      if (statusFilter) params.set('status', statusFilter);
+      if (typeFilter) params.set('type', typeFilter);
+      const qs = params.toString() ? `?${params.toString()}` : '';
+      const res = await api(`/api/admin/cms/content${qs}`);
+      if (!res.ok) throw new Error(await readError(res, 'Failed to load content'));
+      setRows((await res.json()).content);
+      setError(null);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to load content');
+    } finally {
+      setLoading(false);
+    }
+  }, [api, statusFilter, typeFilter]);
 
   useEffect(() => {
-    const load = async () => {
-      setLoading(true);
-      const supabase = createBrowserClient();
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session) return;
-      try {
-        const params = new URLSearchParams();
-        if (statusFilter) params.set('status', statusFilter);
-        if (typeFilter) params.set('type', typeFilter);
-        const qs = params.toString() ? `?${params.toString()}` : '';
-        const res = await fetch(`/api/admin/cms/content${qs}`, {
-          headers: { Authorization: `Bearer ${session.access_token}` },
-        });
-        if (!res.ok) throw new Error((await res.json()).error || 'Failed to load content');
-        setRows((await res.json()).content);
-      } catch (e) {
-        setError(e instanceof Error ? e.message : 'Failed to load content');
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, [statusFilter, typeFilter]);
-
-  // Close the "New" menu on outside click.
-  useEffect(() => {
-    if (!newMenuOpen) return;
-    const onClick = (e: MouseEvent) => {
-      if (newMenuRef.current && !newMenuRef.current.contains(e.target as Node)) {
-        setNewMenuOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', onClick);
-    return () => document.removeEventListener('mousedown', onClick);
-  }, [newMenuOpen]);
+    setLoading(true);
+    void load();
+  }, [load]);
 
   // Types in this list that the public site doesn't read from the CMS yet.
   const offSiteTypes = CONTENT_TYPES.filter(
@@ -99,199 +98,143 @@ export default function AdminContentList() {
   );
   const filterMeta = typeFilter ? getContentTypeMeta(typeFilter) : null;
 
+  // One creatable type → go straight to the editor; several → pick in a sheet.
+  const newAction: PageAction =
+    CREATABLE_CONTENT_TYPES.length === 1
+      ? { label: `New ${CREATABLE_CONTENT_TYPES[0].label.toLowerCase()}`, icon: Plus, variant: 'primary', href: `/admin/content/new?type=${CREATABLE_CONTENT_TYPES[0].key}` }
+      : { label: 'New', icon: Plus, variant: 'primary', onClick: () => setNewOpen(true) };
+
+  const viewLink = (row: ContentRow) => {
+    const meta = getContentTypeMeta(row.type);
+    return row.status === 'published' && meta.publicReadsFromDb ? `${meta.pathPrefix}/${row.slug}` : null;
+  };
+
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">Content</h1>
-          <p className="mt-1 text-sm text-[var(--text-tertiary)] font-medium">
-            Articles, guides, and market outlooks managed in the built-in CMS
-          </p>
-        </div>
+    <AdminPage title="Content" subtitle="Articles, guides and market outlooks" actions={[newAction]} onRefresh={load}>
+      <div className="space-y-5">
+        <FilterChips
+          groups={[
+            {
+              label: 'Type',
+              value: typeFilter,
+              onChange: setTypeFilter,
+              options: [{ value: '', label: 'All types' }, ...CONTENT_TYPES.map((t) => ({ value: t.key, label: t.short }))],
+            },
+            {
+              label: 'Status',
+              value: statusFilter,
+              onChange: setStatusFilter,
+              options: [
+                { value: '', label: 'Any status' },
+                { value: 'published', label: 'Published' },
+                { value: 'draft', label: 'Draft' },
+                { value: 'scheduled', label: 'Scheduled' },
+                { value: 'archived', label: 'Archived' },
+              ],
+            },
+          ]}
+        />
 
-        {/* New content type picker */}
-        <div className="relative" ref={newMenuRef}>
-          <button
-            onClick={() => setNewMenuOpen((v) => !v)}
-            className="inline-flex items-center gap-2 rounded-[var(--radius-md)] bg-navy px-4 py-2 text-sm font-bold text-white hover:opacity-90"
-          >
-            <Plus size={16} /> New
-            <ChevronDown size={14} className={newMenuOpen ? 'rotate-180 transition-transform' : 'transition-transform'} />
-          </button>
-          {newMenuOpen && (
-            <div className="absolute right-0 z-20 mt-2 w-56 overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-primary)] bg-[var(--surface-primary)] py-1 shadow-lg">
-              {CREATABLE_CONTENT_TYPES.map((t) => {
-                const Icon = TYPE_ICONS[t.key];
-                return (
-                  <Link
-                    key={t.key}
-                    href={`/admin/content/new?type=${t.key}`}
-                    onClick={() => setNewMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-[var(--text-secondary)] hover:bg-[var(--surface-secondary)] hover:text-[var(--text-primary)]"
-                  >
-                    <span
-                      className="flex h-7 w-7 items-center justify-center rounded-[var(--radius-md)]"
-                      style={{ backgroundColor: t.badge.bg, color: t.badge.color }}
-                    >
-                      <Icon size={15} />
+        {error && <Callout tone="error">{error}</Callout>}
+
+        {!loading && offSiteTypes.length > 0 && (
+          <Callout tone="warning" title={`${offSiteTypes.map((t) => `${t.label}s`).join(', ')} don’t publish to the site yet.`}>
+            Their public pages are still built from the site&rsquo;s Markdown files, so those rows never appear on the site, even
+            when marked published. Publishing them from here is turned off until the site reads them from the CMS.
+          </Callout>
+        )}
+
+        {loading ? (
+          <SkeletonList rows={6} />
+        ) : rows.length === 0 ? (
+          <EmptyState
+            icon={FileText}
+            title={`No ${typeFilter ? getContentTypeMeta(typeFilter).label.toLowerCase() : 'content'} yet`}
+            action={
+              (!filterMeta || filterMeta.publicReadsFromDb) && (
+                <Button variant="primary" icon={Plus} href={`/admin/content/new${typeFilter ? `?type=${typeFilter}` : ''}`}>
+                  Create your first {typeFilter ? getContentTypeMeta(typeFilter).label.toLowerCase() : 'piece'}
+                </Button>
+              )
+            }
+          />
+        ) : (
+          <DataTable
+            rows={rows}
+            rowKey={(r) => r.id}
+            onRowClick={(r) => router.push(`/admin/content/${r.id}`)}
+            mobileRow={(row) => {
+              const meta = getContentTypeMeta(row.type);
+              return (
+                <ListRow
+                  href={`/admin/content/${row.id}`}
+                  leading={<IconTile icon={TYPE_ICONS[meta.key]} tone={TYPE_TONE[meta.key]} />}
+                  title={row.title || '(untitled)'}
+                  wrapTitle
+                  subtitle={`${meta.label} · ${fmtDate(row.updated_at)}`}
+                  trailing={<Pill tone={STATUS_TONE[row.status]}>{row.status}</Pill>}
+                />
+              );
+            }}
+            columns={[
+              {
+                key: 'title',
+                header: 'Title',
+                cell: (row) => {
+                  const meta = getContentTypeMeta(row.type);
+                  return (
+                    <span className="flex min-w-0 items-center gap-3">
+                      <IconTile icon={TYPE_ICONS[meta.key]} tone={TYPE_TONE[meta.key]} size={28} />
+                      <span className="min-w-0">
+                        <span className="block max-w-[440px] truncate font-semibold text-[var(--ad-label)]">{row.title || '(untitled)'}</span>
+                        <span className="block max-w-[440px] truncate text-[13px] text-[var(--ad-label-3)]">
+                          {meta.pathPrefix}/{row.slug}
+                        </span>
+                      </span>
                     </span>
-                    {t.label}
-                  </Link>
-                );
-              })}
-            </div>
-          )}
-        </div>
+                  );
+                },
+              },
+              { key: 'type', header: 'Type', cell: (row) => getContentTypeMeta(row.type).short },
+              { key: 'status', header: 'Status', cell: (row) => <Pill tone={STATUS_TONE[row.status]}>{row.status}</Pill> },
+              { key: 'updated', header: 'Updated', align: 'right', cell: (row) => fmtDate(row.updated_at) },
+              {
+                key: 'view',
+                header: <span className="sr-only">View</span>,
+                align: 'right',
+                cell: (row) => {
+                  const href = viewLink(row);
+                  return href ? (
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[13px] font-semibold text-[var(--ad-tint)] hover:bg-[var(--ad-fill)]"
+                    >
+                      View <ExternalLink size={12} aria-hidden="true" />
+                    </a>
+                  ) : null;
+                },
+              },
+            ]}
+          />
+        )}
       </div>
 
-      {/* Type filter */}
-      <div className="flex flex-wrap items-center gap-2">
-        {[{ key: '', short: 'All types' }, ...CONTENT_TYPES].map((t) => (
-          <button
-            key={t.key || 'all-types'}
-            onClick={() => setTypeFilter(t.key)}
-            className={`rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider transition-colors ${
-              typeFilter === t.key
-                ? 'bg-navy text-white'
-                : 'bg-[var(--surface-tertiary)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)]'
-            }`}
-          >
-            {t.short}
-          </button>
-        ))}
-      </div>
-
-      {/* Status filter */}
-      <div className="flex flex-wrap items-center gap-2">
-        {['', 'published', 'draft', 'scheduled', 'archived'].map((s) => (
-          <button
-            key={s || 'all'}
-            onClick={() => setStatusFilter(s)}
-            className={`rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider transition-colors ${
-              statusFilter === s
-                ? 'bg-sky text-navy'
-                : 'bg-[var(--surface-tertiary)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)]'
-            }`}
-          >
-            {s || 'All statuses'}
-          </button>
-        ))}
-      </div>
-
-      {error && (
-        <div className="rounded-[var(--radius-md)] border border-[var(--crimson-border)] bg-[var(--crimson-50)] px-4 py-3 text-sm font-medium text-[var(--crimson-500)]">
-          {error}
-        </div>
-      )}
-
-      {!loading && offSiteTypes.length > 0 && (
-        <div className="flex gap-3 rounded-[var(--radius-md)] border border-[var(--color-warning)] bg-[var(--color-warning-soft)] px-4 py-3 text-sm text-[var(--text-secondary)]">
-          <AlertTriangle size={18} className="mt-0.5 shrink-0 text-[var(--color-warning)]" />
-          <p>
-            <strong className="text-[var(--text-primary)]">
-              {offSiteTypes.map((t) => `${t.label}s`).join(', ')} don&rsquo;t publish to the site yet.
-            </strong>{' '}
-            Their public pages are still built from the site&rsquo;s Markdown files, so those rows
-            never appear on the site, even when marked published. Publishing them from here is
-            turned off until the site reads them from the CMS.
-          </p>
-        </div>
-      )}
-
-      {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="animate-spin text-[var(--color-accent)]" size={28} />
-        </div>
-      ) : rows.length === 0 ? (
-        <div className="rounded-[var(--radius-xl)] border border-[var(--border-primary)] bg-[var(--surface-primary)] p-12 text-center">
-          <FileText className="mx-auto mb-3 text-[var(--text-tertiary)]" size={28} />
-          <p className="text-sm font-medium text-[var(--text-secondary)]">
-            No {typeFilter ? getContentTypeMeta(typeFilter).label.toLowerCase() : 'content'} yet.
-          </p>
-          {(!filterMeta || filterMeta.publicReadsFromDb) && (
-            <Link
-              href={`/admin/content/new${typeFilter ? `?type=${typeFilter}` : ''}`}
-              className="mt-3 inline-flex items-center gap-1.5 text-sm font-bold text-[var(--color-accent)]"
-            >
-              <Plus size={14} /> Create your first{' '}
-              {typeFilter ? getContentTypeMeta(typeFilter).label.toLowerCase() : 'piece of content'}
-            </Link>
-          )}
-        </div>
-      ) : (
-        <div className="overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border-primary)] bg-[var(--surface-primary)]">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-[var(--border-primary)] text-left text-xs font-bold uppercase tracking-wider text-[var(--text-tertiary)]">
-                <th className="px-5 py-3">Title</th>
-                <th className="px-5 py-3">Type</th>
-                <th className="px-5 py-3">Status</th>
-                <th className="hidden px-5 py-3 md:table-cell">Updated</th>
-                <th className="px-5 py-3"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => {
-                const badge = STATUS_STYLES[row.status];
-                const typeMeta = getContentTypeMeta(row.type);
-                return (
-                  <tr
-                    key={row.id}
-                    className="border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--surface-secondary)]"
-                  >
-                    <td className="px-5 py-3">
-                      <Link
-                        href={`/admin/content/${row.id}`}
-                        className="font-semibold text-[var(--text-primary)] hover:text-[var(--color-accent)]"
-                      >
-                        {row.title || '(untitled)'}
-                      </Link>
-                      <div className="text-xs text-[var(--text-tertiary)]">
-                        {typeMeta.pathPrefix}/{row.slug}
-                      </div>
-                    </td>
-                    <td className="px-5 py-3">
-                      <span
-                        className="inline-block rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider"
-                        style={{ backgroundColor: typeMeta.badge.bg, color: typeMeta.badge.color }}
-                      >
-                        {typeMeta.short}
-                      </span>
-                    </td>
-                    <td className="px-5 py-3">
-                      <span
-                        className="inline-block rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider"
-                        style={{ backgroundColor: badge.bg, color: badge.color }}
-                      >
-                        {row.status}
-                      </span>
-                    </td>
-                    <td className="hidden px-5 py-3 text-[var(--text-tertiary)] md:table-cell">
-                      {new Date(row.updated_at).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric',
-                      })}
-                    </td>
-                    <td className="px-5 py-3 text-right">
-                      {row.status === 'published' && typeMeta.publicReadsFromDb && (
-                        <a
-                          href={`${typeMeta.pathPrefix}/${row.slug}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--text-tertiary)] hover:text-[var(--color-accent)]"
-                        >
-                          view <ExternalLink size={11} />
-                        </a>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
+      <Sheet open={newOpen} onClose={() => setNewOpen(false)} title="New content">
+        <ListGroup>
+          {CREATABLE_CONTENT_TYPES.map((t) => (
+            <ListRow
+              key={t.key}
+              href={`/admin/content/new?type=${t.key}`}
+              leading={<IconTile icon={TYPE_ICONS[t.key]} tone={TYPE_TONE[t.key]} />}
+              title={t.label}
+              subtitle={t.hint}
+            />
+          ))}
+        </ListGroup>
+      </Sheet>
+    </AdminPage>
   );
 }

@@ -1,8 +1,21 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Users, TrendingUp, CreditCard, Activity, Loader2 } from 'lucide-react';
-import { createBrowserClient } from '@/lib/supabase/client';
+import { useCallback, useEffect, useState } from 'react';
+import { Activity, CreditCard, FilePlus2, Megaphone, TrendingUp, Upload, Users, Gauge } from 'lucide-react';
+import { useAdminApi, readError } from '@/components/admin/useAdminApi';
+import {
+  AdminPage,
+  Callout,
+  Card,
+  CardTitle,
+  DetailRow,
+  IconTile,
+  ListGroup,
+  ListRow,
+  SkeletonTiles,
+  SkeletonList,
+  StatTile,
+} from '@/components/admin/ui';
 
 interface Stats {
   users: { total: number; free: number; finance_pro: number };
@@ -11,187 +24,129 @@ interface Stats {
   revenue: { mrr: number };
 }
 
+const fmt = (n: number) => n.toLocaleString('en-US');
+const money = (n: number) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+
 export default function AdminOverview() {
+  const api = useAdminApi();
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const load = useCallback(async () => {
+    try {
+      const res = await api('/api/admin/stats');
+      if (!res.ok) throw new Error(await readError(res, 'Failed to fetch stats'));
+      setStats(await res.json());
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch stats');
+    } finally {
+      setLoading(false);
+    }
+  }, [api]);
+
   useEffect(() => {
-    const fetchStats = async () => {
-      const supabase = createBrowserClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
+    void load();
+  }, [load]);
 
-      try {
-        const res = await fetch('/api/admin/stats', {
-          headers: { Authorization: `Bearer ${session.access_token}` },
-        });
-        if (!res.ok) throw new Error('Failed to fetch stats');
-        setStats(await res.json());
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchStats();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="animate-spin text-[var(--color-accent)]" size={28} />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="rounded-[var(--radius-xl)] border border-[var(--crimson-border)] bg-[var(--crimson-50)] p-6 text-[var(--crimson-500)] text-sm font-medium">
-        {error}
-      </div>
-    );
-  }
-
-  const kpis = [
-    {
-      label: 'Total Users',
-      value: stats?.users.total || 0,
-      icon: Users,
-      color: 'var(--color-accent)',
-      bg: 'var(--color-accent-light)',
-    },
-    {
-      label: 'Signups (7d)',
-      value: stats?.signups.last7d || 0,
-      icon: TrendingUp,
-      color: 'var(--color-positive)',
-      bg: '#dcfce7',
-    },
-    {
-      label: 'MRR',
-      value: `$${(stats?.revenue.mrr || 0).toFixed(2)}`,
-      icon: CreditCard,
-      color: 'var(--color-info)',
-      bg: '#dbeafe',
-    },
-    {
-      label: 'Events (7d)',
-      value: stats?.events.last7d || 0,
-      icon: Activity,
-      color: 'var(--color-warning)',
-      bg: '#fef3c7',
-    },
-  ];
+  const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  const total = stats?.users.total ?? 0;
+  const pro = stats?.users.finance_pro ?? 0;
+  const free = stats?.users.free ?? 0;
+  const proPct = total ? (pro / total) * 100 : 0;
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">Dashboard</h1>
-        <p className="text-sm text-[var(--text-tertiary)] font-medium mt-1">Overview of your platform metrics</p>
-      </div>
+    <AdminPage
+      title="Overview"
+      eyebrow={<span className="text-[13px] font-semibold uppercase tracking-[0.06em] text-[var(--ad-label-3)]">{today}</span>}
+      onRefresh={load}
+    >
+      <div className="space-y-7">
+        {error && <Callout tone="error">{error}</Callout>}
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {kpis.map((kpi) => (
-          <div
-            key={kpi.label}
-            className="rounded-[var(--radius-xl)] border border-[var(--border-primary)] bg-[var(--surface-primary)] p-5 transition-all hover:shadow-md"
-            style={{ boxShadow: 'var(--shadow-card)' }}
-          >
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-tertiary)]">
-                {kpi.label}
-              </span>
-              <div
-                className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-md)]"
-                style={{ backgroundColor: kpi.bg, color: kpi.color }}
-              >
-                <kpi.icon size={16} />
-              </div>
-            </div>
-            <p className="text-2xl font-bold text-[var(--text-primary)]">{kpi.value}</p>
+        {loading ? (
+          <SkeletonTiles count={4} />
+        ) : (
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+            <StatTile label="Total users" value={fmt(total)} icon={Users} tone="navy" />
+            <StatTile label="Signups · 7d" value={fmt(stats?.signups.last7d ?? 0)} icon={TrendingUp} tone="green" />
+            <StatTile label="MRR" value={money(stats?.revenue.mrr ?? 0)} icon={CreditCard} tone="blue" />
+            <StatTile label="Events · 7d" value={fmt(stats?.events.last7d ?? 0)} icon={Activity} tone="amber" />
           </div>
-        ))}
-      </div>
+        )}
 
-      {/* User Distribution */}
-      <div
-        className="rounded-[var(--radius-xl)] border border-[var(--border-primary)] bg-[var(--surface-primary)] p-6"
-        style={{ boxShadow: 'var(--shadow-card)' }}
-      >
-        <h2 className="text-base font-bold text-[var(--text-primary)] mb-4">User Distribution</h2>
-        <div className="space-y-3">
-          {[
-            { label: 'Free', count: stats?.users.free || 0, color: '#767676' },
-            { label: 'Pro', count: stats?.users.finance_pro || 0, color: 'var(--color-accent)' },
-          ].map((tier) => {
-            const pct = stats?.users.total ? Math.round((tier.count / stats.users.total) * 100) : 0;
-            return (
-              <div key={tier.label} className="flex items-center gap-4">
-                <span className="text-sm font-semibold text-[var(--text-secondary)] w-28">{tier.label}</span>
-                <div className="flex-1 h-6 rounded-full bg-[var(--surface-tertiary)] overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all duration-500"
-                    style={{ width: `${Math.max(pct, 2)}%`, backgroundColor: tier.color }}
-                  />
+        <div className="grid gap-7 lg:grid-cols-2 lg:gap-6">
+          {/* Plan mix */}
+          <Card>
+            <CardTitle>Plan mix</CardTitle>
+            {loading ? (
+              <SkeletonList rows={2} avatar={false} />
+            ) : (
+              <>
+                <div
+                  className="flex h-3 overflow-hidden rounded-full bg-[var(--ad-fill)]"
+                  role="img"
+                  aria-label={`${fmt(free)} free, ${fmt(pro)} Pro`}
+                >
+                  <span className="h-full bg-[#9aa6af]" style={{ width: `${100 - proPct}%` }} />
+                  <span className="h-full bg-[var(--ad-green)]" style={{ width: `${Math.max(proPct, total ? 1 : 0)}%` }} />
                 </div>
-                <span className="text-sm font-bold text-[var(--text-primary)] w-16 text-right">
-                  {tier.count} ({pct}%)
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+                <dl className="mt-4 grid grid-cols-2 gap-3">
+                  <div>
+                    <dt className="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--ad-label-2)]">
+                      <span className="h-2.5 w-2.5 rounded-full bg-[#9aa6af]" aria-hidden="true" /> Free
+                    </dt>
+                    <dd className="mt-1 text-[22px] font-bold tabular-nums">{fmt(free)}</dd>
+                    <dd className="text-[13px] text-[var(--ad-label-3)]">{total ? (100 - proPct).toFixed(1) : '0.0'}%</dd>
+                  </div>
+                  <div>
+                    <dt className="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--ad-label-2)]">
+                      <span className="h-2.5 w-2.5 rounded-full bg-[var(--ad-green)]" aria-hidden="true" /> Pro
+                    </dt>
+                    <dd className="mt-1 text-[22px] font-bold tabular-nums">{fmt(pro)}</dd>
+                    <dd className="text-[13px] text-[var(--ad-label-3)]">{proPct.toFixed(1)}% paid conversion</dd>
+                  </div>
+                </dl>
+              </>
+            )}
+          </Card>
 
-      {/* Quick Stats Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div
-          className="rounded-[var(--radius-xl)] border border-[var(--border-primary)] bg-[var(--surface-primary)] p-6"
-          style={{ boxShadow: 'var(--shadow-card)' }}
-        >
-          <h2 className="text-base font-bold text-[var(--text-primary)] mb-3">Signup Trends</h2>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-[var(--text-secondary)]">Last 7 days</span>
-              <span className="text-sm font-bold text-[var(--text-primary)]">{stats?.signups.last7d || 0}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-[var(--text-secondary)]">Last 30 days</span>
-              <span className="text-sm font-bold text-[var(--text-primary)]">{stats?.signups.last30d || 0}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-[var(--text-secondary)]">Avg daily (30d)</span>
-              <span className="text-sm font-bold text-[var(--text-primary)]">
-                {((stats?.signups.last30d || 0) / 30).toFixed(1)}
-              </span>
-            </div>
-          </div>
+          {/* Signups */}
+          <ListGroup header="Signups">
+            <DetailRow label="Last 7 days" value={fmt(stats?.signups.last7d ?? 0)} />
+            <DetailRow label="Last 30 days" value={fmt(stats?.signups.last30d ?? 0)} />
+            <DetailRow label="Daily average (30d)" value={((stats?.signups.last30d ?? 0) / 30).toFixed(1)} />
+          </ListGroup>
         </div>
-        <div
-          className="rounded-[var(--radius-xl)] border border-[var(--border-primary)] bg-[var(--surface-primary)] p-6"
-          style={{ boxShadow: 'var(--shadow-card)' }}
-        >
-          <h2 className="text-base font-bold text-[var(--text-primary)] mb-3">Paid Conversion</h2>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-[var(--text-secondary)]">Paid users</span>
-              <span className="text-sm font-bold text-[var(--text-primary)]">
-                {(stats?.users.finance_pro || 0)}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-[var(--text-secondary)]">Conversion rate</span>
-              <span className="text-sm font-bold text-[var(--text-primary)]">
-                {stats?.users.total
-                  ? ((stats.users.finance_pro / stats.users.total) * 100).toFixed(1)
-                  : '0.0'}%
-              </span>
-            </div>
-          </div>
-        </div>
+
+        <ListGroup header="Shortcuts">
+          <ListRow
+            href="/admin/content/new?type=article"
+            title="Write an article"
+            subtitle="Draft in Markdown with a live preview"
+            leading={<IconTile icon={FilePlus2} tone="blue" />}
+          />
+          <ListRow
+            href="/admin/ads/campaigns/new"
+            title="New ad campaign"
+            subtitle="Creatives, targeting and schedule"
+            leading={<IconTile icon={Megaphone} tone="orange" />}
+          />
+          <ListRow
+            href="/admin/offers"
+            title="Record conversions"
+            subtitle="Paste your affiliate network's report"
+            leading={<IconTile icon={Upload} tone="amber" />}
+          />
+          <ListRow
+            href="/admin/monetization"
+            title="Weekly scorecard"
+            subtitle="Visits to revenue, by tool"
+            leading={<IconTile icon={Gauge} tone="green" />}
+          />
+        </ListGroup>
       </div>
-    </div>
+    </AdminPage>
   );
 }
