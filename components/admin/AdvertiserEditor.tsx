@@ -1,10 +1,25 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Loader2, Save, Trash2, Plus, ExternalLink } from 'lucide-react';
+import { Plus, ExternalLink } from 'lucide-react';
 import { useAdminApi, readError } from './useAdminApi';
+import {
+  AdminPage,
+  Button,
+  Callout,
+  ConfirmSheet,
+  ListGroup,
+  ListRow,
+  PageSkeleton,
+  Switch,
+  helpClass,
+  inputClass,
+  labelClass,
+  sectionClass as cardClass,
+  selectClass,
+  useToast,
+} from './ui';
 import {
   AD_NETWORKS,
   ADVERTISER_CATEGORIES,
@@ -58,10 +73,6 @@ const PROGRAM_STATUS_HELP: Record<ProgramStatus, string> = {
   rejected: 'The program said no; nothing shows.',
 };
 
-const inputClass =
-  'w-full rounded-[var(--radius-md)] border border-[var(--border-primary)] bg-[var(--surface-primary)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--color-accent)] transition-colors';
-const labelClass = 'block text-xs font-bold uppercase tracking-wider text-[var(--text-tertiary)] mb-1.5';
-const cardClass = 'rounded-[var(--radius-xl)] border border-[var(--border-primary)] bg-[var(--surface-primary)] p-5';
 
 export default function AdvertiserEditor({ advertiserId }: { advertiserId?: string }) {
   const api = useAdminApi();
@@ -71,7 +82,8 @@ export default function AdvertiserEditor({ advertiserId }: { advertiserId?: stri
   const [loading, setLoading] = useState(Boolean(advertiserId));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
+  const toast = useToast();
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
     if (!advertiserId) return;
@@ -120,7 +132,6 @@ export default function AdvertiserEditor({ advertiserId }: { advertiserId?: stri
     }
     setSaving(true);
     setError(null);
-    setNotice(null);
     try {
       const payload = {
         slug: effectiveSlug,
@@ -147,7 +158,7 @@ export default function AdvertiserEditor({ advertiserId }: { advertiserId?: stri
         router.replace(`/admin/ads/advertisers/${json.id}`);
         router.refresh();
       } else {
-        setNotice('Saved.');
+        toast('Saved');
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to save');
@@ -158,203 +169,209 @@ export default function AdvertiserEditor({ advertiserId }: { advertiserId?: stri
 
   async function onDelete() {
     if (!advertiserId) return;
-    if (!confirm('Delete this advertiser? Every campaign and creative attached to it will be deleted too.')) return;
     setSaving(true);
     try {
       const res = await api(`/api/admin/ads/advertisers/${advertiserId}`, { method: 'DELETE' });
       if (!res.ok) throw new Error(await readError(res, 'Failed to delete'));
+      toast('Advertiser deleted');
       router.push('/admin/ads/advertisers');
       router.refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to delete');
+      setConfirmDelete(false);
       setSaving(false);
     }
   }
 
+  const pageTitle = advertiserId ? 'Edit advertiser' : 'New advertiser';
+  const back = { href: '/admin/ads/advertisers', label: 'Advertisers' };
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="animate-spin text-[var(--color-accent)]" size={28} />
-      </div>
+      <AdminPage title={pageTitle} back={back}>
+        <PageSkeleton rows={5} />
+      </AdminPage>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <Link href="/admin/ads/advertisers" className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--text-tertiary)] hover:text-[var(--text-primary)]">
-            <ArrowLeft size={12} /> Advertisers
-          </Link>
-          <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">
-            {advertiserId ? 'Edit advertiser' : 'New advertiser'}
-          </h1>
-          <p className="mt-1 text-sm text-[var(--text-tertiary)] font-medium">{effectiveSlug || 'Set a name to generate a slug'}</p>
-        </div>
-        <div className="flex items-center gap-2">
-          {advertiserId && (
-            <>
-              <Link
-                href={`/admin/ads/campaigns/new?advertiser=${advertiserId}`}
-                className="inline-flex items-center gap-2 rounded-[var(--radius-md)] border border-[var(--border-primary)] px-3 py-2 text-sm font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-              >
-                <Plus size={15} /> New campaign
-              </Link>
-              <button
-                onClick={onDelete}
-                disabled={saving}
-                className="inline-flex items-center gap-2 rounded-[var(--radius-md)] border border-[var(--crimson-border)] px-3 py-2 text-sm font-semibold text-[var(--crimson-500)] hover:bg-[var(--crimson-50)] disabled:opacity-50"
-              >
-                <Trash2 size={15} /> Delete
-              </button>
-            </>
-          )}
-          <button
-            onClick={onSave}
-            disabled={saving}
-            className="inline-flex items-center gap-2 rounded-[var(--radius-md)] bg-navy px-4 py-2 text-sm font-bold text-white hover:opacity-90 disabled:opacity-50"
-          >
-            {saving ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
-            Save
-          </button>
-        </div>
-      </div>
+    <AdminPage
+      title={form.name.trim() || pageTitle}
+      back={back}
+      subtitle={<span className="font-mono text-[13px] text-[var(--ad-label-3)]">{effectiveSlug || 'Set a name to generate a slug'}</span>}
+      actions={[
+        ...(advertiserId
+          ? [{ label: 'New campaign', icon: Plus, href: `/admin/ads/campaigns/new?advertiser=${advertiserId}` }]
+          : []),
+        { label: 'Save', variant: 'primary' as const, onClick: onSave, loading: saving, textOnPhone: true },
+      ]}
+    >
+      <div className="space-y-6">
+        {error && <Callout tone="error">{error}</Callout>}
 
-      {error && (
-        <div className="rounded-[var(--radius-md)] border border-[var(--crimson-border)] bg-[var(--crimson-50)] px-4 py-3 text-sm font-medium text-[var(--crimson-500)]">
-          {error}
-        </div>
-      )}
-      {notice && (
-        <div className="rounded-[var(--radius-md)] border border-[var(--border-primary)] bg-[var(--surface-secondary)] px-4 py-3 text-sm font-medium text-[var(--text-secondary)]">
-          {notice}
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="space-y-6 min-w-0">
-          <div className={cardClass}>
-            <label className={labelClass}>Name</label>
-            <input className={inputClass} value={form.name} onChange={(e) => set('name', e.target.value)} placeholder="Rocket Money" />
-            <div className="mt-4">
-              <label className={labelClass}>Slug</label>
-              <input
-                className={inputClass}
-                value={effectiveSlug}
-                onChange={(e) => {
-                  setSlugTouched(true);
-                  set('slug', slugify(e.target.value));
-                }}
-                placeholder="rocket-money"
-              />
-              <p className="mt-1 text-xs text-[var(--text-tertiary)]">Used in analytics events; keep it stable once campaigns are live.</p>
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <div className="space-y-6 min-w-0">
+            <div className={cardClass}>
+              <label className={labelClass}>Name</label>
+              <input className={inputClass} value={form.name} onChange={(e) => set('name', e.target.value)} placeholder="Rocket Money" />
+              <div className="mt-4">
+                <label className={labelClass}>Slug</label>
+                <input
+                  className={inputClass}
+                  value={effectiveSlug}
+                  onChange={(e) => {
+                    setSlugTouched(true);
+                    set('slug', slugify(e.target.value));
+                  }}
+                  placeholder="rocket-money"
+                />
+                <p className={helpClass}>Used in analytics events; keep it stable once campaigns are live.</p>
+              </div>
+              <div className="mt-4">
+                <label className={labelClass}>Affiliate URL</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="url"
+                    inputMode="url"
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    className={inputClass}
+                    value={form.url}
+                    onChange={(e) => set('url', e.target.value)}
+                    placeholder="https://partner.example.com/ref/…"
+                  />
+                  {form.url && (
+                    <a
+                      href={form.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--ad-fill-strong)] text-[var(--ad-tint)]"
+                      aria-label="Open affiliate URL"
+                    >
+                      <ExternalLink size={17} />
+                    </a>
+                  )}
+                </div>
+              </div>
             </div>
-            <div className="mt-4">
-              <label className={labelClass}>Affiliate URL</label>
-              <div className="flex items-center gap-2">
-                <input className={inputClass} value={form.url} onChange={(e) => set('url', e.target.value)} placeholder="https://partner.example.com/ref/…" />
-                {form.url && (
-                  <a href={form.url} target="_blank" rel="noreferrer" className="text-[var(--text-tertiary)] hover:text-[var(--color-accent)]" aria-label="Open affiliate URL">
-                    <ExternalLink size={16} />
-                  </a>
-                )}
+
+            <div className={cardClass}>
+              <label className={labelClass}>Tagline</label>
+              <input className={inputClass} value={form.tagline} onChange={(e) => set('tagline', e.target.value)} placeholder="The money app that works for you" />
+              <div className="mt-4">
+                <label className={labelClass}>Description</label>
+                <textarea className={inputClass} rows={3} value={form.description} onChange={(e) => set('description', e.target.value)} placeholder="Internal reference — not shown in ads." />
+              </div>
+              <div className="mt-4">
+                <label className={labelClass}>Default CTA</label>
+                <input className={inputClass} value={form.cta} onChange={(e) => set('cta', e.target.value.slice(0, 30))} placeholder="Try it free" />
+                <p className={helpClass}>{30 - form.cta.length} characters left. Creatives each carry their own CTA; this is the suggested default.</p>
+              </div>
+              <div className="mt-4">
+                <label className={labelClass}>Offer disclosure (optional)</label>
+                <textarea
+                  className={inputClass}
+                  rows={3}
+                  maxLength={500}
+                  value={form.disclosure_text}
+                  onChange={(e) => set('disclosure_text', e.target.value)}
+                  placeholder="Leave empty to use the standard wording."
+                />
+                <p className={helpClass}>
+                  Shown right next to the offer&apos;s button. Only fill this in if the program requires its own wording.
+                </p>
               </div>
             </div>
           </div>
 
-          <div className={cardClass}>
-            <label className={labelClass}>Tagline</label>
-            <input className={inputClass} value={form.tagline} onChange={(e) => set('tagline', e.target.value)} placeholder="The money app that works for you" />
-            <div className="mt-4">
-              <label className={labelClass}>Description</label>
-              <textarea className={inputClass} rows={3} value={form.description} onChange={(e) => set('description', e.target.value)} placeholder="Internal reference — not shown in ads." />
+          <div className="space-y-6">
+            <div className={cardClass}>
+              <label className={labelClass}>Category</label>
+              <select className={selectClass} value={form.category} onChange={(e) => set('category', e.target.value as AdvertiserCategory)}>
+                {ADVERTISER_CATEGORIES.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+              <div className="mt-4 flex min-h-[44px] items-center justify-between gap-3">
+                <span className="text-[15px] font-semibold text-[var(--ad-label)]">Active</span>
+                <Switch checked={form.is_active} onChange={(v) => set('is_active', v)} label="Advertiser active" />
+              </div>
+              <p className={helpClass}>Inactive advertisers stop serving every campaign, regardless of campaign status.</p>
             </div>
-            <div className="mt-4">
-              <label className={labelClass}>Default CTA</label>
-              <input className={inputClass} value={form.cta} onChange={(e) => set('cta', e.target.value.slice(0, 30))} placeholder="Try it free" />
-              <p className="mt-1 text-xs text-[var(--text-tertiary)]">{30 - form.cta.length} characters left. Creatives each carry their own CTA; this is the suggested default.</p>
-            </div>
-            <div className="mt-4">
-              <label className={labelClass}>Offer disclosure (optional)</label>
+            <div className={cardClass}>
+              <label className={labelClass}>Affiliate program</label>
+              <select
+                className={selectClass}
+                value={form.program_status}
+                onChange={(e) => set('program_status', e.target.value as ProgramStatus)}
+              >
+                {PROGRAM_STATUSES.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+              <p className={helpClass}>{PROGRAM_STATUS_HELP[form.program_status]}</p>
+              <label className={`${labelClass} mt-4`}>Network</label>
+              <select className={selectClass} value={form.network} onChange={(e) => set('network', e.target.value as AdNetwork | '')}>
+                <option value="">—</option>
+                {AD_NETWORKS.map((n) => (
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
+                ))}
+              </select>
+              <label className={`${labelClass} mt-4`}>Terms verified on</label>
+              <input
+                type="date"
+                className={inputClass}
+                value={form.terms_verified_at}
+                onChange={(e) => set('terms_verified_at', e.target.value)}
+              />
+              <p className={helpClass}>The day you checked the program&apos;s current terms yourself.</p>
+              <label className={`${labelClass} mt-4`}>Payout note (internal)</label>
               <textarea
                 className={inputClass}
                 rows={3}
-                maxLength={500}
-                value={form.disclosure_text}
-                onChange={(e) => set('disclosure_text', e.target.value)}
-                placeholder="Leave empty to use the standard wording."
+                maxLength={1000}
+                value={form.payout_note}
+                onChange={(e) => set('payout_note', e.target.value)}
+                placeholder="What the program pays, in its own words."
               />
-              <p className="mt-1 text-xs text-[var(--text-tertiary)]">
-                Shown right next to the offer&apos;s button. Only fill this in if the program requires its own wording.
-              </p>
+              <p className={helpClass}>Never shown to visitors and never used in any calculation.</p>
+            </div>
+            <div className={cardClass}>
+              <label className={labelClass}>Notes</label>
+              <textarea className={inputClass} rows={4} value={form.notes} onChange={(e) => set('notes', e.target.value)} placeholder="Payout terms, contact, renewal dates…" />
             </div>
           </div>
         </div>
 
-        <div className="space-y-6">
-          <div className={cardClass}>
-            <label className={labelClass}>Category</label>
-            <select className={inputClass} value={form.category} onChange={(e) => set('category', e.target.value as AdvertiserCategory)}>
-              {ADVERTISER_CATEGORIES.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-            <label className="mt-4 flex items-center gap-2 text-sm font-semibold text-[var(--text-secondary)]">
-              <input type="checkbox" checked={form.is_active} onChange={(e) => set('is_active', e.target.checked)} />
-              Active
-            </label>
-            <p className="mt-1 text-xs text-[var(--text-tertiary)]">Inactive advertisers stop serving every campaign, regardless of campaign status.</p>
-          </div>
-          <div className={cardClass}>
-            <label className={labelClass}>Affiliate program</label>
-            <select
-              className={inputClass}
-              value={form.program_status}
-              onChange={(e) => set('program_status', e.target.value as ProgramStatus)}
-            >
-              {PROGRAM_STATUSES.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
-            <p className="mt-1 text-xs text-[var(--text-tertiary)]">{PROGRAM_STATUS_HELP[form.program_status]}</p>
-            <label className={`${labelClass} mt-4`}>Network</label>
-            <select className={inputClass} value={form.network} onChange={(e) => set('network', e.target.value as AdNetwork | '')}>
-              <option value="">—</option>
-              {AD_NETWORKS.map((n) => (
-                <option key={n} value={n}>
-                  {n}
-                </option>
-              ))}
-            </select>
-            <label className={`${labelClass} mt-4`}>Terms verified on</label>
-            <input
-              type="date"
-              className={inputClass}
-              value={form.terms_verified_at}
-              onChange={(e) => set('terms_verified_at', e.target.value)}
-            />
-            <p className="mt-1 text-xs text-[var(--text-tertiary)]">The day you checked the program&apos;s current terms yourself.</p>
-            <label className={`${labelClass} mt-4`}>Payout note (internal)</label>
-            <textarea
-              className={inputClass}
-              rows={3}
-              maxLength={1000}
-              value={form.payout_note}
-              onChange={(e) => set('payout_note', e.target.value)}
-              placeholder="What the program pays, in its own words."
-            />
-            <p className="mt-1 text-xs text-[var(--text-tertiary)]">Never shown to visitors and never used in any calculation.</p>
-          </div>
-          <div className={cardClass}>
-            <label className={labelClass}>Notes</label>
-            <textarea className={inputClass} rows={4} value={form.notes} onChange={(e) => set('notes', e.target.value)} placeholder="Payout terms, contact, renewal dates…" />
-          </div>
+        {advertiserId && (
+          <ListGroup>
+            <ListRow title="Delete advertiser" destructive centered onClick={() => setConfirmDelete(true)} />
+          </ListGroup>
+        )}
+
+        {/* Phones: a full-width save at the end of the form, under the thumb. */}
+        <div className="lg:hidden">
+          <Button variant="primary" size="lg" block loading={saving} onClick={onSave}>
+            Save advertiser
+          </Button>
         </div>
       </div>
-    </div>
+
+      <ConfirmSheet
+        open={confirmDelete}
+        onClose={() => setConfirmDelete(false)}
+        onConfirm={onDelete}
+        busy={saving}
+        title={`Delete ${form.name || 'this advertiser'}?`}
+        message="Every campaign and creative attached to it is deleted too. This can't be undone."
+        confirmLabel="Delete advertiser"
+      />
+    </AdminPage>
   );
 }

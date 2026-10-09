@@ -1,9 +1,21 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Loader2, DollarSign, ChevronLeft, ChevronRight } from 'lucide-react';
-import { createBrowserClient } from '@/lib/supabase/client';
-import { getTierDisplayName } from '@/lib/access-control';
+import { useCallback, useEffect, useState } from 'react';
+import { CreditCard } from 'lucide-react';
+import { useAdminApi, readError } from '@/components/admin/useAdminApi';
+import { getTierDisplayName, type Tier } from '@/lib/access-control';
+import {
+  AdminPage,
+  Avatar,
+  Callout,
+  DataTable,
+  EmptyState,
+  ListRow,
+  Pager,
+  Pill,
+  SkeletonList,
+  type Tone,
+} from '@/components/admin/ui';
 
 interface Subscription {
   id: string;
@@ -31,163 +43,112 @@ interface SubscriptionsResponse {
   mrr: number;
 }
 
+const STATUS_TONE: Record<string, Tone> = {
+  active: 'green',
+  trialing: 'blue',
+  past_due: 'amber',
+  canceled: 'red',
+  incomplete: 'gray',
+};
+
+const statusOf = (s: Subscription) => s.stripe?.status || s.subscription_status || 'unknown';
+const amountOf = (s: Subscription) =>
+  s.stripe?.plan_amount ? `$${(s.stripe.plan_amount / 100).toFixed(2)}/${s.stripe.plan_interval}` : '—';
+const renewsOf = (s: Subscription) =>
+  s.stripe?.current_period_end
+    ? new Date(s.stripe.current_period_end * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    : '—';
+
+function StatusPill({ sub }: { sub: Subscription }) {
+  const status = statusOf(sub);
+  return <Pill tone={STATUS_TONE[status] ?? 'gray'}>{status.replace('_', ' ')}</Pill>;
+}
+
 export default function AdminSubscriptions() {
+  const api = useAdminApi();
   const [data, setData] = useState<SubscriptionsResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
 
+  const load = useCallback(async () => {
+    try {
+      const res = await api(`/api/admin/subscriptions?page=${page}`);
+      if (!res.ok) throw new Error(await readError(res, 'Failed to fetch subscriptions'));
+      setData(await res.json());
+      setError(null);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to fetch subscriptions');
+    } finally {
+      setLoading(false);
+    }
+  }, [api, page]);
+
   useEffect(() => {
-    const fetchSubscriptions = async () => {
-      setLoading(true);
-      const supabase = createBrowserClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
+    void load();
+  }, [load]);
 
-      try {
-        const res = await fetch(`/api/admin/subscriptions?page=${page}`, {
-          headers: { Authorization: `Bearer ${session.access_token}` },
-        });
-        if (!res.ok) throw new Error('Failed to fetch subscriptions');
-        setData(await res.json());
-      } catch {
-        // Error handled by empty state
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchSubscriptions();
-  }, [page]);
-
-  const statusBadge = (status: string | null) => {
-    const colors: Record<string, string> = {
-      active: 'bg-[var(--emerald-100)] text-[var(--emerald-500)]',
-      trialing: 'bg-[var(--color-info-soft)] text-[var(--color-info)]',
-      past_due: 'bg-[var(--color-warning-soft)] text-[var(--color-warning)]',
-      canceled: 'bg-[var(--crimson-100)] text-[var(--crimson-500)]',
-      incomplete: 'bg-gray-100 text-gray-700',
-    };
-    const s = status || 'unknown';
-    return (
-      <span className={`rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase ${colors[s] || 'bg-gray-100 text-gray-600'}`}>
-        {s}
-      </span>
-    );
-  };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="animate-spin text-[var(--color-accent)]" size={28} />
-      </div>
-    );
-  }
+  const mrr = (data?.mrr ?? 0).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">Subscriptions</h1>
-        <p className="text-sm text-[var(--text-tertiary)] font-medium mt-1">
-          {data?.total || 0} subscribers
-        </p>
-      </div>
-
-      {/* MRR Card */}
-      <div
-        className="rounded-[var(--radius-xl)] border border-[var(--border-primary)] bg-[var(--surface-primary)] p-6"
-        style={{ boxShadow: 'var(--shadow-card)' }}
-      >
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-md)] bg-[var(--emerald-100)] text-[var(--emerald-500)]">
-            <DollarSign size={20} />
-          </div>
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-[var(--text-tertiary)]">Monthly Recurring Revenue</p>
-            <p className="text-3xl font-bold text-[var(--text-primary)]">${(data?.mrr || 0).toFixed(2)}</p>
-          </div>
+    <AdminPage
+      title="Subscriptions"
+      subtitle={data ? `${data.total.toLocaleString('en-US')} subscriber${data.total === 1 ? '' : 's'}` : undefined}
+      onRefresh={load}
+    >
+      <div className="space-y-6">
+        <div className="mgm-band relative overflow-hidden !rounded-[16px] p-5 sm:p-6">
+          <p className="text-[13px] font-semibold uppercase tracking-[0.06em] text-[rgba(255,255,255,0.7)]">Monthly recurring revenue</p>
+          <p className="mt-1 text-[38px] font-extrabold tabular-nums tracking-[-0.03em] text-white sm:text-[44px]">{loading ? '—' : mrr}</p>
+          <CreditCard size={88} className="pointer-events-none absolute -bottom-4 -right-3 text-white opacity-[0.08]" aria-hidden="true" />
         </div>
-      </div>
 
-      {/* Subscriptions Table */}
-      <div
-        className="rounded-[var(--radius-xl)] border border-[var(--border-primary)] bg-[var(--surface-primary)] overflow-hidden"
-        style={{ boxShadow: 'var(--shadow-card)' }}
-      >
-        {!data?.subscriptions.length ? (
-          <div className="text-center py-16 text-[var(--text-tertiary)] text-sm font-medium">
-            No active subscriptions
-          </div>
+        {error && <Callout tone="error">{error}</Callout>}
+
+        {loading ? (
+          <SkeletonList rows={6} />
+        ) : !data?.subscriptions.length ? (
+          <EmptyState icon={CreditCard} title="No active subscriptions" />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-[var(--border-secondary)] bg-[var(--surface-secondary)]">
-                  <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Email</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Tier</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Status</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Amount</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Renews</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Canceling</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.subscriptions.map((sub) => (
-                  <tr key={sub.id} className="border-b border-[var(--border-secondary)] last:border-0 hover:bg-[var(--surface-secondary)] transition-colors">
-                    <td className="px-4 py-3 font-medium text-[var(--text-primary)]">
-                      <span className="truncate max-w-[200px] block">{sub.email}</span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="text-xs font-bold">{getTierDisplayName(sub.tier as any)}</span>
-                    </td>
-                    <td className="px-4 py-3">{statusBadge(sub.stripe?.status || sub.subscription_status)}</td>
-                    <td className="px-4 py-3 text-[var(--text-secondary)] text-xs font-medium">
-                      {sub.stripe?.plan_amount
-                        ? `$${(sub.stripe.plan_amount / 100).toFixed(2)}/${sub.stripe.plan_interval}`
-                        : '—'}
-                    </td>
-                    <td className="px-4 py-3 text-[var(--text-tertiary)] text-xs">
-                      {sub.stripe?.current_period_end
-                        ? new Date(sub.stripe.current_period_end * 1000).toLocaleDateString()
-                        : '—'}
-                    </td>
-                    <td className="px-4 py-3 text-xs">
-                      {sub.stripe?.cancel_at_period_end ? (
-                        <span className="text-[var(--color-negative)] font-bold">Yes</span>
-                      ) : (
-                        <span className="text-[var(--text-tertiary)]">No</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <DataTable
+            rows={data.subscriptions}
+            rowKey={(s) => s.id}
+            mobileRow={(s) => (
+              <ListRow
+                leading={<Avatar name={s.email} tone="violet" />}
+                title={s.email}
+                subtitle={`${amountOf(s)} · renews ${renewsOf(s)}`}
+                meta={
+                  <span className="flex flex-wrap items-center gap-2">
+                    <StatusPill sub={s} />
+                    {s.stripe?.cancel_at_period_end && <span className="font-semibold text-[var(--ad-red)]">Cancels at period end</span>}
+                  </span>
+                }
+              />
+            )}
+            columns={[
+              {
+                key: 'email',
+                header: 'Subscriber',
+                cell: (s) => <span className="block max-w-[300px] truncate font-semibold text-[var(--ad-label)]">{s.email}</span>,
+              },
+              { key: 'tier', header: 'Plan', cell: (s) => getTierDisplayName(s.tier as Tier) },
+              { key: 'status', header: 'Status', cell: (s) => <StatusPill sub={s} /> },
+              { key: 'amount', header: 'Amount', align: 'right', cell: amountOf },
+              { key: 'renews', header: 'Renews', align: 'right', cell: renewsOf },
+              {
+                key: 'cancel',
+                header: 'Canceling',
+                align: 'right',
+                cell: (s) =>
+                  s.stripe?.cancel_at_period_end ? <span className="font-bold text-[var(--ad-red)]">Yes</span> : 'No',
+              },
+            ]}
+          />
         )}
 
-        {/* Pagination */}
-        {data && data.totalPages > 1 && (
-          <div className="flex items-center justify-between border-t border-[var(--border-secondary)] px-4 py-3 bg-[var(--surface-secondary)]">
-            <span className="text-xs text-[var(--text-tertiary)] font-medium">
-              Page {data.page} of {data.totalPages}
-            </span>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
-                disabled={page <= 1}
-                className="p-1.5 rounded-md border border-[var(--border-primary)] text-[var(--text-secondary)] disabled:opacity-40 hover:bg-[var(--surface-primary)] transition-colors"
-              >
-                <ChevronLeft size={16} />
-              </button>
-              <button
-                onClick={() => setPage(p => Math.min(data.totalPages, p + 1))}
-                disabled={page >= data.totalPages}
-                className="p-1.5 rounded-md border border-[var(--border-primary)] text-[var(--text-secondary)] disabled:opacity-40 hover:bg-[var(--surface-primary)] transition-colors"
-              >
-                <ChevronRight size={16} />
-              </button>
-            </div>
-          </div>
-        )}
+        {data && <Pager page={data.page} totalPages={data.totalPages} onPage={setPage} />}
       </div>
-    </div>
+    </AdminPage>
   );
 }

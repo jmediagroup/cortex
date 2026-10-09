@@ -199,6 +199,7 @@ export default function PricingPage() {
                   role="tab"
                   aria-selected={on}
                   onClick={() => setBillingPeriod(period)}
+                  className="touch-44"
                   style={{
                     padding: '9px 22px',
                     borderRadius: 'var(--radius-pill)',

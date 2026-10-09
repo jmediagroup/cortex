@@ -82,6 +82,7 @@ export function AppSideNav() {
             <Link
               key={item.href}
               href={item.href}
+              className="app-side-nav-link"
               style={{
                 display: 'flex',
                 alignItems: 'center',

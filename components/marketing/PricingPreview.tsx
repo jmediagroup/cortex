@@ -51,6 +51,7 @@ export function MarketingPricingPreview() {
   return (
     <section
       id="pricing"
+      className="marketing-section"
       style={{ padding: '120px 24px', background: 'var(--bg-page)', scrollMarginTop: 64 }}
     >
       <div style={{ maxWidth: 1100, margin: '0 auto' }}>
@@ -78,7 +79,7 @@ export function MarketingPricingPreview() {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit,minmax(320px,1fr))',
+            gridTemplateColumns: 'repeat(auto-fit,minmax(min(320px,100%),1fr))',
             gap: 20,
             maxWidth: 820,
             margin: '0 auto',

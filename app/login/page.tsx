@@ -285,6 +285,7 @@ function AuthForm() {
             Can&apos;t find it? Check your spam or promotions folder.
           </p>
           <button
+            className="tap-target"
             type="button"
             onClick={handleBackToLogin}
             style={{ ...authLinkStyle, color: 'var(--navy)' }}
@@ -362,6 +363,7 @@ function AuthForm() {
           </Button>
 
           <button
+            className="tap-target"
             type="button"
             onClick={handleBackToLogin}
             style={{ ...authLinkStyle, color: 'var(--navy)', alignSelf: 'center' }}
@@ -424,6 +426,7 @@ function AuthForm() {
           icon={<Lock size={16} />}
           trailing={
             <button
+              className="tap-target"
               type="button"
               onClick={() => setShowPassword((v) => !v)}
               aria-pressed={showPassword}
@@ -461,6 +464,7 @@ function AuthForm() {
         {(needsVerification || noticeIsExpiredLink) && (
           <div style={{ marginTop: -6 }}>
             <button
+              className="tap-target"
               type="button"
               onClick={handleResendVerification}
               disabled={resendLoading || !email || captchaBlocksSubmit}
@@ -490,6 +494,7 @@ function AuthForm() {
 
         <div style={{ marginTop: -6, textAlign: 'right' }}>
           <button
+            className="tap-target"
             type="button"
             onClick={() => {
               setIsForgotPassword(true);
@@ -531,6 +536,7 @@ function AuthForm() {
           New here?{' '}
           <Link
             href={signupHref}
+            className="tap-target"
             style={{ color: 'var(--orange)', fontWeight: 700, textDecoration: 'none' }}
           >
             Create a free account

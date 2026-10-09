@@ -1,9 +1,30 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
-import { Search, ChevronLeft, ChevronRight, Loader2, Trash2, Edit3, X, Check, ShieldAlert, MailWarning } from 'lucide-react';
-import { createBrowserClient } from '@/lib/supabase/client';
-import { getTierDisplayName } from '@/lib/access-control';
+import { useCallback, useEffect, useState } from 'react';
+import { MailWarning, ShieldAlert, Users as UsersIcon } from 'lucide-react';
+import { useAdminApi, readError } from '@/components/admin/useAdminApi';
+import { getTierDisplayName, type Tier } from '@/lib/access-control';
+import {
+  AdminPage,
+  Avatar,
+  Button,
+  Callout,
+  ConfirmSheet,
+  DataTable,
+  DetailRow,
+  EmptyState,
+  FilterChips,
+  ListGroup,
+  ListRow,
+  Pager,
+  Pill,
+  SearchField,
+  SegmentedControl,
+  Sheet,
+  SkeletonList,
+  StatTile,
+  useToast,
+} from '@/components/admin/ui';
 
 interface User {
   id: string;
@@ -51,329 +72,320 @@ const FLAG_LABELS: Record<string, string> = {
   invalid_email: 'Invalid email',
 };
 
+const fullName = (u: User) => [u.first_name, u.last_name].filter(Boolean).join(' ');
+const fmtDate = (iso: string) => new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+const fmt = (n: number) => n.toLocaleString('en-US');
+
+function StatusPills({ user }: { user: User }) {
+  return (
+    <span className="flex items-center gap-1.5">
+      {user.tier === 'finance_pro' && <Pill tone="green">Pro</Pill>}
+      {!user.email_verified_at && <Pill tone="gray">Unverified</Pill>}
+      {user.is_flagged && (
+        <Pill tone="amber" icon={ShieldAlert}>
+          Flagged
+        </Pill>
+      )}
+    </span>
+  );
+}
+
 export default function AdminUsers() {
+  const api = useAdminApi();
+  const toast = useToast();
   const [data, setData] = useState<UsersResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [tierFilter, setTierFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [page, setPage] = useState(1);
-  const [editingUser, setEditingUser] = useState<string | null>(null);
-  const [editTier, setEditTier] = useState('');
-  const [actionLoading, setActionLoading] = useState<string | null>(null);
 
-  const getToken = useCallback(async () => {
-    const supabase = createBrowserClient();
-    const { data: { session } } = await supabase.auth.getSession();
-    return session?.access_token || '';
-  }, []);
+  const [selected, setSelected] = useState<User | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [editTier, setEditTier] = useState<Tier>('free');
+  const [saving, setSaving] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const fetchUsers = useCallback(async () => {
-    setLoading(true);
-    const token = await getToken();
     const params = new URLSearchParams({ page: String(page), limit: '20' });
     if (search) params.set('search', search);
     if (tierFilter) params.set('tier', tierFilter);
     if (statusFilter) params.set('status', statusFilter);
-
     try {
-      const res = await fetch(`/api/admin/users?${params}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error('Failed to fetch users');
+      const res = await api(`/api/admin/users?${params}`);
+      if (!res.ok) throw new Error(await readError(res, 'Failed to fetch users'));
       setData(await res.json());
-    } catch {
-      // Error handled by empty state
+      setError(null);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to fetch users');
     } finally {
       setLoading(false);
     }
-  }, [page, search, tierFilter, statusFilter, getToken]);
+  }, [api, page, search, tierFilter, statusFilter]);
 
   useEffect(() => {
     const timeout = setTimeout(() => fetchUsers(), search ? 300 : 0);
     return () => clearTimeout(timeout);
-  }, [fetchUsers]);
+  }, [fetchUsers, search]);
 
-  const handleUpdateTier = async (userId: string) => {
-    setActionLoading(userId);
-    const token = await getToken();
+  const openUser = (user: User) => {
+    setSelected(user);
+    setEditTier(user.tier);
+    setSheetOpen(true);
+  };
 
+  const handleUpdateTier = async () => {
+    if (!selected) return;
+    setSaving(true);
     try {
-      const res = await fetch(`/api/admin/users/${userId}`, {
+      const res = await api(`/api/admin/users/${selected.id}`, {
         method: 'PATCH',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({ tier: editTier }),
       });
-
-      if (!res.ok) throw new Error('Failed to update user');
-      setEditingUser(null);
-      fetchUsers();
-    } catch {
-      // Error silently caught, could add toast
+      if (!res.ok) throw new Error(await readError(res, 'Failed to update user'));
+      setSheetOpen(false);
+      toast(`Plan changed to ${getTierDisplayName(editTier)}`);
+      void fetchUsers();
+    } catch (e) {
+      toast(e instanceof Error ? e.message : 'Failed to update user', 'error');
     } finally {
-      setActionLoading(null);
+      setSaving(false);
     }
   };
 
-  const handleDeleteUser = async (userId: string) => {
-    if (!confirm('Are you sure you want to delete this user? This cannot be undone.')) return;
-
-    setActionLoading(userId);
-    const token = await getToken();
-
+  const handleDeleteUser = async () => {
+    if (!selected) return;
+    setDeleting(true);
     try {
-      const res = await fetch(`/api/admin/users/${userId}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error('Failed to delete user');
-      fetchUsers();
-    } catch {
-      // Error silently caught
+      const res = await api(`/api/admin/users/${selected.id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error(await readError(res, 'Failed to delete user'));
+      setConfirmDelete(false);
+      setSheetOpen(false);
+      toast('User deleted');
+      void fetchUsers();
+    } catch (e) {
+      toast(e instanceof Error ? e.message : 'Failed to delete user', 'error');
     } finally {
-      setActionLoading(null);
+      setDeleting(false);
     }
   };
 
-  const tierBadge = (tier: string) => {
-    const colors: Record<string, string> = {
-      free: 'bg-[var(--surface-tertiary)] text-[var(--text-secondary)]',
-      finance_pro: 'bg-[var(--emerald-100)] text-[var(--emerald-500)]',
-    };
-    return (
-      <span className={`rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase ${colors[tier] || colors.free}`}>
-        {getTierDisplayName(tier as any)}
-      </span>
-    );
-  };
+  const summary = data?.summary;
+  const aliasCount = summary ? summary.total_users - summary.distinct_inboxes : 0;
+  const filtersActive = Boolean(search || tierFilter || statusFilter);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">Users</h1>
-        <p className="text-sm text-[var(--text-tertiary)] font-medium mt-1">
-          {data?.total || 0} total users
-        </p>
-      </div>
+    <AdminPage title="Users" subtitle={data ? `${fmt(data.total)} total` : undefined} onRefresh={fetchUsers}>
+      <div className="space-y-5">
+        {/*
+          Signup-abuse summary. "Verified" is the only count that reflects real
+          people — a profile row is written the moment an account is created,
+          before the confirmation link is ever clicked, which is why bot signups
+          showed up here as ordinary FREE users.
+        */}
+        {summary && (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <StatTile compact label="Verified" value={fmt(summary.verified_users)} tone="green" />
+            <StatTile compact label="Unverified" value={fmt(summary.unverified_users)} />
+            <StatTile compact label="Unverified > 7d" value={fmt(summary.stale_unverified_users)} />
+            <StatTile compact label="Flagged" value={fmt(summary.flagged_users)} tone="amber" />
+          </div>
+        )}
 
-      {/*
-        Signup-abuse summary. "Verified" is the only count that reflects real
-        people — a profile row is written the moment an account is created,
-        before the confirmation link is ever clicked, which is why bot signups
-        showed up here as ordinary FREE users.
-      */}
-      {data?.summary && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {[
-            { label: 'Verified', value: data.summary.verified_users, tone: 'text-[var(--emerald-500)]' },
-            { label: 'Unverified', value: data.summary.unverified_users, tone: 'text-[var(--text-primary)]' },
-            { label: 'Unverified > 7d', value: data.summary.stale_unverified_users, tone: 'text-[var(--text-primary)]' },
-            { label: 'Flagged', value: data.summary.flagged_users, tone: 'text-[var(--text-primary)]' },
-          ].map((stat) => (
-            <div
-              key={stat.label}
-              className="rounded-[var(--radius-lg)] border border-[var(--border-primary)] bg-[var(--surface-primary)] px-4 py-3"
-            >
-              <div className={`text-xl font-bold tabular-nums ${stat.tone}`}>{stat.value}</div>
-              <div className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)] mt-0.5">
-                {stat.label}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-      {data?.summary && data.summary.total_users > data.summary.distinct_inboxes && (
-        <div className="flex items-start gap-2 rounded-[var(--radius-lg)] border border-[var(--border-primary)] bg-[var(--surface-secondary)] px-4 py-3 text-sm text-[var(--text-secondary)]">
-          <MailWarning size={16} className="mt-0.5 shrink-0 text-[var(--text-tertiary)]" />
-          <span>
-            <strong className="text-[var(--text-primary)]">
-              {data.summary.total_users - data.summary.distinct_inboxes}
-            </strong>{' '}
-            account{data.summary.total_users - data.summary.distinct_inboxes === 1 ? '' : 's'} share an
-            inbox with another account (Gmail dot/plus aliases). Inspect with{' '}
-            <code className="text-xs">select * from user_alias_clusters</code>.
-          </span>
-        </div>
-      )}
+        {aliasCount > 0 && (
+          <Callout icon={MailWarning}>
+            <strong className="text-[var(--ad-label)]">{fmt(aliasCount)}</strong> account{aliasCount === 1 ? '' : 's'} share an inbox
+            with another account (Gmail dot/plus aliases). Inspect with <code>select * from user_alias_clusters</code>.
+          </Callout>
+        )}
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-2.5 text-[var(--text-tertiary)]" size={16} />
-          <input
-            type="text"
-            placeholder="Search by email or name..."
+        <div className="space-y-3 lg:flex lg:items-center lg:gap-4 lg:space-y-0">
+          <SearchField
+            className="lg:w-80 lg:shrink-0"
             value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="w-full pl-9 pr-4 py-2.5 rounded-[var(--radius-lg)] border border-[var(--border-primary)] bg-[var(--surface-primary)] text-sm font-medium text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] outline-none focus:ring-2 focus:ring-[var(--color-accent)] transition-all"
+            onChange={(v) => {
+              setSearch(v);
+              setPage(1);
+            }}
+            placeholder="Search email or name"
+          />
+          <FilterChips
+            groups={[
+              {
+                label: 'Account status',
+                value: statusFilter,
+                onChange: (v) => {
+                  setStatusFilter(v);
+                  setPage(1);
+                },
+                options: [
+                  { value: '', label: 'All' },
+                  { value: 'verified', label: 'Verified' },
+                  { value: 'unverified', label: 'Unverified' },
+                  { value: 'flagged', label: 'Flagged' },
+                ],
+              },
+              {
+                label: 'Plan',
+                value: tierFilter,
+                onChange: (v) => {
+                  setTierFilter(v);
+                  setPage(1);
+                },
+                options: [
+                  { value: '', label: 'Any plan' },
+                  { value: 'free', label: 'Free' },
+                  { value: 'finance_pro', label: 'Pro' },
+                ],
+              },
+            ]}
           />
         </div>
-        <select
-          value={statusFilter}
-          onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-          className="px-4 py-2.5 rounded-[var(--radius-lg)] border border-[var(--border-primary)] bg-[var(--surface-primary)] text-sm font-medium text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
-        >
-          <option value="">All accounts</option>
-          <option value="verified">Verified only</option>
-          <option value="unverified">Unverified only</option>
-          <option value="flagged">Flagged only</option>
-        </select>
-        <select
-          value={tierFilter}
-          onChange={(e) => { setTierFilter(e.target.value); setPage(1); }}
-          className="px-4 py-2.5 rounded-[var(--radius-lg)] border border-[var(--border-primary)] bg-[var(--surface-primary)] text-sm font-medium text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
-        >
-          <option value="">All tiers</option>
-          <option value="free">Free</option>
-          <option value="finance_pro">Finance Pro</option>
-        </select>
-      </div>
 
-      {/* Users Table */}
-      <div
-        className="rounded-[var(--radius-xl)] border border-[var(--border-primary)] bg-[var(--surface-primary)] overflow-hidden"
-        style={{ boxShadow: 'var(--shadow-card)' }}
-      >
+        {error && <Callout tone="error">{error}</Callout>}
+
         {loading ? (
-          <div className="flex items-center justify-center py-16">
-            <Loader2 className="animate-spin text-[var(--color-accent)]" size={24} />
-          </div>
+          <SkeletonList rows={8} />
         ) : !data?.users.length ? (
-          <div className="text-center py-16 text-[var(--text-tertiary)] text-sm font-medium">
-            No users found
-          </div>
+          <EmptyState
+            icon={UsersIcon}
+            title="No users found"
+            message={filtersActive ? 'Try a different search or clear the filters.' : undefined}
+          />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-[var(--border-secondary)] bg-[var(--surface-secondary)]">
-                  <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Email</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Name</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Status</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Tier</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Subscription</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Joined</th>
-                  <th className="text-right px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.users.map((user) => (
-                  <tr key={user.id} className="border-b border-[var(--border-secondary)] last:border-0 hover:bg-[var(--surface-secondary)] transition-colors">
-                    <td className="px-4 py-3 font-medium text-[var(--text-primary)]">
-                      <span className="truncate max-w-[200px] block">{user.email}</span>
-                    </td>
-                    <td className="px-4 py-3 text-[var(--text-secondary)]">
-                      {[user.first_name, user.last_name].filter(Boolean).join(' ') || '—'}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex flex-wrap items-center gap-1.5">
-                        {user.email_verified_at ? (
-                          <span className="rounded-md bg-[var(--emerald-100)] px-2 py-0.5 text-[10px] font-semibold uppercase text-[var(--emerald-500)]">
-                            Verified
-                          </span>
-                        ) : (
-                          <span className="rounded-md bg-[var(--surface-tertiary)] px-2 py-0.5 text-[10px] font-semibold uppercase text-[var(--text-tertiary)]">
-                            Unverified
-                          </span>
-                        )}
-                        {user.is_flagged && (
-                          <span
-                            title={(user.signup_flags || [])
-                              .map((f) => FLAG_LABELS[f] || f)
-                              .join(', ')}
-                            className="inline-flex items-center gap-1 rounded-md bg-[var(--surface-tertiary)] px-1.5 py-0.5 text-[10px] font-semibold uppercase text-[var(--text-secondary)]"
-                          >
-                            <ShieldAlert size={11} /> Flagged
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      {editingUser === user.id ? (
-                        <div className="flex items-center gap-2">
-                          <select
-                            value={editTier}
-                            onChange={(e) => setEditTier(e.target.value)}
-                            className="text-xs border border-[var(--border-primary)] rounded-md px-2 py-1 outline-none"
-                          >
-                            <option value="free">Free</option>
-                            <option value="finance_pro">Finance Pro</option>
-                          </select>
-                          <button
-                            onClick={() => handleUpdateTier(user.id)}
-                            disabled={actionLoading === user.id}
-                            className="text-[var(--color-positive)] hover:opacity-70"
-                          >
-                            {actionLoading === user.id ? <Loader2 className="animate-spin" size={14} /> : <Check size={14} />}
-                          </button>
-                          <button onClick={() => setEditingUser(null)} className="text-[var(--text-tertiary)] hover:opacity-70">
-                            <X size={14} />
-                          </button>
-                        </div>
-                      ) : (
-                        tierBadge(user.tier)
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-[var(--text-secondary)] text-xs">
-                      {user.subscription_status || (user.stripe_subscription_id ? 'active' : '—')}
-                    </td>
-                    <td className="px-4 py-3 text-[var(--text-tertiary)] text-xs">
-                      {new Date(user.created_at).toLocaleDateString()}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => { setEditingUser(user.id); setEditTier(user.tier); }}
-                          className="p-1.5 rounded-md text-[var(--text-tertiary)] hover:bg-[var(--surface-tertiary)] hover:text-[var(--text-primary)] transition-colors"
-                          title="Edit tier"
-                        >
-                          <Edit3 size={14} />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteUser(user.id)}
-                          disabled={actionLoading === user.id}
-                          className="p-1.5 rounded-md text-[var(--text-tertiary)] hover:bg-[var(--crimson-50)] hover:text-[var(--color-negative)] transition-colors"
-                          title="Delete user"
-                        >
-                          {actionLoading === user.id ? <Loader2 className="animate-spin" size={14} /> : <Trash2 size={14} />}
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <DataTable
+            rows={data.users}
+            rowKey={(u) => u.id}
+            onRowClick={openUser}
+            mobileRow={(u) => (
+              <ListRow
+                onClick={() => openUser(u)}
+                leading={<Avatar name={fullName(u) || u.email} tone={u.tier === 'finance_pro' ? 'green' : 'navy'} />}
+                title={fullName(u) || u.email}
+                subtitle={fullName(u) ? u.email : `Joined ${fmtDate(u.created_at)}`}
+                trailing={<StatusPills user={u} />}
+              />
+            )}
+            columns={[
+              {
+                key: 'user',
+                header: 'User',
+                cell: (u) => (
+                  <span className="flex min-w-0 items-center gap-3">
+                    <Avatar name={fullName(u) || u.email} size={32} tone={u.tier === 'finance_pro' ? 'green' : 'navy'} />
+                    <span className="min-w-0">
+                      <span className="block max-w-[280px] truncate font-semibold text-[var(--ad-label)]">{fullName(u) || u.email}</span>
+                      {fullName(u) && <span className="block max-w-[280px] truncate text-[13px] text-[var(--ad-label-3)]">{u.email}</span>}
+                    </span>
+                  </span>
+                ),
+              },
+              {
+                key: 'status',
+                header: 'Status',
+                cell: (u) => (
+                  <span className="flex flex-wrap items-center gap-1.5">
+                    {u.email_verified_at ? <Pill tone="green">Verified</Pill> : <Pill tone="gray">Unverified</Pill>}
+                    {u.is_flagged && (
+                      <Pill tone="amber" icon={ShieldAlert}>
+                        Flagged
+                      </Pill>
+                    )}
+                  </span>
+                ),
+              },
+              {
+                key: 'tier',
+                header: 'Plan',
+                cell: (u) => <Pill tone={u.tier === 'finance_pro' ? 'green' : 'gray'}>{getTierDisplayName(u.tier)}</Pill>,
+              },
+              {
+                key: 'sub',
+                header: 'Subscription',
+                cell: (u) => u.subscription_status || (u.stripe_subscription_id ? 'active' : '—'),
+              },
+              { key: 'joined', header: 'Joined', align: 'right', cell: (u) => fmtDate(u.created_at) },
+            ]}
+          />
         )}
 
-        {/* Pagination */}
-        {data && data.totalPages > 1 && (
-          <div className="flex items-center justify-between border-t border-[var(--border-secondary)] px-4 py-3 bg-[var(--surface-secondary)]">
-            <span className="text-xs text-[var(--text-tertiary)] font-medium">
-              Page {data.page} of {data.totalPages}
-            </span>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
-                disabled={page <= 1}
-                className="p-1.5 rounded-md border border-[var(--border-primary)] text-[var(--text-secondary)] disabled:opacity-40 hover:bg-[var(--surface-primary)] transition-colors"
-              >
-                <ChevronLeft size={16} />
-              </button>
-              <button
-                onClick={() => setPage(p => Math.min(data.totalPages, p + 1))}
-                disabled={page >= data.totalPages}
-                className="p-1.5 rounded-md border border-[var(--border-primary)] text-[var(--text-secondary)] disabled:opacity-40 hover:bg-[var(--surface-primary)] transition-colors"
-              >
-                <ChevronRight size={16} />
-              </button>
+        {data && <Pager page={data.page} totalPages={data.totalPages} onPage={setPage} />}
+      </div>
+
+      {/* User detail */}
+      <Sheet
+        open={sheetOpen}
+        onClose={() => setSheetOpen(false)}
+        title="User"
+        footer={
+          selected && editTier !== selected.tier ? (
+            <Button variant="primary" size="lg" block loading={saving} onClick={handleUpdateTier}>
+              Change plan to {getTierDisplayName(editTier)}
+            </Button>
+          ) : undefined
+        }
+      >
+        {selected && (
+          <div className="space-y-6">
+            <div className="flex flex-col items-center pt-1 text-center">
+              <Avatar name={fullName(selected) || selected.email} size={64} tone={selected.tier === 'finance_pro' ? 'green' : 'navy'} />
+              <p className="mt-3 text-[20px] font-bold">{fullName(selected) || 'No name'}</p>
+              <p className="max-w-full break-all text-[14px] text-[var(--ad-label-2)]">{selected.email}</p>
+              <div className="mt-3">
+                <StatusPills user={selected} />
+              </div>
             </div>
+
+            <ListGroup header="Plan" footer="Changes the plan in the database only. Stripe billing is not touched.">
+              <div className="p-3">
+                <SegmentedControl<Tier>
+                  label="Plan"
+                  value={editTier}
+                  onChange={setEditTier}
+                  options={[
+                    { value: 'free', label: getTierDisplayName('free') },
+                    { value: 'finance_pro', label: getTierDisplayName('finance_pro') },
+                  ]}
+                />
+              </div>
+            </ListGroup>
+
+            <ListGroup header="Account">
+              <DetailRow label="Email" value={selected.email_verified_at ? `Verified ${fmtDate(selected.email_verified_at)}` : 'Not verified'} />
+              <DetailRow label="Joined" value={fmtDate(selected.created_at)} />
+              <DetailRow
+                label="Subscription"
+                value={selected.subscription_status || (selected.stripe_subscription_id ? 'active' : 'None')}
+              />
+              {selected.stripe_customer_id && <DetailRow label="Stripe customer" value={selected.stripe_customer_id} mono />}
+            </ListGroup>
+
+            {selected.is_flagged && (
+              <ListGroup header="Signup flags" footer="Recorded at signup by the email hygiene checks.">
+                {(selected.signup_flags?.length ? selected.signup_flags : ['flagged']).map((f) => (
+                  <ListRow key={f} title={FLAG_LABELS[f] || f} leading={<ShieldAlert size={18} className="text-[var(--ad-amber)]" />} />
+                ))}
+              </ListGroup>
+            )}
+
+            <ListGroup>
+              <ListRow title="Delete user" destructive centered onClick={() => setConfirmDelete(true)} />
+            </ListGroup>
           </div>
         )}
-      </div>
-    </div>
+      </Sheet>
+
+      <ConfirmSheet
+        open={confirmDelete}
+        onClose={() => setConfirmDelete(false)}
+        onConfirm={handleDeleteUser}
+        busy={deleting}
+        title={`Delete ${selected?.email ?? 'this user'}?`}
+        message="Removes their profile and sign-in. A Stripe subscription, if any, is not cancelled. This can't be undone."
+        confirmLabel="Delete user"
+      />
+    </AdminPage>
   );
 }

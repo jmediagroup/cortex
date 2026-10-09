@@ -119,6 +119,7 @@ export default async function GuideDetailPage({ params }: PageProps) {
             <nav style={{ marginBottom: 20 }}>
               <Link
                 href="/guides"
+                className="tap-target"
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -168,6 +169,7 @@ export default async function GuideDetailPage({ params }: PageProps) {
             </p>
 
             <div
+              className="pub-byline"
               style={{
                 display: 'flex',
                 flexWrap: 'wrap',

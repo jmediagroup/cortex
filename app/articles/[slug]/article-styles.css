@@ -4,6 +4,8 @@
   line-height: 1.75;
   color: var(--text-secondary);
   font-family: var(--font-sans);
+  /* Long URLs / tickers / unbroken strings wrap instead of pushing the page sideways. */
+  overflow-wrap: break-word;
 }
 
 .article-content h1,
@@ -232,5 +234,32 @@
     float: none;
     margin-left: 0;
     margin-right: 0;
+  }
+}
+
+/* Wide tables (market recaps, comparison grids) scroll inside their own box on
+   phones/small tablets instead of overflowing the whole page. The anonymous
+   table box still shrink-wraps, so narrow tables keep their natural width. */
+@media (max-width: 768px) {
+  .article-content table {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    font-size: 0.875rem;
+  }
+
+  /* Keep columns readable (not one word per line); the box scrolls instead. */
+  .article-content th,
+  .article-content td {
+    padding: 0.5rem 0.75rem;
+    min-width: 6.5rem;
+  }
+
+  .article-content th:last-child,
+  .article-content td:last-child {
+    min-width: 12rem;
   }
 }

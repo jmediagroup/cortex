@@ -21,7 +21,7 @@ export default function FilterPills({
 
   return (
     <div
-      className={`flex gap-2 overflow-x-auto scrollbar-none ${className}`}
+      className={`flex flex-wrap gap-2 sm:flex-nowrap sm:overflow-x-auto scrollbar-none ${className}`}
       role="tablist"
     >
       {options.map((option) => {
@@ -32,7 +32,7 @@ export default function FilterPills({
             role="tab"
             aria-selected={isActive}
             onClick={() => onChange(option)}
-            className={`whitespace-nowrap rounded-full font-medium transition-all duration-200 ${sizeStyles} ${
+            className={`filter-pill tap-target whitespace-nowrap rounded-full font-medium transition-all duration-200 ${sizeStyles} ${
               isActive
                 ? 'bg-[var(--color-accent)] text-[var(--text-inverse)] shadow-sm'
                 : 'bg-[var(--surface-tertiary)] text-[var(--text-secondary)] hover:bg-[var(--border-primary)] hover:text-[var(--text-primary)]'

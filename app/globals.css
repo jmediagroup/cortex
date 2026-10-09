@@ -535,7 +535,9 @@ body :where(.text-white, .mgm-band, [data-theme="dark"])
 }
 @media (max-width: 900px) {
   .marketing-hero-grid { grid-template-columns: 1fr !important; gap: 56px !important; }
-  .marketing-hero-preview { order: -1; }
+  /* Headline + CTAs lead on stacked layouts (value prop above the fold);
+     the preview card follows at a readable width instead of full-bleed. */
+  .marketing-hero-preview { width: 100%; max-width: 560px; }
   .marketing-articles-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
   .marketing-enterprise-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
   .dashboard-chart-grid { grid-template-columns: 1fr !important; }
@@ -723,4 +725,147 @@ body :where(.text-white, .mgm-band, [data-theme="dark"])
 .glass-card--strong {
   background: var(--bg-glass-strong);
   border-color: var(--glass-border-strong);
+}
+
+/* ===== Responsive polish (public + user app) ===== */
+
+/* --- Touch-target helpers (touch screens only) ---------------------------
+   .touch-44   grows the element itself to a 44px-tall row.
+   .tap-target keeps the visual size but extends the tappable area to at
+               least 44×44 with an invisible pseudo-element — for small text
+               links/buttons that sit in open space (show-password, "Back to
+               guides", inline sign-in links, card CTAs). */
+@media (pointer: coarse) {
+  .touch-44 { min-height: 44px; }
+  :where(.tap-target, .mgm-btn--sm) { position: relative; }
+  .tap-target::after,
+  .mgm-btn--sm::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    min-width: 44px;
+    min-height: 44px;
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* --- Shared 3-up card grid: one column on phones, three across from small
+   tablets up (avoids the 2 + 1 orphan that auto-fit/minmax(280px) produced
+   between ~640px and ~920px). */
+.pub-grid-3up { display: grid; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 720px) {
+  .pub-grid-3up { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* --- MGM buttons on phones: allow long uppercase labels to wrap instead of
+   overflowing their card (e.g. "Tools for financial mutants", "Start thinking
+   clearly", "Upgrade to Pro - $9/month"). */
+@media (max-width: 480px) {
+  .mgm-btn { white-space: normal; max-width: 100%; text-align: center; }
+  .mgm-btn--md { padding: 12px 22px; }
+  .mgm-btn--lg { padding: 14px 28px; }
+}
+
+/* --- Marketing nav ------------------------------------------------------- */
+@media (pointer: coarse) {
+  .marketing-nav-link,
+  .marketing-nav-action { display: inline-flex; align-items: center; min-height: 44px; }
+}
+
+/* --- Home hero ----------------------------------------------------------- */
+@media (max-width: 900px) {
+  .marketing-hero-inner { padding-top: 72px !important; padding-bottom: 56px !important; }
+}
+@media (max-width: 640px) {
+  .marketing-hero { padding-bottom: 32px !important; }
+  .marketing-hero-inner { padding-top: 40px !important; padding-bottom: 40px !important; }
+  /* Three stats side by side instead of 2 + 1 with an orphaned divider. */
+  .marketing-hero-stats {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start !important;
+    gap: 12px !important;
+  }
+  .marketing-hero-stat-divider { display: none; }
+}
+
+/* --- Home sections: tighter vertical rhythm on phones -------------------- */
+@media (max-width: 640px) {
+  .marketing-section { padding-top: 72px !important; padding-bottom: 72px !important; }
+  .marketing-principles { padding-top: 48px !important; padding-bottom: 48px !important; }
+}
+@media (max-width: 900px) {
+  .marketing-principles-panel { padding: 56px 32px !important; }
+}
+@media (max-width: 640px) {
+  .marketing-principles-panel { padding: 48px 20px !important; }
+}
+
+/* --- Marketing footer ---------------------------------------------------- */
+@media (pointer: coarse) {
+  .marketing-footer-link {
+    display: flex !important;
+    align-items: center;
+    min-height: 44px;
+    margin-bottom: 0 !important;
+  }
+}
+@media (max-width: 640px) {
+  .marketing-footer-groups {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px !important;
+    row-gap: 28px !important;
+    width: 100%;
+  }
+  .marketing-footer-disclaimer { font-size: 12px !important; }
+}
+
+/* --- Guide / outlook article meta row: on phones drop the "·" separators so
+   a wrapped row never ends in a dangling dot; author gets its own line. */
+@media (max-width: 640px) {
+  .pub-byline { row-gap: 8px !important; }
+  .pub-byline > span[aria-hidden='true'] { display: none; }
+  .pub-byline > span:first-child { flex-basis: 100%; }
+}
+
+/* --- Thinking rail (cadence + subscribe) on tablets: side by side instead of
+   one stretched full-width column. */
+@media (min-width: 641px) and (max-width: 900px) {
+  .pub-rail-card {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 32px !important;
+    align-items: start;
+  }
+  .pub-rail-subscribe {
+    padding-top: 0 !important;
+    border-top: 0 !important;
+    padding-left: 32px;
+    border-left: 1px solid var(--border-subtle);
+  }
+}
+
+/* --- Enterprise feature list: 2 × 2 on tablets. */
+@media (min-width: 641px) and (max-width: 900px) {
+  .enterprise-feature-list {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* --- Signed-in app shell ------------------------------------------------- */
+@media (pointer: coarse) {
+  .app-side-nav-link { min-height: 44px; }
+  .app-top-bar-settings { width: 44px !important; height: 44px !important; }
+  .filter-pill { min-height: 36px; }
+}
+/* Tablet portrait uses the bottom tab bar: keep the three tabs grouped in the
+   middle rather than spread edge to edge across ~820px. */
+@media (min-width: 641px) and (max-width: 900px) {
+  .app-mobile-tab-bar { justify-content: center !important; }
+  .app-mobile-tab-bar > a { flex: 0 1 200px !important; }
 }

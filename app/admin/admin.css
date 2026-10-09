@@ -1,0 +1,423 @@
+/* ============================================================
+   ADMIN APP — iOS-style shell for /admin.
+   Everything is scoped under `.admin-app` so none of it leaks into the
+   public site. Brand ink (navy) and accent (sky) come from tokens.css;
+   the grouped-gray canvas, hairlines and fills follow iOS conventions.
+   ============================================================ */
+
+.admin-app {
+  --ad-bg: #f2f4f7;                       /* grouped background */
+  --ad-card: #ffffff;
+  --ad-fill: rgba(5, 76, 125, 0.06);      /* search field, segmented track */
+  --ad-fill-strong: rgba(5, 76, 125, 0.1);
+  --ad-pressed: rgba(5, 76, 125, 0.07);   /* row tap highlight */
+  --ad-sep: rgba(5, 76, 125, 0.11);       /* hairline separators */
+  --ad-sep-strong: rgba(5, 76, 125, 0.18);
+  --ad-label: #054c7d;                    /* primary text (navy) */
+  --ad-label-2: #44576a;                  /* secondary text */
+  --ad-label-3: #66737d;                  /* tertiary text, ~4.6:1 on white */
+  --ad-tint: #054c7d;
+  --ad-accent: #4ec9f5;
+  --ad-green: #1d8072;
+  --ad-red: #cd2026;
+  --ad-orange: #f26531;
+  --ad-amber: #b0730a;
+  --ad-blue: #0a6fd1;
+  --ad-shadow: 0 1px 2px rgba(21, 48, 85, 0.05), 0 1px 1px rgba(21, 48, 85, 0.03);
+  --ad-shadow-lg: 0 18px 50px rgba(21, 48, 85, 0.18), 0 4px 14px rgba(21, 48, 85, 0.08);
+  --ad-ease: cubic-bezier(0.32, 0.72, 0, 1);  /* iOS sheet curve */
+  --ad-bar-h: 52px;
+  --ad-tab-h: 64px;
+  --ad-tab-gap: max(var(--safe-bottom), 12px);
+
+  min-height: 100dvh;
+  background: var(--ad-bg);
+  color: var(--ad-label);
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* tokens.css styles h1–h3 and p with UNLAYERED rules, which beat every
+   Tailwind utility. Inside the admin, roll them back to the layered
+   cascade so utility classes (text-[15px], font-bold…) take effect. */
+.admin-app :where(h1, h2, h3, h4, p, code) {
+  font-family: revert-layer;
+  font-size: revert-layer;
+  font-weight: revert-layer;
+  line-height: revert-layer;
+  letter-spacing: revert-layer;
+  color: revert-layer;
+}
+@layer base {
+  .admin-app :where(h1, h2, h3, h4, p) { color: inherit; }
+}
+
+@layer components {
+
+/* Room for the floating tab bar on phones (only on top-level tabs). */
+.admin-app .ad-main { padding-bottom: 40px; }
+@media (max-width: 767px) {
+  .admin-app[data-tabbar='true'] .ad-main {
+    padding-bottom: calc(var(--ad-tab-h) + var(--ad-tab-gap) + 28px);
+  }
+  .admin-app[data-tabbar='false'] .ad-main {
+    padding-bottom: calc(var(--safe-bottom) + 32px);
+  }
+}
+
+/* Route change: content settles in rather than snapping. */
+@keyframes ad-enter {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+.ad-enter { animation: ad-enter 260ms var(--ad-ease) both; }
+
+/* ---------- Navigation bar (sticky, translucent, large-title collapse) ---------- */
+.ad-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  padding-top: var(--safe-top);
+  background: rgba(242, 244, 247, 0.82);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+          backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 0.5px solid transparent;
+  transition: border-color 200ms ease, background 200ms ease;
+}
+.ad-navbar[data-scrolled='true'] {
+  border-bottom-color: var(--ad-sep-strong);
+  background: rgba(247, 248, 250, 0.86);
+}
+.ad-navbar-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  height: var(--ad-bar-h);
+}
+.ad-navbar-title {
+  max-width: min(52vw, 420px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+.ad-navbar[data-scrolled='true'] .ad-navbar-title { opacity: 1; transform: none; }
+
+.ad-large-title {
+  font-size: 32px;
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+@media (min-width: 1024px) {
+  .ad-large-title { font-size: 30px; }
+}
+
+/* ---------- Pull to refresh ---------- */
+.ad-ptr {
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  height: 0;
+  color: var(--ad-label-3);
+}
+.ad-ptr[data-active='true'] { transition: none; }
+.ad-ptr[data-active='false'] { transition: height 280ms var(--ad-ease); }
+
+/* ---------- Floating tab bar (phones) ---------- */
+.ad-tabbar {
+  position: fixed;
+  z-index: 40;
+  left: calc(12px + var(--safe-left));
+  right: calc(12px + var(--safe-right));
+  bottom: var(--ad-tab-gap);
+  height: var(--ad-tab-h);
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  padding: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.8);
+  -webkit-backdrop-filter: saturate(180%) blur(24px);
+          backdrop-filter: saturate(180%) blur(24px);
+  border: 0.5px solid rgba(5, 76, 125, 0.12);
+  box-shadow: 0 10px 30px rgba(21, 48, 85, 0.16), 0 2px 6px rgba(21, 48, 85, 0.06);
+  animation: ad-tabbar-in 320ms var(--ad-ease) both;
+}
+@keyframes ad-tabbar-in {
+  from { transform: translateY(24px); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+.ad-tab {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border-radius: 999px;
+  color: var(--ad-label-3);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 160ms ease, background 160ms ease, transform 120ms ease;
+}
+.ad-tab[data-active='true'] {
+  color: var(--ad-tint);
+  background: rgba(78, 201, 245, 0.18);
+}
+.ad-tab:active { transform: scale(0.94); }
+
+/* ---------- Grouped lists ---------- */
+.ad-group {
+  background: var(--ad-card);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: var(--ad-shadow);
+}
+.ad-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 52px;
+  padding-left: 16px;
+  text-align: left;
+  color: inherit;
+  text-decoration: none;
+  background: transparent;
+  border: 0;
+  font: inherit;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 120ms ease;
+}
+.ad-row-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 16px 11px 0;
+}
+.ad-row + .ad-row .ad-row-main,
+.ad-row + .ad-row-wrap .ad-row-main,
+.ad-row-wrap + .ad-row .ad-row-main,
+.ad-row-wrap + .ad-row-wrap .ad-row-main {
+  border-top: 0.5px solid var(--ad-sep-strong);
+}
+:is(a.ad-row, button.ad-row) { cursor: pointer; }
+:is(a.ad-row, button.ad-row):active { background: var(--ad-pressed); }
+@media (hover: hover) {
+  :is(a.ad-row, button.ad-row):hover { background: rgba(5, 76, 125, 0.035); }
+}
+
+/* ---------- Horizontal scrollers (chips, KPI strips) ---------- */
+.ad-hscroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.ad-hscroll::-webkit-scrollbar { display: none; }
+.ad-hscroll > * { flex: none; }
+
+/* ---------- Native select with an iOS chevron ---------- */
+.admin-app select.ad-select {
+  -webkit-appearance: none;
+  appearance: none;
+  padding-right: 36px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2366737d' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 15 5 5 5-5'/%3E%3Cpath d='m7 9 5-5 5 5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 14px;
+}
+.admin-app input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--ad-tint);
+  flex: none;
+}
+
+/* ---------- Sheets (bottom sheet on phones, centred dialog on tablet+) ---------- */
+.ad-sheet {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: hidden;
+  color: var(--ad-label);
+}
+.ad-sheet::backdrop {
+  background: rgba(8, 24, 38, 0.4);
+  animation: ad-fade-in 240ms ease both;
+}
+.ad-sheet[data-closing='true']::backdrop { animation: ad-fade-out 220ms ease both; }
+
+.ad-sheet-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100dvh - var(--safe-top) - 28px);
+  background: var(--ad-bg);
+  border-radius: 18px 18px 0 0;
+  box-shadow: var(--ad-shadow-lg);
+  padding-bottom: var(--safe-bottom);
+  animation: ad-sheet-up 420ms var(--ad-ease) both;
+  will-change: transform;
+}
+.ad-sheet[data-closing='true'] .ad-sheet-panel { animation: ad-sheet-down 240ms var(--ad-ease) both; }
+.ad-sheet-grabber {
+  width: 38px;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(5, 76, 125, 0.22);
+  margin: 7px auto 0;
+}
+.ad-sheet-body {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Action sheet (confirmations): floating cards on phones. */
+.ad-sheet[data-variant='action'] .ad-sheet-panel {
+  left: 8px;
+  right: 8px;
+  bottom: calc(var(--safe-bottom) + 8px);
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  padding-bottom: 0;
+  gap: 8px;
+}
+
+@media (min-width: 768px) {
+  .ad-sheet-panel,
+  .ad-sheet[data-variant='action'] .ad-sheet-panel {
+    left: 50%;
+    right: auto;
+    top: 50%;
+    bottom: auto;
+    width: min(560px, calc(100vw - 48px));
+    max-height: min(760px, calc(100dvh - 64px));
+    border-radius: 18px;
+    padding-bottom: 0;
+    transform: translate(-50%, -50%);
+    animation: ad-pop-in 260ms var(--ad-ease) both;
+  }
+  .ad-sheet[data-variant='action'] .ad-sheet-panel { width: min(400px, calc(100vw - 48px)); }
+  .ad-sheet[data-closing='true'] .ad-sheet-panel { animation: ad-pop-out 180ms ease both; }
+  .ad-sheet-grabber { display: none; }
+}
+
+@keyframes ad-fade-in  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ad-fade-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes ad-sheet-up   { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes ad-sheet-down { from { transform: translateY(0); } to { transform: translateY(100%); } }
+@keyframes ad-pop-in  { from { opacity: 0; transform: translate(-50%, -48%) scale(0.97); } to { opacity: 1; transform: translate(-50%, -50%); } }
+@keyframes ad-pop-out { from { opacity: 1; transform: translate(-50%, -50%); } to { opacity: 0; transform: translate(-50%, -50%) scale(0.97); } }
+
+/* ---------- Toast ---------- */
+.ad-toast {
+  position: fixed;
+  z-index: 80;
+  left: 50%;
+  top: calc(var(--safe-top) + 12px);
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: rgba(21, 48, 85, 0.94);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: var(--ad-shadow-lg);
+  -webkit-backdrop-filter: blur(12px);
+          backdrop-filter: blur(12px);
+  animation: ad-toast-in 320ms var(--ad-ease) both;
+  pointer-events: none;
+  max-width: calc(100vw - 32px);
+}
+@keyframes ad-toast-in {
+  from { opacity: 0; transform: translate(-50%, -16px) scale(0.96); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* ---------- Skeleton shimmer ---------- */
+.ad-skel {
+  border-radius: 8px;
+  background: linear-gradient(90deg, rgba(5, 76, 125, 0.06) 25%, rgba(5, 76, 125, 0.11) 50%, rgba(5, 76, 125, 0.06) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+/* ---------- Switch ---------- */
+.ad-switch {
+  position: relative;
+  flex: none;
+  width: 51px;
+  height: 31px;
+  border-radius: 999px;
+  border: 0;
+  padding: 0;
+  background: rgba(120, 120, 128, 0.22);
+  cursor: pointer;
+  transition: background 220ms ease;
+}
+.ad-switch[aria-checked='true'] { background: var(--ad-green); }
+.ad-switch:disabled { opacity: 0.5; cursor: not-allowed; }
+.ad-switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 27px;
+  height: 27px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15), 0 1px 1px rgba(0, 0, 0, 0.12);
+  transition: transform 260ms var(--ad-ease);
+}
+.ad-switch[aria-checked='true'] .ad-switch-thumb { transform: translateX(20px); }
+
+/* Markdown preview inside the editor keeps article typography but fits the card. */
+.admin-app .article-content { overflow-wrap: anywhere; }
+.admin-app .article-content :is(pre, table) { max-width: 100%; overflow-x: auto; }
+
+/* Phone-only chrome. */
+@media (min-width: 768px) {
+  .ad-tabbar { display: none; }
+}
+
+} /* end @layer components */
+
+/* Match the page canvas to the admin background so iOS overscroll and the
+   standalone status-bar area don't flash white. */
+html:has(.admin-app),
+html:has(.admin-app) body {
+  background: #f2f4f7;
+}

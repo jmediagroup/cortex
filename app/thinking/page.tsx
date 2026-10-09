@@ -141,6 +141,7 @@ export default function ThinkingPage() {
         >
           <aside>
             <div
+              className="pub-rail-card"
               style={{
                 position: 'sticky',
                 top: 88,
@@ -165,6 +166,7 @@ export default function ThinkingPage() {
               </div>
 
               <div
+                className="pub-rail-subscribe"
                 style={{
                   paddingTop: 20,
                   borderTop: '1px solid var(--border-subtle)',

@@ -66,7 +66,7 @@ export function MarketingFooter() {
             </p>
           </div>
 
-          <div style={{ display: 'flex', gap: 56, flexWrap: 'wrap' }}>
+          <div className="marketing-footer-groups" style={{ display: 'flex', gap: 56, flexWrap: 'wrap' }}>
             {LINK_GROUPS.map((group) => (
               <div key={group.heading}>
                 <div
@@ -79,6 +79,7 @@ export function MarketingFooter() {
                   <Link
                     key={link.label + link.href}
                     href={link.href}
+                    className="marketing-footer-link"
                     style={{
                       display: 'block',
                       fontSize: 13,
@@ -116,6 +117,7 @@ export function MarketingFooter() {
             © {new Date().getFullYear()} Cortex Technologies
           </span>
           <p
+            className="marketing-footer-disclaimer"
             style={{
               flexBasis: '100%',
               order: 3,

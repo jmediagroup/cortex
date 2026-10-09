@@ -222,6 +222,7 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
                     <button
                       type="submit"
                       aria-label="Search"
+                      className="tap-target"
                       style={{
                         position: 'absolute',
                         right: 8,
@@ -488,6 +489,7 @@ function SidebarLink({
     <li>
       <Link
         href={href}
+        className="touch-44"
         style={{
           display: 'flex',
           alignItems: 'center',

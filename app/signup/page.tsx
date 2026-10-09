@@ -400,6 +400,7 @@ function SignupForm() {
               Didn&apos;t receive the email?
             </p>
             <button
+              className="tap-target"
               type="button"
               onClick={handleResend}
               disabled={resendCooldown > 0 || resendLoading || captchaBlocksSubmit}
@@ -427,6 +428,7 @@ function SignupForm() {
 
           <div style={{ paddingTop: 16, borderTop: '1px solid var(--border-subtle)' }}>
             <button
+              className="tap-target"
               type="button"
               onClick={handleStartOver}
               style={{
@@ -535,6 +537,7 @@ function SignupForm() {
           hint={<PasswordChecklist password={password} id={authHintId('signup-password')} />}
           trailing={
             <button
+              className="tap-target"
               type="button"
               onClick={() => setShowPassword((v) => !v)}
               aria-pressed={showPassword}
@@ -637,6 +640,7 @@ function SignupForm() {
           Already a member?{' '}
           <Link
             href={signInHref}
+            className="tap-target"
             style={{ color: 'var(--orange)', fontWeight: 700, textDecoration: 'none' }}
           >
             Log in
