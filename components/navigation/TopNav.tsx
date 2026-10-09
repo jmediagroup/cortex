@@ -3,19 +3,9 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Wordmark } from '@/components/brand/Wordmark';
-import {
-  Grid3X3,
-  BookOpen,
-  Bookmark,
-  Settings,
-  User,
-  LogOut,
-  ChevronDown,
-  Shield,
-} from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
-import { type Tier, getTierDisplayName } from '@/lib/access-control';
-import { isAdmin } from '@/lib/admin';
+import { Grid3X3, BookOpen, Bookmark, Settings } from 'lucide-react';
+import { type Tier } from '@/lib/access-control';
+import UserMenu from './UserMenu';
 
 interface NavItem {
   label: string;
@@ -46,38 +36,12 @@ export default function TopNav({
   onSettingsClick,
 }: TopNavProps) {
   const pathname = usePathname();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setDropdownOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  useEffect(() => {
-    function handleEscape(event: KeyboardEvent) {
-      if (event.key === 'Escape') setDropdownOpen(false);
-    }
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, []);
-
   const isActive = (href: string) => {
     if (href === '/dashboard/scenarios') return pathname === '/dashboard/scenarios';
     if (href === '/dashboard') return pathname === '/dashboard' || pathname.startsWith('/apps');
     if (href === '/articles') return pathname.startsWith('/articles');
     return pathname === href;
   };
-
-  const tierBadgeColor =
-    userTier === 'finance_pro'
-      ? 'bg-[var(--sky)] text-[var(--navy-deep)]'
-      : 'bg-[var(--surface-tertiary)] text-[var(--text-secondary)]';
 
   return (
     <nav className="hidden md:flex items-center justify-between border-b border-[var(--border-primary)] bg-[var(--surface-primary)] px-6 py-3 sticky top-0 z-50">
@@ -120,101 +84,7 @@ export default function TopNav({
               <Settings size={18} />
             </button>
 
-            {/* User dropdown */}
-            <div className="relative" ref={dropdownRef}>
-              <button
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center gap-2.5 rounded-full border border-[var(--border-primary)] bg-[var(--surface-secondary)] px-3 py-1.5 transition-colors hover:bg-[var(--surface-tertiary)]"
-              >
-                <div className="relative">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--navy)] text-xs font-bold text-white">
-                    {(user.name || user.email).charAt(0).toUpperCase()}
-                  </div>
-                  <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--surface-secondary)] bg-[var(--color-positive)]" />
-                </div>
-                <span className="max-w-[140px] truncate text-sm font-semibold text-[var(--text-primary)]">
-                  {user.name || user.email}
-                </span>
-                <span className={`rounded-md px-1.5 py-0.5 text-[10px] font-semibold uppercase ${tierBadgeColor}`}>
-                  {getTierDisplayName(userTier)}
-                </span>
-                <ChevronDown
-                  size={14}
-                  className={`text-[var(--text-tertiary)] transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`}
-                />
-              </button>
-
-              {/* Dropdown */}
-              {dropdownOpen && (
-                <div
-                  className="absolute right-0 top-full mt-2 w-64 overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border-primary)] bg-[var(--surface-primary)] z-50"
-                  style={{ boxShadow: 'var(--shadow-elevated)' }}
-                >
-                  <div className="border-b border-[var(--border-secondary)] bg-[var(--surface-secondary)] p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--navy)] text-sm font-bold text-white">
-                        {(user.name || user.email).charAt(0).toUpperCase()}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-bold text-[var(--text-primary)]">
-                          {user.name || user.email}
-                        </p>
-                        <p className="text-xs font-semibold uppercase text-[var(--text-tertiary)]">
-                          {getTierDisplayName(userTier)} Plan
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="py-1">
-                    <Link
-                      href="/account"
-                      onClick={() => setDropdownOpen(false)}
-                      className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-secondary)]"
-                    >
-                      <User size={16} className="text-[var(--text-tertiary)]" />
-                      My Account
-                    </Link>
-                    <Link
-                      href="/dashboard/scenarios"
-                      onClick={() => setDropdownOpen(false)}
-                      className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-secondary)]"
-                    >
-                      <Bookmark size={16} className="text-[var(--text-tertiary)]" />
-                      My Scenarios
-                    </Link>
-                    <Link
-                      href="/pricing"
-                      onClick={() => setDropdownOpen(false)}
-                      className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-secondary)]"
-                    >
-                      <ChevronDown size={16} className="rotate-[-90deg] text-[var(--text-tertiary)]" />
-                      Upgrade Plan
-                    </Link>
-                    {isAdmin(user.email) && (
-                      <Link
-                        href="/admin"
-                        onClick={() => setDropdownOpen(false)}
-                        className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-secondary)]"
-                      >
-                        <Shield size={16} className="text-[var(--text-tertiary)]" />
-                        Admin Panel
-                      </Link>
-                    )}
-                    <div className="my-1 border-t border-[var(--border-secondary)]" />
-                    <button
-                      onClick={() => {
-                        setDropdownOpen(false);
-                        onSignOut?.();
-                      }}
-                      className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-[var(--color-negative)] transition-colors hover:bg-[var(--color-negative-light)]"
-                    >
-                      <LogOut size={16} />
-                      Sign Out
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
+            <UserMenu user={user} userTier={userTier} onSignOut={onSignOut} />
           </>
         ) : (
           <>

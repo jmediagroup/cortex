@@ -13,6 +13,7 @@ import {
   CheckCircle,
   XCircle,
   CreditCard,
+  LogOut,
 } from 'lucide-react';
 import { DashboardShell } from '@/components/navigation';
 import { getTierDisplayName, getTierColor, type Tier } from '@/lib/access-control';
@@ -511,6 +512,23 @@ export default function AccountPage() {
               )}
             </div>
           )}
+        </div>
+
+        {/* Sign out — always reachable, including on phones where the header
+            menu is the only other way out. */}
+        <div className="bg-[var(--bg-card)] rounded-3xl border border-[var(--border-default)] shadow-sm p-6 sm:p-8 mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <h2 className="text-xl font-bold text-[var(--text-primary)]">Sign out</h2>
+            <p className="text-[var(--text-secondary)] font-medium truncate">Signed in as {user.email}</p>
+          </div>
+          <button
+            type="button"
+            onClick={handleSignOut}
+            className="flex min-h-[44px] w-full shrink-0 items-center justify-center gap-2 rounded-xl border border-[var(--border-default)] bg-[var(--bg-card)] px-6 py-3 font-bold text-[var(--text-primary)] transition-colors hover:bg-[var(--bg-section)] sm:w-auto"
+          >
+            <LogOut size={18} />
+            Sign out
+          </button>
         </div>
 
         {/* Danger Zone - Delete Account */}

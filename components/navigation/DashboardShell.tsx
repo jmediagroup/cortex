@@ -4,6 +4,7 @@ import { type ReactNode } from 'react';
 import Link from 'next/link';
 import TopNav from './TopNav';
 import BottomTabBar from './BottomTabBar';
+import UserMenu from './UserMenu';
 import { Wordmark } from '@/components/brand/Wordmark';
 import { type Tier } from '@/lib/access-control';
 
@@ -23,8 +24,6 @@ export default function DashboardShell({
   userTier = 'free',
   onSignOut,
 }: DashboardShellProps) {
-  const displayName = user?.name || user?.email?.split('@')[0] || 'User';
-
   return (
     <div className="min-h-screen bg-[var(--surface-secondary)]">
       {/* Desktop top navigation - hidden on mobile */}
@@ -47,12 +46,7 @@ export default function DashboardShell({
         <Wordmark size="sm" />
 
         {user ? (
-          <div className="relative">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--navy)] text-xs font-bold text-white">
-              {displayName.charAt(0).toUpperCase()}
-            </div>
-            <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--surface-primary)] bg-[var(--color-positive)]" />
-          </div>
+          <UserMenu user={user} userTier={userTier} onSignOut={onSignOut} variant="compact" />
         ) : (
           <Link
             href="/login"
