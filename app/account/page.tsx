@@ -320,7 +320,7 @@ export default function AccountPage() {
       onSignOut={handleSignOut}
     >
       {/* MAIN CONTENT */}
-      <div className="max-w-4xl mx-auto px-6 py-12">
+      <div className="max-w-4xl mx-auto px-4 py-8 sm:px-6 sm:py-12">
         {/* Success/Error Messages */}
         {successMessage && (
           <div className="mb-6 bg-[var(--emerald-50)] border border-[var(--emerald-border)] text-[var(--emerald-500)] px-6 py-4 rounded-2xl flex items-center gap-3">
@@ -336,7 +336,7 @@ export default function AccountPage() {
         )}
 
         {/* Profile Information Section */}
-        <div className="bg-[var(--bg-card)] rounded-3xl border border-[var(--border-default)] shadow-sm p-8 mb-8">
+        <div className="bg-[var(--bg-card)] rounded-3xl border border-[var(--border-default)] shadow-sm p-6 sm:p-8 mb-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="bg-[var(--emerald-100)] p-3 rounded-2xl">
               <User className="text-[var(--emerald-500)]" size={24} />
@@ -433,7 +433,7 @@ export default function AccountPage() {
         </div>
 
         {/* Subscription Management Section */}
-        <div className="bg-[var(--bg-card)] rounded-3xl border border-[var(--border-default)] shadow-sm p-8 mb-8">
+        <div className="bg-[var(--bg-card)] rounded-3xl border border-[var(--border-default)] shadow-sm p-6 sm:p-8 mb-8">
           <div className="flex items-center gap-3 mb-6">
             <div className={`p-3 rounded-2xl ${userTier !== 'free' ? 'bg-[var(--emerald-100)]' : 'bg-[var(--bg-glass)]'}`}>
               {userTier !== 'free' ? (
@@ -514,7 +514,7 @@ export default function AccountPage() {
         </div>
 
         {/* Danger Zone - Delete Account */}
-        <div className="bg-[var(--bg-card)] rounded-3xl border-2 border-[var(--crimson-border)] shadow-sm p-8">
+        <div className="bg-[var(--bg-card)] rounded-3xl border-2 border-[var(--crimson-border)] shadow-sm p-6 sm:p-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="bg-[var(--crimson-100)] p-3 rounded-2xl">
               <AlertTriangle className="text-[var(--crimson-500)]" size={24} />

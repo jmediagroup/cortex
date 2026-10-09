@@ -280,13 +280,7 @@ export default function TheMoneyGuyShowPage() {
           >
             Get the show, straight from the source.
           </h2>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-              gap: 16,
-            }}
-          >
+          <div className="pub-grid-3up" style={{ gap: 16 }}>
             {WATCH_LINKS.map((link) => (
               <Card
                 key={link.title}
@@ -333,6 +327,7 @@ export default function TheMoneyGuyShowPage() {
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
+                  className="tap-target"
                   style={{
                     marginTop: 'auto',
                     color: 'var(--orange)',
@@ -431,13 +426,7 @@ export default function TheMoneyGuyShowPage() {
             Free calculators and decision engines inspired by the same ideas — see
             the outcome before you live it.
           </p>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-              gap: 16,
-            }}
-          >
+          <div className="pub-grid-3up" style={{ gap: 16 }}>
             {TOOLS.map((tool) => (
               <Card key={tool.href} href={tool.href} style={{ padding: 24 }}>
                 <div

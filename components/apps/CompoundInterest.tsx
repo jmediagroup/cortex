@@ -218,7 +218,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
               <Calculator size={16} className="text-[var(--navy)]" /> Variables
             </h3>
 
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
               <div>
                 <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Initial Principal</label>
                 <div className="relative">

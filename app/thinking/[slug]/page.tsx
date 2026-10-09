@@ -121,6 +121,7 @@ export default async function OutlookDetailPage({ params }: PageProps) {
             <nav style={{ marginBottom: 20 }}>
               <Link
                 href="/thinking"
+                className="tap-target"
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -177,6 +178,7 @@ export default async function OutlookDetailPage({ params }: PageProps) {
             </p>
 
             <div
+              className="pub-byline"
               style={{
                 display: 'flex',
                 flexWrap: 'wrap',

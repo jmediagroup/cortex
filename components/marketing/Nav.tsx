@@ -94,7 +94,7 @@ export function MarketingNav() {
         <div className="marketing-nav-actions" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <Link
             href="/login"
-            className="marketing-nav-signin"
+            className="marketing-nav-signin marketing-nav-action"
             style={{
               fontSize: 13,
               fontWeight: 500,
@@ -107,7 +107,7 @@ export function MarketingNav() {
           </Link>
           <Link
             href="/signup"
-            className="marketing-nav-cta"
+            className="marketing-nav-cta marketing-nav-action"
             style={{
               background: 'var(--orange)',
               color: 'var(--text-inverse)',
@@ -133,8 +133,8 @@ export function MarketingNav() {
               display: 'none',
               alignItems: 'center',
               justifyContent: 'center',
-              width: 40,
-              height: 40,
+              width: 44,
+              height: 44,
               borderRadius: 9999,
               background: 'var(--bg-glass)',
               border: '1px solid var(--glass-border)',
@@ -158,6 +158,7 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
     <Link
       ref={ref}
       href={href}
+      className="marketing-nav-link"
       style={{
         fontSize: 13,
         fontWeight: 500,
@@ -231,8 +232,8 @@ function MobilePanel({ onClose }: { onClose: () => void }) {
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
-            width: 40,
-            height: 40,
+            width: 44,
+            height: 44,
             borderRadius: 9999,
             background: 'var(--bg-glass)',
             border: '1px solid var(--glass-border)',

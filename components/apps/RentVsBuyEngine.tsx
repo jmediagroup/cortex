@@ -385,7 +385,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
         <div className="lg:col-span-8 space-y-6">
 
           {/* Time Horizon Master Slider */}
-          <div data-theme="dark" className="bg-[var(--obsidian-800)] text-white p-8 rounded-2xl shadow-xl overflow-hidden relative">
+          <div data-theme="dark" className="bg-[var(--obsidian-800)] text-white p-6 sm:p-8 rounded-2xl shadow-xl overflow-hidden relative">
             <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
               <TrendingUp size={120} />
             </div>
@@ -398,14 +398,14 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                 className="w-full h-4 bg-[var(--emerald-600)] rounded-xl appearance-none cursor-pointer accent-white mb-6"
               />
 
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 <div>
                   <p className="text-[var(--mist-200)] text-xs font-semibold uppercase">Timeline</p>
                   <p className="text-3xl font-bold">{years} <span className="text-lg">Years</span></p>
                 </div>
                 <div className="col-span-1 md:col-span-2">
                   <p className="text-[var(--mist-200)] text-xs font-semibold uppercase mb-1">The Verdict</p>
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-wrap items-center gap-3">
                     <div className={`px-4 py-1 rounded-full text-lg font-semibold uppercase tracking-tighter ${winner === 'Buy' ? 'bg-[var(--emerald-500)] text-white' : 'bg-[var(--crimson-500)] text-white'}`}>
                       {winner} Wins
                     </div>
@@ -425,7 +425,7 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
 
           {/* Chart Area */}
           <div className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border-default)] shadow-sm">
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-wrap justify-between items-center gap-3 mb-6">
               <div>
                 <h3 className="font-bold text-[var(--text-primary)]">Net Worth Trajectory</h3>
                 <p className="text-xs text-[var(--text-muted)]">Each side&apos;s invested savings, plus home equity net of selling costs for the buyer</p>

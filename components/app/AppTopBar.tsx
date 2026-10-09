@@ -273,6 +273,7 @@ export function AppTopBar({ user, userTier = 'free', onSignOut }: Props) {
         ) : (
           <Link
             href="/login"
+            className="tap-target"
             style={{
               padding: '8px 16px',
               borderRadius: 'var(--radius-sm)',

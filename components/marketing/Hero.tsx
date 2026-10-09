@@ -157,7 +157,17 @@ function PulsePreview() {
         }}
       >
         {bars.map((h, i) => (
-          <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <div
+            key={i}
+            style={{
+              flex: 1,
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'flex-end',
+              gap: 2,
+            }}
+          >
             <div
               style={{
                 height: `${h * 0.55}%`,
@@ -232,6 +242,7 @@ const DEFAULT_STATS: HeroStat[] = [
 export function MarketingHero({ stats = DEFAULT_STATS }: { stats?: HeroStat[] } = {}) {
   return (
     <section
+      className="marketing-hero"
       style={{
         position: 'relative',
         overflow: 'hidden',
@@ -242,6 +253,7 @@ export function MarketingHero({ stats = DEFAULT_STATS }: { stats?: HeroStat[] } 
       <HeroBackground />
 
       <div
+        className="marketing-hero-inner"
         style={{
           maxWidth: 1200,
           margin: '0 auto',
@@ -322,6 +334,7 @@ export function MarketingHero({ stats = DEFAULT_STATS }: { stats?: HeroStat[] } 
             </div>
 
             <div
+              className="marketing-hero-stats"
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -336,6 +349,7 @@ export function MarketingHero({ stats = DEFAULT_STATS }: { stats?: HeroStat[] } 
                   {i > 0 && (
                     <div
                       aria-hidden="true"
+                      className="marketing-hero-stat-divider"
                       style={{ width: 1, height: 32, background: 'rgba(255,255,255,0.18)' }}
                     />
                   )}
@@ -375,7 +389,7 @@ export function MarketingHero({ stats = DEFAULT_STATS }: { stats?: HeroStat[] } 
               aria-hidden="true"
               style={{
                 position: 'absolute',
-                top: -20,
+                top: -30,
                 right: -16,
                 background: 'var(--white)',
                 border: '1px solid var(--border-default)',
@@ -428,7 +442,7 @@ export function MarketingHero({ stats = DEFAULT_STATS }: { stats?: HeroStat[] } 
               aria-hidden="true"
               style={{
                 position: 'absolute',
-                bottom: -16,
+                bottom: -30,
                 left: -20,
                 background: 'var(--white)',
                 border: '1px solid var(--border-default)',

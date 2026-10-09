@@ -114,6 +114,7 @@ export function MarketingToolGrid({ tools = DEFAULT_TOOLS }: { tools?: Marketing
   return (
     <section
       id="tools"
+      className="marketing-section"
       style={{
         position: 'relative',
         padding: '120px 24px',

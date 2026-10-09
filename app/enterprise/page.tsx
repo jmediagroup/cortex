@@ -223,7 +223,10 @@ export default function EnterprisePage() {
               Custom integrations, white-label deployments, and dedicated support for organizations that need precision financial tools at scale.
             </p>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div
+              className="enterprise-feature-list"
+              style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
+            >
               {[
                 {
                   icon: <Globe size={16} />,
@@ -488,6 +491,7 @@ export default function EnterprisePage() {
               Not ready for enterprise?{' '}
               <Link
                 href="/pricing"
+                className="tap-target"
                 style={{ color: 'var(--navy)', fontWeight: 700, textDecoration: 'underline' }}
               >
                 View our plans

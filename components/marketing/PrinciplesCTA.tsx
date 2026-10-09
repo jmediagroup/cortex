@@ -26,6 +26,7 @@ export function MarketingPrinciplesCTA() {
 
   return (
     <section
+      className="marketing-principles"
       style={{
         position: 'relative',
         overflow: 'hidden',
@@ -34,6 +35,7 @@ export function MarketingPrinciplesCTA() {
       }}
     >
       <div
+        className="marketing-principles-panel"
         style={{
           maxWidth: 1200,
           margin: '0 auto',
@@ -94,9 +96,8 @@ export function MarketingPrinciplesCTA() {
           </p>
 
           <div
+            className="pub-grid-3up"
             style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))',
               gap: 12,
               marginBottom: 56,
               textAlign: 'left',

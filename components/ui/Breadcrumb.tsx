@@ -10,7 +10,7 @@ export default function Breadcrumb({ toolName }: BreadcrumbProps) {
     <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm mb-6">
       <Link
         href="/apps"
-        className="flex items-center gap-1.5 text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors"
+        className="tap-target flex items-center gap-1.5 text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors"
       >
         <Home size={14} />
         <span>All tools</span>

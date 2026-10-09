@@ -28,6 +28,7 @@ export function MarketingPhilosophy() {
   return (
     <section
       id="thinking"
+      className="marketing-section"
       style={{
         position: 'relative',
         padding: '120px 24px',
@@ -58,13 +59,7 @@ export function MarketingPhilosophy() {
           <span style={{ color: 'var(--navy)' }}>better judgment.</span>
         </h2>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))',
-            gap: 20,
-          }}
-        >
+        <div className="pub-grid-3up" style={{ gap: 20 }}>
           {BEATS.map((b) => (
             <div
               key={b.pivot}

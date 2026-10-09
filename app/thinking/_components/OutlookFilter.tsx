@@ -100,6 +100,7 @@ function FilterLink({
     <li>
       <Link
         href={href}
+        className="touch-44"
         style={{
           display: 'flex',
           alignItems: 'center',
