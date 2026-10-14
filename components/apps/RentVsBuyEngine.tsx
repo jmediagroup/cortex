@@ -11,6 +11,7 @@ import SaveScenarioButton from './SaveScenarioButton';
 import { formatAxisMoney } from '@/lib/format-axis';
 import Tooltip from '@/components/ui/Tooltip';
 import NumberInput from '@/components/ui/NumberInput';
+import { rangeFill } from '@/lib/range-fill';
 import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 import ProGatedPreview from '@/components/monetization/ProGatedPreview';
 
@@ -295,7 +296,8 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                 <input
                   type="range" min="100000" max="2000000" step="10000"
                   value={purchasePrice} onChange={(e) => setPurchasePrice(Number(e.target.value))}
-                  className="w-full h-2 bg-[var(--bg-glass-strong)] rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                  className="mgm-range"
+                  style={rangeFill(purchasePrice, 100000, 2000000)}
                 />
                 <div className="flex justify-between mt-1 font-mono font-medium">
                   <span>{formatCurrency(purchasePrice)}</span>
@@ -307,7 +309,8 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                 <input
                   type="range" min="500" max="10000" step="50"
                   value={monthlyRent} onChange={(e) => setMonthlyRent(Number(e.target.value))}
-                  className="w-full h-2 bg-[var(--bg-glass-strong)] rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                  className="mgm-range"
+                  style={rangeFill(monthlyRent, 500, 10000)}
                 />
                 <div className="flex justify-between mt-1 font-mono font-medium">
                   <span>{formatCurrency(monthlyRent)}</span>
@@ -348,7 +351,8 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                 <input
                   type="range" min="0" max="4" step="0.1"
                   value={maintenanceRate} onChange={(e) => setMaintenanceRate(Number(e.target.value))}
-                  className="w-full h-1.5 bg-[var(--bg-glass-strong)] rounded-lg appearance-none cursor-pointer accent-orange-500"
+                  className="mgm-range"
+                  style={rangeFill(maintenanceRate, 0, 4, 'var(--color-warning)')}
                 />
                 <p className="text-[10px] text-[var(--text-muted)] mt-1 italic">Roofs, HVAC, leaks, and time. Realtor math usually ignores this.</p>
               </div>
@@ -361,7 +365,8 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                 <input
                   type="range" min="0" max="15" step="0.5"
                   value={stockReturn} onChange={(e) => setStockReturn(Number(e.target.value))}
-                  className="w-full h-1.5 bg-[var(--bg-glass-strong)] rounded-lg appearance-none cursor-pointer accent-green-500"
+                  className="mgm-range"
+                  style={rangeFill(stockReturn, 0, 15, 'var(--emerald-500)')}
                 />
                 <p className="text-[10px] text-[var(--text-muted)] mt-1 italic">The opportunity cost of your down payment in an S&P 500 index.</p>
               </div>
@@ -374,7 +379,8 @@ export default function RentVsBuyEngine({ isPro, isLoggedIn = false, onUpgrade, 
                 <input
                   type="range" min="-2" max="10" step="0.1"
                   value={appreciationRate} onChange={(e) => setAppreciationRate(Number(e.target.value))}
-                  className="w-full h-1.5 bg-[var(--bg-glass-strong)] rounded-lg appearance-none cursor-pointer accent-blue-500"
+                  className="mgm-range"
+                  style={rangeFill(appreciationRate, -2, 10, 'var(--color-info)')}
                 />
               </div>
             </div>
