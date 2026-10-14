@@ -31,6 +31,7 @@ import SaveScenarioButton from './SaveScenarioButton';
 import Tooltip from '@/components/ui/Tooltip';
 import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 import ProGatedPreview from '@/components/monetization/ProGatedPreview';
+import { rangeFill } from '@/lib/range-fill';
 
 interface IndexFundVisualizerProps {
   isPro?: boolean;
@@ -371,7 +372,8 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
                 <input
                   type="range" min="0" max="100000" step="1000"
                   value={principal} onChange={(e) => setPrincipal(Number(e.target.value))}
-                  className="w-full h-2 bg-[var(--bg-glass-strong)] rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                  className="mgm-range"
+                  style={rangeFill(principal, 0, 100000)}
                 />
               </div>
 
@@ -395,7 +397,8 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
                 <input
                   type="range" min="0" max="10000" step="100"
                   value={contribution} onChange={(e) => setContribution(Number(e.target.value))}
-                  className="w-full h-2 bg-[var(--bg-glass-strong)] rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                  className="mgm-range"
+                  style={rangeFill(contribution, 0, 10000)}
                 />
               </div>
 
@@ -409,7 +412,8 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
                 <input
                   type="range" min="1" max="50" step="1"
                   value={duration} onChange={(e) => setDuration(Number(e.target.value))}
-                  className="w-full h-2 bg-[var(--bg-glass-strong)] rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                  className="mgm-range"
+                  style={rangeFill(duration, 1, 50)}
                 />
               </div>
             </div>

@@ -11,6 +11,7 @@ import SaveScenarioButton from './SaveScenarioButton';
 import NumberInput from '@/components/ui/NumberInput';
 import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 import ProGatedPreview from '@/components/monetization/ProGatedPreview';
+import { rangeFill } from '@/lib/range-fill';
 
 // Single set of loss assumptions, used by both the headline and the Pro
 // house-edge analysis so the two never disagree:
@@ -237,7 +238,8 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
                   step="10"
                   value={Math.min(5000, inputs.monthlyBet)}
                   onChange={handleInputChange}
-                  className="w-full h-2 bg-[var(--bg-glass-strong)] rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                  className="mgm-range"
+                  style={rangeFill(Math.min(5000, inputs.monthlyBet), 10, 5000, 'var(--emerald-500)')}
                 />
                 <div className="flex justify-between mt-1 text-[10px] text-[var(--text-muted)] font-bold">
                   <span>$10</span>
@@ -269,7 +271,8 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
                   max="50"
                   value={inputs.years}
                   onChange={handleInputChange}
-                  className="w-full h-2 bg-[var(--bg-glass-strong)] rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                  className="mgm-range"
+                  style={rangeFill(inputs.years, 1, 50, 'var(--emerald-500)')}
                 />
                 <div className="flex justify-between mt-1 text-[10px] text-[var(--text-muted)] font-bold">
                   <span>1 Year</span>
@@ -297,7 +300,8 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
                   max="15"
                   value={inputs.marketReturn}
                   onChange={handleInputChange}
-                  className="w-full h-2 bg-[var(--bg-glass-strong)] rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                  className="mgm-range"
+                  style={rangeFill(inputs.marketReturn, 1, 15, 'var(--emerald-500)')}
                 />
               </div>
             </div>

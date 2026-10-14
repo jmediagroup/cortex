@@ -26,6 +26,7 @@ import { formatAxisMoney } from '@/lib/format-axis';
 import ProUpsellCard from '@/components/monetization/ProUpsellCard';
 import ProGatedPreview from '@/components/monetization/ProGatedPreview';
 import NumberInput from '@/components/ui/NumberInput';
+import { rangeFill } from '@/lib/range-fill';
 
 interface Debt {
   id: number;
@@ -482,7 +483,8 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                   type="range" min="100" max="5000" step="50"
                   value={monthlyBudget}
                   onChange={(e) => setMonthlyBudget(parseInt(e.target.value))}
-                  className="w-full h-2 bg-[var(--bg-glass-strong)] rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                  className="mgm-range"
+                  style={rangeFill(monthlyBudget, 100, 5000)}
                 />
                 <p className="text-[10px] text-[var(--text-muted)] mt-1 italic">
                   Min required to cover all debts: ${debts.reduce((s, d) => s + d.minPayment, 0)}
@@ -500,7 +502,8 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                   type="range" min="0" max="100"
                   value={psychologicalWeight}
                   onChange={(e) => setPsychologicalWeight(parseInt(e.target.value))}
-                  className="w-full h-2 bg-[var(--bg-glass-strong)] rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                  className="mgm-range"
+                  style={rangeFill(psychologicalWeight, 0, 100)}
                 />
                 <div className="flex justify-between text-[10px] text-[var(--text-muted)] mt-1 uppercase font-bold tracking-wider">
                   <span>Avalanche (Logic)</span>

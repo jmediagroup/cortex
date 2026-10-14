@@ -16,7 +16,7 @@ import {
   LogOut,
 } from 'lucide-react';
 import { DashboardShell } from '@/components/navigation';
-import { getTierDisplayName, getTierColor, type Tier } from '@/lib/access-control';
+import { getTierDisplayName, type Tier } from '@/lib/access-control';
 
 type BillingState = {
   tier: Tier;
@@ -455,7 +455,15 @@ export default function AccountPage() {
                 <p className="text-sm text-[var(--text-tertiary)] font-bold uppercase tracking-wide mb-1">Current Plan</p>
                 <p className="text-3xl font-bold text-[var(--text-primary)] uppercase">{getTierDisplayName(userTier)}</p>
               </div>
-              <div className={`px-4 py-2 rounded-xl font-bold text-sm bg-${getTierColor(userTier)}-600 text-white`}>
+              {/* Literal classes: Tailwind can't see a class name built at runtime
+                  (bg-${color}-600), so the old badge rendered with no background. */}
+              <div
+                className={`px-4 py-2 rounded-xl font-bold text-sm ${
+                  userTier === 'finance_pro'
+                    ? 'bg-[var(--navy)] text-white'
+                    : 'bg-[var(--bg-card)] text-[var(--text-primary)] border border-[var(--border-strong)]'
+                }`}
+              >
                 {userTier === 'finance_pro'
                   ? billing?.subscription?.amount != null && billing.subscription.interval
                     ? `$${(billing.subscription.amount / 100).toFixed(0)}/${billing.subscription.interval}`
