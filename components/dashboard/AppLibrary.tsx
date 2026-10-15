@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   ArrowRight,
@@ -269,13 +270,13 @@ export default function AppLibrary({ userTier, appOrder }: AppLibraryProps) {
               const appConfig = APPS.find((a) => a.id === recent.id);
               const Icon = appConfig?.icon;
               return (
-                <div
+                <Link
                   key={recent.id}
+                  href={recent.path}
                   onClick={() => {
                     trackEvent('app_opened', { app_name: recent.name, app_id: recent.id, source: 'recent' });
-                    router.push(recent.path);
                   }}
-                  className="group flex items-center gap-3 min-w-[200px] max-w-[260px] rounded-xl border border-[var(--border-primary)] bg-[var(--surface-primary)] px-4 py-3 cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-card-hover)]"
+                  className="group flex items-center gap-3 min-w-[200px] max-w-[260px] rounded-xl border border-[var(--border-primary)] bg-[var(--surface-primary)] px-4 py-3 cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-card-hover)] focus-visible:-translate-y-0.5 focus-visible:shadow-[var(--shadow-card-hover)]"
                   style={{ boxShadow: 'var(--shadow-card)' }}
                 >
                   {Icon && (
@@ -287,7 +288,7 @@ export default function AppLibrary({ userTier, appOrder }: AppLibraryProps) {
                     <p className="text-sm font-bold text-[var(--text-primary)] truncate">{recent.name}</p>
                     <p className="text-[10px] font-medium text-[var(--text-tertiary)]">{formatRelativeTime(recent.visitedAt)}</p>
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>
@@ -315,24 +316,23 @@ export default function AppLibrary({ userTier, appOrder }: AppLibraryProps) {
           const Icon = app.icon;
 
           return (
-            <div
+            <CardShell
               key={app.id}
-              onClick={() => {
-                if (!isLocked) {
-                  trackEvent('app_opened', {
-                    app_name: app.name,
-                    app_id: app.id,
-                    app_category: app.category,
-                  });
-                  router.push(app.path);
-                }
-              }}
+              href={isLocked ? undefined : app.path}
+              onOpen={() =>
+                trackEvent('app_opened', {
+                  app_name: app.name,
+                  app_id: app.id,
+                  app_category: app.category,
+                })
+              }
+              labelledBy={`app-card-${app.id}-name`}
+              describedBy={`app-card-${app.id}-desc`}
               className={`group relative flex flex-col rounded-[var(--radius-2xl)] border border-[var(--border-primary)] bg-[var(--surface-primary)] p-6 transition-all duration-300 ${
                 isLocked
                   ? 'cursor-default opacity-70 grayscale-[0.3]'
-                  : 'cursor-pointer hover:-translate-y-1 hover:shadow-[var(--shadow-card-hover)]'
+                  : 'cursor-pointer hover:-translate-y-1 hover:shadow-[var(--shadow-card-hover)] focus-visible:-translate-y-1 focus-visible:shadow-[var(--shadow-card-hover)]'
               }`}
-              style={{ boxShadow: 'var(--shadow-card)' }}
             >
               {/* Tier badge */}
               <span
@@ -357,10 +357,10 @@ export default function AppLibrary({ userTier, appOrder }: AppLibraryProps) {
                 </div>
               </div>
 
-              <h3 className="mb-2 text-lg font-bold tracking-tight text-[var(--text-primary)]">
+              <h3 id={`app-card-${app.id}-name`} className="mb-2 text-lg font-bold tracking-tight text-[var(--text-primary)]">
                 {app.name}
               </h3>
-              <p className="mb-5 flex-1 text-sm leading-relaxed text-[var(--text-secondary)]">
+              <p id={`app-card-${app.id}-desc`} className="mb-5 flex-1 text-sm leading-relaxed text-[var(--text-secondary)]">
                 {app.description}
               </p>
 
@@ -377,7 +377,7 @@ export default function AppLibrary({ userTier, appOrder }: AppLibraryProps) {
                   </span>
                 )}
               </div>
-            </div>
+            </CardShell>
           );
         })}
       </div>
@@ -412,5 +412,47 @@ export default function AppLibrary({ userTier, appOrder }: AppLibraryProps) {
         </div>
       )}
     </div>
+  );
+}
+
+/**
+ * An app card: a real link when the tool is open to this user (so it is
+ * reachable with Tab, opens with Enter, and can open in a new tab), and a
+ * plain, non-interactive box when it is locked behind Pro.
+ */
+function CardShell({
+  href,
+  onOpen,
+  labelledBy,
+  describedBy,
+  className,
+  children,
+}: {
+  href?: string;
+  onOpen: () => void;
+  labelledBy: string;
+  describedBy: string;
+  className: string;
+  children: ReactNode;
+}) {
+  const style = { boxShadow: 'var(--shadow-card)' };
+  if (!href) {
+    return (
+      <div className={className} style={style}>
+        {children}
+      </div>
+    );
+  }
+  return (
+    <Link
+      href={href}
+      onClick={onOpen}
+      aria-labelledby={labelledBy}
+      aria-describedby={describedBy}
+      className={className}
+      style={style}
+    >
+      {children}
+    </Link>
   );
 }
