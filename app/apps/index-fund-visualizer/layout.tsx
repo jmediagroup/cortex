@@ -1,25 +1,7 @@
 import type { Metadata } from 'next';
-import { generateCalculatorJsonLd } from '@/lib/calculator-content';
+import { generateCalculatorJsonLd, toolMetadata } from '@/lib/calculator-content';
 
-export const metadata: Metadata = {
-  title: 'Index Fund Growth Visualizer - ETF Investment Simulator',
-  description: 'Simulate and visualize long-term growth for popular index funds like VOO, VTI, VT, and QQQM. See historical returns, volatility impact, and compound growth projections for your investment strategy.',
-  keywords: ['index fund calculator', 'ETF growth simulator', 'VOO calculator', 'VTI simulator', 'S&P 500 returns', 'index fund comparison', 'investment growth visualizer', 'compound growth calculator', 'portfolio simulator', 'retirement investment calculator'],
-  openGraph: {
-    title: 'Index Fund Growth Visualizer - ETF Investment Simulator',
-    description: 'Simulate long-term growth for popular index funds with historical returns and volatility modeling.',
-    type: 'website',
-    url: 'https://moneyguymutants.com/apps/index-fund-visualizer',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Index Fund Growth Visualizer',
-    description: 'Simulate long-term growth for popular index funds with historical returns and volatility modeling.',
-  },
-  alternates: {
-    canonical: 'https://moneyguymutants.com/apps/index-fund-visualizer',
-  },
-};
+export const metadata: Metadata = toolMetadata('index-fund-visualizer');
 
 const jsonLd = generateCalculatorJsonLd('index-fund-visualizer');
 

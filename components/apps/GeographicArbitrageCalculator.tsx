@@ -326,8 +326,8 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
     const ficaTax = 0.062 * Math.min(incomeNum, SS_WAGE_BASE_2026)
       + 0.0145 * incomeNum
       + 0.009 * Math.max(0, incomeNum - 200000);
-    // State tax is a single-rate model: top-marginal rate x gross income.
-    // This overstates the bill in progressive states (CA, NY, etc.).
+    // State tax is a single-rate model: approximate effective rate x gross
+    // income (see LOCATION_PRESETS). It can over- or understate the real bill.
     const stateTax = incomeNum * loc.taxRate;
     const totalTax = federalTax + ficaTax + stateTax;
     const takeHome = incomeNum - totalTax;
@@ -664,8 +664,8 @@ export default function GeographicArbitrageCalculator({ isPro, onUpgrade, isLogg
 
           <p className="text-xs text-[var(--text-muted)] font-medium leading-relaxed">
             Take-home estimates use 2026 federal brackets (single filer, standard deduction) plus employee-side FICA.
-            State tax applies each state's top marginal rate to gross income — a top-marginal estimate that
-            overstates the bill in progressive states like CA and NY.
+            State tax applies one approximate effective rate per city to gross income — a single-number estimate,
+            not a bracket calculation, so your actual state bill could be higher or lower.
           </p>
 
           {/* PRO FEATURES SECTION */}

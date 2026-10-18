@@ -14,9 +14,9 @@ export default function CapitalGainsTaxPage() {
   return (
     <ToolLayout
       eyebrow="FINANCE · TAX"
-      title="Capital-gains tax efficiency."
-      sub="If you sell this much stock, what actually happens? Models the 0/15/20% long-term brackets — plus NIIT, QBI, ACA and IRMAA cliffs — for tax year 2026, Virginia resident."
-      breadcrumb={<Breadcrumb toolName="Capital Gains Tax" />}
+      title="Capital gains tax calculator (2026)."
+      sub="If you sell this much stock, what actually happens? Models the 0/15/20% long-term brackets and NIIT for tax year 2026, with Virginia state tax. QBI, ACA and IRMAA cliffs are in Pro."
+      breadcrumb={<Breadcrumb toolName="Capital Gains Tax Calculator" />}
       narration="Most of a gain can be tax-free if it fits under the 0% bracket. You just saw exactly how much room you have — and where the next cliff sits."
       footer={
         <>

@@ -1,25 +1,15 @@
 import type { Metadata } from 'next';
-import { generateCalculatorJsonLd } from '@/lib/calculator-content';
+import Link from 'next/link';
+import CalculatorSEOContent from '@/components/seo/CalculatorSEOContent';
+import RelatedTools from '@/components/seo/RelatedTools';
+import {
+  CALCULATOR_CONTENT,
+  generateCalculatorJsonLd,
+  getRelatedTools,
+  toolMetadata,
+} from '@/lib/calculator-content';
 
-export const metadata: Metadata = {
-  title: 'Free Household Budget Calculator & AI Budget Optimizer',
-  description: 'Smart budget calculator with AI-powered optimization. Track monthly expenses, allocate resources efficiently, and optimize your household budget. Free budget planning tool with tension metrics and flexibility analysis.',
-  keywords: ['budget calculator', 'household budget planner', 'budget optimizer', 'AI budget tool', 'monthly budget calculator', 'expense tracker', 'budget allocation tool', 'family budget planner', 'budget management software', 'smart budgeting app', 'budget planning calculator', 'resource allocation', 'budget tension analysis', 'flexible budget tool'],
-  openGraph: {
-    title: 'Free Household Budget Calculator & AI Budget Optimizer',
-    description: 'Smart budget calculator with AI-powered optimization. Track monthly expenses and optimize your household budget.',
-    type: 'website',
-    url: 'https://moneyguymutants.com/apps/budget',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Free Household Budget Calculator & AI Budget Optimizer',
-    description: 'Smart budget calculator with AI-powered optimization.',
-  },
-  alternates: {
-    canonical: 'https://moneyguymutants.com/apps/budget',
-  },
-};
+export const metadata: Metadata = toolMetadata('budget');
 
 const jsonLd = generateCalculatorJsonLd('budget');
 
@@ -37,6 +27,24 @@ export default function BudgetLayout({
         />
       )}
       {children}
+
+      {/* Rendered here, not in the client page, so the registry stays out of the
+        browser bundle and crawlers get the explainer as static HTML. */}
+      <div className="max-w-7xl mx-auto px-6">
+        <CalculatorSEOContent content={CALCULATOR_CONTENT['budget']} />
+        <RelatedTools tools={getRelatedTools('budget')} />
+      </div>
+
+      <footer className="max-w-7xl mx-auto px-6 py-10 text-center border-t border-[var(--border-subtle)] mt-8">
+        <p className="text-xs text-[var(--text-muted)] font-medium">&copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.</p>
+        <div className="flex items-center justify-center gap-3 mt-2">
+          <Link href="/articles" className="text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors text-xs">Articles</Link>
+          <span className="text-[var(--text-muted)]">|</span>
+          <Link href="/pricing" className="text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors text-xs">Pricing</Link>
+          <span className="text-[var(--text-muted)]">|</span>
+          <Link href="/terms" className="text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors text-xs">Terms & Privacy</Link>
+        </div>
+      </footer>
     </>
   );
 }

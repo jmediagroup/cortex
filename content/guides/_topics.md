@@ -22,3 +22,6 @@ removing the line, so the topic isn't accidentally reused.
 | 2026-09-27 | how-much-car-can-you-afford | Car affordability |
 | 2026-10-11 | when-to-claim-social-security | Social Security claiming age |
 | 2026-10-18 | how-to-calculate-your-net-worth | Net worth |
+| 2026-10-18 | 2027-contribution-limits | 2027 contribution limits |
+| 2026-10-18 | open-enrollment-checklist | Open enrollment |
+| 2026-10-18 | year-end-tax-moves-2026 | Year-end tax moves (2026) |

@@ -14,9 +14,9 @@ export default function GamblingRedirectPage() {
   return (
     <ToolLayout
       eyebrow="FINANCE · BEHAVIOR"
-      title="Gambling spend redirect."
-      sub="See the wealth gap between playing the odds and owning the market — then redirect toward real, boring compounding."
-      breadcrumb={<Breadcrumb toolName="Gambling Spend Redirect" />}
+      title="Gambling vs investing calculator."
+      sub="Enter what you spend on betting each month and see what the same money could grow to if it were invested instead."
+      breadcrumb={<Breadcrumb toolName="Gambling vs Investing Calculator" />}
       narration="Most scoreboards track the last bet. You just saw what that money would have been worth in twenty years."
       footer={
         <>

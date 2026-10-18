@@ -460,7 +460,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
           <div className="bg-[var(--bg-card)] p-8 rounded-2xl border border-[var(--border-default)] shadow-sm overflow-hidden">
             <div className="flex flex-wrap items-center justify-between mb-8 gap-4">
               <h3 className="text-xl font-bold text-[var(--text-primary)] flex items-center gap-2">
-                <TrendingUp className="text-[var(--emerald-500)]" /> Growth Forecast
+                <TrendingUp className="text-[var(--emerald-500)]" /> Growth Projection
               </h3>
               <div className="flex gap-4 text-[10px] font-bold uppercase tracking-wider">
                 <div className="flex items-center gap-1.5 text-[var(--text-tertiary)]"><span className="w-3 h-3 rounded-full bg-[var(--emerald-400)]"></span> Steady</div>

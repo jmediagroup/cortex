@@ -1,5 +1,12 @@
 # Phase 5 — target queries per tool (draft for Drew's approval)
 
+**Applied 2026-10-18** (branch `dev/keen-goodall-at704g`), after Drew asked to "make the calculators findable for searches like 'coast FIRE calculator' without using the Money Guy brand". It follows this doc's recommendations. The checklist in §6 is still Drew's to tick; anything below can be reversed in one file.
+- **D-A:** option 2. `/apps/<tool>` owns each query. `/calculators/*` keep working for paid traffic, canonicalize to `/apps/<tool>`, and stay out of the sitemap; the hub is `noindex`. To switch to 301s, add redirects in `next.config.ts`.
+- **D-B:** the suffix is dropped on tool and landing pages (`title.absolute` via `toolMetadata()`), as the "no brand" instruction asks. Titles are ≤ 60 characters. Other pages keep the template.
+- **D-C:** every listed mismatch is fixed, plus more found in the code (AUDIT §12, rows 25–33).
+- **D-D:** `whats-your-why` untouched. `s-corp-investment` gets honest metadata (it says it's Pro) but no explainer.
+- **Per tool:** titles, metas, H1s and keywords follow §1–2, with the 20 freed characters used for the long-tail where it helped. Copy lives in `lib/calculator-content.ts`.
+
 **Status:** Draft, 2026-09-29. Nothing here is published or live. The Phase 5 kickoff (`HANDOFF.md` §12) says: "Draft (don't publish) a list of target queries per tool for my approval first." No content gets written until Drew marks each tool approved, edited or dropped (checklist at the end).
 
 **What this is based on:** repository reads only (`lib/calculator-content.ts`, `lib/landing-pages.ts`, `app/apps/*/layout.tsx` and `page.tsx`, `components/apps/*.tsx`, `content/guides/`, `lib/tools-registry.ts`, `app/sitemap.ts`, `app/robots.ts`, `docs/monetization/AUDIT.md`, `PILOT-TOOLS.md`) plus general knowledge of how these search results usually look. **This document contains no search volumes, rankings or click numbers, because none have been measured.** Wherever a number would go, it says "volume unknown; verify in Search Console/Keyword Planner."

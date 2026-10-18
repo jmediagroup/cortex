@@ -1,25 +1,7 @@
 import type { Metadata } from 'next';
-import { generateCalculatorJsonLd } from '@/lib/calculator-content';
+import { generateCalculatorJsonLd, toolMetadata } from '@/lib/calculator-content';
 
-export const metadata: Metadata = {
-  title: 'Car Affordability Calculator - 20/3/8 Rule Auto Loan Tool',
-  description: 'Calculate how much car you can afford using the 20/3/8 rule. Factor in depreciation, opportunity cost, and true cost of vehicle ownership.',
-  keywords: ['car affordability calculator', 'auto loan calculator', '20/3/8 rule calculator', 'car buying calculator', 'vehicle affordability', 'car payment calculator', 'auto financing calculator', 'car depreciation calculator', 'true cost of car ownership'],
-  openGraph: {
-    title: 'Car Affordability Calculator - 20/3/8 Rule Auto Loan Tool',
-    description: 'Calculate how much car you can afford using the 20/3/8 rule with depreciation analysis.',
-    type: 'website',
-    url: 'https://moneyguymutants.com/apps/car-affordability',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Car Affordability Calculator - 20/3/8 Rule',
-    description: 'Calculate how much car you can afford using the 20/3/8 rule.',
-  },
-  alternates: {
-    canonical: 'https://moneyguymutants.com/apps/car-affordability',
-  },
-};
+export const metadata: Metadata = toolMetadata('car-affordability');
 
 const jsonLd = generateCalculatorJsonLd('car-affordability');
 

@@ -1,25 +1,7 @@
 import type { Metadata } from 'next';
-import { generateCalculatorJsonLd } from '@/lib/calculator-content';
+import { generateCalculatorJsonLd, toolMetadata } from '@/lib/calculator-content';
 
-export const metadata: Metadata = {
-  title: 'S-Corp Tax Calculator - Self-Employment Tax Savings Tool',
-  description: 'Calculate S-Corp tax savings and find your ideal salary/distribution split. Maximize self-employment tax savings with our free S-Corporation tax optimizer.',
-  keywords: ['S-Corp calculator', 's-corporation tax calculator', 'self-employment tax savings', 'S-Corp salary calculator', 'distribution vs salary', 'S-Corp tax optimizer', 'small business tax calculator', 'LLC vs S-Corp calculator', 'self-employment tax calculator', 'business tax savings'],
-  openGraph: {
-    title: 'S-Corp Tax Calculator - Self-Employment Tax Savings Tool',
-    description: 'Calculate S-Corp tax savings and find your ideal salary/distribution split.',
-    type: 'website',
-    url: 'https://moneyguymutants.com/apps/s-corp-optimizer',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'S-Corp Tax Calculator',
-    description: 'Calculate S-Corp tax savings and find your ideal salary/distribution split.',
-  },
-  alternates: {
-    canonical: 'https://moneyguymutants.com/apps/s-corp-optimizer',
-  },
-};
+export const metadata: Metadata = toolMetadata('s-corp-optimizer');
 
 const jsonLd = generateCalculatorJsonLd('s-corp-optimizer');
 

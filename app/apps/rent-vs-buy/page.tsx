@@ -14,9 +14,9 @@ export default function RentVsBuyPage() {
   return (
     <ToolLayout
       eyebrow="FINANCE · HOUSING"
-      title="Rent vs buy reality engine."
-      sub="Opportunity cost, maintenance drag, home appreciation, selling costs, and rent growth — the things everyone forgets — all modeled here."
-      breadcrumb={<Breadcrumb toolName="Rent vs Buy Reality Engine" />}
+      title="Rent vs buy calculator."
+      sub="A rent vs buy reality engine: opportunity cost, maintenance drag, home appreciation, selling costs, and rent growth — the things everyone forgets — all modeled here."
+      breadcrumb={<Breadcrumb toolName="Rent vs Buy Calculator" />}
       narration="Most people ask whether to rent or buy. You just saw how the answer changes depending on where you live, for how long, and what the market does next."
       footer={
         <>

@@ -1,12 +1,12 @@
 ---
-title: "How much car can you afford? A complete guide to car affordability"
+title: "How much should you spend on a car? The 20/4/10 rule and the true cost of owning one"
 date: 2026-09-27
 summary: "Car prices, loan terms, and interest costs have all stretched at once. Here's how to figure out what you can actually afford, using the 20/4/10 rule, real 2026 cost data, and the full cost of ownership rather than just the monthly payment."
 topic: "Car affordability"
 category: "Budgeting"
 tags: [car-buying, auto-loans, affordability, budgeting]
 relatedTools: [car-affordability, budget, debt-paydown, compound-interest]
-metaDescription: "How much car can you afford in 2026? A complete guide to the 20/4/10 rule, total cost of ownership, loan terms, negative equity, and running your own numbers."
+metaDescription: "How much should you spend on a car in 2026? The 20/4/10 rule, total cost of ownership, loan terms, negative equity, and how to run your own numbers."
 ---
 
 Most people size a car purchase by the monthly payment, because that's the number the dealership puts in front of them. It's also the number that's easiest to manipulate: stretch the loan long enough and almost any vehicle fits almost any payment. That's how buyers end up owing more than their car is worth for years at a time.
@@ -33,7 +33,7 @@ The most widely cited affordability guideline is the **20/4/10 rule**:
 
 The third number is the one people misread. It isn't 10% for the car payment; it's 10% for everything the car costs you each month. On a $75,000 salary, that's $625 a month total — and if insurance and fuel run $300 of that, the payment has to fit in the remaining $325.
 
-Our [Car Affordability Calculator](/apps/car-affordability) uses a tighter variant, the **20/3/8 rule**: 20% down, a three-year maximum term, and 8% of gross income for total vehicle costs. The shorter term and lower income share are deliberately conservative — they keep you ahead of depreciation and leave more room in your budget for goals that build wealth instead of losing it. Run both thresholds and treat the gap between them as your risk tolerance, not as a rule you're failing.
+Our [Car Affordability Calculator](/apps/car-affordability) uses a tighter variant, the **20/3/8 rule**: 20% down, a three-year maximum term, and a monthly payment of no more than 8% of gross income. The shorter term and lower income share are deliberately conservative — they keep you ahead of depreciation and leave more room in your budget for goals that build wealth instead of losing it. Run both thresholds and treat the gap between them as your risk tolerance, not as a rule you're failing.
 
 ## Running the numbers on your own income
 
@@ -82,7 +82,7 @@ Then either buy a less expensive vehicle or keep saving until you can. A smaller
 
 ### How much of my income should a car payment be?
 
-Under the 20/4/10 rule, all transportation costs combined — payment, insurance, fuel, and maintenance — should stay under 10% of gross monthly income, which typically leaves the payment itself somewhere in the 5–7% range. The stricter 20/3/8 approach caps the total at 8%.
+Under the 20/4/10 rule, all transportation costs combined — payment, insurance, fuel, and maintenance — should stay under 10% of gross monthly income, which typically leaves the payment itself somewhere in the 5–7% range. The 20/3/8 approach the calculator uses caps the payment alone at 8%, so budget insurance, fuel and maintenance on top of it.
 
 ## Disclaimer
 

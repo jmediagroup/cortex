@@ -358,7 +358,7 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
             <Zap size={24} fill="currentColor" />
             <span className="font-bold tracking-widest uppercase text-sm">Wealth Architecture</span>
           </div>
-          <h1 className="text-4xl font-bold text-[var(--text-primary)]">Drawdown Strategy Engine <span className="text-[var(--emerald-500)]">v2</span></h1>
+          <h2 className="text-4xl font-bold text-[var(--text-primary)]">Drawdown Strategy Engine <span className="text-[var(--emerald-500)]">v2</span></h2>
           <p className="text-[var(--text-tertiary)] max-w-xl mt-2">Manage Social Security timing and Roth conversion ladders to maximize portfolio longevity.</p>
         </div>
 
@@ -648,7 +648,7 @@ export default function RetirementStrategyEngine({ isPro = false, isLoggedIn = f
                   <Info className="text-[var(--color-info)] mt-0.5" size={16} />
                   <div className="text-xs text-[var(--color-info)] font-medium">
                     <strong className="font-bold">How to implement:</strong> Each year listed above, convert the specified amount from your Traditional IRA/401(k) to your Roth IRA.
-                    You'll pay taxes on the conversion that year, but all future growth and withdrawals will be tax-free. Ensure you have cash in your taxable account to pay the taxes.
+                    You'll pay taxes on the conversion that year; qualified withdrawals of that money and its growth can then be tax-free (the five-year and age 59½ rules apply). Ensure you have cash in your taxable account to pay the taxes.
                   </div>
                 </div>
               </div>

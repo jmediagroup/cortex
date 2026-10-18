@@ -2,7 +2,6 @@ import { getArticles, getCategories } from '@/lib/cms/articles';
 import { getAllOutlooks } from '@/lib/outlook/content';
 import { getAllGuides } from '@/lib/guides/content';
 import { CALCULATOR_CONTENT } from '@/lib/calculator-content';
-import { LANDING_PAGES } from '@/lib/landing-pages';
 
 // /llms.txt — curated, machine-readable index for LLMs and AI search engines.
 // Spec: https://llmstxt.org
@@ -17,12 +16,6 @@ const BASE_URL = 'https://moneyguymutants.com';
 
 /** Tools that live outside the calculator content registry. */
 const OTHER_TOOLS: Array<{ name: string; slug: string; summary: string }> = [
-  {
-    name: 'Financial Personality Quiz',
-    slug: 'personality-quiz',
-    summary:
-      'Ten questions that map money instincts to one of six investor archetypes (Accumulator, Optimizer, Fortress, Visionary, Tactician, Steward). Free, no email required.',
-  },
   {
     name: "What's Your Why",
     slug: 'whats-your-why',
@@ -129,12 +122,6 @@ export async function GET() {
     ...OTHER_TOOLS.map((t) => `- [${t.name}](${BASE_URL}/apps/${t.slug}): ${t.summary}`),
     `- [All tools](${BASE_URL}/apps)`,
     '',
-    '## Calculator explainers',
-    '',
-    '> Keyword-focused pages that embed a calculator inside a longer explanation: how the model works, what inputs to use, worked examples, and FAQs.',
-    '',
-    ...LANDING_PAGES.map((p) => `- [${p.metaTitle}](${BASE_URL}/calculators/${p.slug}): ${oneLine(p.metaDescription)}`),
-    '',
     guideSection,
     outlookSection,
     topicsSection,
@@ -145,7 +132,7 @@ export async function GET() {
     `- [Article RSS feed](${BASE_URL}/articles/rss.xml): subscribe to new articles`,
     `- [Guides RSS feed](${BASE_URL}/guides/rss.xml): subscribe to new guides`,
     `- [Outlook RSS feed](${BASE_URL}/thinking/rss.xml): subscribe to the daily and weekly market outlook`,
-    `- [Full content corpus](${BASE_URL}/llms-full.txt): every guide, calculator explainer, article and market outlook concatenated as plain text, optimized for LLM ingestion`,
+    `- [Full content corpus](${BASE_URL}/llms-full.txt): every guide, calculator page, article and market outlook concatenated as plain text, optimized for LLM ingestion`,
     `- [Tools for Financial Mutants](${BASE_URL}/financial-mutants): calculators and decision engines for financial mutants and fans of the Money Guy Show, organized around the Financial Order of Operations`,
     `- [The Money Guy Show tribute](${BASE_URL}/the-money-guy-show): an independent fan hub to subscribe on YouTube and watch the show's latest episodes (not affiliated with the show)`,
     `- [About Money Guy Mutants](${BASE_URL}/about)`,

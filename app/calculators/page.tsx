@@ -9,7 +9,6 @@ export const metadata: Metadata = {
   title: 'Free Financial Calculators — Compound Interest, Coast FIRE, Debt Payoff & More',
   description:
     'Free, no-signup financial calculators: compound interest with monthly contributions, Coast FIRE, debt snowball vs avalanche, rent vs buy, car affordability, S-corp tax savings, capital gains tax, and net worth.',
-  alternates: { canonical: `${BASE_URL}/calculators` },
   openGraph: {
     type: 'website',
     url: `${BASE_URL}/calculators`,
@@ -18,13 +17,14 @@ export const metadata: Metadata = {
       'Free, no-signup financial calculators for the decisions that actually move your net worth.',
     siteName: 'Money Guy Mutants',
   },
-  robots: { index: true, follow: true },
+  // /apps is the indexed tools hub; this one only gives the paid landing pages
+  // a breadcrumb parent, so keep it out of the index but let crawlers follow.
+  robots: { index: false, follow: true },
 };
 
 /**
- * Hub for the search landing pages. Not linked from the main nav on purpose;
- * it exists so crawlers (and the sitemap) have one place that links every
- * landing page, and so each landing page has a sensible breadcrumb parent.
+ * Hub for the paid search landing pages. Not linked from the main nav on
+ * purpose; each landing page's canonical points at its /apps/<tool> page.
  */
 export default function CalculatorsIndex() {
   const jsonLd = {

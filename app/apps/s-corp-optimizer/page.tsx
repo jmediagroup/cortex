@@ -14,9 +14,9 @@ export default function SCorpOptimizerPage() {
   return (
     <ToolLayout
       eyebrow="FINANCE · SMALL BUSINESS"
-      title="S-Corp optimizer."
-      sub="Self-employment tax savings, owner salary, and distribution split — modeled with an IRS-reasonable-comp lens."
-      breadcrumb={<Breadcrumb toolName="S-Corp Optimizer" />}
+      title="S corp tax savings calculator."
+      sub="Compare self-employment tax as an LLC with payroll tax as an S corp, see the distribution left over, and get a flag if the salary looks too low to be reasonable."
+      breadcrumb={<Breadcrumb toolName="S Corp Tax Savings Calculator" />}
       narration="Most S-Corp owners pay the default. You just saw the split that keeps you compliant and cuts the tax bill."
       footer={
         <>

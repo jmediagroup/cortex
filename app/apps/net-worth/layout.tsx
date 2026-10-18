@@ -1,25 +1,7 @@
 import type { Metadata } from 'next';
-import { generateCalculatorJsonLd } from '@/lib/calculator-content';
+import { generateCalculatorJsonLd, toolMetadata } from '@/lib/calculator-content';
 
-export const metadata: Metadata = {
-  title: 'Net Worth Calculator & Wealth Tracker - Free Financial Tool',
-  description: 'Track your net worth, assets, and liabilities with our free calculator. Analyze liquidity, momentum, and visualize your financial trajectory. Comprehensive wealth tracking for personal finance.',
-  keywords: ['net worth calculator', 'wealth tracker', 'asset tracker', 'liability calculator', 'financial health tracker', 'net worth analysis', 'wealth management tool', 'personal finance tracker', 'net worth growth', 'financial trajectory', 'liquidity analysis', 'wealth building calculator'],
-  openGraph: {
-    title: 'Net Worth Calculator & Wealth Tracker - Free Financial Tool',
-    description: 'Track your net worth, assets, and liabilities. Analyze liquidity and visualize your financial trajectory.',
-    type: 'website',
-    url: 'https://moneyguymutants.com/apps/net-worth',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Net Worth Calculator & Wealth Tracker',
-    description: 'Track your net worth, assets, and liabilities with our free calculator.',
-  },
-  alternates: {
-    canonical: 'https://moneyguymutants.com/apps/net-worth',
-  },
-};
+export const metadata: Metadata = toolMetadata('net-worth');
 
 const jsonLd = generateCalculatorJsonLd('net-worth');
 

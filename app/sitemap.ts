@@ -2,7 +2,6 @@ import { MetadataRoute } from 'next';
 import { getAllArticleSlugs } from '@/lib/cms/articles';
 import { getAllOutlookSlugs } from '@/lib/outlook/content';
 import { getAllGuideSlugs } from '@/lib/guides/content';
-import { getAllLandingSlugs } from '@/lib/landing-pages';
 import { CALCULATOR_CONTENT } from '@/lib/calculator-content';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -38,22 +37,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  // Search landing pages (/calculators/*) — keyword pages wrapping the tools.
-  const landingEntries: MetadataRoute.Sitemap = [
-    {
-      url: `${baseUrl}/calculators`,
-      lastModified: new Date('2026-09-20T12:00:00Z'),
-      changeFrequency: 'weekly' as const,
-      priority: 0.8,
-    },
-    ...getAllLandingSlugs().map((l) => ({
-      url: `${baseUrl}/calculators/${l.slug}`,
-      lastModified: new Date(`${l.updated}T12:00:00Z`),
-      changeFrequency: 'monthly' as const,
-      priority: 0.85,
-    })),
-  ];
-
   // Articles listing page
   const articlesListingEntry: MetadataRoute.Sitemap = [
     {
@@ -80,7 +63,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // new timestamps on every build. Update this date when content actually changes.
   const lastUpdated = new Date('2026-04-07');
   // Tool pages: bumped whenever calculator logic or on-page content changes.
-  const toolsUpdated = new Date('2026-09-20');
+  const toolsUpdated = new Date('2026-10-18');
 
   const staticRoutes: MetadataRoute.Sitemap = [
     // Core pages
@@ -161,12 +144,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly' as const,
       priority: 0.9,
     })),
-    {
-      url: `${baseUrl}/apps/personality-quiz`,
-      lastModified: lastUpdated,
-      changeFrequency: 'monthly',
-      priority: 0.9,
-    },
     // What's Your Why
     {
       url: `${baseUrl}/apps/whats-your-why`,
