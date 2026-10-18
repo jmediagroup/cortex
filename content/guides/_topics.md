@@ -21,3 +21,4 @@ removing the line, so the topic isn't accidentally reused.
 | 2026-09-20 | 50-30-20-budget-rule | 50/30/20 budgeting rule |
 | 2026-09-27 | how-much-car-can-you-afford | Car affordability |
 | 2026-10-11 | when-to-claim-social-security | Social Security claiming age |
+| 2026-10-18 | how-to-calculate-your-net-worth | Net worth |
