@@ -20,9 +20,6 @@ import { ToolFunnel } from '@/components/app/ToolFunnel';
 import { trackToolVisit } from '@/lib/useRecentTools';
 import { Breadcrumb, CalculatorSkeleton } from '@/components/ui';
 import Tooltip from '@/components/ui/Tooltip';
-import CalculatorSEOContent from '@/components/seo/CalculatorSEOContent';
-import RelatedTools from '@/components/seo/RelatedTools';
-import { CALCULATOR_CONTENT, getRelatedTools } from '@/lib/calculator-content';
 
 // --- Constants & Defaults ---
 const CATEGORIES = {
@@ -533,9 +530,9 @@ const App = () => {
               <div className="w-8 h-8 bg-[var(--emerald-500)] rounded flex items-center justify-center">
                 <BrainCircuit className="text-white" size={20} />
               </div>
-              <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)] uppercase">Money Guy Mutants</h1>
+              <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)] uppercase">Monthly budget calculator</h1>
             </div>
-            <p className="text-sm text-[var(--text-tertiary)] italic">Resource allocation under constraints.</p>
+            <p className="text-sm text-[var(--text-tertiary)] italic">Start from gross monthly pay, estimate take-home, and split it across 11 categories to see what is left unallocated.</p>
           </header>
 
           {/* Income Section */}
@@ -931,22 +928,6 @@ const App = () => {
       )}
       </div>
 
-      {/* SEO & AEO Content */}
-      <div className="max-w-7xl mx-auto px-6">
-        <CalculatorSEOContent content={CALCULATOR_CONTENT['budget']} />
-        <RelatedTools tools={getRelatedTools('budget')} />
-      </div>
-
-      <footer className="max-w-7xl mx-auto px-6 py-10 text-center border-t border-[var(--border-subtle)] mt-8">
-        <p className="text-xs text-[var(--text-muted)] font-medium">&copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.</p>
-        <div className="flex items-center justify-center gap-3 mt-2">
-          <a href="/articles" className="text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors text-xs">Articles</a>
-          <span className="text-[var(--text-muted)]">|</span>
-          <a href="/pricing" className="text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors text-xs">Pricing</a>
-          <span className="text-[var(--text-muted)]">|</span>
-          <a href="/terms" className="text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors text-xs">Terms & Privacy</a>
-        </div>
-      </footer>
     </>
   );
 };

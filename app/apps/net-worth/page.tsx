@@ -14,9 +14,9 @@ export default function NetWorthPage() {
   return (
     <ToolLayout
       eyebrow="FINANCE · NET WORTH"
-      title="Net worth engine."
+      title="Net worth calculator."
       sub="Track assets and liabilities, analyze liquidity, and visualize your financial trajectory over time."
-      breadcrumb={<Breadcrumb toolName="Net Worth Engine" />}
+      breadcrumb={<Breadcrumb toolName="Net Worth Calculator" />}
       narration="Most people know their checking balance. You just saw the whole balance sheet in one frame."
       footer={
         <>

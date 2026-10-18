@@ -1,6 +1,6 @@
 # SEO & AI discoverability — how this site is wired
 
-Last updated 2026-09-20. Supersedes `SEO_ACTION_PLAN.md` and
+Last updated 2026-10-18. Supersedes `SEO_ACTION_PLAN.md` and
 `SEO_IMPLEMENTATION_COMPLETE.md` (both historical, cortex.vip era).
 
 ## The one rule that matters most
@@ -18,11 +18,20 @@ island with its own `<Suspense>` boundary. Only `/apps/budget` keeps its
 calculator inline (it never used the hook). The search landing pages under
 `/calculators/*` reuse the same island.
 
-If you add a tool: copy an existing `page.tsx`, add the tool to
-`TOOL_COMPONENTS` in `ToolIsland.tsx`, add its entry to
-`lib/calculator-content.ts` (that single registry feeds the sitemap, llms.txt,
-llms-full.txt, JSON-LD and the on-page FAQ), and add it to `DEFAULT_TOOLS` in
-`components/marketing/ToolGrid.tsx` for the `/apps` hub.
+If you add a tool: copy an existing `page.tsx` and `layout.tsx`, add the tool
+to `TOOL_COMPONENTS` in `ToolIsland.tsx`, add its entry to
+`lib/calculator-content.ts`, and add it to `DEFAULT_TOOLS` in
+`lib/tools-registry.ts` for the `/apps` hub. That registry entry is the single
+source for the page's `<title>`, meta description and keywords (`seo`, via
+`toolMetadata()` in the layout), the explainer sections and tables, the FAQ,
+the "Read the guide" links (`guides`, full dated slugs), JSON-LD, the sitemap,
+llms.txt and llms-full.txt. `tests/seo-content.test.mjs` enforces the length,
+brand and link rules below.
+
+`/apps/budget` and `/apps/personality-quiz` are the two client-heavy pages:
+budget renders its explainer from `layout.tsx`, and the quiz page is a server
+component around `components/apps/PersonalityQuizIsland.tsx`. Either way the
+registry never ships to the browser.
 
 ## Structured data
 
@@ -44,6 +53,15 @@ llms-full.txt, JSON-LD and the on-page FAQ), and add it to `DEFAULT_TOOLS` in
 
 - Root template appends ` | Money Guy Mutants`; page titles must **not** repeat
   it.
+- **Tool pages (`/apps/<tool>`) and the `/calculators/*` landing pages use an
+  absolute title with no site name** (`title: { absolute }`). They compete on
+  the calculator query ("coast fire calculator"), not the brand, and the 20
+  characters go to the query. Keep `seo.title` ≤ 60 characters and
+  `seo.description` ≤ 155. No "Money Guy" in titles, descriptions or keywords;
+  the site name still reaches results through the `WebSite` structured data.
+- One query, one owner: target queries per tool are in
+  `docs/monetization/phase-5/TARGET-QUERIES.md`. The H1 contains the primary
+  query, and every claim is true of the free tool or says it is Pro.
 - Do not set `openGraph.images` / `twitter.images` on tool layouts — the
   `opengraph-image.tsx` file convention next to each route generates the card
   and Twitter falls back to it. (The old explicit paths pointed at PNGs that
@@ -56,20 +74,24 @@ llms-full.txt, JSON-LD and the on-page FAQ), and add it to `DEFAULT_TOOLS` in
 ## Machine-readable indexes
 
 - `/sitemap.xml` (`app/sitemap.ts`) — tools derived from
-  `CALCULATOR_CONTENT`, landing pages from `LANDING_PAGES`, guides/outlooks/
-  articles from their content sources. Bump `toolsUpdated` when calculator
+  `CALCULATOR_CONTENT`, guides/outlooks/articles from their content sources.
+  Landing pages are deliberately left out (they canonicalize to `/apps`). Bump `toolsUpdated` when calculator
   logic or copy changes.
 - `/robots.txt` (`app/robots.ts`) — explicit allow-list plus named AI
   crawlers. Add new public sections to `PUBLIC_PATHS`.
-- `/llms.txt` — derived index (calculators, explainers, guides, outlooks,
-  articles). `/llms-full.txt` — full plain-text corpus of guides, calculator
-  intros + FAQs, landing-page copy, outlooks and articles.
+- `/llms.txt` — derived index (calculators, guides, outlooks, articles).
+  `/llms-full.txt` — full plain-text corpus of guides, calculator intros,
+  explainer sections and FAQs, outlooks and articles.
 - `public/ai.txt` — training/ingestion permissions.
 
 ## Search landing pages (`/calculators/*`)
 
-Registry: `lib/landing-pages.ts`. Not linked from the nav on purpose; the hub
-at `/calculators` and the sitemap link them. Every CTA carries
+Registry: `lib/landing-pages.ts`. These are paid-traffic variants: each one
+points its canonical at `/apps/<tool>` (which owns the organic query), is not
+in the sitemap, and renders the tool's explainer, FAQ and guide links from
+`CALCULATOR_CONTENT` so the copy lives in one place. The `/calculators` hub is
+`noindex, follow`. To retire them instead, add 301s to `/apps/<tool>` in
+`next.config.ts`; query strings carry through. Every CTA carries
 `?ref=lp-<slug>`, which signup stores as `signup_source` in user metadata and
 `landing_page_view` / `landing_cta_click` events record with UTM params, so
 paid campaigns can be measured end to end.

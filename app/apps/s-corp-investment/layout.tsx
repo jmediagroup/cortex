@@ -1,25 +1,7 @@
 import type { Metadata } from 'next';
-import { generateCalculatorJsonLd } from '@/lib/calculator-content';
+import { generateCalculatorJsonLd, toolMetadata } from '@/lib/calculator-content';
 
-export const metadata: Metadata = {
-  title: 'S-Corp Retirement Contribution Calculator - 401k Optimizer',
-  description: 'Maximize retirement savings through S-Corp contributions. Calculate employee deferrals, profit sharing, and company matching for S-Corporation owners.',
-  keywords: ['S-Corp 401k calculator', 's-corporation retirement', 'S-Corp retirement calculator', 'solo 401k calculator', 'profit sharing calculator', 'S-Corp contribution calculator', 'small business retirement', 'S-Corp retirement planning'],
-  openGraph: {
-    title: 'S-Corp Retirement Contribution Calculator - 401k Optimizer',
-    description: 'Maximize retirement savings through S-Corp contributions and profit sharing.',
-    type: 'website',
-    url: 'https://moneyguymutants.com/apps/s-corp-investment',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'S-Corp Retirement Contribution Calculator',
-    description: 'Maximize retirement savings through S-Corp contributions.',
-  },
-  alternates: {
-    canonical: 'https://moneyguymutants.com/apps/s-corp-investment',
-  },
-};
+export const metadata: Metadata = toolMetadata('s-corp-investment');
 
 const jsonLd = generateCalculatorJsonLd('s-corp-investment');
 

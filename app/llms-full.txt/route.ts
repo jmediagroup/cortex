@@ -2,9 +2,8 @@ import { getAllArticleSlugs, getArticleBySlug } from '@/lib/cms/articles';
 import { getAllOutlooksWithBody } from '@/lib/outlook/content';
 import { getAllGuidesWithBody } from '@/lib/guides/content';
 import { CALCULATOR_CONTENT } from '@/lib/calculator-content';
-import { LANDING_PAGES } from '@/lib/landing-pages';
 
-// /llms-full.txt — every guide, calculator explainer, article and market
+// /llms-full.txt — every guide, calculator page, article and market
 // outlook concatenated as plain text. AI crawlers and retrieval pipelines (RAG indexers, fine-tuning
 // corpora, AI search) prefer a single plain-text file over crawling the
 // HTML site.
@@ -90,7 +89,6 @@ export async function GET() {
     `Generated: ${new Date().toISOString()}`,
     `Guides: ${guides.length}`,
     `Calculators: ${calculators.length}`,
-    `Calculator explainers: ${LANDING_PAGES.length}`,
     `Articles: ${articles.length}`,
     `Market outlooks: ${outlooks.length}`,
     '',
@@ -123,11 +121,27 @@ export async function GET() {
     })
     .join('\n');
 
-  // Calculator pages: the model description and FAQ that render on each tool.
+  // Calculator pages: the model description, explainer and FAQ that render
+  // on each tool.
   const calculatorBody = calculators
     .map((c) => {
       const url = `${BASE_URL}/apps/${c.slug}`;
       const faq = c.faqs.map((f) => `### ${f.question}\n\n${f.answer}`).join('\n\n');
+      const sections = c.sections.map((sec) => {
+        const bullets = sec.bullets ? '\n\n' + sec.bullets.map((b) => `- ${b}`).join('\n') : '';
+        const table = sec.table
+          ? '\n\n' +
+            [
+              sec.table.caption,
+              '',
+              `| ${sec.table.columns.join(' | ')} |`,
+              `|${sec.table.columns.map(() => '---').join('|')}|`,
+              ...sec.table.rows.map((r) => `| ${r.join(' | ')} |`),
+              ...(sec.table.note ? ['', sec.table.note] : []),
+            ].join('\n')
+          : '';
+        return `## ${sec.heading}\n\n${sec.paragraphs.join('\n\n')}${bullets}${table}`;
+      });
       return [
         `# ${c.name}`,
         '',
@@ -137,6 +151,7 @@ export async function GET() {
         '',
         c.intro,
         '',
+        ...sections.flatMap((sec) => [sec, '']),
         '## FAQ',
         '',
         faq,
@@ -146,40 +161,6 @@ export async function GET() {
       ].join('\n');
     })
     .join('\n');
-
-  // Calculator explainer pages (/calculators/*): long-form copy around a tool.
-  const landingBody = LANDING_PAGES.map((p) => {
-    const url = `${BASE_URL}/calculators/${p.slug}`;
-    const sections = p.sections
-      .map((sec) => {
-        const bullets = sec.bullets ? '\n\n' + sec.bullets.map((b) => `- ${b}`).join('\n') : '';
-        return `## ${sec.heading}\n\n${sec.paragraphs.join('\n\n')}${bullets}`;
-      })
-      .join('\n\n');
-    const faq = p.faqs.map((f) => `### ${f.question}\n\n${f.answer}`).join('\n\n');
-    return [
-      `# ${p.h1}`,
-      '',
-      `Source: ${url}`,
-      `Updated: ${p.updated}`,
-      'Type: Calculator explainer',
-      '',
-      `> ${p.subhead}`,
-      '',
-      '## How it works',
-      '',
-      ...p.howItWorks.map((step, i) => `${i + 1}. ${step}`),
-      '',
-      sections,
-      '',
-      '## FAQ',
-      '',
-      faq,
-      '',
-      '---',
-      '',
-    ].join('\n');
-  }).join('\n');
 
   // Market outlooks are stored as local markdown, which is already the ideal
   // plain-text format — include the body verbatim. Newest first.
@@ -259,7 +240,7 @@ export async function GET() {
     })
     .join('\n');
 
-  return new Response(header + guideBody + calculatorBody + landingBody + outlookBody + body, {
+  return new Response(header + guideBody + calculatorBody + outlookBody + body, {
     headers: {
       'Content-Type': 'text/plain; charset=utf-8',
       'Cache-Control': 'public, max-age=600, s-maxage=3600, stale-while-revalidate=86400',

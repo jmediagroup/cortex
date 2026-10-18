@@ -14,9 +14,9 @@ export default function DebtPaydownPage() {
   return (
     <ToolLayout
       eyebrow="FINANCE · DEBT"
-      title="Debt paydown optimizer."
-      sub="Compare avalanche versus snowball with psychological weighting and opportunity cost built in."
-      breadcrumb={<Breadcrumb toolName="Debt Paydown Optimizer" />}
+      title="Debt snowball vs avalanche calculator."
+      sub="Compare the snowball, avalanche, and a hybrid plan on debt-free date and total interest — then check whether paying down or investing wins."
+      breadcrumb={<Breadcrumb toolName="Debt Snowball vs Avalanche Calculator" />}
       narration="Most advice picks one strategy. You just saw which one gets you out fastest — and what it costs to choose the one that feels better."
       footer={
         <>

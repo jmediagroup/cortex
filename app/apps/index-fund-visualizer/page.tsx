@@ -14,10 +14,10 @@ export default function IndexFundVisualizerPage() {
   return (
     <ToolLayout
       eyebrow="FINANCE · INVESTING"
-      title="Index fund growth visualizer."
-      sub="Simulate historical returns and volatility for VOO, VTI, VT, and QQQM with custom contributions and windows."
-      breadcrumb={<Breadcrumb toolName="Index Fund Growth Visualizer" />}
-      narration="Most people pick a fund by name. You just saw how VOO, VTI, VT, and QQQM actually performed across the last cycle."
+      title="Index fund calculator."
+      sub="A growth visualizer for S&P 500, total market, world, and growth index funds that shows a smooth average next to a bumpy simulated path."
+      breadcrumb={<Breadcrumb toolName="Index Fund Calculator" />}
+      narration="Most people pick a fund by name. You just saw how much the assumed return — and a bumpy path — move where VOO, VTI, VT, and QQQM could end up."
       footer={
         <>
           <CalculatorSEOContent content={CALCULATOR_CONTENT["index-fund-visualizer"]} />
@@ -31,7 +31,7 @@ export default function IndexFundVisualizerPage() {
         toolPath="/apps/index-fund-visualizer"
         upsell={{
           headline: "Run the simulation across decades.",
-          sub: "A free account saves scenarios so you can compare funds, windows, and contribution cadences over time.",
+          sub: "A free account saves scenarios so you can revisit funds, contribution cadences, and timelines over time.",
         }}
       />
     </ToolLayout>

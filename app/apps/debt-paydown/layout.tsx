@@ -1,25 +1,7 @@
 import type { Metadata } from 'next';
-import { generateCalculatorJsonLd } from '@/lib/calculator-content';
+import { generateCalculatorJsonLd, toolMetadata } from '@/lib/calculator-content';
 
-export const metadata: Metadata = {
-  title: 'Debt Payoff Calculator - Avalanche vs Snowball Method',
-  description: 'Compare debt paydown strategies: avalanche, snowball, and hybrid methods. Calculate payoff timelines with psychological weighting and opportunity cost.',
-  keywords: ['debt payoff calculator', 'debt snowball calculator', 'debt avalanche calculator', 'debt paydown calculator', 'debt elimination calculator', 'debt reduction calculator', 'pay off debt calculator', 'debt strategy calculator', 'debt free calculator'],
-  openGraph: {
-    title: 'Debt Payoff Calculator - Avalanche vs Snowball Method',
-    description: 'Compare debt paydown strategies with psychological weighting and opportunity cost analysis.',
-    type: 'website',
-    url: 'https://moneyguymutants.com/apps/debt-paydown',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Debt Payoff Calculator',
-    description: 'Compare debt paydown strategies: avalanche vs snowball methods.',
-  },
-  alternates: {
-    canonical: 'https://moneyguymutants.com/apps/debt-paydown',
-  },
-};
+export const metadata: Metadata = toolMetadata('debt-paydown');
 
 const jsonLd = generateCalculatorJsonLd('debt-paydown');
 

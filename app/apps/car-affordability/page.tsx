@@ -14,7 +14,7 @@ export default function CarAffordabilityPage() {
   return (
     <ToolLayout
       eyebrow="FINANCE · VEHICLES"
-      title="Car affordability calculator."
+      title="How much car can I afford?"
       sub="How much car your income supports under the 20/3/8 rule — 20% down, a 3-year loan, and a payment capped at 8% of gross income."
       breadcrumb={<Breadcrumb toolName="Car Affordability Calculator" />}
       narration="Most people start from the sticker price. You just sized the price from a payment your income can actually carry."

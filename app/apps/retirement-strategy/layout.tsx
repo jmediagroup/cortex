@@ -1,25 +1,7 @@
 import type { Metadata } from 'next';
-import { generateCalculatorJsonLd } from '@/lib/calculator-content';
+import { generateCalculatorJsonLd, toolMetadata } from '@/lib/calculator-content';
 
-export const metadata: Metadata = {
-  title: 'Retirement Planning Calculator - Withdrawal Strategy Optimizer',
-  description: 'Advanced retirement calculator with RMD calculations, Roth conversion planning, and sequence risk analysis. Plan your retirement withdrawal strategy with tax optimization.',
-  keywords: ['retirement calculator', 'retirement planning', 'RMD calculator', 'Roth conversion calculator', 'retirement withdrawal strategy', 'retirement income calculator', '401k calculator', 'IRA calculator', 'retirement planning tool', 'tax-efficient retirement', 'sequence risk', 'retirement strategy'],
-  openGraph: {
-    title: 'Retirement Planning Calculator - Withdrawal Strategy Optimizer',
-    description: 'Advanced retirement calculator with RMD calculations and Roth conversion planning.',
-    type: 'website',
-    url: 'https://moneyguymutants.com/apps/retirement-strategy',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Retirement Planning Calculator',
-    description: 'Advanced retirement calculator with RMD calculations and Roth conversion planning.',
-  },
-  alternates: {
-    canonical: 'https://moneyguymutants.com/apps/retirement-strategy',
-  },
-};
+export const metadata: Metadata = toolMetadata('retirement-strategy');
 
 const jsonLd = generateCalculatorJsonLd('retirement-strategy');
 

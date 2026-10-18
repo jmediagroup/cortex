@@ -15,7 +15,7 @@ export default function GeographicArbitragePage() {
     <ToolLayout
       eyebrow="FINANCE · COST OF LIVING"
       title="Geographic arbitrage calculator."
-      sub="Income, 2026 federal tax, top-marginal state tax estimates, and cost of living modeled across all 50 states."
+      sub="Compare take-home pay, housing, and everyday costs between two U.S. cities, using 2026 federal tax and one approximate state income tax rate per city."
       breadcrumb={<Breadcrumb toolName="Geographic Arbitrage Calculator" />}
       narration="Most people chase a higher salary. You just saw what that salary is actually worth once rent and taxes are paid."
       footer={

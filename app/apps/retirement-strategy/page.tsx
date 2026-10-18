@@ -14,9 +14,9 @@ export default function RetirementStrategyPage() {
   return (
     <ToolLayout
       eyebrow="FINANCE · RETIREMENT"
-      title="Retirement strategy engine."
-      sub="Decumulation planning with Roth conversions, tax optimization, and sequence-of-returns risk modeled."
-      breadcrumb={<Breadcrumb toolName="Retirement Strategy Engine" />}
+      title="Roth conversion and withdrawal calculator."
+      sub="Model withdrawals from taxable, traditional, and Roth accounts year by year, with RMDs, Roth conversions, and a market-crash stress test."
+      breadcrumb={<Breadcrumb toolName="Roth Conversion Calculator" />}
       narration="Most people retire by feel. You just modeled the actual sequence — and the tax bill that comes with it."
       footer={
         <>

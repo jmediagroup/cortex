@@ -26,8 +26,8 @@ For the 2026 tax year, the IRS adjusted long-term capital gains income threshold
 
 | Filing status | 0% rate applies up to | 15% rate applies up to | 20% rate applies above |
 |---|---|---|---|
-| Single | $49,450 | $533,400 | $533,400 |
-| Married filing jointly | $98,900 | $600,050 | $600,050 |
+| Single | $49,450 | $545,500 | $545,500 |
+| Married filing jointly | $98,900 | $613,700 | $613,700 |
 
 These thresholds are based on taxable income, not just your investment gains — your gains stack on top of your other income to determine which bracket they fall into. It's entirely possible for part of a large gain to be taxed at 15% and part at 20% if it straddles a threshold.
 

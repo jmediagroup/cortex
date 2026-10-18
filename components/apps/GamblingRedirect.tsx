@@ -323,7 +323,7 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
               </li>
               <li className="flex gap-2">
                 <div className="h-1.5 w-1.5 rounded-full bg-[var(--emerald-400)] mt-1.5 shrink-0" />
-                <span>In 20 years, the S&P 500 has a <strong>100% historical success rate</strong> for positive returns.</span>
+                <span>Historically, the S&P 500 has had positive total returns over <strong>long 20-year stretches</strong> — history, not a guarantee.</span>
               </li>
             </ul>
           </div>

@@ -8,8 +8,8 @@ import {
   landingToolContent,
   type LandingPage,
 } from '@/lib/landing-pages';
-import { getAllGuides } from '@/lib/guides/content';
 import { LandingShell } from '@/components/landing/LandingShell';
+import { SectionTable } from '@/components/seo/CalculatorSEOContent';
 import { LandingCalculator } from '@/components/landing/LandingCalculator';
 import { LandingCtaLink, LandingViewTracker } from '@/components/landing/LandingTracking';
 
@@ -30,11 +30,13 @@ export async function generateMetadata({
   const page = getLandingPage(slug);
   if (!page) return {};
   const url = `${BASE_URL}/calculators/${page.slug}`;
+  // /apps/<tool> owns the organic query; this page exists for paid traffic.
+  const canonical = `${BASE_URL}/apps/${page.tool}`;
   return {
-    title: page.metaTitle,
+    title: { absolute: page.metaTitle },
     description: page.metaDescription,
     keywords: [page.keyword, ...page.keywords],
-    alternates: { canonical: url },
+    alternates: { canonical },
     openGraph: {
       type: 'website',
       url,
@@ -104,7 +106,7 @@ function jsonLd(page: LandingPage) {
       },
       {
         '@type': 'FAQPage',
-        mainEntity: page.faqs.map((f) => ({
+        mainEntity: tool.faqs.map((f) => ({
           '@type': 'Question',
           name: f.question,
           acceptedAnswer: { '@type': 'Answer', text: f.answer },
@@ -140,7 +142,6 @@ export default async function LandingPageRoute({
   if (!page) notFound();
 
   const tool = landingToolContent(page);
-  const guides = getAllGuides().filter((g) => page.relatedGuides.includes(g.slug));
   const related = page.relatedPages.map((s) => getLandingPage(s)).filter(Boolean) as LandingPage[];
 
   return (
@@ -294,7 +295,7 @@ export default async function LandingPageRoute({
 
       {/* Long-form content */}
       <article style={{ ...sectionWrap, paddingBottom: 'clamp(24px, 4vw, 40px)' }}>
-        {page.sections.map((section) => (
+        {tool.sections.map((section) => (
           <section key={section.heading} style={{ marginBottom: 32 }}>
             <h2 style={h2}>{section.heading}</h2>
             {section.paragraphs.map((para, i) => (
@@ -311,6 +312,11 @@ export default async function LandingPageRoute({
                 ))}
               </ul>
             )}
+            {section.table && (
+              <div style={{ maxWidth: 720 }}>
+                <SectionTable table={section.table} />
+              </div>
+            )}
           </section>
         ))}
       </article>
@@ -319,7 +325,7 @@ export default async function LandingPageRoute({
       <section style={{ ...sectionWrap, paddingBottom: 'clamp(24px, 4vw, 40px)' }}>
         <h2 style={h2}>Frequently asked questions.</h2>
         <div style={{ maxWidth: 760, display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {page.faqs.map((faq) => (
+          {tool.faqs.map((faq) => (
             <details
               key={faq.question}
               style={{
@@ -347,7 +353,7 @@ export default async function LandingPageRoute({
       </section>
 
       {/* Related */}
-      {(guides.length > 0 || related.length > 0) && (
+      {(tool.guides.length > 0 || related.length > 0) && (
         <section style={{ ...sectionWrap, paddingBottom: 'clamp(24px, 4vw, 40px)' }}>
           <h2 style={h2}>Keep going.</h2>
           <div
@@ -379,7 +385,7 @@ export default async function LandingPageRoute({
                 </div>
               </Link>
             ))}
-            {guides.map((g) => (
+            {tool.guides.map((g) => (
               <Link
                 key={g.slug}
                 href={`/guides/${g.slug}`}
@@ -395,10 +401,7 @@ export default async function LandingPageRoute({
                 <div className="mgm-eyebrow" style={{ marginBottom: 8, fontSize: 10 }}>
                   GUIDE
                 </div>
-                <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 6 }}>{g.title}</div>
-                <div style={{ fontSize: 13, color: 'var(--text-tertiary)', lineHeight: 1.5 }}>
-                  {g.summary}
-                </div>
+                <div style={{ fontWeight: 700, fontSize: 15 }}>{g.label}</div>
               </Link>
             ))}
           </div>
