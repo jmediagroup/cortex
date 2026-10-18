@@ -590,7 +590,10 @@ export default function GamblingRedirect({ isPro = false, onUpgrade, isLoggedIn 
           Get Support <ArrowRight className="w-4 h-4" />
         </a>
         <p className="text-xs text-[var(--text-muted)] mt-4">
-          National Council on Problem Gambling: 1-800-522-4700
+          National Problem Gambling Helpline, free and open 24/7:{' '}
+          <a href="tel:+18006973738" className="font-semibold underline">1-800-MY-RESET</a>{' '}
+          (1-800-697-3738). The older number,{' '}
+          <a href="tel:+18005224700" className="underline">1-800-522-4700</a>, still works.
         </p>
       </div>
       {!isPro && <ProUpsellCard toolId="gambling-redirect" isLoggedIn={isLoggedIn} />}
