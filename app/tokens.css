@@ -52,6 +52,10 @@
   --cta:         var(--orange);
   --cta-alt:     var(--yellow);
   --focus-ring:  0 0 0 3px rgba(78, 201, 245, 0.45);
+  /* Hairlines read by .mgm-input / .mgm-card in globals.css (were undefined,
+     so inputs and cards rendered with no border at rest). */
+  --border-input: var(--gray-300);
+  --border-card:  var(--off-white);
 
   /* ---------- CORE 5 TONES (repurposed to MGM) ---------- */
   --obsidian:      #054C7D;   /* now the navy INK */

@@ -12,6 +12,8 @@ import { callbackNotice, friendlyLoginError, friendlySignupError } from '@/lib/a
 import {
   AuthShell,
   AuthField,
+  AuthAlert,
+  useAuthFormStates,
   authInputWithIcon,
   authErrorStyle,
   authInfoStyle,
@@ -21,6 +23,30 @@ import {
 import { Button } from '@/components/ui/Button';
 import { MarketingIcon } from '@/components/marketing/Icons';
 import { TurnstileWidget, isTurnstileEnabled } from '@/components/auth/TurnstileWidget';
+
+type LoginField = 'email' | 'password';
+
+/** Signals that point at the person's network/rate/CAPTCHA, not at a field. */
+function isNonFieldError(e: { message?: string; code?: string }): boolean {
+  const code = e.code ?? '';
+  const msg = (e.message ?? '').toLowerCase();
+  return (
+    code === 'over_request_rate_limit' ||
+    code === 'over_email_send_rate_limit' ||
+    msg.includes('rate limit') ||
+    code === 'captcha_failed' ||
+    msg.includes('captcha') ||
+    code === 'user_banned' ||
+    msg.includes('banned')
+  );
+}
+
+/** Which fields a failed sign-in is about. Generic/credential failures mark both. */
+function loginErrorFields(e: { message?: string; code?: string }): LoginField[] {
+  if (e.code === 'email_not_confirmed' || /email not confirmed/i.test(e.message ?? '')) return ['email'];
+  if (isNonFieldError(e)) return [];
+  return ['email', 'password'];
+}
 
 function AuthForm() {
   const router = useRouter();
@@ -45,6 +71,13 @@ function AuthForm() {
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [captchaNonce, setCaptchaNonce] = useState(0);
   const errorRef = useRef<HTMLDivElement | null>(null);
+  const fields = useAuthFormStates<LoginField>();
+  const busy = loading || fields.leaving;
+
+  // Typing in a field clears its error; the message goes once no field is left flagged.
+  const onFieldInput = (field: LoginField) => {
+    if (error && fields.clear(field)) setError(null);
+  };
 
   // Tokens are single-use; a failed attempt needs a fresh one before retrying.
   const resetCaptcha = useCallback(() => {
@@ -113,6 +146,7 @@ function AuthForm() {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    fields.reset();
     setNotice(null);
     setNeedsVerification(false);
     setResendMsg(null);
@@ -126,7 +160,7 @@ function AuthForm() {
       if (signInError) throw signInError;
       if (data.session) {
         await trackEvent('user_login', {}, true);
-        router.replace(redirectTarget);
+        fields.leave(() => router.replace(redirectTarget));
         return;
       }
       throw new Error('No session returned');
@@ -137,6 +171,7 @@ function AuthForm() {
         setNeedsVerification(true);
       }
       setError(friendlyLoginError(e));
+      fields.fail(loginErrorFields(e));
       resetCaptcha();
       setLoading(false);
       await trackEvent(
@@ -176,6 +211,7 @@ function AuthForm() {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    fields.reset();
     setNotice(null);
     try {
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
@@ -191,6 +227,7 @@ function AuthForm() {
       const e = err as { message?: string; code?: string };
       console.error('Password reset error:', err);
       setError(friendlySignupError(e));
+      fields.fail(isNonFieldError(e) ? [] : ['email']);
       resetCaptcha();
     } finally {
       setLoading(false);
@@ -201,6 +238,7 @@ function AuthForm() {
     setIsForgotPassword(false);
     setResetEmailSent(false);
     setError(null);
+    fields.reset();
     setPassword('');
   };
 
@@ -223,10 +261,20 @@ function AuthForm() {
   ) : null;
 
   const errorBanner = error ? (
-    <div ref={errorRef} role="alert" tabIndex={-1} style={{ ...authErrorStyle, outline: 'none' }}>
+    <AuthAlert ref={errorRef} id="login-error">
       {error}
-    </div>
+    </AuthAlert>
   ) : null;
+
+  // The message sits directly under the field it is about: under email when
+  // only email is flagged, otherwise under the last field (password).
+  const errorUnderEmail = fields.isInvalid('email') && !fields.isInvalid('password');
+
+  /** a11y + visual-state props for a text input. */
+  const inputState = (field: LoginField) =>
+    fields.isInvalid(field)
+      ? ({ 'aria-invalid': true, 'aria-describedby': 'login-error' } as const)
+      : ({ 'aria-invalid': false } as const);
 
   if (resetEmailSent) {
     return (
@@ -300,7 +348,12 @@ function AuthForm() {
   if (isForgotPassword) {
     return (
       <AuthShell>
-        <form onSubmit={handleForgotPassword} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <form
+          onSubmit={handleForgotPassword}
+          className={busy ? 'mgm-auth-form busy' : 'mgm-auth-form'}
+          aria-busy={busy}
+          style={{ display: 'flex', flexDirection: 'column', gap: 20 }}
+        >
           <div>
             <div className="mgm-eyebrow" style={{ marginBottom: 10 }}>
               NO WORRIES
@@ -322,16 +375,24 @@ function AuthForm() {
           </div>
 
           {noticeBanner}
-          {errorBanner}
 
-          <AuthField id="reset-email" label="Email address" icon={<Mail size={16} />}>
+          <AuthField
+            id="reset-email"
+            label="Email address"
+            icon={<Mail size={16} />}
+            {...fields.fieldProps('email')}
+          >
             <input
               id="reset-email"
               name="email"
               type="email"
               required
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                onFieldInput('email');
+              }}
+              {...inputState('email')}
               placeholder="name@example.com"
               className="mgm-input"
               style={authInputWithIcon}
@@ -343,15 +404,17 @@ function AuthForm() {
             />
           </AuthField>
 
+          {errorBanner}
+
           <TurnstileWidget onToken={setCaptchaToken} resetSignal={captchaNonce} />
 
           <Button
             variant="primary"
             type="submit"
-            disabled={loading || captchaBlocksSubmit}
+            disabled={busy || captchaBlocksSubmit}
             style={{ width: '100%' }}
           >
-            {loading ? (
+            {busy ? (
               <>
                 <Loader2 size={16} className="animate-spin" aria-hidden="true" /> Sending…
               </>
@@ -376,8 +439,13 @@ function AuthForm() {
   }
 
   return (
-    <AuthShell>
-      <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+    <AuthShell leaving={fields.leaving}>
+      <form
+        onSubmit={handleAuth}
+        className={busy ? 'mgm-auth-form busy' : 'mgm-auth-form'}
+        aria-busy={busy}
+        style={{ display: 'flex', flexDirection: 'column', gap: 20 }}
+      >
         <div>
           <div className="mgm-eyebrow" style={{ marginBottom: 10 }}>
             WELCOME BACK
@@ -399,16 +467,24 @@ function AuthForm() {
         </div>
 
         {noticeBanner}
-        {errorBanner}
 
-        <AuthField id="login-email" label="Email address" icon={<Mail size={16} />}>
+        <AuthField
+          id="login-email"
+          label="Email address"
+          icon={<Mail size={16} />}
+          {...fields.fieldProps('email')}
+        >
           <input
             id="login-email"
             name="email"
             type="email"
             required
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              onFieldInput('email');
+            }}
+            {...inputState('email')}
             placeholder="name@example.com"
             className="mgm-input"
             style={authInputWithIcon}
@@ -420,10 +496,13 @@ function AuthForm() {
           />
         </AuthField>
 
+        {errorUnderEmail && errorBanner}
+
         <AuthField
           id="login-password"
           label="Password"
           icon={<Lock size={16} />}
+          {...fields.fieldProps('password')}
           trailing={
             <button
               className="tap-target"
@@ -450,7 +529,11 @@ function AuthForm() {
             type={showPassword ? 'text' : 'password'}
             required
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              onFieldInput('password');
+            }}
+            {...inputState('password')}
             placeholder="••••••••"
             className="mgm-input"
             style={authInputWithIcon}
@@ -460,6 +543,8 @@ function AuthForm() {
             autoComplete="current-password"
           />
         </AuthField>
+
+        {!errorUnderEmail && errorBanner}
 
         {(needsVerification || noticeIsExpiredLink) && (
           <div style={{ marginTop: -6 }}>
@@ -499,6 +584,7 @@ function AuthForm() {
             onClick={() => {
               setIsForgotPassword(true);
               setError(null);
+              fields.reset();
             }}
             style={{ ...authLinkStyle, fontSize: 12 }}
           >
@@ -511,10 +597,10 @@ function AuthForm() {
         <Button
           variant="primary"
           type="submit"
-          disabled={loading || captchaBlocksSubmit}
+          disabled={busy || captchaBlocksSubmit}
           style={{ width: '100%' }}
         >
-          {loading ? (
+          {busy ? (
             <>
               <Loader2 size={16} className="animate-spin" aria-hidden="true" /> Signing in…
             </>

@@ -54,13 +54,15 @@ export function ToolLayout({
 
       <header style={{ marginBottom: 28, maxWidth: 780 }}>
         <div
-          className="eyebrow"
-          style={{ color: 'var(--text-tertiary)', marginBottom: 12 }}
+          className="eyebrow enter"
+          style={{ ['--i' as string]: 0, color: 'var(--text-tertiary)', marginBottom: 12 }}
         >
           {eyebrow}
         </div>
         <h1
+          className="enter"
           style={{
+            ['--i' as string]: 1,
             fontSize: 'clamp(24px, 6vw, 40px)',
             fontWeight: 700,
             color: 'var(--text-primary)',
@@ -72,7 +74,9 @@ export function ToolLayout({
           {title}
         </h1>
         <p
+          className="enter"
           style={{
+            ['--i' as string]: 2,
             fontSize: 'clamp(15px, 2.4vw, 16px)',
             color: 'var(--text-secondary)',
             lineHeight: 1.55,

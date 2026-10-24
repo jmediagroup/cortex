@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Tag } from '@/components/ui/Tag';
 import { MarketingIcon } from './Icons';
+import { useCanHover } from '@/lib/useCanHover';
 
 type Tier = {
   name: string;
@@ -55,7 +56,7 @@ export function MarketingPricingPreview() {
       style={{ padding: '120px 24px', background: 'var(--bg-page)', scrollMarginTop: 64 }}
     >
       <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', maxWidth: 560, margin: '0 auto 64px' }}>
+        <div className="reveal" style={{ textAlign: 'center', maxWidth: 560, margin: '0 auto 64px' }}>
           <div className="mgm-eyebrow" style={{ marginBottom: 16 }}>
             PRICING
           </div>
@@ -85,8 +86,8 @@ export function MarketingPricingPreview() {
             margin: '0 auto',
           }}
         >
-          {TIERS.map((tier) => (
-            <PricingCard key={tier.name} tier={tier} />
+          {TIERS.map((tier, i) => (
+            <PricingCard key={tier.name} tier={tier} index={i} />
           ))}
         </div>
 
@@ -100,118 +101,122 @@ export function MarketingPricingPreview() {
   );
 }
 
-function PricingCard({ tier }: { tier: Tier }) {
-  const [hover, setHover] = useState(false);
+function PricingCard({ tier, index }: { tier: Tier; index: number }) {
+  const canHover = useCanHover();
+  const [hoverRaw, setHover] = useState(false);
+  const hover = canHover && hoverRaw;
   return (
-    <div
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      style={{
-        position: 'relative',
-        background: 'var(--white)',
-        border: tier.featured ? '2px solid var(--sky)' : '1px solid var(--border-default)',
-        borderRadius: 'var(--radius-md)',
-        padding: 32,
-        boxShadow: tier.featured
-          ? '0 14px 30px rgba(78,201,245,0.18)'
-          : hover
-            ? 'var(--shadow-card-hover)'
-            : 'var(--shadow-card)',
-        display: 'flex',
-        flexDirection: 'column',
-        transform: hover ? 'translateY(-3px)' : 'none',
-        transition: 'transform 320ms var(--ease-out-expo), box-shadow 320ms',
-      }}
-    >
-      {tier.featured && (
-        <div style={{ position: 'absolute', top: -14, left: 24 }}>
-          <Tag tone="sky" style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '5px 12px' }}>
-            Most popular
-          </Tag>
-        </div>
-      )}
-
-      <h3
+    <div className="reveal" style={{ ['--i' as string]: index, display: 'grid' }}>
+      <div
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
         style={{
-          fontSize: 18,
-          fontWeight: 700,
-          color: 'var(--navy)',
-          margin: 0,
-          letterSpacing: '-0.01em',
+          position: 'relative',
+          background: 'var(--white)',
+          border: tier.featured ? '2px solid var(--sky)' : '1px solid var(--border-default)',
+          borderRadius: 'var(--radius-md)',
+          padding: 32,
+          boxShadow: tier.featured
+            ? '0 14px 30px rgba(78,201,245,0.18)'
+            : hover
+              ? 'var(--shadow-card-hover)'
+              : 'var(--shadow-card)',
+          display: 'flex',
+          flexDirection: 'column',
+          transform: hover ? 'translateY(-2px)' : 'none',
+          transition: 'transform 240ms var(--ease-out-expo), box-shadow 240ms var(--ease-out-expo)',
         }}
       >
-        {tier.name}
-      </h3>
-      <p style={{ color: 'var(--text-muted)', fontSize: 13, margin: '6px 0 28px' }}>
-        {tier.sub}
-      </p>
+        {tier.featured && (
+          <div style={{ position: 'absolute', top: -14, left: 24 }}>
+            <Tag tone="sky" style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '5px 12px' }}>
+              Most popular
+            </Tag>
+          </div>
+        )}
 
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 32 }}>
-        <span
+        <h3
           style={{
-            fontSize: 48,
+            fontSize: 18,
             fontWeight: 700,
             color: 'var(--navy)',
-            letterSpacing: '-0.035em',
-            fontFamily: 'var(--font-sans)',
+            margin: 0,
+            letterSpacing: '-0.01em',
           }}
         >
-          {tier.price}
-        </span>
-        <span
-          style={{
-            color: 'var(--text-muted)',
-            fontSize: 14,
-            fontFamily: 'var(--font-mono)',
-          }}
-        >
-          {tier.cadence}
-        </span>
-      </div>
+          {tier.name}
+        </h3>
+        <p style={{ color: 'var(--text-muted)', fontSize: 13, margin: '6px 0 28px' }}>
+          {tier.sub}
+        </p>
 
-      <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 36px', flex: 1 }}>
-        {tier.features.map((feature) => (
-          <li
-            key={feature}
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 32 }}>
+          <span
             style={{
-              display: 'flex',
-              alignItems: 'flex-start',
-              gap: 10,
-              fontSize: 14,
-              color: 'var(--text-secondary)',
-              marginBottom: 14,
+              fontSize: 48,
+              fontWeight: 700,
+              color: 'var(--navy)',
+              letterSpacing: '-0.035em',
+              fontFamily: 'var(--font-sans)',
             }}
           >
-            <span
-              aria-hidden="true"
+            {tier.price}
+          </span>
+          <span
+            style={{
+              color: 'var(--text-muted)',
+              fontSize: 14,
+              fontFamily: 'var(--font-mono)',
+            }}
+          >
+            {tier.cadence}
+          </span>
+        </div>
+
+        <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 36px', flex: 1 }}>
+          {tier.features.map((feature) => (
+            <li
+              key={feature}
               style={{
-                flexShrink: 0,
-                width: 18,
-                height: 18,
-                borderRadius: '50%',
-                background: 'var(--emerald-tint)',
-                color: 'var(--teal-green)',
                 display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginTop: 1,
+                alignItems: 'flex-start',
+                gap: 10,
+                fontSize: 14,
+                color: 'var(--text-secondary)',
+                marginBottom: 14,
               }}
             >
-              <MarketingIcon name="check" size={10} stroke={2.5} />
-            </span>
-            {feature}
-          </li>
-        ))}
-      </ul>
+              <span
+                aria-hidden="true"
+                style={{
+                  flexShrink: 0,
+                  width: 18,
+                  height: 18,
+                  borderRadius: '50%',
+                  background: 'var(--emerald-tint)',
+                  color: 'var(--teal-green)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginTop: 1,
+                }}
+              >
+                <MarketingIcon name="check" size={10} stroke={2.5} />
+              </span>
+              {feature}
+            </li>
+          ))}
+        </ul>
 
-      <Button
-        variant={tier.featured ? 'primary' : 'secondary'}
-        tone="navy"
-        href={tier.href}
-        style={{ width: '100%' }}
-      >
-        {tier.cta} <MarketingIcon name="arrowRight" size={14} />
-      </Button>
+        <Button
+          variant={tier.featured ? 'primary' : 'secondary'}
+          tone="navy"
+          href={tier.href}
+          style={{ width: '100%' }}
+        >
+          {tier.cta} <MarketingIcon name="arrowRight" size={14} />
+        </Button>
+      </div>
     </div>
   );
 }

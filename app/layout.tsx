@@ -181,7 +181,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="light">
+    // suppressHydrationWarning: the motion bootstrap (components/ui/RevealObserver)
+    // adds class="js" to <html> before React hydrates, exactly like next-themes.
+    <html lang="en" data-theme="light" suppressHydrationWarning>
       <head>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-0PQ1RZVNTS"

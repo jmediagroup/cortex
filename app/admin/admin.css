@@ -368,12 +368,10 @@
   to   { opacity: 1; transform: translate(-50%, 0); }
 }
 
-/* ---------- Skeleton shimmer ---------- */
+/* ---------- Skeleton (static fill — nothing loops) ---------- */
 .ad-skel {
   border-radius: 8px;
-  background: linear-gradient(90deg, rgba(5, 76, 125, 0.06) 25%, rgba(5, 76, 125, 0.11) 50%, rgba(5, 76, 125, 0.06) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.4s ease-in-out infinite;
+  background: rgba(5, 76, 125, 0.07);
 }
 
 /* ---------- Switch ---------- */
