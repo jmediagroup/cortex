@@ -7,7 +7,8 @@ interface SkeletonProps {
 export function Skeleton({ className = '' }: SkeletonProps) {
   return (
     <div
-      className={`animate-pulse rounded-[var(--radius-md)] bg-[var(--surface-tertiary)] ${className}`}
+      aria-hidden="true"
+      className={`rounded-[var(--radius-md)] bg-[var(--surface-tertiary)] ${className}`}
     />
   );
 }

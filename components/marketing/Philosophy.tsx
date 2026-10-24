@@ -39,10 +39,11 @@ export function MarketingPhilosophy() {
       }}
     >
       <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-        <div className="mgm-eyebrow" style={{ marginBottom: 16 }}>
+        <div className="mgm-eyebrow reveal" style={{ marginBottom: 16 }}>
           HOW WE THINK
         </div>
         <h2
+          className="reveal"
           style={{
             fontSize: 'clamp(32px,4.5vw,52px)',
             fontWeight: 700,
@@ -60,10 +61,12 @@ export function MarketingPhilosophy() {
         </h2>
 
         <div className="pub-grid-3up" style={{ gap: 20 }}>
-          {BEATS.map((b) => (
+          {BEATS.map((b, i) => (
             <div
               key={b.pivot}
+              className="reveal"
               style={{
+                ['--i' as string]: i,
                 background: 'var(--white)',
                 border: '1px solid var(--border-default)',
                 borderRadius: 'var(--radius-md)',

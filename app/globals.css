@@ -1,4 +1,5 @@
 @import "./tokens.css";
+@import "./motion.css";
 @import "tailwindcss";
 
 /* ============================================================
@@ -299,30 +300,11 @@ body :where(.text-white, .mgm-band, [data-theme="dark"])
   from { opacity: 0; transform: scaleY(0.9); transform-origin: bottom; }
   to   { opacity: 1; transform: scaleY(1); }
 }
-@keyframes shimmer {
-  0%   { background-position: -200% 0; }
-  100% { background-position:  200% 0; }
-}
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-6px); }
-}
-
 .animate-card-in  { animation: cardFadeIn 0.4s var(--ease-out-expo) both; will-change: transform, opacity; }
 .animate-chart-in { animation: chartDraw  0.6s var(--ease-out-expo) both; will-change: opacity, stroke-dashoffset; }
-.animate-shimmer {
-  will-change: background-position;
-  background: linear-gradient(
-    90deg,
-    var(--bg-section) 25%,
-    var(--bg-card-hover) 50%,
-    var(--bg-section) 75%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 1.5s ease-in-out infinite;
-}
-.animate-float         { animation: float 6s ease-in-out infinite; will-change: transform; }
-.animate-float-delayed { animation: float 6s ease-in-out infinite; will-change: transform; animation-delay: -3s; }
+/* Static skeleton fill — nothing loops (JMG motion rule). Class name kept
+   for existing callers. */
+.animate-shimmer { background: var(--bg-section); }
 
 .stagger-children > *:nth-child(1) { animation-delay:   0ms; }
 .stagger-children > *:nth-child(2) { animation-delay:  60ms; }
@@ -338,9 +320,11 @@ body :where(.text-white, .mgm-band, [data-theme="dark"])
 .hover-lift {
   transition: transform 0.25s var(--ease-out-expo), box-shadow 0.25s var(--ease-out-expo);
 }
-.hover-lift:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-card-hover);
+@media (hover: hover) {
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card-hover);
+  }
 }
 
 .focus-ring:focus-visible {
@@ -438,7 +422,9 @@ body :where(.text-white, .mgm-band, [data-theme="dark"])
   opacity: 0;
   transition: opacity 0.3s ease;
 }
-.card-glow:hover::before { opacity: 1; }
+@media (hover: hover) {
+  .card-glow:hover::before { opacity: 1; }
+}
 
 /* ============================================================
    Theme toggle — ported from ui_kits/marketing/Nav.jsx > ThemeToggle.
@@ -551,9 +537,6 @@ body :where(.text-white, .mgm-band, [data-theme="dark"])
 @media (prefers-reduced-motion: reduce) {
   .animate-card-in,
   .animate-chart-in,
-  .animate-shimmer,
-  .animate-float,
-  .animate-float-delayed,
   .bottom-sheet-enter,
   .bottom-sheet-exit,
   .hover-lift,
@@ -593,28 +576,35 @@ body :where(.text-white, .mgm-band, [data-theme="dark"])
   text-decoration: none;
   white-space: nowrap;
   transition: background-color 0.18s ease, color 0.18s ease,
-              border-color 0.18s ease, box-shadow 0.18s ease;
+              border-color 0.18s ease, box-shadow 0.18s ease,
+              transform 120ms var(--ease-out-quart);
 }
+.mgm-btn:active { transform: scale(.985); }
 .mgm-btn:disabled,
 .mgm-btn[aria-disabled='true'] { opacity: 0.5; cursor: not-allowed; }
+.mgm-btn:disabled:active,
+.mgm-btn[aria-disabled='true']:active { transform: none; }
 
 .mgm-btn--sm { padding: 8px 22px;  font-size: 12px; }
 .mgm-btn--md { padding: 12px 30px; font-size: 0.8125rem; }
 .mgm-btn--lg { padding: 16px 40px; font-size: 15px; }
 
 .mgm-btn--primary { background: var(--orange); border-color: var(--orange); color: #fff; }
-.mgm-btn--primary:hover { background: #d94f1e; border-color: #d94f1e; color: #fff; }
-
 .mgm-btn--tertiary { background: var(--yellow); border-color: var(--yellow); color: var(--navy-deep); }
-.mgm-btn--tertiary:hover { background: #e6ac06; border-color: #e6ac06; color: var(--navy-deep); }
 
 .mgm-btn--secondary { background: transparent; }
 .mgm-btn--secondary.mgm-btn--orange { border-color: var(--orange); color: var(--orange); }
-.mgm-btn--secondary.mgm-btn--orange:hover { background: var(--orange); color: #fff; }
 .mgm-btn--secondary.mgm-btn--navy { border-color: var(--navy); color: var(--navy); }
-.mgm-btn--secondary.mgm-btn--navy:hover { background: var(--navy); color: #fff; }
 .mgm-btn--secondary.mgm-btn--white { border-color: #fff; color: #fff; }
-.mgm-btn--secondary.mgm-btn--white:hover { background: #fff; color: var(--navy); }
+
+/* Hover only on devices that truly hover — no stuck state after a tap. */
+@media (hover: hover) {
+  .mgm-btn--primary:hover { background: #d94f1e; border-color: #d94f1e; color: #fff; }
+  .mgm-btn--tertiary:hover { background: #e6ac06; border-color: #e6ac06; color: var(--navy-deep); }
+  .mgm-btn--secondary.mgm-btn--orange:hover { background: var(--orange); color: #fff; }
+  .mgm-btn--secondary.mgm-btn--navy:hover { background: var(--navy); color: #fff; }
+  .mgm-btn--secondary.mgm-btn--white:hover { background: #fff; color: var(--navy); }
+}
 
 /* ============================================================
    MGM surface + form primitives (used by <Card> and by restyled
@@ -631,9 +621,11 @@ body :where(.text-white, .mgm-band, [data-theme="dark"])
   text-decoration: none;
   transition: box-shadow 0.22s ease, transform 0.22s ease;
 }
-.mgm-card--hover:hover {
-  box-shadow: var(--shadow-card-hover);
-  transform: translateY(-2px);
+@media (hover: hover) {
+  .mgm-card--hover:hover {
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-2px);
+  }
 }
 
 /* Navy duotone band — the MGM "dark section" (white text lives inside). */
@@ -770,6 +762,14 @@ body :where(.text-white, .mgm-band, [data-theme="dark"])
 }
 
 /* --- Marketing nav ------------------------------------------------------- */
+.marketing-nav-link {
+  color: var(--text-secondary);
+  background: transparent;
+  transition: color 160ms var(--ease-out-quart), background-color 160ms var(--ease-out-quart);
+}
+@media (hover: hover) {
+  .marketing-nav-link:hover { color: var(--text-primary); background: var(--bg-glass); }
+}
 @media (pointer: coarse) {
   .marketing-nav-link,
   .marketing-nav-action { display: inline-flex; align-items: center; min-height: 44px; }

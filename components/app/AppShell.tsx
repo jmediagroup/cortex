@@ -3,6 +3,7 @@ import type { Tier } from '@/lib/access-control';
 import { AppSideNav } from './AppSideNav';
 import { AppTopBar } from './AppTopBar';
 import { AppMobileTabBar } from './AppMobileTabBar';
+import { RevealBootstrap, RevealObserver } from '@/components/ui/RevealObserver';
 
 type Props = {
   children: ReactNode;
@@ -26,6 +27,8 @@ export function AppShell({ children, user, userTier = 'free', onSignOut }: Props
         display: 'flex',
       }}
     >
+      <RevealBootstrap />
+      <RevealObserver />
       <AppSideNav />
       <div
         style={{

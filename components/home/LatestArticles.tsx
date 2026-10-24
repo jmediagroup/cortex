@@ -32,7 +32,7 @@ export default async function LatestArticles() {
       }}
     >
       <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-        <div style={{ maxWidth: 640, margin: '0 0 56px' }}>
+        <div className="reveal" style={{ maxWidth: 640, margin: '0 0 56px' }}>
           <div
             className="eyebrow"
             style={{ marginBottom: 16, color: 'var(--text-tertiary)' }}
@@ -71,8 +71,8 @@ export default async function LatestArticles() {
             marginBottom: 40,
           }}
         >
-          {articles.map((article) => (
-            <ArticleCard key={article.id} article={article} />
+          {articles.map((article, i) => (
+            <ArticleCard key={article.id} article={article} index={i} />
           ))}
         </div>
 
@@ -103,11 +103,12 @@ export default async function LatestArticles() {
   );
 }
 
-function ArticleCard({ article }: { article: ArticleListItem }) {
+function ArticleCard({ article, index }: { article: ArticleListItem; index: number }) {
   return (
     <Link
       href={`/articles/${article.slug}`}
       style={{
+        ['--i' as string]: index,
         display: 'block',
         textDecoration: 'none',
         background: 'var(--bg-glass)',
@@ -118,7 +119,7 @@ function ArticleCard({ article }: { article: ArticleListItem }) {
         overflow: 'hidden',
         boxShadow: 'var(--shadow-card), var(--shadow-inset-top)',
       }}
-      className="hover-lift"
+      className="hover-lift reveal"
     >
       {article.featuredImage ? (
         <div

@@ -35,7 +35,7 @@ export function MarketingPrinciplesCTA() {
       }}
     >
       <div
-        className="marketing-principles-panel"
+        className="marketing-principles-panel reveal"
         style={{
           maxWidth: 1200,
           margin: '0 auto',
@@ -103,10 +103,12 @@ export function MarketingPrinciplesCTA() {
               textAlign: 'left',
             }}
           >
-            {PRINCIPLES.map((p) => (
+            {PRINCIPLES.map((p, i) => (
               <div
                 key={p.title}
+                className="reveal"
                 style={{
+                  ['--i' as string]: i + 1,
                   background: cardBg,
                   border: `1px solid ${cardBorder}`,
                   borderRadius: 'var(--radius-md)',

@@ -6,12 +6,14 @@ import { ToolLayout } from '@/components/app/ToolLayout';
 import { MarketingIcon } from '@/components/marketing/Icons';
 import { DEFAULT_TOOLS, type MarketingTool } from '@/components/marketing/ToolGrid';
 
-function IndexToolCard({ tool }: { tool: MarketingTool }) {
+function IndexToolCard({ tool, index }: { tool: MarketingTool; index: number }) {
   const isFree = tool.tag === 'FREE';
   return (
     <Link
       href={tool.href}
+      className="reveal"
       style={{
+        ['--i' as string]: index % 6,
         position: 'relative',
         display: 'block',
         textDecoration: 'none',
@@ -113,8 +115,8 @@ export function AppsIndex() {
           gap: 16,
         }}
       >
-        {DEFAULT_TOOLS.map((tool) => (
-          <IndexToolCard key={tool.href} tool={tool} />
+        {DEFAULT_TOOLS.map((tool, i) => (
+          <IndexToolCard key={tool.href} tool={tool} index={i} />
         ))}
       </div>
     </ToolLayout>

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { MarketingIcon } from './Icons';
+import { useCanHover } from '@/lib/useCanHover';
 
 /**
  * Clean MGM hero — a full-bleed navy duotone band (navy base + faint diagonal
@@ -42,7 +43,7 @@ function prefersReducedMotion() {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-function Tick({ from, to, prefix = '', suffix = '', dur = 1400 }: {
+function Tick({ from, to, prefix = '', suffix = '', dur = 900 }: {
   from: number;
   to: number;
   prefix?: string;
@@ -75,7 +76,9 @@ function Tick({ from, to, prefix = '', suffix = '', dur = 1400 }: {
 }
 
 function PulsePreview() {
-  const [hover, setHover] = useState(false);
+  const canHover = useCanHover();
+  const [hoverRaw, setHover] = useState(false);
+  const hover = canHover && hoverRaw;
   const bars = [42, 58, 46, 71, 65, 83, 78, 92];
   return (
     <div
@@ -88,8 +91,8 @@ function PulsePreview() {
         borderRadius: 'var(--radius-md)',
         padding: 28,
         boxShadow: hover ? 'var(--shadow-card-hover)' : 'var(--shadow-card)',
-        transform: hover ? 'translateY(-3px)' : 'translateY(0)',
-        transition: 'transform 320ms var(--ease-out-expo), box-shadow 320ms',
+        transform: hover ? 'translateY(-2px)' : 'translateY(0)',
+        transition: 'transform 240ms var(--ease-out-expo), box-shadow 240ms var(--ease-out-expo)',
       }}
     >
       <div
@@ -272,7 +275,9 @@ export function MarketingHero({ stats = DEFAULT_STATS }: { stats?: HeroStat[] } 
         >
           <div>
             <div
+              className="enter"
               style={{
+                ['--i' as string]: 0,
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 8,
@@ -301,7 +306,10 @@ export function MarketingHero({ stats = DEFAULT_STATS }: { stats?: HeroStat[] } 
               </span>
             </div>
 
-            <h1 className="h-hero" style={{ margin: '0 0 28px', maxWidth: 620, color: '#fff' }}>
+            <h1
+              className="h-hero enter"
+              style={{ ['--i' as string]: 1, margin: '0 0 28px', maxWidth: 620, color: '#fff' }}
+            >
               Think clearly about
               <br />
               life&apos;s{' '}
@@ -309,7 +317,9 @@ export function MarketingHero({ stats = DEFAULT_STATS }: { stats?: HeroStat[] } 
             </h1>
 
             <p
+              className="enter"
               style={{
+                ['--i' as string]: 2,
                 fontSize: 18,
                 color: 'rgba(255,255,255,0.85)',
                 lineHeight: 1.55,
@@ -324,7 +334,10 @@ export function MarketingHero({ stats = DEFAULT_STATS }: { stats?: HeroStat[] } 
               .
             </p>
 
-            <div style={{ display: 'flex', gap: 12, marginBottom: 48, flexWrap: 'wrap' }}>
+            <div
+              className="enter"
+              style={{ ['--i' as string]: 3, display: 'flex', gap: 12, marginBottom: 48, flexWrap: 'wrap' }}
+            >
               <Button variant="primary" size="lg" href="/#tools">
                 Explore the tools <MarketingIcon name="arrowRight" size={16} />
               </Button>
@@ -334,8 +347,9 @@ export function MarketingHero({ stats = DEFAULT_STATS }: { stats?: HeroStat[] } 
             </div>
 
             <div
-              className="marketing-hero-stats"
+              className="marketing-hero-stats enter"
               style={{
+                ['--i' as string]: 4,
                 display: 'flex',
                 alignItems: 'center',
                 gap: 24,
@@ -383,7 +397,10 @@ export function MarketingHero({ stats = DEFAULT_STATS }: { stats?: HeroStat[] } 
             </div>
           </div>
 
-          <div className="marketing-hero-preview" style={{ position: 'relative' }}>
+          <div
+            className="marketing-hero-preview settle"
+            style={{ ['--i' as string]: 2, position: 'relative' }}
+          >
             <PulsePreview />
             <div
               aria-hidden="true"

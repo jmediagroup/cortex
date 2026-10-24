@@ -162,19 +162,9 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
       style={{
         fontSize: 13,
         fontWeight: 500,
-        color: 'var(--text-secondary)',
         padding: '8px 14px',
         borderRadius: 9999,
         textDecoration: 'none',
-        transition: 'color 120ms, background 120ms',
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.color = 'var(--text-primary)';
-        e.currentTarget.style.background = 'var(--bg-glass)';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.color = 'var(--text-secondary)';
-        e.currentTarget.style.background = 'transparent';
       }}
     >
       {children}
