@@ -1,11 +1,15 @@
 import Link from 'next/link';
+import { useCallback, useState } from 'react';
 import { ShieldCheck } from 'lucide-react';
 import { Wordmark } from '@/components/brand/Wordmark';
+import './auth-states.css';
 
 type Props = {
   children: React.ReactNode;
   /** Optional extra content rendered below the security badge. */
   footer?: React.ReactNode;
+  /** Success: lift the card out just before a redirect (see useAuthFormStates). */
+  leaving?: boolean;
 };
 
 /**
@@ -14,7 +18,7 @@ type Props = {
  * collapses on small screens, where a compact wordmark sits above the form.
  * Light-only (no theme toggle, no aurora/grid/glass).
  */
-export function AuthShell({ children, footer }: Props) {
+export function AuthShell({ children, footer, leaving = false }: Props) {
   return (
     <div className="mgm-auth">
       <style dangerouslySetInnerHTML={{ __html: authShellCss }} />
@@ -63,7 +67,7 @@ export function AuthShell({ children, footer }: Props) {
             <Wordmark size="sm" />
           </Link>
 
-          <div className="mgm-auth__card">{children}</div>
+          <div className={leaving ? 'mgm-auth__card is-leaving' : 'mgm-auth__card'}>{children}</div>
 
           <div className="mgm-auth__secure">
             <ShieldCheck size={12} />
@@ -186,6 +190,10 @@ type FieldProps = {
   id?: string;
   /** Optional element rendered at the right end of the label row (e.g. a show/hide toggle). */
   trailing?: React.ReactNode;
+  /** Plays the one-shot error shake on the field (icon + input together). */
+  shaking?: boolean;
+  /** Called when the shake finishes, so the class can be removed and replayed later. */
+  onShakeEnd?: () => void;
 };
 
 /** Id used for a field's hint text, for `aria-describedby`. */
@@ -194,7 +202,17 @@ export function authHintId(id: string): string {
 }
 
 /** Labelled input wrapper used by login/signup/reset forms. */
-export function AuthField({ label, icon, children, hint, labelColor, id, trailing }: FieldProps) {
+export function AuthField({
+  label,
+  icon,
+  children,
+  hint,
+  labelColor,
+  id,
+  trailing,
+  shaking = false,
+  onShakeEnd,
+}: FieldProps) {
   const labelStyle: React.CSSProperties = {
     fontSize: 12,
     fontWeight: 700,
@@ -214,16 +232,21 @@ export function AuthField({ label, icon, children, hint, labelColor, id, trailin
         )}
         {trailing}
       </div>
-      <div style={{ position: 'relative' }}>
+      <div
+        className={shaking ? 'mgm-auth-field__control is-shaking' : 'mgm-auth-field__control'}
+        onAnimationEnd={(e) => {
+          if (e.animationName === 'mgm-auth-shake') onShakeEnd?.();
+        }}
+      >
         {icon && (
           <span
             aria-hidden="true"
+            className="mgm-auth-field__icon"
             style={{
               position: 'absolute',
               left: 14,
               top: '50%',
               transform: 'translateY(-50%)',
-              color: 'var(--gray-500)',
               display: 'inline-flex',
               pointerEvents: 'none',
             }}
@@ -254,6 +277,119 @@ export const authErrorStyle: React.CSSProperties = {
   fontSize: 13,
   fontWeight: 600,
 };
+
+/**
+ * Error message for an auth form. Fades/rises in on mount (auth-states.css);
+ * render it directly under the field it is about. Focusable so the page can
+ * move focus to it after a failed submit.
+ */
+export function AuthAlert({
+  id,
+  children,
+  ref,
+  style,
+}: {
+  id?: string;
+  children: React.ReactNode;
+  ref?: React.Ref<HTMLDivElement>;
+  style?: React.CSSProperties;
+}) {
+  return (
+    <div
+      ref={ref}
+      id={id}
+      role="alert"
+      aria-live="polite"
+      tabIndex={-1}
+      className="mgm-auth-alert"
+      style={{ ...authErrorStyle, outline: 'none', ...style }}
+    >
+      {children}
+    </div>
+  );
+}
+
+/** Lift-out duration before a success redirect; matches .mgm-auth__card in auth-states.css. */
+export const AUTH_LEAVE_MS = 180;
+
+/** 0 when the person prefers reduced motion, otherwise AUTH_LEAVE_MS. */
+export function authLeaveDelay(): number {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return AUTH_LEAVE_MS;
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : AUTH_LEAVE_MS;
+}
+
+/**
+ * Visual state for an auth form: which fields are invalid / shaking, and the
+ * success lift-out. Purely presentational — the pages keep their own
+ * Supabase, Turnstile and redirect logic and just call into this.
+ */
+export function useAuthFormStates<F extends string>() {
+  const [invalid, setInvalid] = useState<ReadonlySet<F>>(() => new Set());
+  const [shaking, setShaking] = useState<ReadonlySet<F>>(() => new Set());
+  const [leaving, setLeaving] = useState(false);
+
+  /** A submit failed: mark these fields invalid and shake them once. */
+  const fail = useCallback((fields: F[]) => {
+    setInvalid(new Set(fields));
+    setShaking(new Set(fields));
+  }, []);
+
+  /** Forget all field errors (start of a new attempt). */
+  const reset = useCallback(() => {
+    setInvalid(new Set());
+    setShaking(new Set());
+  }, []);
+
+  /**
+   * The person typed in `field`: clear its error. Returns true when no
+   * invalid field is left, i.e. the error message can be cleared too.
+   * An error that flags several fields at once ("Incorrect email or
+   * password") is about the combination, so editing any of them clears all.
+   */
+  const clear = (field: F): boolean => {
+    if (!invalid.has(field)) return invalid.size === 0;
+    const next = new Set(invalid);
+    if (next.size > 1) next.clear();
+    else next.delete(field);
+    setInvalid(next);
+    setShaking(new Set());
+    return next.size === 0;
+  };
+
+  const shakeEnd = useCallback((field: F) => {
+    setShaking((prev) => {
+      if (!prev.has(field)) return prev;
+      const next = new Set(prev);
+      next.delete(field);
+      return next;
+    });
+  }, []);
+
+  /** Success: lift the card out, then run the navigation (immediately under reduced motion). */
+  const leave = useCallback((navigate: () => void) => {
+    const delay = authLeaveDelay();
+    setLeaving(true);
+    if (delay === 0) navigate();
+    else window.setTimeout(navigate, delay);
+    // Safety net: if the navigation doesn't unmount this page, never leave
+    // the card invisible.
+    window.setTimeout(() => setLeaving(false), 2000);
+  }, []);
+
+  return {
+    leaving,
+    leave,
+    fail,
+    reset,
+    clear,
+    isInvalid: (field: F) => invalid.has(field),
+    /** Props for <AuthField> wrapping `field`. */
+    fieldProps: (field: F) => ({
+      shaking: shaking.has(field),
+      onShakeEnd: () => shakeEnd(field),
+    }),
+  };
+}
 
 /** Neutral notice (e.g. "your email is verified, log in to continue"). */
 export const authInfoStyle: React.CSSProperties = {

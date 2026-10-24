@@ -1,0 +1,126 @@
+/*
+ * Auth form states — busy, invalid, error message, success lift-out, focus.
+ * Scoped to the auth shell (.mgm-auth) so nothing here leaks into the rest
+ * of the site. Imported once from components/auth/AuthShell.tsx.
+ *
+ * Timings: transitions 150–250ms, the field shake 350ms (plays once).
+ * Everything is switched off under prefers-reduced-motion, and nothing is
+ * ever left at opacity 0 there.
+ */
+
+/* ---------- Text fields ---------------------------------------------------- */
+
+/* Never below 16px, so iOS Safari doesn't zoom the page on focus. */
+/*
+ * Rest border: globals.css references var(--border-input), which no token
+ * defines, so the border is otherwise dropped entirely. Fall back to the
+ * documented input-border token (--gray-300) here.
+ */
+.mgm-auth .mgm-input {
+  border: 1px solid var(--border-input, var(--gray-300));
+  font-size: max(16px, 1rem);
+  transition:
+    border-color 180ms cubic-bezier(.2, .7, .2, 1),
+    box-shadow 180ms cubic-bezier(.2, .7, .2, 1);
+}
+
+/* Invalid: error border + 2px inset underline in the error color. */
+.mgm-auth .mgm-input[aria-invalid='true'] {
+  border-color: var(--alert-red);
+  box-shadow: inset 0 -2px 0 var(--alert-red);
+}
+
+/*
+ * Focus (declared after invalid so it wins while the person is typing):
+ * accent border, the site focus ring, and a 2px inset underline in the accent.
+ * Matches the global .mgm-input focus treatment (var(--sky) + var(--focus-ring)).
+ */
+.mgm-auth .mgm-input:focus-visible {
+  outline: none;
+  border-color: var(--sky);
+  box-shadow: var(--focus-ring), inset 0 -2px 0 var(--sky);
+}
+
+/* Field wrapper (icon + input) — the thing that shakes. */
+.mgm-auth-field__control {
+  position: relative;
+}
+.mgm-auth-field__control.is-shaking {
+  animation-name: mgm-auth-shake;
+  animation-duration: 350ms;
+  animation-timing-function: cubic-bezier(.36, .07, .19, .97);
+  animation-iteration-count: 1;
+}
+.mgm-auth-field__icon {
+  color: var(--gray-500);
+  transition: color 180ms ease;
+}
+/* Tint the leading icon with the error color while the field is invalid. */
+.mgm-auth-field__control:has(.mgm-input[aria-invalid='true']:not(:focus-visible)) .mgm-auth-field__icon {
+  color: var(--alert-red);
+}
+
+@keyframes mgm-auth-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(2px); }
+}
+
+/* ---------- Error message -------------------------------------------------- */
+
+/* Sits directly under the field it is about; fades/rises in on mount. */
+.mgm-auth-alert {
+  margin-top: -10px;
+  animation: mgm-auth-rise 200ms cubic-bezier(.2, .7, .2, 1) both;
+}
+
+@keyframes mgm-auth-rise {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Busy ----------------------------------------------------------- */
+
+.mgm-auth-form.busy [type='submit'],
+.mgm-auth-form.busy [type='submit']:disabled {
+  opacity: .55;
+  cursor: progress;
+}
+.mgm-auth-form [type='submit'] {
+  transition: opacity 180ms ease;
+}
+
+/* ---------- Success lift-out ----------------------------------------------- */
+
+.mgm-auth__card {
+  transition:
+    opacity 180ms ease,
+    transform 180ms cubic-bezier(.2, .7, .2, 1);
+}
+.mgm-auth__card.is-leaving {
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+}
+
+/* ---------- Reduced motion ------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .mgm-auth .mgm-input,
+  .mgm-auth-form [type='submit'],
+  .mgm-auth-field__icon,
+  .mgm-auth__card {
+    transition: none;
+  }
+  .mgm-auth-field__control.is-shaking,
+  .mgm-auth-alert {
+    animation: none;
+  }
+  /* The redirect fires immediately here; never leave the card invisible. */
+  .mgm-auth__card.is-leaving {
+    opacity: 1;
+    transform: none;
+  }
+}

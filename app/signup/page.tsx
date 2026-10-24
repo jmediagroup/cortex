@@ -19,9 +19,10 @@ import { TurnstileWidget, isTurnstileEnabled } from '@/components/auth/Turnstile
 import {
   AuthShell,
   AuthField,
+  AuthAlert,
+  useAuthFormStates,
   authHintId,
   authInputWithIcon,
-  authErrorStyle,
   authSuccessStyle,
   authLinkStyle,
 } from '@/components/auth/AuthShell';
@@ -92,6 +93,21 @@ function PasswordChecklist({ password, id }: { password: string; id: string }) {
   );
 }
 
+type SignupField = 'firstName' | 'email' | 'password';
+
+/**
+ * Which fields a signup error message is about. The route's 400 messages are
+ * already person-friendly and name the field ("…valid email address…",
+ * "Password must be…"); anything else (rate limit, CAPTCHA, network) flags none.
+ */
+function signupErrorFields(message: string): SignupField[] {
+  const m = message.toLowerCase();
+  const out: SignupField[] = [];
+  if (m.includes('email address') || m.includes('email and password')) out.push('email');
+  if (m.includes('password') && !m.includes('reset your password')) out.push('password');
+  return out;
+}
+
 function SignupForm() {
   const [firstName, setFirstName] = useState('');
   const [email, setEmail] = useState('');
@@ -111,8 +127,12 @@ function SignupForm() {
   const [honeypot, setHoneypot] = useState('');
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [captchaNonce, setCaptchaNonce] = useState(0);
-  const formStartedAt = useRef<number>(Date.now());
+  // Lazy initializer keeps render pure; same value as before (time of first render).
+  const [initialStartedAt] = useState(() => Date.now());
+  const formStartedAt = useRef<number>(initialStartedAt);
   const errorRef = useRef<HTMLDivElement | null>(null);
+  const fields = useAuthFormStates<SignupField>();
+  const busy = loading || fields.leaving;
   const resendTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -146,7 +166,7 @@ function SignupForm() {
     if (signupSource) params.set('ref', signupSource);
     const qs = params.toString();
     return qs ? `/login?${qs}` : '/login';
-  }, [hasProIntent, postVerifyRedirect, accountExists, email]);
+  }, [hasProIntent, postVerifyRedirect, accountExists, email, signupSource]);
 
   const resetHref = useMemo(() => {
     const params = new URLSearchParams({ mode: 'reset' });
@@ -184,16 +204,26 @@ function SignupForm() {
 
   const passwordOk = checkPassword(password).ok;
 
+  // Typing in a field clears its error; the message goes once no field is left flagged.
+  const onFieldInput = (field: SignupField) => {
+    if (error && fields.clear(field)) {
+      setError(null);
+      setAccountExists(false);
+    }
+  };
+
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setAccountExists(false);
+    fields.reset();
 
     // Same policy as the server. Catching it here saves a round trip and a
     // single-use CAPTCHA token.
     const pw = checkPassword(password);
     if (!pw.ok) {
       setError(pw.message);
+      fields.fail(['password']);
       return;
     }
 
@@ -223,6 +253,7 @@ function SignupForm() {
       if (res.status === 409 || payload.code === 'account_exists') {
         setAccountExists(true);
         setError(payload.error || 'An account already exists for this email.');
+        fields.fail(['email']);
         return;
       }
 
@@ -238,7 +269,7 @@ function SignupForm() {
       // Email confirmations are off in Supabase: the route already set the
       // session cookies, so go straight in.
       if (payload.requiresVerification === false) {
-        router.replace(safeNextPath(payload.next, postVerifyRedirect));
+        fields.leave(() => router.replace(safeNextPath(payload.next, postVerifyRedirect)));
         return;
       }
 
@@ -247,7 +278,14 @@ function SignupForm() {
     } catch (err: unknown) {
       const e = err as { message?: string };
       console.error('Signup error:', err);
-      setError(e.message || 'We couldn’t create your account just now. Please try again.');
+      // A TypeError here is fetch itself failing (offline, blocked) — its
+      // message is technical ("Failed to fetch"), so show the friendly copy.
+      const message =
+        err instanceof TypeError
+          ? friendlySignupError(e)
+          : e.message || 'We couldn’t create your account just now. Please try again.';
+      setError(message);
+      fields.fail(signupErrorFields(message));
     } finally {
       // The token is spent either way; get a fresh one for the next attempt.
       resetCaptcha();
@@ -305,6 +343,7 @@ function SignupForm() {
     setEmail('');
     setPassword('');
     setError(null);
+    fields.reset();
     setAccountExists(false);
     setResendSuccess(false);
     setResendCooldown(0);
@@ -382,14 +421,9 @@ function SignupForm() {
             </div>
           )}
           {error && (
-            <div
-              ref={errorRef}
-              role="alert"
-              tabIndex={-1}
-              style={{ ...authErrorStyle, marginBottom: 16, outline: 'none' }}
-            >
+            <AuthAlert ref={errorRef} style={{ marginTop: 0, marginBottom: 16 }}>
               {error}
-            </div>
+            </AuthAlert>
           )}
 
           {/* Kept mounted so a resend always has a fresh single-use token. */}
@@ -445,11 +479,33 @@ function SignupForm() {
     );
   }
 
+  const errorBanner = error ? (
+    <AuthAlert ref={errorRef} id="signup-error">
+      <div>{error}</div>
+      {accountExists && (
+        <div style={{ marginTop: 8, display: 'flex', gap: 14, flexWrap: 'wrap' }}>
+          <Link href={signInHref} style={{ color: 'inherit', textDecoration: 'underline' }}>
+            Log in
+          </Link>
+          <Link href={resetHref} style={{ color: 'inherit', textDecoration: 'underline' }}>
+            Reset password
+          </Link>
+        </div>
+      )}
+    </AuthAlert>
+  ) : null;
+
+  // The message sits directly under the field it is about: under email when
+  // only email is flagged, otherwise under the last field (password).
+  const errorUnderEmail = fields.isInvalid('email') && !fields.isInvalid('password');
+
   return (
-    <AuthShell>
+    <AuthShell leaving={fields.leaving}>
       <form
         onSubmit={handleSignup}
         noValidate={false}
+        className={busy ? 'mgm-auth-form busy' : 'mgm-auth-form'}
+        aria-busy={busy}
         style={{ display: 'flex', flexDirection: 'column', gap: 20 }}
       >
         <div>
@@ -474,34 +530,21 @@ function SignupForm() {
           </p>
         </div>
 
-        {error && (
-          <div
-            ref={errorRef}
-            role="alert"
-            tabIndex={-1}
-            style={{ ...authErrorStyle, outline: 'none' }}
-          >
-            <div>{error}</div>
-            {accountExists && (
-              <div style={{ marginTop: 8, display: 'flex', gap: 14, flexWrap: 'wrap' }}>
-                <Link href={signInHref} style={{ color: 'inherit', textDecoration: 'underline' }}>
-                  Log in
-                </Link>
-                <Link href={resetHref} style={{ color: 'inherit', textDecoration: 'underline' }}>
-                  Reset password
-                </Link>
-              </div>
-            )}
-          </div>
-        )}
-
-        <AuthField id="signup-first-name" label="First name" icon={<UserIcon size={16} />}>
+        <AuthField
+          id="signup-first-name"
+          label="First name"
+          icon={<UserIcon size={16} />}
+          {...fields.fieldProps('firstName')}
+        >
           <input
             id="signup-first-name"
             name="given-name"
             type="text"
             value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
+            onChange={(e) => {
+              setFirstName(e.target.value);
+              onFieldInput('firstName');
+            }}
             placeholder="Alex (optional)"
             className="mgm-input"
             style={authInputWithIcon}
@@ -511,14 +554,24 @@ function SignupForm() {
           />
         </AuthField>
 
-        <AuthField id="signup-email" label="Email address" icon={<Mail size={16} />}>
+        <AuthField
+          id="signup-email"
+          label="Email address"
+          icon={<Mail size={16} />}
+          {...fields.fieldProps('email')}
+        >
           <input
             id="signup-email"
             name="email"
             type="email"
             required
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              onFieldInput('email');
+            }}
+            aria-invalid={fields.isInvalid('email')}
+            aria-describedby={fields.isInvalid('email') ? 'signup-error' : undefined}
             placeholder="name@example.com"
             className="mgm-input"
             style={authInputWithIcon}
@@ -530,10 +583,13 @@ function SignupForm() {
           />
         </AuthField>
 
+        {errorUnderEmail && errorBanner}
+
         <AuthField
           id="signup-password"
           label="Password"
           icon={<Lock size={16} />}
+          {...fields.fieldProps('password')}
           hint={<PasswordChecklist password={password} id={authHintId('signup-password')} />}
           trailing={
             <button
@@ -561,16 +617,25 @@ function SignupForm() {
             type={showPassword ? 'text' : 'password'}
             required
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              onFieldInput('password');
+            }}
             placeholder="••••••••••"
             className="mgm-input"
             style={authInputWithIcon}
             minLength={MIN_PASSWORD_LENGTH}
             autoComplete="new-password"
-            aria-describedby={authHintId('signup-password')}
-            aria-invalid={password.length > 0 && !passwordOk}
+            aria-describedby={
+              fields.isInvalid('password')
+                ? `${authHintId('signup-password')} signup-error`
+                : authHintId('signup-password')
+            }
+            aria-invalid={fields.isInvalid('password') || (password.length > 0 && !passwordOk)}
           />
         </AuthField>
+
+        {!errorUnderEmail && errorBanner}
 
         {/*
           Honeypot. Hidden from sighted users and from screen readers, and
@@ -596,10 +661,10 @@ function SignupForm() {
         <Button
           variant="primary"
           type="submit"
-          disabled={loading || captchaBlocksSubmit}
+          disabled={busy || captchaBlocksSubmit}
           style={{ width: '100%' }}
         >
-          {loading ? (
+          {busy ? (
             <>
               <Loader2 size={16} className="animate-spin" aria-hidden="true" /> Creating account…
             </>
