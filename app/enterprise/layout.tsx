@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Enterprise & Teams — Financial Tools for Advisors, Employers and Creators',
+  title: 'Enterprise & Teams: Financial Tools for Advisors, Employers and Creators',
   description:
-    'Bring Money Guy Mutants calculators to your clients, employees or audience. White-label tools, team access and priority support. Tell us about your use case.',
+    'Bring Money Guy Mutants calculators to your clients, employees or audience. Early access. Tell us what you need and we will say whether we can build it.',
   alternates: { canonical: 'https://moneyguymutants.com/enterprise' },
   openGraph: {
     type: 'website',

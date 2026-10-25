@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "What's Your Why — Find Your Real Money Motivation",
+  title: "What's Your Why: Find Your Real Money Motivation",
   description:
-    'A reflective, eight-question diagnostic that surfaces what actually drives your financial decisions, fears, and goals — then reflects it back as a personal, AI-synthesized read on your relationship with money. Free.',
+    'A reflective, eight-question diagnostic that surfaces what actually drives your financial decisions, fears, and goals, then reflects it back as a personal, AI-synthesized read on your relationship with money. Free.',
   keywords: [
     'whats your why',
     'money motivation',
@@ -17,9 +17,9 @@ export const metadata: Metadata = {
     'purpose and money',
   ],
   openGraph: {
-    title: "What's Your Why — Find Your Real Money Motivation",
+    title: "What's Your Why: Find Your Real Money Motivation",
     description:
-      'Eight questions that surface what actually drives your financial decisions — reflected back as a personal read on your relationship with money.',
+      'Eight questions that surface what actually drives your financial decisions, reflected back as a personal read on your relationship with money.',
     type: 'website',
     url: 'https://moneyguymutants.com/apps/whats-your-why',
   },

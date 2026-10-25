@@ -4,21 +4,26 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Lock, Sparkles, ArrowRight } from 'lucide-react';
 
-const TOOL_BENEFITS: Record<string, string[]> = {
-  'capital-gains-tax': ['NIIT & additional-Medicare modeling', 'ACA subsidy-cliff and IRMAA detection', 'QBI / §199A deduction layer'],
-  'car-affordability': ['Save and revisit affordability scenarios', 'Share results with a link', 'Pro access across every Cortex calculator'],
-  'coast-fire': ['Monte Carlo retirement simulations', 'Variable contribution modeling', 'Safe withdrawal rate analysis'],
-  'compound-interest': ['Tax-advantaged account modeling', 'Inflation-adjusted projections', 'Multi-account comparison'],
-  'debt-paydown': ['Hybrid paydown strategies', 'Refinancing scenario modeling', 'Net worth impact projections'],
-  'gambling-redirect': ['Portfolio simulation over 30 years', 'Risk-adjusted return comparisons', 'Behavioral cost calculator'],
-  'geographic-arbitrage': ['Side-by-side city comparisons', 'Tax burden breakdown by state', 'Real wage purchasing power'],
-  'index-fund-visualizer': ['Custom fund basket builder', 'Dividend reinvestment modeling', 'Factor exposure analysis'],
-  'net-worth': ['Liability paydown projections', 'Asset growth forecasting', 'Financial independence timeline'],
+// Single source of truth for Pro benefit bullets (ProUpsellCard imports this).
+// Every bullet must describe something the tool's Pro view actually renders.
+export const TOOL_BENEFITS: Record<string, string[]> = {
+  'capital-gains-tax': ['NIIT headroom analysis', 'ACA premium-tax-credit cliff and Medicare IRMAA tiers', 'QBI / §199A deduction with the S-corp wage limit'],
+  'car-affordability': ['Unlimited saved affordability scenarios (free accounts save 1 per tool)', 'Pro access across every Money Guy Mutants calculator', 'Deeper Pro panels in tools like Debt Paydown and Rent vs Buy'],
+  'coast-fire': ['Stress test: lower returns, higher inflation, reduced spending', 'Barista FIRE part-time income scenarios', 'Social Security integration and a coast date optimizer'],
+  'compound-interest': ['Cost of a 5-year delay, in dollars', 'What a 20% higher contribution adds', 'Withdrawal income preview and age milestones'],
+  'debt-paydown': ['Opportunity cost: paydown versus minimums plus investing', 'Hybrid plan and refinance opportunity check', 'Debt-to-income trajectory and cash flow flexibility score'],
+  'gambling-redirect': ['Expected loss to the house edge over your timeframe', 'Life milestones the same money could reach', 'Projected income from the invested alternative'],
+  'geographic-arbitrage': ['Top 5 destinations ranked for your savings', 'Estimated state income tax difference from a move', 'Career mobility premium and lifestyle compression score'],
+  'index-fund-visualizer': ['Head-to-head comparison of all four funds with your inputs', 'Monte Carlo range (5th, 50th, 95th percentile) from fund volatility', 'Sharpe ratio and estimated max drawdown'],
+  'net-worth': ['Net worth momentum split into asset growth and active savings', 'Annual debt drag on your momentum', 'Tipping point: when asset growth can outpace savings'],
   'rent-vs-buy': ['3-move lifecycle friction analysis', 'Market timing scenario range', 'Hidden ownership cost breakdown'],
-  'retirement-strategy': ['Roth conversion ladder modeling', 'Social Security optimization', 'Sequence of returns risk'],
-  's-corp-investment': ['Solo 401k contribution maximizer', 'Defined benefit plan modeling', 'After-tax return comparison'],
-  's-corp-optimizer': ['State tax optimization', 'Benefits and deduction planning', 'Multi-year salary strategy'],
+  'retirement-strategy': ['Auto-sized Roth conversions that fill a target tax bracket', 'Choice of which bracket to fill', 'Unlimited saved retirement scenarios (free accounts save 1 per tool)'],
+  's-corp-investment': ['Solo 401(k) employee deferral and employer contribution modeling', 'IRA and HSA contributions with 2026 limits', '30-year projection with tax savings factored in'],
+  's-corp-optimizer': ['Unlimited saved scenarios (free accounts save 1 per tool)', 'Pro access across every Money Guy Mutants calculator', 'Includes the S-Corp Investment Optimizer (Solo 401(k), IRA, HSA)'],
+  'whats-your-why': ['AI-synthesized reflection on your money psychology', 'Named themes, core tension, and a personal next step', 'Reflections saved privately to your account'],
 };
+
+export const DEFAULT_PRO_BENEFITS = ['Deeper scenario panel for this tool', 'Unlimited saved scenarios (free accounts save 1 per tool)', 'Pro access across every Money Guy Mutants calculator'];
 
 interface ProGatedPreviewProps {
   isLocked: boolean;
@@ -34,7 +39,7 @@ export default function ProGatedPreview({ isLocked, toolId, previewLabel, childr
     return <>{children}</>;
   }
 
-  const benefits = TOOL_BENEFITS[toolId] || ['Advanced analytics', 'Pro-level insights', 'Enhanced modeling'];
+  const benefits = TOOL_BENEFITS[toolId] || DEFAULT_PRO_BENEFITS;
 
   return (
     <div className="relative">

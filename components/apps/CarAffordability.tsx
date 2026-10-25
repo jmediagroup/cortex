@@ -135,6 +135,9 @@ export default function CarAffordability({ isPro = false, isLoggedIn = false, on
           </div>
           <div>
             <h3 className="text-xl font-bold text-[var(--color-info)] mb-2">The 20/3/8 Car-Buying Rule</h3>
+            <p className="text-xs text-[var(--color-info)] mb-4">
+              The 20/3/8 rule of thumb is popularized by The Money Guy Show; this independent tool is not affiliated with the show.
+            </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
               <div className="flex items-start gap-2">
                 <div className="font-bold text-3xl text-[var(--color-info)]">20%</div>

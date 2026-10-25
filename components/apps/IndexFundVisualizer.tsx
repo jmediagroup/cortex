@@ -44,7 +44,7 @@ interface IndexFundVisualizerProps {
 const FUND_METADATA = {
   'VOO_IVV': {
     name: 'S&P 500 (VOO / IVV)',
-    description: 'Top 500 U.S. companies. The gold standard for U.S. large-cap equity.',
+    description: 'Top 500 U.S. companies. The most widely held U.S. large-cap index.',
     cagr: 10.5,
     volatility: 15.0,
     color: '#1D8072',
@@ -563,7 +563,7 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
             </div>
             <div className="mt-6 pt-6 border-t border-[var(--border-strong)]">
               <div className="text-[10px] text-[var(--text-tertiary)] italic">
-                *Historical averages are not indicative of future performance. This tool is for educational purposes only.
+                *Historical averages are not indicative of future performance. Expense ratios are shown for comparison but are not deducted from the projection. This tool is for educational purposes only.
               </div>
             </div>
           </div>
@@ -711,20 +711,20 @@ export default function IndexFundVisualizer({ isPro = false, onUpgrade, isLogged
             </div>
           )}
 
-          {/* MUTANT Recommendation */}
+          {/* What this comparison shows */}
           <div className="bg-[var(--obsidian-900)] rounded-2xl p-8 text-white">
             <div className="flex items-center gap-2 mb-4">
               <Sparkles className="w-5 h-5 text-[var(--color-warning)]" />
-              <h4 className="font-bold text-lg">MUTANT Recommendation</h4>
+              <h4 className="font-bold text-lg">What this comparison shows</h4>
             </div>
             <p className="text-[var(--text-muted)] font-medium leading-relaxed">
               Based on your {duration}-year time horizon and {formatCurrency(contribution)}/{frequency === 'monthly' ? 'month' : 'year'} contribution capacity,
               {selectedFund === 'QQQM_VUG' ? (
-                <span> consider the higher volatility of growth funds. While they offer greater upside, a 30%+ drawdown can test your resolve. Ensure you can stay invested during downturns.</span>
+                <span> growth funds carry higher volatility. They have shown greater upside, and a 30%+ drawdown is also part of their history. Staying invested through downturns is part of that trade-off.</span>
               ) : selectedFund === 'VT' ? (
                 <span> global diversification reduces single-country risk but historically trails U.S.-focused funds. Best for those prioritizing stability over maximum growth.</span>
               ) : (
-                <span> the S&P 500 remains the benchmark for U.S. large-cap investing. Low costs, broad diversification, and a proven track record make it a solid core holding.</span>
+                <span> the S&P 500 is the most widely followed U.S. large-cap benchmark, with low costs and broad diversification, and it has the longest history of the four in this tool. Past returns do not predict future ones.</span>
               )}
             </p>
           </div>

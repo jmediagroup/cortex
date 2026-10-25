@@ -6,7 +6,7 @@ import { LandingShell } from '@/components/landing/LandingShell';
 const BASE_URL = 'https://moneyguymutants.com';
 
 export const metadata: Metadata = {
-  title: 'Free Financial Calculators — Compound Interest, Coast FIRE, Debt Payoff & More',
+  title: 'Free Financial Calculators: Compound Interest, Coast FIRE, Debt Payoff & More',
   description:
     'Free, no-signup financial calculators: compound interest with monthly contributions, Coast FIRE, debt snowball vs avalanche, rent vs buy, car affordability, S-corp tax savings, capital gains tax, and net worth.',
   openGraph: {

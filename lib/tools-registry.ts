@@ -50,7 +50,7 @@ export const DEFAULT_TOOLS: MarketingTool[] = [
     title: 'Retirement Strategy Engine',
     desc: 'Decumulation planning with Roth conversions, tax optimization, and sequence risk analysis.',
     href: '/apps/retirement-strategy',
-    tag: 'PRO',
+    tag: 'FREE',
     featured: true,
   },
   {
@@ -65,7 +65,7 @@ export const DEFAULT_TOOLS: MarketingTool[] = [
     title: 'Net Worth Engine',
     desc: 'Track assets and liabilities, analyze liquidity, and visualize your financial trajectory.',
     href: '/apps/net-worth',
-    tag: 'PRO',
+    tag: 'FREE',
     featured: true,
   },
   {
@@ -73,21 +73,21 @@ export const DEFAULT_TOOLS: MarketingTool[] = [
     title: 'Rent vs Buy Reality Engine',
     desc: 'Compare renting vs buying with opportunity cost, maintenance drag, and tax treatment.',
     href: '/apps/rent-vs-buy',
-    tag: 'PRO',
+    tag: 'FREE',
   },
   {
     icon: 'trendDown',
     title: 'Debt Paydown Optimizer',
     desc: 'Compare avalanche vs snowball strategies with psychological weighting and opportunity cost.',
     href: '/apps/debt-paydown',
-    tag: 'PRO',
+    tag: 'FREE',
   },
   {
     icon: 'mapPin',
     title: 'Geographic Arbitrage',
     desc: 'Calculate wealth-building potential by comparing income, taxes, and cost of living across all 50 states.',
     href: '/apps/geographic-arbitrage',
-    tag: 'PRO',
+    tag: 'FREE',
   },
   {
     icon: 'building',
@@ -101,7 +101,7 @@ export const DEFAULT_TOOLS: MarketingTool[] = [
     title: 'S-Corp Optimizer',
     desc: 'Calculate self-employment tax savings and find your ideal salary/distribution split.',
     href: '/apps/s-corp-optimizer',
-    tag: 'PRO',
+    tag: 'FREE',
   },
   {
     icon: 'landmark',
@@ -115,7 +115,7 @@ export const DEFAULT_TOOLS: MarketingTool[] = [
     title: 'Car Affordability Calculator',
     desc: 'Understand the true cost of vehicle ownership including depreciation and opportunity cost.',
     href: '/apps/car-affordability',
-    tag: 'PRO',
+    tag: 'FREE',
   },
   {
     icon: 'brain',

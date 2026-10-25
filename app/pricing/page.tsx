@@ -36,11 +36,11 @@ const PRICING_PLANS: Plan[] = [
     description: 'For exploration and curiosity.',
     features: [
       'Access to core calculators',
-      'Compound Interest Calculator',
-      'Car Affordability Calculator',
-      'Limited scenarios and projections',
+      "Every calculator's full basic result",
+      'Every assumption visible',
+      'One saved scenario per tool',
       'Ideal for learning',
-      'Community support',
+      'Email support',
     ],
     cta: 'Start free',
     tier: 'free',
@@ -58,16 +58,15 @@ const PRICING_PLANS: Plan[] = [
       'Full access to all Money Guy Mutants tools',
       'Advanced scenarios and comparisons',
       'Deeper projections and strategy modeling',
-      'S-Corp tools and tax modeling',
-      'Ad-free experience',
-      'Priority support',
+      'S-Corp Investment tool and capital gains tax layers',
+      'No sponsored cards',
+      'Email support',
     ],
     cta: 'Get Pro',
     tier: 'finance_pro',
     priceId: process.env.NEXT_PUBLIC_STRIPE_FINANCE_PRO_MONTHLY_PRICE_ID || 'price_PLACEHOLDER',
     annualPriceId: process.env.NEXT_PUBLIC_STRIPE_FINANCE_PRO_ANNUAL_PRICE_ID || 'price_PLACEHOLDER',
     highlighted: true,
-    badge: 'Most popular',
   },
 ];
 
@@ -407,6 +406,11 @@ export default function PricingPage() {
                     </>
                   )}
                 </Button>
+                {plan.tier === 'finance_pro' && (
+                  <p style={{ margin: '10px 0 0', fontSize: 13, color: 'var(--gray-500)', textAlign: 'center' }}>
+                    Cancel any time.
+                  </p>
+                )}
               </div>
             );
           })}

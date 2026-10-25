@@ -145,9 +145,9 @@ export default function EnterprisePage() {
               </div>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {[
-                  'Our team will review your requirements',
-                  'We’ll reach out to schedule a discovery call',
-                  'You’ll receive a custom proposal tailored to your needs',
+                  'We will read what you sent',
+                  'We will reply by email, and may suggest a short call',
+                  'We will tell you plainly whether we can build it',
                 ].map((item) => (
                   <li
                     key={item}
@@ -220,7 +220,7 @@ export default function EnterprisePage() {
                 margin: '0 0 32px',
               }}
             >
-              Custom integrations, white-label deployments, and dedicated support for organizations that need precision financial tools at scale.
+              Early access. Tell us what you need and we will say whether we can build it.
             </p>
 
             <div
@@ -230,23 +230,23 @@ export default function EnterprisePage() {
               {[
                 {
                   icon: <Globe size={16} />,
-                  title: 'White-label solutions',
-                  desc: 'Fully branded tools deployed on your domain.',
+                  title: 'Branded versions, on request',
+                  desc: 'Ask about the calculators under your name or on your domain. We will tell you if it is possible.',
                 },
                 {
                   icon: <Zap size={16} />,
-                  title: 'Custom integrations',
-                  desc: 'API access and integrations with your existing systems.',
+                  title: 'Integrations, on request',
+                  desc: 'There is no public API today. Tell us what you use and we will say what could be built.',
                 },
                 {
                   icon: <BarChart3 size={16} />,
-                  title: 'Advanced analytics',
-                  desc: 'Detailed usage analytics and reporting dashboards.',
+                  title: 'Usage reporting, on request',
+                  desc: 'Not built yet. Tell us what you would want to see.',
                 },
                 {
                   icon: <Users size={16} />,
-                  title: 'Dedicated support',
-                  desc: 'Priority support with a named account manager.',
+                  title: 'Email support',
+                  desc: 'You talk to the people who build the tools.',
                 },
               ].map((feat) => (
                 <div
@@ -313,7 +313,7 @@ export default function EnterprisePage() {
                 borderTop: '1px solid var(--border-subtle)',
               }}
             >
-              Trusted by financial advisors, HR teams, and organizations that value clarity in decision-making.
+              Enterprise is in early access. We will be clear about what exists today and what would need to be built.
             </p>
           </div>
 
@@ -349,7 +349,7 @@ export default function EnterprisePage() {
                   margin: 0,
                 }}
               >
-                Tell us about your needs and we&apos;ll create a custom solution.
+                Tell us what you need and we will say whether we can build it.
               </p>
             </div>
 

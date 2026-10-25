@@ -8,47 +8,38 @@ import { Button } from '@/components/ui/Button';
 const CANONICAL = 'https://moneyguymutants.com/financial-mutants';
 
 export const metadata: Metadata = {
-  title: 'Money Guy Show Tools for Financial Mutants',
+  title: 'Free Calculators for Long-Term Savers and Investors',
   description:
-    'Free calculators and decision engines for financial mutants and fans of the Money Guy Show. Model the Financial Order of Operations, compound growth, and your net worth — an independent community project inspired by the moneyguy method.',
+    'Free calculators for people who save early and invest for the long run. Model compound growth, Coast FIRE and your net worth. An independent project, not affiliated with any show.',
   keywords: [
-    'money guy',
-    'moneyguy',
-    'money guy show',
-    'financial mutants',
-    'financial mutant',
-    'money guy show tools',
-    'money guy calculators',
-    'financial order of operations',
-    'financial order of operations calculator',
-    'money guy compound interest',
-    'money guy net worth',
-    'wealth multiplier',
-    'financial mutant community',
-    'money guy show fans',
+    'free financial calculators',
+    'compound interest calculator',
+    'net worth tracker',
+    'coast fire calculator',
+    'long-term investing calculator',
   ],
   alternates: { canonical: CANONICAL },
   openGraph: {
     type: 'website',
     url: CANONICAL,
-    title: 'Money Guy Show Tools for Financial Mutants',
+    title: 'Free Calculators for Long-Term Savers and Investors',
     description:
-      'Free calculators and decision engines for financial mutants and fans of the Money Guy Show — model the Financial Order of Operations and watch your money compound.',
+      'Free calculators for people who save early and invest for the long run. Model compound growth and watch your money compound.',
     siteName: 'Money Guy Mutants',
     images: [
       {
         url: '/opengraph-image',
         width: 1200,
         height: 630,
-        alt: 'Money Guy Mutants — tools for financial mutants',
+        alt: 'Money Guy Mutants: free calculators for long-term savers',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Money Guy Show Tools for Financial Mutants',
+    title: 'Free Calculators for Long-Term Savers and Investors',
     description:
-      'Free calculators and decision engines for financial mutants and fans of the Money Guy Show.',
+      'Free calculators for people who save early and invest for the long run.',
     images: ['/opengraph-image'],
   },
 };
@@ -117,7 +108,7 @@ const FAQ: { q: string; a: string }[] = [
   },
   {
     q: 'Is it really free?',
-    a: 'Yes. Every calculator on Money Guy Mutants runs in your browser and is free to use without an account. Creating a free account lets you save scenarios and history; a Pro plan unlocks the most advanced engines.',
+    a: 'Every calculator shows its full basic result free, without an account. Two advanced tools and the deeper layers are Pro. Creating a free account lets you save one scenario per tool.',
   },
   {
     q: 'Is this financial advice?',
@@ -132,9 +123,9 @@ const jsonLd = {
       '@type': 'WebPage',
       '@id': `${CANONICAL}#webpage`,
       url: CANONICAL,
-      name: 'Money Guy Show Tools for Financial Mutants',
+      name: 'Free Calculators for Long-Term Savers and Investors',
       description:
-        'Free calculators and decision engines for financial mutants and fans of the Money Guy Show, inspired by the Financial Order of Operations.',
+        'Free calculators for people who save early and invest for the long run. An independent project, not affiliated with any show.',
       isPartOf: { '@id': 'https://moneyguymutants.com/#website' },
       breadcrumb: { '@id': `${CANONICAL}#breadcrumb` },
     },
@@ -244,7 +235,7 @@ export default function FinancialMutantsPage() {
                 <strong style={{ color: 'var(--navy)' }}>financial mutant</strong>{' '}
                 thinks — the wealth multiplier, the Financial Order of Operations,
                 deployment of every surplus dollar to its highest-value use. No
-                fluff, no product pitches. Just the math behind the decision,
+                fluff, no ads before your result. Just the math behind the decision,
                 visualized so the invisible consequences become obvious.
               </p>
             </div>

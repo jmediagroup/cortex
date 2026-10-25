@@ -36,7 +36,7 @@ export default function BudgetLayout({
       </div>
 
       <footer className="max-w-7xl mx-auto px-6 py-10 text-center border-t border-[var(--border-subtle)] mt-8">
-        <p className="text-xs text-[var(--text-muted)] font-medium">&copy; {new Date().getFullYear()} Cortex Technologies. Tools for Long-Term Thinking.</p>
+        <p className="text-xs text-[var(--text-muted)] font-medium">&copy; {new Date().getFullYear()} J Media Group LLC. Tools for Long-Term Thinking.</p>
         <div className="flex items-center justify-center gap-3 mt-2">
           <Link href="/articles" className="text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors text-xs">Articles</Link>
           <span className="text-[var(--text-muted)]">|</span>

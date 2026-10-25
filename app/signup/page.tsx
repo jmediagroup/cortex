@@ -526,7 +526,7 @@ function SignupForm() {
           <p style={{ fontSize: 15, color: 'var(--text-secondary)', margin: 0 }}>
             {hasProIntent
               ? `Verify your email, then finish checkout for Finance Pro · ${billingLabel}.`
-              : 'Thousands of Mutants are building wealth on purpose. Yes, it’s free.'}
+              : 'Free calculators that show their assumptions. Yes, it’s free.'}
           </p>
         </div>
 

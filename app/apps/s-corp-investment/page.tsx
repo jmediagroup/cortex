@@ -17,7 +17,7 @@ export default function SCorpInvestmentPage() {
       title="S corp solo 401(k) contribution calculator."
       sub="For S corp owners: employee deferrals, company profit sharing, IRA, and HSA modeled together with 2026 limits, while keeping owner pay reasonable. A Pro tool."
       breadcrumb={<Breadcrumb toolName="S Corp Solo 401(k) Calculator" />}
-      narration="Most S-Corp owners default to a Roth IRA. You just saw what a Solo 401(k) plus a company contribution does to the retirement number."
+      narration="Most S-Corp owners default to a Roth IRA. This tool shows what a Solo 401(k) plus a company contribution does to the retirement number."
       footer={
         <>
           <CalculatorSEOContent content={CALCULATOR_CONTENT["s-corp-investment"]} />

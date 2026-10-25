@@ -25,8 +25,8 @@ export const metadata: Metadata = {
     default: "Money Guy Mutants - Financial Decision Tools & Budget Planning Software",
     template: "%s | Money Guy Mutants"
   },
-  description: "Free online financial calculators and budget planning tools. Retirement planning, compound interest calculator, budget optimizer, net worth tracker, and more. Make smarter money decisions with Money Guy Mutants.",
-  keywords: ['money guy', 'moneyguy', 'money guy show', 'financial mutants', 'financial mutant', 'money guy show tools', 'financial order of operations', 'financial calculator', 'budget planner', 'retirement calculator', 'compound interest calculator', 'net worth tracker', 'budget optimizer', 'financial planning tool', 'money management app', 'investment calculator', 'debt payoff calculator', 'financial decision making', 'personal finance software'],
+  description: "Free financial calculators that show their assumptions: retirement, Coast FIRE, rent vs buy, taxes and more. Educational, not advice.",
+  keywords: ['financial calculator', 'budget planner', 'retirement calculator', 'compound interest calculator', 'net worth tracker', 'budget optimizer', 'financial planning tool', 'money management app', 'investment calculator', 'debt payoff calculator', 'financial decision making', 'personal finance software'],
   authors: [{ name: 'Money Guy Mutants', url: 'https://moneyguymutants.com/about' }],
   creator: 'Money Guy Mutants',
   publisher: 'J Media Group LLC',
@@ -128,7 +128,7 @@ const jsonLd = {
       },
       image: { '@id': 'https://moneyguymutants.com/#logo' },
       description:
-        'Money Guy Mutants builds free, interactive decision-support tools for personal finance — calculators, guides, and a daily investment outlook.',
+        'Money Guy Mutants builds free, interactive decision-support tools for personal finance: calculators, guides, and a daily investment outlook.',
       contactPoint: {
         '@type': 'ContactPoint',
         contactType: 'customer support',
@@ -205,13 +205,13 @@ export default function RootLayout({
         <link
           rel="alternate"
           type="application/rss+xml"
-          title="Money Guy Mutants — Articles RSS"
+          title="Money Guy Mutants: Articles RSS"
           href="https://moneyguymutants.com/articles/rss.xml"
         />
         <link
           rel="alternate"
           type="application/rss+xml"
-          title="Money Guy Mutants Research — Daily & Weekly Investment Outlook RSS"
+          title="Money Guy Mutants Research: Daily & Weekly Investment Outlook RSS"
           href="https://moneyguymutants.com/thinking/rss.xml"
         />
         <link rel="sitemap" type="application/xml" href="/sitemap.xml" />

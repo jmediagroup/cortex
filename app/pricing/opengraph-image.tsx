@@ -76,20 +76,6 @@ export default async function Image() {
             <span style={{ fontSize: '20px', fontWeight: 700, color: BRAND.navyDeep, marginBottom: '8px' }}>Finance Pro</span>
             <span style={{ fontSize: '40px', fontWeight: 800, color: BRAND.navyDeep }}>$9/mo</span>
           </div>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              padding: '24px 40px',
-              borderRadius: '12px',
-              backgroundColor: BRAND.navyDeep,
-              border: `2px solid ${BRAND.sky}`,
-            }}
-          >
-            <span style={{ fontSize: '20px', fontWeight: 600, color: BRAND.sky, marginBottom: '8px' }}>Elite</span>
-            <span style={{ fontSize: '40px', fontWeight: 800, color: '#ffffff' }}>$29/mo</span>
-          </div>
         </div>
 
         {/* URL */}
