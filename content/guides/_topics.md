@@ -25,3 +25,4 @@ removing the line, so the topic isn't accidentally reused.
 | 2026-10-18 | 2027-contribution-limits | 2027 contribution limits |
 | 2026-10-18 | open-enrollment-checklist | Open enrollment |
 | 2026-10-18 | year-end-tax-moves-2026 | Year-end tax moves (2026) |
+| 2026-10-25 | safe-withdrawal-rate-4-percent-rule | Safe withdrawal rate (4% rule) |
