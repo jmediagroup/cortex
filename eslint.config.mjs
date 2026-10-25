@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Stale design-system doc folder with JSX that is not part of the app.
+    "Cortex Design System/**",
   ]),
 ]);
 

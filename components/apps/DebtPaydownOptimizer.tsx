@@ -641,7 +641,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                 <div className="p-3 bg-[var(--emerald-50)] rounded-xl border border-[var(--emerald-border-soft)] flex gap-3">
                   <Info className="w-5 h-5 text-[var(--emerald-500)] shrink-0 mt-0.5" />
                   <p className="text-xs text-[var(--emerald-500)] leading-relaxed">
-                    <strong>Verdict:</strong> Any debt with an APR higher than {investmentRate}% (adjusted for taxes) is a &quot;guaranteed return&quot; better than the market.
+                    <strong>Verdict:</strong> Any debt with an APR higher than {investmentRate}% (adjusted for taxes) has a known, fixed cost, which many people compare against an uncertain market return.
                   </p>
                 </div>
               </div>
@@ -759,9 +759,9 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                         <h5 className="font-bold mb-3">Early-Career Opportunity Cost</h5>
                         <p className="text-white/85 text-sm font-medium leading-relaxed">
                           {debts.filter(d => d.rate < investmentRate).length > 0 ? (
-                            <>You have {debts.filter(d => d.rate < investmentRate).length} debt(s) with rates below {investmentRate}%. Every dollar of extra payment on these debts costs you decades of compound growth. With {results.avalanche.months} months to debt-freedom, investing your ${monthlyBudget - debts.reduce((s, d) => s + d.minPayment, 0)}/month surplus could become ${Math.round(opportunityAnalysis.investmentValueAtRetirement).toLocaleString()} by retirement (age 65, at {(investmentRate * (1 - CAPITAL_GAINS_TAX)).toFixed(1)}% after tax). Don't sacrifice 30+ years of market returns to rush debt payoff.</>
+                            <>You have {debts.filter(d => d.rate < investmentRate).length} debt(s) with rates below {investmentRate}%. Every dollar of extra payment on these debts costs you decades of compound growth. With {results.avalanche.months} months to debt-freedom, investing your ${monthlyBudget - debts.reduce((s, d) => s + d.minPayment, 0)}/month surplus could become ${Math.round(opportunityAnalysis.investmentValueAtRetirement).toLocaleString()} by retirement (age 65, at {(investmentRate * (1 - CAPITAL_GAINS_TAX)).toFixed(1)}% after tax). Rushing low-rate debt can mean giving up years of compounding; the inputs above decide which matters more for you.</>
                           ) : (
-                            <>Your debts all exceed {investmentRate}% returns. At your age, eliminating these high-cost debts creates a guaranteed return better than the market. Clear your ${debts.filter(d => d.rate >= investmentRate).map(d => `${d.name} (${d.rate.toFixed(1)}%)`).join(', ')} aggressively, then redirect that ${monthlyBudget}/month into index funds for maximum compound growth over your {65 - age} working years remaining.</>
+                            <>Your debts all exceed {investmentRate}% returns. Paying down your {debts.filter(d => d.rate >= investmentRate).map(d => `${d.name} (${d.rate.toFixed(1)}%)`).join(', ')} removes a fixed cost higher than the return you entered. Some people prioritize them before investing more. The right order depends on your situation, and you have {65 - age} working years remaining in this model.</>
                           )}
                         </p>
                       </div>
@@ -860,7 +860,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                   if (lowestRateDebt.rate < investmentRate) {
                     return `Your ${lowestRateDebt.name} at ${lowestRateDebt.rate.toFixed(1)}% costs less than ${investmentRate}% market returns. Paying extra on this debt sacrifices potential wealth growth. Better strategy: minimum payment + invest difference until DTI < 30% (currently ${dti.toFixed(0)}%).`;
                   } else {
-                    return `Your ${highestBalanceDebt.name} balance of $${highestBalanceDebt.balance.toLocaleString()} at ${highestBalanceDebt.rate.toFixed(1)}% is bleeding ${((highestBalanceDebt.balance * highestBalanceDebt.rate / 100) / 12).toFixed(0)}/month in interest. This debt rate exceeds ${investmentRate}% returns—aggressive paydown guaranteed to outperform the market.`;
+                    return `Your ${highestBalanceDebt.name} balance of $${highestBalanceDebt.balance.toLocaleString()} at ${highestBalanceDebt.rate.toFixed(1)}% is bleeding ${((highestBalanceDebt.balance * highestBalanceDebt.rate / 100) / 12).toFixed(0)}/month in interest. This debt rate exceeds ${investmentRate}% returns, so paying this down avoids a known cost above the return you entered.`;
                   }
                 })()}
               </p>
@@ -936,7 +936,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                           const monthlyInterest = (d.balance * (d.rate / 100)) / 12;
                           return (
                             <p key={d.id} className="text-white text-sm font-medium mb-2">
-                              • <strong>{d.name}</strong>: ${d.balance.toLocaleString()} @ {d.rate.toFixed(1)}% {d.isTaxDeductible && `(${effectiveRate.toFixed(1)}% after tax)`} — bleeding ${monthlyInterest.toFixed(0)}/month. This rate beats {investmentRate}% market returns. Every extra dollar here is guaranteed profit.
+                              • <strong>{d.name}</strong>: ${d.balance.toLocaleString()} @ {d.rate.toFixed(1)}% {d.isTaxDeductible && `(${effectiveRate.toFixed(1)}% after tax)`}, about ${monthlyInterest.toFixed(0)}/month in interest. This rate is above the {investmentRate}% return you entered. Every extra dollar here avoids interest at this rate.
                             </p>
                           );
                         })}
@@ -1018,7 +1018,7 @@ export default function DebtPaydownOptimizer({ isPro, onUpgrade, isLoggedIn = fa
                   if (highRateDebt && lowRateDebt) {
                     return `Your ${highRateDebt.name} at ${highRateDebt.rate.toFixed(1)}% bleeds wealth while your ${lowRateDebt.name} at ${lowRateDebt.rate.toFixed(1)}% costs less than market returns. Crush the ${highRateDebt.name} with your full ${monthlyBudget}/month, then shift to the hybrid model. This captures both debt-freedom momentum AND compound growth.`;
                   } else if (highRateDebt) {
-                    return `All ${debts.length} of your debts exceed ${investmentRate}% market returns. With a combined balance of $${debts.reduce((sum, d) => sum + d.balance, 0).toLocaleString()}, aggressive paydown is your guaranteed best return. No hybrid needed—pure debt elimination wins here.`;
+                    return `All ${debts.length} of your debts exceed ${investmentRate}% market returns. With a combined balance of $${debts.reduce((sum, d) => sum + d.balance, 0).toLocaleString()}, paying these down first avoids the highest known costs. A hybrid plan is still an option if you value investing early.`;
                   } else {
                     return `None of your ${debts.length} debts justify aggressive paydown over investing. Your total $${debts.reduce((sum, d) => sum + d.balance, 0).toLocaleString()} balance at sub-${investmentRate}% rates is "cheap debt." Pay minimums, invest the ${monthlyBudget - debts.reduce((s, d) => s + d.minPayment, 0)}/month difference, and let compound interest do the heavy lifting.`;
                   }

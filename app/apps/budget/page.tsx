@@ -864,7 +864,7 @@ const App = () => {
               </div>
               <h2 className="text-2xl font-bold mb-2">Unlock Auto-Optimize</h2>
               <p className="text-[var(--mist-100)] text-sm font-medium">
-                Advanced budget optimization requires Finance Pro or Elite tier.
+                Advanced budget optimization is part of Finance Pro.
               </p>
             </div>
 
@@ -901,9 +901,9 @@ const App = () => {
                   <p className="text-xs text-[var(--text-tertiary)]">/month</p>
                 </div>
                 <div className="border-2 border-[var(--emerald-border)] rounded-2xl p-4 text-center bg-gradient-to-br from-[var(--emerald-50)] to-[var(--emerald-50)]">
-                  <p className="text-xs text-[var(--emerald-500)] font-bold mb-1">Elite (Best Value)</p>
-                  <p className="text-3xl font-bold text-[var(--emerald-500)]">$29</p>
-                  <p className="text-xs text-[var(--text-tertiary)]">/month</p>
+                  <p className="text-xs text-[var(--emerald-500)] font-bold mb-1">Finance Pro, yearly</p>
+                  <p className="text-3xl font-bold text-[var(--emerald-500)]">$90</p>
+                  <p className="text-xs text-[var(--text-tertiary)]">/year</p>
                 </div>
               </div>
 

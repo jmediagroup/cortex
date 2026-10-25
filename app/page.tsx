@@ -8,17 +8,10 @@ import { MarketingPrinciplesCTA } from '@/components/marketing/PrinciplesCTA';
 import LatestArticles from '@/components/home/LatestArticles';
 
 export const metadata: Metadata = {
-  title: 'Money Guy Mutants — Tools for Long-Term Thinking',
+  title: { absolute: 'Money Guy Mutants: Free Financial Calculators That Show Their Assumptions' },
   description:
-    'Free financial calculators and decision engines for financial mutants and fans of the Money Guy Show. Interactive models that turn complexity into clarity — so you can see outcomes before you live them.',
+    'Free financial calculators that show their assumptions. Interactive models that turn complexity into clarity, so you can see outcomes before you live them.',
   keywords: [
-    'money guy',
-    'moneyguy',
-    'money guy show',
-    'financial mutants',
-    'financial mutant',
-    'money guy show tools',
-    'financial order of operations',
     'financial calculator',
     'compound interest calculator',
     'net worth tracker',

@@ -6,9 +6,9 @@ import type { GuideListItem } from '@/lib/guides/types';
 import { FeaturedBanner } from '@/components/brand/FeaturedBanner';
 
 export const metadata: Metadata = {
-  title: 'Guides — Personal Finance, Explained',
+  title: 'Guides: Personal Finance, Explained',
   description:
-    'Money Guy Mutants Guides are in-depth, evergreen personal-finance explainers — budgeting, investing, debt, taxes, and retirement — paired with the Money Guy Mutants calculators to put the ideas into practice.',
+    'Money Guy Mutants Guides are in-depth, evergreen personal-finance explainers on budgeting, investing, debt, taxes, and retirement, paired with the Money Guy Mutants calculators to put the ideas into practice.',
   keywords: [
     'personal finance guide',
     'financial planning guide',
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     'money guy mutants guides',
   ],
   openGraph: {
-    title: 'Money Guy Mutants Guides — Personal Finance, Explained',
+    title: 'Money Guy Mutants Guides: Personal Finance, Explained',
     description:
       'In-depth, evergreen personal-finance guides from Money Guy Mutants, paired with free calculators to put the ideas into practice.',
     type: 'website',
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Money Guy Mutants Guides — Personal Finance, Explained',
+    title: 'Money Guy Mutants Guides: Personal Finance, Explained',
     description: 'In-depth, evergreen personal-finance guides from Money Guy Mutants.',
     images: ['/opengraph-image'],
   },
@@ -49,7 +49,7 @@ export default function GuidesPage() {
           '@type': 'CollectionPage',
           '@id': 'https://moneyguymutants.com/guides#collection',
           url: 'https://moneyguymutants.com/guides',
-          name: 'Money Guy Mutants Guides — Personal Finance, Explained',
+          name: 'Money Guy Mutants Guides: Personal Finance, Explained',
           description:
             'In-depth, evergreen personal-finance guides from Money Guy Mutants.',
           inLanguage: 'en-US',

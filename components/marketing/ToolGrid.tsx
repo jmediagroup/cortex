@@ -144,7 +144,7 @@ export function MarketingToolGrid({ tools = DEFAULT_TOOLS }: { tools?: Marketing
                 lineHeight: 1.1,
               }}
             >
-              Fifteen tools.
+              Sixteen tools.
               <br />
               One mental model.
             </h2>

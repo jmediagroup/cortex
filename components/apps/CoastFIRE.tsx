@@ -695,7 +695,7 @@ export default function CoastFIRE({ isPro = false, onUpgrade, isLoggedIn = false
               <Info size={16} className="text-[var(--emerald-400)]" /> What is Coast FIRE?
             </h4>
             <p className="text-sm font-medium leading-relaxed text-[var(--mist-200)] mb-4">
-              Coast FIRE is reaching the point where your current investments will grow to your FIRE number by retirement age, <strong className="text-white">even if you never contribute another cent</strong>.
+              Coast FIRE is reaching the point where your current investments are projected to reach your FIRE number by retirement age, at the growth rate you entered, <strong className="text-white">even with no further contributions</strong>.
             </p>
             <div className="bg-[var(--obsidian-700)]/50 rounded-xl p-4 border border-[var(--emerald-border)]">
               <p className="text-xs font-bold text-[var(--emerald-400)] uppercase tracking-widest mb-1">THE FORMULA</p>

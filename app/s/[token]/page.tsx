@@ -26,16 +26,16 @@ export async function generateMetadata({ params }: SharedScenarioPageProps): Pro
   const scenario = await getScenario(token);
 
   if (!scenario) {
-    return { title: 'Scenario Not Found — Money Guy Mutants' };
+    return { title: 'Scenario Not Found' };
   }
 
-  const title = `${scenario.tool_name} Scenario — Money Guy Mutants`;
+  const title = `${scenario.tool_name} Scenario | Money Guy Mutants`;
   const description = scenario.key_result
     ? `${scenario.tool_name}: ${scenario.key_result}`
     : `Shared ${scenario.tool_name} scenario on Money Guy Mutants`;
 
   return {
-    title,
+    title: { absolute: title },
     description,
     // Shared scenarios are personal, unbounded in number, and near-duplicates
     // of the tool page — keep them out of the index.

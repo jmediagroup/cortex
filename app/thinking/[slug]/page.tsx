@@ -177,6 +177,17 @@ export default async function OutlookDetailPage({ params }: PageProps) {
               {outlook.summary}
             </p>
 
+            <p
+              style={{
+                fontSize: 13,
+                color: 'var(--text-muted)',
+                lineHeight: 1.5,
+                margin: '0 0 24px',
+              }}
+            >
+              Educational market commentary, not investment advice. Nothing here is a recommendation to buy or sell any security.
+            </p>
+
             <div
               className="pub-byline"
               style={{

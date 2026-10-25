@@ -114,7 +114,7 @@ export function MarketingFooter() {
               fontFamily: 'var(--font-mono)',
             }}
           >
-            © {new Date().getFullYear()} Cortex Technologies
+            © {new Date().getFullYear()} J Media Group LLC
           </span>
           <p
             className="marketing-footer-disclaimer"

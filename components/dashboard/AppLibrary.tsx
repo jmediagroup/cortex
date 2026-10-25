@@ -395,12 +395,12 @@ export default function AppLibrary({ userTier, appOrder }: AppLibraryProps) {
             <h3 className="mb-4 text-2xl font-bold tracking-tight md:text-3xl">
               {userTier === 'free'
                 ? 'Unlock Pro Financial Tools'
-                : 'Upgrade to Elite - All Sectors'}
+                : 'Upgrade to Pro'}
             </h3>
             <p className="mb-6 text-sm leading-relaxed text-white/80 md:text-base">
               {userTier === 'free'
-                ? 'Get access to advanced Finance tools including Roth Conversion optimization, auto-optimize features, and more.'
-                : 'Access pro features across ALL current and future sectors.'}
+                ? 'Unlock the S-Corp Investment tool, auto-optimize features, unlimited saved scenarios, and the deeper panels in every calculator.'
+                : 'Pro features across every calculator.'}
             </p>
             <button
               onClick={() => router.push('/pricing')}

@@ -17,44 +17,36 @@ const CANONICAL = 'https://moneyguymutants.com/the-money-guy-show';
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: 'The Money Guy Show — Watch, Subscribe & Run the Numbers',
+  title: 'About The Money Guy Show (an independent fan page)',
   description:
-    'A financial-mutant tribute to The Money Guy Show. Subscribe on YouTube, watch the latest episodes, and run the numbers behind the Financial Order of Operations with free calculators. An independent fan project — not affiliated with the show.',
+    'About The Money Guy Show podcast and YouTube channel, with links to the official channel and free calculators. An independent fan project, not affiliated with the show.',
   keywords: [
-    'the money guy show',
-    'money guy show youtube',
-    'money guy show latest episodes',
-    'money guy show videos',
-    'subscribe money guy show',
-    'money guy',
-    'moneyguy',
-    'brian preston bo hanson',
-    'financial order of operations',
-    'financial mutants',
-    'money guy show podcast',
+    'free financial calculators',
+    'personal finance calculators',
+    'compound interest calculator',
   ],
   alternates: { canonical: CANONICAL },
   openGraph: {
     type: 'website',
     url: CANONICAL,
-    title: 'The Money Guy Show — Watch, Subscribe & Run the Numbers',
+    title: 'About The Money Guy Show (an independent fan page)',
     description:
-      'A financial-mutant tribute to The Money Guy Show. Subscribe on YouTube, watch the latest episodes, and run the numbers behind the Financial Order of Operations.',
+      'About The Money Guy Show podcast and YouTube channel, with links to the official channel and free calculators. An independent fan project, not affiliated with the show.',
     siteName: 'Money Guy Mutants',
     images: [
       {
         url: '/opengraph-image',
         width: 1200,
         height: 630,
-        alt: 'Money Guy Mutants — a tribute to The Money Guy Show',
+        alt: 'Money Guy Mutants: an independent fan page',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'The Money Guy Show — Watch, Subscribe & Run the Numbers',
+    title: 'About The Money Guy Show (an independent fan page)',
     description:
-      'A financial-mutant tribute to The Money Guy Show. Subscribe, watch the latest episodes, and run the numbers.',
+      'Links to the official channel and free calculators. An independent fan project, not affiliated with the show.',
     images: ['/opengraph-image'],
   },
 };
@@ -143,16 +135,11 @@ const jsonLd = {
       '@type': 'WebPage',
       '@id': `${CANONICAL}#webpage`,
       url: CANONICAL,
-      name: 'The Money Guy Show — Watch, Subscribe & Run the Numbers',
+      name: 'About The Money Guy Show (an independent fan page)',
       description:
-        'A financial-mutant tribute to The Money Guy Show: subscribe on YouTube, watch the latest episodes, and run the numbers behind the Financial Order of Operations.',
+        'About The Money Guy Show podcast and YouTube channel, with links to the official channel and free calculators. An independent fan project, not affiliated with the show.',
       isPartOf: { '@id': 'https://moneyguymutants.com/#website' },
       breadcrumb: { '@id': `${CANONICAL}#breadcrumb` },
-      about: {
-        '@type': 'TVSeries',
-        name: 'The Money Guy Show',
-        sameAs: [MONEY_GUY_CHANNEL_URL, MONEY_GUY_SITE_URL],
-      },
     },
     {
       '@type': 'BreadcrumbList',

@@ -114,7 +114,7 @@ function PulsePreview() {
             }}
           />
           <span className="eyebrow" style={{ margin: 0 }}>
-            NET WORTH · LIVE
+            NET WORTH · EXAMPLE
           </span>
         </div>
         <div
@@ -237,9 +237,9 @@ function PulsePreview() {
 type HeroStat = { v: string; l: string; plus?: boolean };
 
 const DEFAULT_STATS: HeroStat[] = [
-  { v: '13', l: 'Interactive tools', plus: true },
+  { v: '16', l: 'Interactive tools' },
   { v: '50', l: 'States covered', plus: true },
-  { v: '0', l: 'Dark patterns' },
+  { v: '0', l: 'Ads before your result' },
 ];
 
 export function MarketingHero({ stats = DEFAULT_STATS }: { stats?: HeroStat[] } = {}) {

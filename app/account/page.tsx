@@ -603,7 +603,7 @@ export default function AccountPage() {
 
       {/* FOOTER */}
       <footer className="max-w-4xl mx-auto px-6 py-12 text-center text-[var(--text-muted)] font-medium text-sm">
-        <p>&copy; {new Date().getFullYear()} Cortex Financial Technology. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} J Media Group LLC. All rights reserved.</p>
         <div className="flex items-center justify-center gap-3 mt-2">
           <a href="/articles" className="text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors text-xs">
             Articles

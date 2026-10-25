@@ -334,7 +334,7 @@ export default function CompoundInterest({ isPro = false, isLoggedIn = false, on
               <div className="bg-white/10 rounded-lg p-6 border border-white/20">
                 <Target size={24} className="mb-3" />
                 <h4 className="font-bold text-sm mb-2">Withdrawal Strategy</h4>
-                <p className="text-white/85 text-xs font-medium">Calculate sustainable income from your future portfolio using proven withdrawal rates</p>
+                <p className="text-white/85 text-xs font-medium">Calculate sustainable income from your future portfolio using commonly cited withdrawal rates</p>
               </div>
               <div className="bg-white/10 rounded-lg p-6 border border-white/20">
                 <Clock size={24} className="mb-3" />

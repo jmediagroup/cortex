@@ -18,7 +18,7 @@ import { MarketingIcon } from '@/components/marketing/Icons';
 import { FeaturedBanner } from '@/components/brand/FeaturedBanner';
 
 export const metadata: Metadata = {
-  title: 'Articles — Financial Insights & Guides',
+  title: 'Articles: Financial Insights & Guides',
   description:
     'Expert articles on personal finance, retirement planning, investing strategies, and money management. Learn how to make smarter financial decisions with Money Guy Mutants.',
   keywords: [
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     'financial literacy',
   ],
   openGraph: {
-    title: 'Articles — Financial Insights & Guides | Money Guy Mutants',
+    title: 'Articles: Financial Insights & Guides | Money Guy Mutants',
     description:
       'Expert articles on personal finance, retirement planning, investing strategies, and money management.',
     type: 'website',
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Articles — Financial Insights & Guides',
+    title: 'Articles: Financial Insights & Guides',
     description: 'Expert articles on personal finance, retirement planning, and investing strategies.',
     images: ['/opengraph-image'],
   },

@@ -23,9 +23,9 @@ export function generateMetadata(config: SEOConfig): Metadata {
     title: `${title} | Money Guy Mutants`,
     description,
     keywords: keywords.join(', '),
-    authors: [{ name: 'Cortex Technologies' }],
-    creator: 'Cortex Technologies',
-    publisher: 'Cortex Technologies',
+    authors: [{ name: 'J Media Group LLC' }],
+    creator: 'J Media Group LLC',
+    publisher: 'J Media Group LLC',
     robots: {
       index: true,
       follow: true,

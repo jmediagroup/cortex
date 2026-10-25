@@ -4,6 +4,9 @@ import { getAllOutlookSlugs } from '@/lib/outlook/content';
 import { getAllGuideSlugs } from '@/lib/guides/content';
 import { CALCULATOR_CONTENT } from '@/lib/calculator-content';
 
+// update when static page copy changes
+const STATIC_LAST_MODIFIED = new Date('2026-10-25');
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://moneyguymutants.com';
 
@@ -59,9 +62,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // Use a stable date for static routes to avoid misleading crawlers with
-  // new timestamps on every build. Update this date when content actually changes.
-  const lastUpdated = new Date('2026-04-07');
+  // Stable date for static routes, so crawlers do not see a new timestamp on
+  // every deploy (the site redeploys daily for new outlook posts).
+  const lastUpdated = STATIC_LAST_MODIFIED;
   // Tool pages: bumped whenever calculator logic or on-page content changes.
   const toolsUpdated = new Date('2026-10-18');
 
@@ -115,14 +118,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly',
       priority: 0.4,
     },
-    // Keyword landing page for the Money Guy Show / Financial Mutants audience
+    // Landing page: calculators for long-term savers
     {
       url: `${baseUrl}/financial-mutants`,
       lastModified: lastUpdated,
       changeFrequency: 'monthly',
       priority: 0.9,
     },
-    // Money Guy Show tribute hub (subscribe + latest videos feed)
+    // Independent fan page about The Money Guy Show (latest videos feed)
     {
       url: `${baseUrl}/the-money-guy-show`,
       lastModified: lastUpdated,

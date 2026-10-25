@@ -10,7 +10,7 @@ import { OutlookSubscribeForm } from './_components/OutlookSubscribeForm';
 import { OutlookFilterGrid, OutlookFilterNav } from './_components/OutlookFilter';
 
 export const metadata: Metadata = {
-  title: 'Thinking — Daily & Weekly Investment Outlook',
+  title: 'Thinking: Daily & Weekly Investment Outlook',
   description:
     'Money Guy Mutants Research publishes a daily and weekly investment outlook covering markets, tickers, sectors, and the decisions worth making. Free to read; opt in for the daily email.',
   keywords: [
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     'money guy mutants research',
   ],
   openGraph: {
-    title: 'Money Guy Mutants Thinking — Daily & Weekly Investment Outlook',
+    title: 'Money Guy Mutants Thinking: Daily & Weekly Investment Outlook',
     description:
       'Daily and weekly investment outlooks from Money Guy Mutants Research. Free to read; opt in for the daily email.',
     type: 'website',
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Money Guy Mutants Thinking — Daily & Weekly Investment Outlook',
+    title: 'Money Guy Mutants Thinking: Daily & Weekly Investment Outlook',
     description: 'Daily and weekly investment outlooks from Money Guy Mutants Research.',
     images: ['/opengraph-image'],
   },
@@ -64,7 +64,7 @@ export default function ThinkingPage() {
           '@type': 'CollectionPage',
           '@id': 'https://moneyguymutants.com/thinking#collection',
           url: 'https://moneyguymutants.com/thinking',
-          name: 'Money Guy Mutants Thinking — Investment Outlook',
+          name: 'Money Guy Mutants Thinking: Investment Outlook',
           description:
             'Daily and weekly investment outlooks from Money Guy Mutants Research.',
           inLanguage: 'en-US',
@@ -125,6 +125,16 @@ export default function ThinkingPage() {
             }}
           >
             Daily before market open. Weekly on Sundays. Free to read — opt in for the email.
+          </p>
+          <p
+            style={{
+              fontSize: 13,
+              color: 'var(--gray-500)',
+              lineHeight: 1.5,
+              margin: '16px 0 0',
+            }}
+          >
+            Educational market commentary, not investment advice. Nothing here is a recommendation to buy or sell any security.
           </p>
         </div>
       </section>

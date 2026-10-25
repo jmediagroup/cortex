@@ -608,7 +608,7 @@ export const CALCULATOR_CONTENT: Record<string, CalculatorContent> = {
     name: 'Car Affordability Calculator',
     shortName: 'Car Affordability',
     description: 'Answer how much car you can afford with the 20/3/8 rule: 20% down, a 3-year loan, and a payment under 8% of gross income.',
-    intro: 'The Car Affordability Calculator uses the 20/3/8 rule to size the most car your income supports: at least 20% down, a loan of no more than three years, and a monthly payment of no more than 8% of gross monthly income, minus any car payment you already have. Enter your income, the loan rate you expect and your down payment, and it reports the maximum price, the payment, the loan amount, the interest and the total paid. The price does not include sales tax, insurance, fuel or maintenance, so budget those separately.',
+    intro: 'The Car Affordability Calculator uses the 20/3/8 rule to size the most car your income supports: at least 20% down, a loan of no more than three years, and a monthly payment of no more than 8% of gross monthly income, minus any car payment you already have. The 20/3/8 rule of thumb is popularized by The Money Guy Show; this independent tool is not affiliated with the show. Enter your income, the loan rate you expect and your down payment, and it reports the maximum price, the payment, the loan amount, the interest and the total paid. The price does not include sales tax, insurance, fuel or maintenance, so budget those separately.',
     category: 'FinanceApplication',
     features: [
       '20/3/8 rule check',
