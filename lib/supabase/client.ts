@@ -730,6 +730,51 @@ export type Database = {
         };
         Relationships: [];
       };
+      /**
+       * Failed / blocked logins (supabase/migrations/20261105120000_security_hardening.sql).
+       * Hashed identifiers only. Service role only.
+       */
+      auth_events: {
+        Row: {
+          id: number;
+          created_at: string;
+          event: 'login_failed' | 'login_blocked';
+          reason: string;
+          email_hash: string | null;
+          ip_hash: string | null;
+        };
+        Insert: {
+          event: 'login_failed' | 'login_blocked';
+          reason: string;
+          email_hash?: string | null;
+          ip_hash?: string | null;
+        };
+        Update: Record<string, never>;
+        Relationships: [];
+      };
+      /** One row per Anthropic call, for the monthly AI budget. Service role only. */
+      ai_usage: {
+        Row: {
+          id: number;
+          created_at: string;
+          feature: string;
+          model: string;
+          input_tokens: number;
+          output_tokens: number;
+          cache_read_input_tokens: number;
+          cost_usd: number;
+        };
+        Insert: {
+          feature: string;
+          model: string;
+          input_tokens?: number;
+          output_tokens?: number;
+          cache_read_input_tokens?: number;
+          cost_usd?: number;
+        };
+        Update: Record<string, never>;
+        Relationships: [];
+      };
     };
     Views: {
       // Monetization scorecard — 20260929120000_monetization_scorecard.sql.
@@ -816,6 +861,25 @@ export type Database = {
       delete_old_events: {
         Args: { retention_days: number };
         Returns: number;
+      };
+      /**
+       * Shared fixed-window rate limiter
+       * (supabase/migrations/20261105120000_security_hardening.sql).
+       * `p_cost: 0` reads the bucket without counting a hit.
+       */
+      rate_limit_hit: {
+        Args: { p_key: string; p_limit: number; p_window_seconds: number; p_cost?: number };
+        Returns: { allowed: boolean; hits: number; reset_at: string }[];
+      };
+      /** Estimated AI spend (USD) for the current UTC calendar month. */
+      ai_spend_month_to_date: {
+        Args: Record<string, never>;
+        Returns: number;
+      };
+      /** Deletes expired rate-limit buckets, old auth events and old AI usage. */
+      prune_security_tables: {
+        Args: Record<string, never>;
+        Returns: { rate_limit_buckets: number; auth_events: number; ai_usage: number };
       };
     };
     Enums: Record<never, never>;

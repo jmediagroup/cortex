@@ -11,6 +11,9 @@ export function OutlookSubscribeForm({ source = 'thinking' }: { source?: string 
   const [company, setCompany] = useState('');
   const [status, setStatus] = useState<Status>('idle');
   const [message, setMessage] = useState<string | null>(null);
+  // When the form rendered: the server rejects a submit faster than a person
+  // could type an address (lib/bot-check.ts).
+  const [startedAt] = useState(() => Date.now());
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -22,7 +25,7 @@ export function OutlookSubscribeForm({ source = 'thinking' }: { source?: string 
       const res = await fetch('/api/outlook/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim(), source, company }),
+        body: JSON.stringify({ email: email.trim(), source, company, formStartedAt: startedAt }),
       });
       const json = (await res.json().catch(() => ({}))) as {
         error?: string;

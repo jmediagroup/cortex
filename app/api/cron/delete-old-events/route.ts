@@ -34,7 +34,19 @@ async function run(request: NextRequest): Promise<NextResponse> {
 
   const deleted = data ?? 0;
   console.log(`[events-retention] deleted ${deleted} events older than ${RETENTION_DAYS} days`);
-  return NextResponse.json({ deleted, retentionDays: RETENTION_DAYS });
+
+  // Same daily slot: expire rate-limit buckets, failed-login rows (90 days)
+  // and old AI usage rows (13 months) —
+  // supabase/migrations/20261105120000_security_hardening.sql. Best-effort:
+  // until that migration is applied this fails and nothing else changes.
+  const { data: pruned, error: pruneError } = await supabase.rpc('prune_security_tables');
+  if (pruneError) {
+    console.error('[events-retention] prune_security_tables failed:', pruneError.message);
+  } else {
+    console.log('[events-retention] pruned security tables', pruned);
+  }
+
+  return NextResponse.json({ deleted, retentionDays: RETENTION_DAYS, pruned: pruneError ? null : pruned });
 }
 
 export async function GET(request: NextRequest) {

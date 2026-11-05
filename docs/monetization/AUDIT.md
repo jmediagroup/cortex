@@ -279,3 +279,18 @@ It was tested end to end on a local Postgres 16 with Supabase's roles recreated:
 | 35 | Gambling helpline | The tool shows 1-800-522-4700. NCPG adopted 1-800-MY-RESET on Jan 29, 2026, after a court returned 1-800-GAMBLER to New Jersey's council. | The explainer and the tool's help panel both list MY-RESET first and note 522-4700 still works. |
 | 36 | Index fund assumptions | The fixed averages (10.5 / 10.2 / 8.5 / 13.5%) and expense ratios have no source or date in code | The copy calls them the tool's assumptions. **Drew confirmed them on 2026-10-18 (`DECISIONS.md`); no change.** |
 | 37 | `CapitalGainsTaxTool.tsx` label "SALT capped $40k" | The 2026 cap is $40,400. The engine doesn't apply a SALT cap, so this is a label only. | Logged, not changed |
+
+## 13. Security hardening (Nov 5, 2026)
+
+Not a monetization phase. It is recorded here because it changes what the auth and AI code does today. Full detail and Drew's checklist: `docs/HARDENING.md`.
+
+Migration `20261105120000_security_hardening.sql` was applied to production on Nov 5, 2026 at Drew's instruction (no Supabase branch: branching is billed, rule 5; tested on a local Postgres first, as in §12 row 2). Security advisors afterwards: only `rls_enabled_no_policy` went from 7 to 10, which is intentional (service-role-only tables). Everything else is unchanged.
+
+| # | What the repo did | What it does now |
+|---|---|---|
+| 1 | Rate limits were in-memory per serverless instance (`lib/rate-limit.ts`), so each warm instance had its own allowance | Signup, login, AI, enterprise and newsletter routes use `lib/rate-limit-shared.ts` (Postgres `rate_limit_hit`). It falls back to in-memory until the migration is applied |
+| 2 | Login ran entirely in the browser: no rate limit and no failure record | `/api/auth/login` (server); every failed or blocked attempt goes to `public.auth_events` (hashed identifiers only) |
+| 3 | The signup route verified the Turnstile token **and** passed the same single-use token to Supabase. Once Supabase CAPTCHA protection is switched on, one of the two checks would always fail and block every signup | One or the other, chosen by `SUPABASE_CAPTCHA_ENABLED` (`verifyCaptchaForSupabaseAuth`) |
+| 4 | `/api/why` had no spend cap, no retry and no outage handling | Kill switch, circuit breaker, per-user/IP limits and a monthly budget (`lib/ai/guard.ts`); one quick retry; answers kept in the browser |
+| 5 | `/api/scenarios*`, `GET /api/why` and the bearer-auth helper returned raw database/auth messages | Plain copy + a reference code; detail goes to the server log (`lib/api-errors.ts`). Admin routes unchanged |
+| 6 | No health endpoint | `GET /api/health` (`ok` / `degraded` / `down`) |

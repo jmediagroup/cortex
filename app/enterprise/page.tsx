@@ -21,6 +21,7 @@ import { COMPANY_SIZES } from '@/lib/validation';
 import { MarketingShell } from '@/components/marketing/MarketingShell';
 import { MarketingIcon } from '@/components/marketing/Icons';
 import { Button } from '@/components/ui/Button';
+import { TurnstileWidget, isTurnstileEnabled } from '@/components/auth/TurnstileWidget';
 
 export default function EnterprisePage() {
   const router = useRouter();
@@ -35,6 +36,13 @@ export default function EnterprisePage() {
   const [companySize, setCompanySize] = useState('');
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
+  // Bot protection (lib/bot-check.ts): a hidden honeypot field, the time the
+  // form rendered, and a Turnstile token once Turnstile is configured.
+  const [honeypot, setHoneypot] = useState('');
+  const [startedAt] = useState(() => Date.now());
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [captchaNonce, setCaptchaNonce] = useState(0);
+  const captchaBlocksSubmit = isTurnstileEnabled() && !captchaToken;
 
   useEffect(() => {
     trackEvent('enterprise_page_view');
@@ -57,18 +65,23 @@ export default function EnterprisePage() {
           companySize,
           phone: phone || null,
           message,
+          mgm_hp: honeypot,
+          formStartedAt: startedAt,
+          captchaToken,
         }),
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.error || 'Failed to submit form');
 
       await trackEvent('enterprise_form_submitted', { company_size: companySize }, true);
       setSubmitted(true);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'An error occurred. Please try again.';
-      console.error('Form submission error:', err);
       setError(msg);
+      // Turnstile tokens are single-use; get a fresh one for the retry.
+      setCaptchaToken(null);
+      setCaptchaNonce((n) => n + 1);
     } finally {
       setLoading(false);
     }
@@ -455,7 +468,28 @@ export default function EnterprisePage() {
               />
             </FormField>
 
-            <Button type="submit" variant="primary" disabled={loading} style={{ width: '100%' }}>
+            {/* Honeypot: hidden from people, screen readers and keyboard focus. */}
+            <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', top: 0 }}>
+              <label htmlFor="mgm-hp-enterprise">Leave this empty</label>
+              <input
+                id="mgm-hp-enterprise"
+                name="mgm_hp"
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+              />
+            </div>
+
+            <TurnstileWidget onToken={setCaptchaToken} resetSignal={captchaNonce} />
+
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={loading || captchaBlocksSubmit}
+              style={{ width: '100%' }}
+            >
               {loading ? (
                 <>
                   <Loader2 className="animate-spin" size={16} />

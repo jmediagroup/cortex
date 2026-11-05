@@ -7,14 +7,20 @@ import {
   isValidCompanySize,
   sanitizeString
 } from '@/lib/validation';
-import { checkRateLimit, getClientIP, RATE_LIMITS } from '@/lib/rate-limit';
+import { getClientIP, RATE_LIMITS } from '@/lib/rate-limit';
+import { checkSharedRateLimit } from '@/lib/rate-limit-shared';
 import { sendEnterpriseLeadNotification } from '@/lib/email';
+import { botSignalMessage, checkBotSignals, HONEYPOT_FIELD } from '@/lib/bot-check';
+import { verifyTurnstileToken } from '@/lib/turnstile';
+
+/** Six fields and a free-text message: nobody fills this in under 3 seconds. */
+const MIN_FORM_FILL_MS = 3000;
 
 export async function POST(request: NextRequest) {
   try {
     // Rate limiting
     const clientIP = getClientIP(request.headers);
-    const rateLimit = checkRateLimit(`enterprise-lead:${clientIP}`, RATE_LIMITS.enterpriseLead);
+    const rateLimit = await checkSharedRateLimit(`enterprise-lead:${clientIP}`, RATE_LIMITS.enterpriseLead);
 
     if (!rateLimit.success) {
       return NextResponse.json(
@@ -31,7 +37,42 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse request body
-    const body = await request.json();
+    const body = await request.json().catch(() => null);
+    if (!body || typeof body !== 'object') {
+      return NextResponse.json({ error: 'Invalid request.' }, { status: 400 });
+    }
+
+    // Bot signals: honeypot → decoy success (no row, no email); too fast or
+    // no timing → visible "try again". Then Turnstile, once configured.
+    const bot = checkBotSignals({
+      honeypot: body[HONEYPOT_FIELD],
+      formStartedAt: body.formStartedAt,
+      minFillMs: MIN_FORM_FILL_MS,
+      requireTiming: true,
+    });
+    if (!bot.ok) {
+      console.warn('[enterprise-lead] bot signal', { reason: bot.reason });
+      if (bot.decoy) {
+        return NextResponse.json(
+          { success: true, message: 'Thank you for your interest. We will be in touch soon.' },
+          { status: 200 },
+        );
+      }
+      return NextResponse.json(
+        { error: botSignalMessage(bot.reason === 'too_fast' ? 'too_fast' : 'missing_timing') },
+        { status: 400 },
+      );
+    }
+    const captcha = await verifyTurnstileToken(
+      typeof body.captchaToken === 'string' ? body.captchaToken : null,
+      clientIP,
+    );
+    if (!captcha.success) {
+      return NextResponse.json(
+        { error: 'The security check didn’t pass. Please refresh the page and try again.' },
+        { status: 400 },
+      );
+    }
 
     // Validate required fields
     const validation = validateRequiredFields(body, [
@@ -128,7 +169,7 @@ export async function POST(request: NextRequest) {
         },
       }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Enterprise lead API error:', error);
     return NextResponse.json(
       { error: 'An unexpected error occurred. Please try again.' },

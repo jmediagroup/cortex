@@ -4,6 +4,7 @@ import { createServiceClient } from '@/lib/supabase/client';
 import { authenticateRequest, isAuthError, unauthorizedResponse } from '@/lib/auth-helpers';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { CALCULATOR_CONTENT } from '@/lib/calculator-content';
+import { internalErrorResponse } from '@/lib/api-errors';
 
 // Tool ids a scenario may be saved under: every calculator with content
 // plus the two non-calculator tools that also save.
@@ -35,7 +36,7 @@ export async function GET(request: NextRequest) {
     .order('created_at', { ascending: false });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return internalErrorResponse('scenarios', error, 'We couldn’t save or load your scenarios just now. Please try again.');
   }
 
   return NextResponse.json({ scenarios: data });
@@ -122,7 +123,7 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return internalErrorResponse('scenarios', error, 'We couldn’t save or load your scenarios just now. Please try again.');
   }
 
   return NextResponse.json({ scenario: data }, { status: 201 });
@@ -158,7 +159,7 @@ export async function DELETE(request: NextRequest) {
     .eq('id', scenarioId);
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return internalErrorResponse('scenarios', error, 'We couldn’t save or load your scenarios just now. Please try again.');
   }
 
   return NextResponse.json({ success: true });

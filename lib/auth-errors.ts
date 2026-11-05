@@ -10,7 +10,7 @@
  * Dependency-free so it can be unit-tested with plain `node --test`.
  */
 
-type SupabaseLikeError = { message?: string; code?: string; status?: number } | null | undefined;
+type SupabaseLikeError = { message?: string; code?: string; status?: number; name?: string } | null | undefined;
 
 const GENERIC_SIGNUP = 'We couldn’t create your account just now. Please try again in a moment.';
 const GENERIC_LOGIN = 'We couldn’t sign you in just now. Please try again in a moment.';
@@ -65,6 +65,37 @@ export function friendlyLoginError(error: SupabaseLikeError): string {
     return 'This account has been disabled. Contact support if you think that’s a mistake.';
   }
   return GENERIC_LOGIN;
+}
+
+/**
+ * Short machine code for a failed `signInWithPassword`, stored in
+ * `auth_events.reason`. Never the raw Supabase message.
+ */
+export type LoginFailureReason =
+  | 'invalid_credentials'
+  | 'email_not_confirmed'
+  | 'captcha_failed'
+  | 'rate_limited_upstream'
+  | 'user_banned'
+  | 'auth_unavailable'
+  | 'other';
+
+export function loginFailureReason(error: SupabaseLikeError): LoginFailureReason {
+  const code = error?.code ?? '';
+  const msg = (error?.message ?? '').toLowerCase();
+
+  if (code === 'invalid_credentials' || msg.includes('invalid login credentials')) return 'invalid_credentials';
+  if (code === 'email_not_confirmed' || msg.includes('email not confirmed')) return 'email_not_confirmed';
+  if (code === 'captcha_failed' || msg.includes('captcha')) return 'captcha_failed';
+  if (code === 'over_request_rate_limit' || msg.includes('rate limit')) return 'rate_limited_upstream';
+  if (code === 'user_banned' || msg.includes('banned')) return 'user_banned';
+  // Supabase Auth unreachable or erroring (network failure, 5xx): not the
+  // person's fault, so it must not read as "wrong password".
+  const status = error?.status;
+  if (error?.name === 'AuthRetryableFetchError' || status === 0 || (typeof status === 'number' && status >= 500)) {
+    return 'auth_unavailable';
+  }
+  return 'other';
 }
 
 /** Message for a failed `resetPasswordForEmail` / `updateUser({ password })` call. */
