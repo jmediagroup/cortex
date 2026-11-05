@@ -5,10 +5,20 @@ import {
   isAuthError,
   unauthorizedResponse,
 } from '@/lib/auth-helpers';
-import { checkRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
+import { getClientIP, RATE_LIMITS } from '@/lib/rate-limit';
 import { hasProAccess, type Tier } from '@/lib/access-control';
 import { WHY_QUESTION_IDS, type WhyAnswers } from '@/lib/why/questions';
-import { synthesizeWhy, SynthesisError } from '@/lib/why/synthesis';
+import { synthesizeWhy, SynthesisError, WHY_MAX_TOKENS, WHY_MODEL } from '@/lib/why/synthesis';
+import { aiPreflight, recordAiUsage, recordUpstreamFailure, AI_UNAVAILABLE_MESSAGE } from '@/lib/ai/guard';
+import { roughTokenCount } from '@/lib/ai/policy';
+import { internalErrorResponse } from '@/lib/api-errors';
+
+/** First attempt (≤25s) plus one quick retry; see lib/why/synthesis.ts. */
+export const maxDuration = 60;
+
+const FEATURE = 'whats-your-why';
+/** System prompt + framing, before the answers (~1k tokens). */
+const PROMPT_OVERHEAD_TOKENS = 1200;
 
 // Per-answer character cap. The synthesis cost is dominated by input tokens, so
 // this bounds the worst case: 8 answers × 1500 chars ≈ 3k input tokens, versus
@@ -30,7 +40,7 @@ export async function GET(request: NextRequest) {
     .order('created_at', { ascending: false });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return internalErrorResponse('why:list', error, 'We couldn’t load your past reflections. Please try again.');
   }
 
   return NextResponse.json({ reflections: data });
@@ -58,22 +68,6 @@ export async function POST(request: NextRequest) {
         message: "What's Your Why is a Pro feature. Upgrade to a paid plan to generate your reflection.",
       },
       { status: 403 },
-    );
-  }
-
-  // Rate limit the AI call per user to keep cost and abuse in check.
-  const rateLimit = checkRateLimit(
-    `why-synthesis:${auth.user.id}`,
-    RATE_LIMITS.whySynthesis,
-  );
-  if (!rateLimit.success) {
-    return NextResponse.json(
-      {
-        error: 'RATE_LIMITED',
-        message:
-          "You're reflecting quickly — give it a few minutes before generating another.",
-      },
-      { status: 429 },
     );
   }
 
@@ -112,20 +106,54 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Kill switch, circuit breaker, per-user/per-IP limits and the monthly
+  // budget (lib/ai/guard.ts) — all before any money is spent.
+  const clientIP = getClientIP(request.headers);
+  const refused = await aiPreflight({
+    feature: FEATURE,
+    model: WHY_MODEL,
+    estimatedInputTokens:
+      PROMPT_OVERHEAD_TOKENS + roughTokenCount(Object.values(answers).join('\n')),
+    maxOutputTokens: WHY_MAX_TOKENS,
+    limits: [
+      {
+        key: `why-synthesis:${auth.user.id}`,
+        config: RATE_LIMITS.whySynthesis,
+        message: "You're reflecting quickly — give it a few minutes before generating another.",
+      },
+      {
+        key: `ai:user-daily:${auth.user.id}`,
+        config: RATE_LIMITS.aiUserDaily,
+        message: "You've reached today's limit for reflections. Your answers are saved — come back tomorrow.",
+      },
+      {
+        key: `ai:ip:${clientIP}`,
+        config: RATE_LIMITS.aiIpHourly,
+        message: 'Too many reflections from this connection. Please try again in an hour.',
+      },
+    ],
+  });
+  if (refused) {
+    return NextResponse.json(refused.body, { status: refused.status, headers: refused.headers });
+  }
+
   let summary;
   try {
-    summary = await synthesizeWhy(answers);
+    const result = await synthesizeWhy(answers);
+    summary = result.summary;
+    await recordAiUsage(FEATURE, WHY_MODEL, result.usage);
   } catch (err) {
     if (err instanceof SynthesisError) {
+      await recordAiUsage(FEATURE, WHY_MODEL, err.usage);
+      await recordUpstreamFailure(FEATURE, err.upstreamStatus);
+      // `err.message` is written for people (see lib/why/synthesis.ts).
       return NextResponse.json(
-        { error: 'SYNTHESIS_FAILED', message: err.message },
+        { error: err.status === 422 ? 'SYNTHESIS_REFUSED' : 'AI_UNAVAILABLE', message: err.message },
         { status: err.status },
       );
     }
-    return NextResponse.json(
-      { error: 'SYNTHESIS_FAILED', message: 'Could not generate your reflection.' },
-      { status: 502 },
-    );
+    console.error('[why] unexpected synthesis error:', err instanceof Error ? err.message : 'unknown');
+    return NextResponse.json({ error: 'AI_UNAVAILABLE', message: AI_UNAVAILABLE_MESSAGE }, { status: 502 });
   }
 
   const { data, error } = await supabase

@@ -56,7 +56,9 @@ export async function authenticateRequest(
         };
       }
 
-      return { error: authError.message, status: 401 };
+      // Don't echo the provider's message to the client; log it instead.
+      console.warn('[auth] token rejected:', authError.message);
+      return { error: 'Please sign in again.', status: 401 };
     }
 
     if (!user) {
@@ -64,7 +66,7 @@ export async function authenticateRequest(
     }
 
     return { user, token };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Authentication error:', error);
     return { error: 'Authentication failed', status: 500 };
   }

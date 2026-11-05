@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServiceClient } from '@/lib/supabase/client';
 import { isValidEmail, sanitizeString } from '@/lib/validation';
-import { checkRateLimit, getClientIP, RATE_LIMITS } from '@/lib/rate-limit';
+import { getClientIP, RATE_LIMITS } from '@/lib/rate-limit';
+import { checkSharedRateLimit } from '@/lib/rate-limit-shared';
+import { botSignalMessage, checkBotSignals } from '@/lib/bot-check';
 import { sendConfirmationEmail } from '@/lib/outlook/email';
 
-type SubscribeBody = { email?: unknown; source?: unknown; company?: unknown };
+type SubscribeBody = { email?: unknown; source?: unknown; company?: unknown; formStartedAt?: unknown };
+
+/** One email field: even a fast typist takes longer than this; autofill can be quicker, hence "visible retry". */
+const MIN_FORM_FILL_MS = 800;
 
 function logError(stage: string, detail: unknown) {
   console.error(`[outlook/subscribe] ${stage}:`, detail);
@@ -30,7 +35,7 @@ export async function POST(request: NextRequest) {
     }
 
     const clientIP = getClientIP(request.headers);
-    const rateLimit = checkRateLimit(`outlook-subscribe:${clientIP}`, RATE_LIMITS.outlookSubscribe);
+    const rateLimit = await checkSharedRateLimit(`outlook-subscribe:${clientIP}`, RATE_LIMITS.outlookSubscribe);
 
     if (!rateLimit.success) {
       return NextResponse.json(
@@ -53,12 +58,22 @@ export async function POST(request: NextRequest) {
 
     // Honeypot: the form renders a visually hidden "company" field that
     // humans never see. Bots that fill every field get a fake success and
-    // no database row.
-    if (typeof body.company === 'string' && body.company.trim()) {
-      return NextResponse.json(
-        { success: true, message: 'Check your inbox to confirm your subscription.' },
-        { status: 200 },
-      );
+    // no database row. Timing is checked when sent (older cached pages don't
+    // send it, so it isn't required).
+    const bot = checkBotSignals({
+      honeypot: body.company,
+      formStartedAt: body.formStartedAt,
+      minFillMs: MIN_FORM_FILL_MS,
+      requireTiming: false,
+    });
+    if (!bot.ok) {
+      if (bot.decoy) {
+        return NextResponse.json(
+          { success: true, message: 'Check your inbox to confirm your subscription.' },
+          { status: 200 },
+        );
+      }
+      return NextResponse.json({ error: botSignalMessage('too_fast') }, { status: 400 });
     }
 
     const email = sanitizeString(body.email, 255).toLowerCase();

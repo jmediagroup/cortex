@@ -27,6 +27,41 @@ export function isTurnstileConfigured(): boolean {
   return Boolean(process.env.TURNSTILE_SECRET_KEY);
 }
 
+/**
+ * True once CAPTCHA protection is switched on in the Supabase dashboard
+ * (Authentication → Bot and Abuse Protection) and SUPABASE_CAPTCHA_ENABLED is
+ * set to "true" to say so.
+ *
+ * Why it matters: a Turnstile token can be redeemed exactly ONCE. When
+ * Supabase verifies it, our own siteverify call must be skipped, or one of the
+ * two always fails ("timeout-or-duplicate") and every signup/login is
+ * rejected. When Supabase does NOT verify it, we must, or nothing does.
+ */
+export function isCaptchaVerifiedBySupabase(): boolean {
+  return process.env.SUPABASE_CAPTCHA_ENABLED === 'true';
+}
+
+export interface AuthCaptchaResult extends TurnstileResult {
+  /** The token to hand to Supabase (`options.captchaToken`), or undefined. */
+  tokenForSupabase?: string;
+}
+
+/**
+ * CAPTCHA handling for routes that call Supabase Auth (signup, login): verify
+ * the token ourselves, or pass it through to Supabase — never both. See
+ * `isCaptchaVerifiedBySupabase`.
+ */
+export async function verifyCaptchaForSupabaseAuth(
+  token: string | null | undefined,
+  remoteIp?: string,
+): Promise<AuthCaptchaResult> {
+  if (isCaptchaVerifiedBySupabase()) {
+    // Supabase rejects a missing/invalid token itself (`captcha_failed`).
+    return { success: true, skipped: true, tokenForSupabase: token || undefined };
+  }
+  return verifyTurnstileToken(token, remoteIp);
+}
+
 export interface TurnstileResult {
   success: boolean;
   /** Cloudflare error codes, if any, for logging. */

@@ -2,9 +2,11 @@ import { createHash } from 'crypto';
 import { after, NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { createServiceClient } from '@/lib/supabase/client';
-import { checkRateLimit, getClientIP, RATE_LIMITS } from '@/lib/rate-limit';
+import { getClientIP, RATE_LIMITS } from '@/lib/rate-limit';
+import { checkSharedRateLimit } from '@/lib/rate-limit-shared';
 import { assessSignup, normalizeEmail } from '@/lib/email-hygiene';
-import { verifyTurnstileToken } from '@/lib/turnstile';
+import { verifyCaptchaForSupabaseAuth } from '@/lib/turnstile';
+import { botSignalMessage, checkBotSignals, HONEYPOT_FIELD } from '@/lib/bot-check';
 import { sanitizeString } from '@/lib/validation';
 import { safeNextPath } from '@/lib/safe-redirect';
 import { siteUrl } from '@/lib/site-url';
@@ -123,9 +125,6 @@ export async function POST(request: NextRequest) {
       password,
       firstName: rawFirstName,
       captchaToken,
-      // Honeypot: hidden in the form, invisible to humans, irresistible to
-      // naive form-fillers. (Named so no browser autofill heuristic matches it.)
-      mgm_hp: honeypot,
       // Client timestamp of when the form was rendered.
       formStartedAt,
       next: rawNext,
@@ -169,41 +168,42 @@ export async function POST(request: NextRequest) {
     }
 
     // --- 2. Honeypot + timing ------------------------------------------------
-    if (typeof honeypot === 'string' && honeypot.trim() !== '') {
-      console.warn('[Signup] Honeypot triggered', { ip: clientIP, normalizedEmail });
-      return decoySuccess();
-    }
-
-    // Our form always sends `formStartedAt`. A client that omits it is not our
-    // form; a submit that arrives faster than the page could be read is a
-    // script. Both get a *visible* "try again" rather than a silent decoy —
-    // a person who autofilled with a password manager can hit this, and
-    // they must never be left waiting for an email that isn't coming.
-    // Negative elapsed = client clock behind ours; treat as fine.
-    if (typeof formStartedAt !== 'number' || !Number.isFinite(formStartedAt)) {
-      console.warn('[Signup] Missing form timing', { ip: clientIP, normalizedEmail });
-      return errorResponse('Something went wrong with the form. Please refresh the page and try again.', 400);
-    }
-    const elapsed = Date.now() - formStartedAt;
-    if (elapsed >= 0 && elapsed < MIN_FORM_FILL_MS) {
-      console.warn('[Signup] Form submitted too fast', { ip: clientIP, elapsed });
-      return errorResponse('That was quick! Please double-check your details and submit again.', 400);
+    // Honeypot (hidden `mgm_hp` field) gets a *decoy* success so bots can't
+    // tell they were caught. Missing or too-fast timing gets a *visible*
+    // "try again": a person who autofilled with a password manager can hit
+    // this, and they must never be left waiting for an email that isn't
+    // coming. Shared logic: lib/bot-check.ts.
+    const bot = checkBotSignals({
+      honeypot: (body as Record<string, unknown>)[HONEYPOT_FIELD],
+      formStartedAt,
+      minFillMs: MIN_FORM_FILL_MS,
+      requireTiming: true,
+    });
+    if (!bot.ok) {
+      console.warn('[Signup] Bot signal', { reason: bot.reason, ip: clientIP });
+      if (bot.decoy) return decoySuccess();
+      return errorResponse(botSignalMessage(bot.reason === 'too_fast' ? 'too_fast' : 'missing_timing'), 400);
     }
 
     // --- 3. Rate limits ------------------------------------------------------
-    const burst = checkRateLimit(`signup:burst:${clientIP}`, RATE_LIMITS.signupBurst);
+    // Shared across serverless instances (lib/rate-limit-shared.ts); falls back
+    // to the per-instance limiter if the database is unavailable.
+    const burst = await checkSharedRateLimit(`signup:burst:${clientIP}`, RATE_LIMITS.signupBurst);
     if (!burst.success) return tooManyRequests(burst.resetTime);
 
-    const sustained = checkRateLimit(`signup:ip:${clientIP}`, RATE_LIMITS.signupIp);
+    const sustained = await checkSharedRateLimit(`signup:ip:${clientIP}`, RATE_LIMITS.signupIp);
     if (!sustained.success) return tooManyRequests(sustained.resetTime);
 
     // Keyed on the canonical address so every alias of one inbox shares a
     // single bucket.
-    const perEmail = checkRateLimit(`signup:email:${normalizedEmail}`, RATE_LIMITS.signupEmail);
+    const perEmail = await checkSharedRateLimit(`signup:email:${normalizedEmail}`, RATE_LIMITS.signupEmail);
     if (!perEmail.success) return tooManyRequests(perEmail.resetTime);
 
     // --- 4. CAPTCHA ----------------------------------------------------------
-    const captcha = await verifyTurnstileToken(
+    // A Turnstile token is single-use: either we verify it here, or (once
+    // SUPABASE_CAPTCHA_ENABLED=true) Supabase verifies it in signUp — never
+    // both, or the second check always fails.
+    const captcha = await verifyCaptchaForSupabaseAuth(
       typeof captchaToken === 'string' ? captchaToken : null,
       clientIP,
     );
@@ -238,7 +238,7 @@ export async function POST(request: NextRequest) {
     // this origin; /auth/callback can then exchange a `?code=` link opened in
     // this same browser. Links from our own templates use `token_hash`
     // instead and work from any device — see app/auth/callback/route.ts.
-    const supabase = await createServerSupabaseClient();
+    const supabase = await createServerSupabaseClient({ forwardedFor: clientIP });
     const next = safeNextPath(typeof rawNext === 'string' ? rawNext : null, '/onboarding');
 
     const { data, error: signUpError } = await supabase.auth.signUp({
@@ -253,7 +253,7 @@ export async function POST(request: NextRequest) {
           signup_next: next,
           ...(signupSource ? { signup_source: signupSource } : {}),
         },
-        captchaToken: typeof captchaToken === 'string' ? captchaToken : undefined,
+        captchaToken: captcha.tokenForSupabase,
       },
     });
 

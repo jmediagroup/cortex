@@ -70,6 +70,8 @@ function AuthForm() {
   // signup — so all three calls below carry a token.
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [captchaNonce, setCaptchaNonce] = useState(0);
+  // Honeypot: hidden from people; anything typed here came from a script.
+  const [honeypot, setHoneypot] = useState('');
   const errorRef = useRef<HTMLDivElement | null>(null);
   const fields = useAuthFormStates<LoginField>();
   const busy = loading || fields.leaving;
@@ -152,32 +154,50 @@ function AuthForm() {
     setResendMsg(null);
 
     try {
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-        options: captchaToken ? { captchaToken } : undefined,
+      // Sign-in runs on the server (/api/auth/login) so it can be rate-limited
+      // and every failure logged. On success the route writes the session
+      // cookies, which this page's browser client reads.
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, captchaToken, mgm_hp: honeypot }),
       });
-      if (signInError) throw signInError;
-      if (data.session) {
-        await trackEvent('user_login', {}, true);
-        fields.leave(() => router.replace(redirectTarget));
-        return;
+      const payload = (await res.json().catch(() => ({}))) as {
+        success?: boolean;
+        error?: string;
+        code?: string;
+      };
+      if (!res.ok || !payload.success) {
+        // `code` is our own short reason code (never a raw Supabase string);
+        // `error` is already plain-English copy.
+        throw { code: payload.code ?? 'unknown', message: payload.error, status: res.status };
       }
-      throw new Error('No session returned');
+      await trackEvent('user_login', {}, true);
+      fields.leave(() => router.replace(redirectTarget));
+      return;
     } catch (err: unknown) {
-      const e = err as { message?: string; code?: string };
-      console.error('Auth error:', err);
-      if (e.code === 'email_not_confirmed' || /email not confirmed/i.test(e.message ?? '')) {
+      const e = err as { message?: string; code?: string; status?: number };
+      if (e.code === 'email_not_confirmed') {
         setNeedsVerification(true);
       }
-      setError(friendlyLoginError(e));
-      fields.fail(loginErrorFields(e));
+      // The route already sends friendly copy; fall back to our mapping for
+      // network errors (where `message` is the browser's own text).
+      setError(e.status ? e.message || friendlyLoginError(e) : friendlyLoginError(e));
+      // Rate limits, CAPTCHA and server errors aren't about a field.
+      const notAboutAField =
+        e.code === 'rate_limited' ||
+        e.code === 'rate_limited_upstream' ||
+        e.code === 'auth_unavailable' ||
+        e.code === 'server_error' ||
+        !e.status;
+      fields.fail(notAboutAField ? [] : loginErrorFields(e));
       resetCaptcha();
       setLoading(false);
       await trackEvent(
         'error_occurred',
         {
-          error_message: e.message ?? 'unknown',
+          // Reason code only — never the message text.
+          error_message: e.code ?? 'unknown',
           error_code: e.code || 'unknown',
           context: 'login',
         },
@@ -590,6 +610,20 @@ function AuthForm() {
           >
             Forgot password?
           </button>
+        </div>
+
+        {/* Honeypot — see the signup form. Hidden, unlabeled for AT, no tab stop. */}
+        <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', top: 0 }}>
+          <label htmlFor="mgm-hp-login">Leave this empty</label>
+          <input
+            id="mgm-hp-login"
+            name="mgm_hp"
+            type="text"
+            tabIndex={-1}
+            autoComplete="off"
+            value={honeypot}
+            onChange={(e) => setHoneypot(e.target.value)}
+          />
         </div>
 
         <TurnstileWidget onToken={setCaptchaToken} resetSignal={captchaNonce} />

@@ -12,6 +12,44 @@ import type { WhySummary } from '@/lib/why/synthesis';
 // anything longer, so cap (and count) in the UI rather than silently losing text.
 const MAX_ANSWER_CHARS = 1500;
 
+// Answers are kept in this browser until a reflection succeeds, so an AI
+// outage, a rate limit or an accidental refresh never costs someone their
+// writing. Local to this device only; never sent anywhere but /api/why.
+const DRAFT_KEY = 'mgm-why-draft-v1';
+
+function loadDraft(): Record<string, string> {
+  try {
+    const raw = window.localStorage.getItem(DRAFT_KEY);
+    const parsed = raw ? (JSON.parse(raw) as unknown) : null;
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
+    return Object.fromEntries(
+      Object.entries(parsed as Record<string, unknown>).filter(
+        (e): e is [string, string] => typeof e[1] === 'string',
+      ),
+    );
+  } catch {
+    return {};
+  }
+}
+
+function saveDraft(answers: Record<string, string>) {
+  try {
+    if (Object.values(answers).some((a) => a.trim())) {
+      window.localStorage.setItem(DRAFT_KEY, JSON.stringify(answers));
+    }
+  } catch {
+    // Private mode / storage blocked: the in-memory answers still work.
+  }
+}
+
+function clearDraft() {
+  try {
+    window.localStorage.removeItem(DRAFT_KEY);
+  } catch {
+    // ignore
+  }
+}
+
 type Stage = 'intro' | 'reflect' | 'loading' | 'result' | 'error';
 
 interface Props {
@@ -49,8 +87,14 @@ export default function WhatsYourWhy({ isPro, isLoggedIn }: Props) {
     [question.id],
   );
 
+  // Persist while the person is writing (and while a request is in flight).
+  useEffect(() => {
+    if (stage === 'reflect' || stage === 'loading' || stage === 'error') saveDraft(answers);
+  }, [answers, stage]);
+
   const start = useCallback(() => {
-    setAnswers({});
+    // Pick up where they left off if an earlier attempt didn't finish.
+    setAnswers(loadDraft());
     setSummary(null);
     setCurrentIndex(0);
     setStage('reflect');
@@ -88,19 +132,25 @@ export default function WhatsYourWhy({ isPro, isLoggedIn }: Props) {
         body: JSON.stringify({ answers }),
       });
 
-      const data = await res.json();
-      if (!res.ok) {
+      // A gateway timeout can come back as HTML, not JSON.
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.reflection) {
+        // The server's `message` is written for people (no internals).
         setErrorMessage(
-          data?.message || 'We could not generate your reflection. Please try again.',
+          data?.message ||
+            'We could not generate your reflection right now. Your answers are saved on this device — please try again in a few minutes.',
         );
         setStage('error');
         return;
       }
 
+      clearDraft();
       setSummary(data.reflection.summary as WhySummary);
       setStage('result');
     } catch {
-      setErrorMessage('Something went wrong. Please try again.');
+      setErrorMessage(
+        'We couldn’t reach the server. Check your connection — your answers are saved on this device, so you can try again.',
+      );
       setStage('error');
     }
   }, [answers]);

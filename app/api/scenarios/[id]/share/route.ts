@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServiceClient } from '@/lib/supabase/client';
 import { authenticateRequest, isAuthError, unauthorizedResponse } from '@/lib/auth-helpers';
 import { siteUrl } from '@/lib/site-url';
+import { internalErrorResponse } from '@/lib/api-errors';
 
 // POST /api/scenarios/[id]/share - Make a scenario public and return its share URL
 export async function POST(
@@ -39,7 +40,7 @@ export async function POST(
     .single();
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return internalErrorResponse('scenarios:share', error, 'We couldn’t save or load your scenarios just now. Please try again.');
   }
 
   return NextResponse.json({
