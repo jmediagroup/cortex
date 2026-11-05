@@ -284,6 +284,8 @@ It was tested end to end on a local Postgres 16 with Supabase's roles recreated:
 
 Not a monetization phase. It is recorded here because it changes what the auth and AI code does today. Full detail and Drew's checklist: `docs/HARDENING.md`.
 
+Migration `20261105120000_security_hardening.sql` was applied to production on Nov 5, 2026 at Drew's instruction (no Supabase branch: branching is billed, rule 5; tested on a local Postgres first, as in §12 row 2). Security advisors afterwards: only `rls_enabled_no_policy` went from 7 to 10, which is intentional (service-role-only tables). Everything else is unchanged.
+
 | # | What the repo did | What it does now |
 |---|---|---|
 | 1 | Rate limits were in-memory per serverless instance (`lib/rate-limit.ts`), so each warm instance had its own allowance | Signup, login, AI, enterprise and newsletter routes use `lib/rate-limit-shared.ts` (Postgres `rate_limit_hit`). It falls back to in-memory until the migration is applied |

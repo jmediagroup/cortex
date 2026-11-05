@@ -1,18 +1,20 @@
 # Product hardening (Nov 2026)
 
 Eight protections, what each one does, and what Drew still has to switch on.
-Everything ships **safe by default**: with no new env vars and the migration
-not yet applied, the site behaves exactly as before, except that it is
-stricter about bots and never shows raw errors.
+Everything ships **safe by default**: with no new env vars set, the site
+behaves as before, except that it is stricter about bots and never shows raw
+errors. The database migration is **applied** (Nov 5, 2026), so shared rate
+limits, the failed-login log and the AI budget are live as soon as this code
+deploys.
 
 | # | Ask | What's in the code now | Needs Drew? |
 |---|-----|------------------------|-------------|
-| 1 | Rate-limit signup and login | Signup and the **new** `/api/auth/login` route use a rate limiter shared by every server (Postgres), with per-IP and per-email buckets | Apply migration |
-| 2 | Rate-limit every AI endpoint | `/api/why`: 5 per 5 min per user, 20 a day per user, 30 an hour per IP. `/api/ai/insights`: 30 a minute per IP | Apply migration |
+| 1 | Rate-limit signup and login | Signup and the **new** `/api/auth/login` route use a rate limiter shared by every server (Postgres), with per-IP and per-email buckets | — (migration applied) |
+| 2 | Rate-limit every AI endpoint | `/api/why`: 5 per 5 min per user, 20 a day per user, 30 an hour per IP. `/api/ai/insights`: 30 a minute per IP | — (migration applied) |
 | 3 | Cap monthly AI spend | Every model call is costed and recorded in `ai_usage`. A call is refused if it could take the month past `AI_MONTHLY_BUDGET_USD` (default **$25**) | Set the budget, set a Console limit |
 | 4 | Bot protection on forms | Honeypot + fill-time check on signup, login, enterprise and newsletter forms. Turnstile on signup, login and enterprise once keys are set | Turnstile keys (existing step) |
 | 5 | Hide stack traces | User-facing API routes return plain copy + a reference code and log the detail. New `app/global-error.tsx`. A test fails if a route sends `error.message` again | — |
-| 6 | Log every failed login | Every failed or blocked login → `public.auth_events` (reason + salted hashes, no raw email/IP) + Vercel log line. Alert on spikes | Apply migration, set salt |
+| 6 | Log every failed login | Every failed or blocked login → `public.auth_events` (reason + salted hashes, no raw email/IP) + Vercel log line. Alert on spikes | Set salt |
 | 7 | Uptime alerts | `GET /api/health` → `ok` / `degraded` / `down` (503). Opt-in ops alert emails | Create the monitor (free) |
 | 8 | Plan for the AI API going down | One quick retry → circuit breaker (stop calling for ≤2 min after 5 failures) → friendly "try again" copy; answers kept in the browser; kill switch; runbook below | — |
 
@@ -22,23 +24,23 @@ stricter about bots and never shows raw errors.
 
 None of these were done by code. Each is a few minutes.
 
-### A. Apply the migration (unlocks 1, 2, 3, 6)
+### A. Apply the migration — ✅ done 2026-11-05
 
-`supabase/migrations/20261105120000_security_hardening.sql`: three new tables
-(`rate_limit_buckets`, `auth_events`, `ai_usage`), four functions and one view.
-It only adds objects. RLS is on, and `anon` and `authenticated` have no access
-to anything it creates. It was tested on a local Postgres 16 (it re-runs
-cleanly, the counters and window reset are correct, and anon/authenticated get
-`permission denied` on every object).
+`supabase/migrations/20261105120000_security_hardening.sql` was applied to the
+Money Guy Mutants production project (`pehteunyustvnxmxjcfk`) on Nov 5, 2026
+at Drew's instruction. Before that it was tested on a local Postgres 16 (it
+re-runs cleanly; counters, window reset and peek are correct).
 
-1. Apply it to a Supabase **branch** first (rule 3), or say the word and it can
-   go to production directly as Phase 0 did. Branching is billed per hour.
-2. After it is applied, run **Advisors → Security** and **Performance**. Expect
-   no new findings. The tables have RLS with no policies on purpose: only the
-   service role reads or writes them.
-3. Until it is applied: rate limits fall back to the old per-server counters,
-   failed logins are only in the Vercel logs, and **the AI budget is not
-   enforced**. Each AI call logs `budget NOT enforced`.
+Checked in production after applying:
+- RLS is on for all 3 tables, with 0 policies. `anon` and `authenticated` have
+  no table, view or function access; `service_role` has.
+- `rate_limit_hit` allows 1 and then blocks (tested in a rolled-back
+  transaction; no rows left behind).
+- **Security advisors**: the only change is `rls_enabled_no_policy` going from
+  7 to 10 (INFO). That is intentional: the three new tables are service-role
+  only, the same setup as the `ad_*` tables. Every other count is unchanged.
+- **Performance advisors**: the only new findings are `unused_index` (INFO) on
+  the four indexes of the new, still-empty tables.
 
 ### B. Vercel env vars (names only, set values in the dashboard)
 

@@ -1,10 +1,10 @@
 -- Product hardening: shared rate limits, failed-login log, AI spend ledger.
 -- See docs/HARDENING.md. Additive only and safe to re-run.
 --
--- Apply to a Supabase branch (or a local Postgres) first, never straight to
--- production (CLAUDE.md rule 3). The app works before this is applied: every
--- caller falls back to its old in-memory behaviour when these objects are
--- missing, so deploy order does not matter.
+-- Tested on a local Postgres 16; applied to production (Money Guy Mutants,
+-- pehteunyustvnxmxjcfk) on 2026-11-05 at Drew's instruction. The app also
+-- works without it: every caller falls back to its old in-memory behaviour
+-- when these objects are missing, so deploy order does not matter.
 --
 -- All three tables are written and read ONLY by server code holding the
 -- service role key. RLS is on with no policies for anon/authenticated, and the
@@ -24,10 +24,11 @@ create table if not exists public.rate_limit_buckets (
 );
 
 comment on table public.rate_limit_buckets is
-  'Fixed-window counters shared by every serverless instance (lib/rate-limit.ts). Keys are hashed. Service role only.';
+  'Fixed-window counters shared by every serverless instance (lib/rate-limit-shared.ts). Keys are hashed. Service role only.';
 
 alter table public.rate_limit_buckets enable row level security;
 revoke all on table public.rate_limit_buckets from anon, authenticated;
+grant select, insert, update, delete on table public.rate_limit_buckets to service_role;
 
 create index if not exists rate_limit_buckets_reset_at_idx
   on public.rate_limit_buckets (reset_at);
@@ -104,6 +105,7 @@ comment on table public.auth_events is
 
 alter table public.auth_events enable row level security;
 revoke all on table public.auth_events from anon, authenticated;
+grant select, insert, update, delete on table public.auth_events to service_role;
 
 create index if not exists auth_events_created_at_idx on public.auth_events (created_at desc);
 create index if not exists auth_events_email_hash_idx on public.auth_events (email_hash, created_at desc)
@@ -136,15 +138,16 @@ create table if not exists public.ai_usage (
   input_tokens integer not null default 0 check (input_tokens >= 0),
   output_tokens integer not null default 0 check (output_tokens >= 0),
   cache_read_input_tokens integer not null default 0 check (cache_read_input_tokens >= 0),
-  -- Estimated from the published per-token price in lib/ai/pricing.ts.
+  -- Estimated from the published per-token price in lib/ai/policy.ts.
   cost_usd numeric(12, 6) not null default 0 check (cost_usd >= 0)
 );
 
 comment on table public.ai_usage is
-  'Token usage and estimated cost of every Anthropic call, for the monthly AI budget (lib/ai/budget.ts). No user ids, no prompt text. Service role only.';
+  'Token usage and estimated cost of every Anthropic call, for the monthly AI budget (lib/ai/guard.ts). No user ids, no prompt text. Service role only.';
 
 alter table public.ai_usage enable row level security;
 revoke all on table public.ai_usage from anon, authenticated;
+grant select, insert, update, delete on table public.ai_usage to service_role;
 
 create index if not exists ai_usage_created_at_idx on public.ai_usage (created_at desc);
 
