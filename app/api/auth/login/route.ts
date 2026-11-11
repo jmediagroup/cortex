@@ -3,7 +3,8 @@ import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { getClientIP, RATE_LIMITS, retryAfterSeconds } from '@/lib/rate-limit';
 import { checkSharedRateLimit } from '@/lib/rate-limit-shared';
 import { normalizeEmail } from '@/lib/email-hygiene';
-import { verifyCaptchaForSupabaseAuth } from '@/lib/turnstile';
+import { captchaMisconfigHint, upstreamCaptchaMisconfig, verifyCaptchaForSupabaseAuth } from '@/lib/turnstile';
+import { sendOpsAlert } from '@/lib/ops-alert';
 import { checkBotSignals, HONEYPOT_FIELD } from '@/lib/bot-check';
 import { friendlyLoginError, loginFailureReason } from '@/lib/auth-errors';
 import { logAuthEvent, type AuthEventInput } from '@/lib/auth-events';
@@ -90,12 +91,14 @@ export async function POST(request: NextRequest) {
     // --- 2. Honeypot -------------------------------------------------------------
     // No fill-time check on login: password managers submit instantly, and
     // there is no decoy we could safely show. A tripped honeypot just looks
-    // like a wrong password.
+    // like a wrong password. Autofill that copies the person's own email or
+    // password into the hidden field is NOT a bot (see lib/bot-check.ts).
     const bot = checkBotSignals({
       honeypot: body[HONEYPOT_FIELD],
       formStartedAt: undefined,
       minFillMs: 0,
       requireTiming: false,
+      ownValues: [rawEmail, email, password],
     });
     if (!bot.ok) {
       record('login_blocked', 'honeypot');
@@ -149,6 +152,35 @@ export async function POST(request: NextRequest) {
 
     if (error || !data.session) {
       const reason = error ? loginFailureReason(error) : 'other';
+
+      // Supabase demanded a CAPTCHA token our setup could never provide (the
+      // widget has no site key, or we already spent the token). That is our
+      // bug, not the visitor's: telling them to "refresh and try again" just
+      // loops them. Say it's temporarily unavailable, log the fix, alert Drew.
+      if (reason === 'captcha_failed') {
+        const misconfig = upstreamCaptchaMisconfig(captcha, captchaToken);
+        if (misconfig) {
+          record('login_failed', `captcha_misconfigured_${misconfig}`);
+          const hint = captchaMisconfigHint(misconfig);
+          console.error(`[auth/login] CAPTCHA misconfigured (${misconfig}): ${hint}`);
+          after(() =>
+            sendOpsAlert({
+              key: `captcha-misconfigured:${misconfig}`,
+              subject: 'Sign-in is broken: CAPTCHA misconfigured',
+              body: `Supabase rejected a sign-in for CAPTCHA reasons that come from our configuration, not the visitor (${misconfig}).\n\n${hint}\n\nUntil this is fixed, nobody can log in, sign up or reset a password.`,
+              dedupeSeconds: 3600,
+            }),
+          );
+          return NextResponse.json(
+            {
+              error: 'Sign-in is temporarily unavailable on our side. We’re on it, so please try again a little later.',
+              code: 'auth_unavailable',
+            },
+            { status: 503 },
+          );
+        }
+      }
+
       record('login_failed', reason);
       const status =
         reason === 'email_not_confirmed'

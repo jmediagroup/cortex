@@ -55,9 +55,24 @@ Checked in production after applying:
 
 ### C. Supabase + Cloudflare dashboard
 
+> **Incident, Nov 8–11 2026: nobody could log in.** Supabase CAPTCHA (C.3)
+> was switched on, but the production build had no
+> `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, so the widget never rendered and no token
+> was ever sent. Supabase rejected every sign-in and password reset
+> (`captcha_failed: no captcha_token found`); there were zero successful
+> logins in the 24 hours before the fix. `NEXT_PUBLIC_*` values are compiled
+> into the browser bundle **at build time**. Adding the key in Vercel does
+> nothing until you **redeploy**. The code now detects this: the routes log
+> `CAPTCHA misconfigured`, send an ops alert, and show "temporarily
+> unavailable" instead of a "refresh and try again" loop, and `/api/health`
+> reports `auth_captcha: "misconfigured"` (when `SUPABASE_CAPTCHA_ENABLED` or
+> `TURNSTILE_SECRET_KEY` is set without the site key).
+
 1. **Turnstile** keys (`NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`).
    This is the existing step in `SECURITY_SIGNUP_HARDENING.md`. Login and the
-   enterprise form pick them up automatically.
+   enterprise form pick them up automatically. Set them for the **Production**
+   environment, then **redeploy**, and confirm the widget appears on `/login`
+   **before** doing step 3.
 2. **Anthropic Console → Limits → spend limit**. This is the hard backstop. Our
    cap is an estimate and only works once the migration is applied. Set the
    Console limit a little above `AI_MONTHLY_BUDGET_USD`.

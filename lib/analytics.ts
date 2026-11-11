@@ -421,21 +421,10 @@ export async function trackSubscriptionChange(
   }, true); // Send subscription events immediately
 }
 
-// Analytics query helpers (for dashboard/admin pages)
-export async function getUserEventSummary(userId: string) {
-  const supabase = createBrowserClient();
-
-  const { data, error } = await (supabase
-    .rpc as any)('get_user_event_summary', { target_user_id: userId });
-
-  if (error) {
-    console.error('Failed to get user event summary:', error);
-    return null;
-  }
-
-  return data;
-}
-
+// Analytics query helpers (for dashboard/admin pages).
+// (getUserEventSummary was removed: it called a SECURITY DEFINER RPC that
+// returned ANY user's activity to anyone — see
+// supabase/migrations/20261111120000_lock_down_definer_functions.sql.)
 export async function getRecentEvents(limit = 50) {
   const supabase = createBrowserClient();
 

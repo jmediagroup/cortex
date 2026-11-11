@@ -34,14 +34,28 @@ export interface BotSignalInput {
   minFillMs: number;
   /** When true, a missing/invalid `formStartedAt` is rejected. */
   requireTiming: boolean;
+  /**
+   * The values the person typed into the real fields (email, password, name).
+   * Browser autofill and password managers sometimes drop one of these into
+   * the hidden field too. A honeypot holding the person's *own* value is
+   * autofill, not a bot, and must not block them.
+   */
+  ownValues?: unknown[];
   now?: number;
+}
+
+/** True when the honeypot just repeats one of the person's own field values (autofill). */
+export function isAutofillEcho(honeypot: string, ownValues: unknown[] = []): boolean {
+  const echo = honeypot.trim().toLowerCase();
+  if (!echo) return false;
+  return ownValues.some((v) => typeof v === 'string' && v.trim() !== '' && v.trim().toLowerCase() === echo);
 }
 
 export function checkBotSignals(input: BotSignalInput): BotSignal {
   const { honeypot, formStartedAt, minFillMs, requireTiming } = input;
   const now = input.now ?? Date.now();
 
-  if (typeof honeypot === 'string' && honeypot.trim() !== '') {
+  if (typeof honeypot === 'string' && honeypot.trim() !== '' && !isAutofillEcho(honeypot, input.ownValues)) {
     return { ok: false, reason: 'honeypot', decoy: true };
   }
 

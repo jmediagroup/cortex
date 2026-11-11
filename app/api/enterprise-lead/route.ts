@@ -49,6 +49,7 @@ export async function POST(request: NextRequest) {
       formStartedAt: body.formStartedAt,
       minFillMs: MIN_FORM_FILL_MS,
       requireTiming: true,
+      ownValues: [body.email, body.firstName, body.lastName, body.companyName, body.phone],
     });
     if (!bot.ok) {
       console.warn('[enterprise-lead] bot signal', { reason: bot.reason });
