@@ -3,12 +3,16 @@ import { createServiceClient } from '@/lib/supabase/client';
 import { checkRateLimit, getClientIP, RATE_LIMITS } from '@/lib/rate-limit';
 import { isCircuitOpen, monthToDateSpendUsd } from '@/lib/ai/guard';
 import { aiFeaturesDisabled, BUDGET_WARN_RATIO, monthlyBudgetUsd } from '@/lib/ai/policy';
+import { captchaConfigProblem } from '@/lib/turnstile';
 
 /**
  * GET /api/health — what an uptime monitor polls (docs/HARDENING.md).
  *
  *   200 { status: "ok" }        everything works
- *   200 { status: "degraded" }  site works; AI is off/failing/out of budget
+ *   200 { status: "degraded" }  site works; AI is off/failing/out of budget,
+ *                               or the CAPTCHA setup can't produce tokens
+ *                               (auth_captcha: "misconfigured" = nobody can
+ *                               log in, sign up or reset a password)
  *   503 { status: "down" }      the database can't be reached
  *
  * Point the monitor's *availability* check at the HTTP status (so it pages
@@ -71,14 +75,19 @@ async function report(request: NextRequest) {
   }
 
   const [database, aiState] = await Promise.all([checkDatabase(), checkAi()]);
+  const authCaptcha = captchaConfigProblem() ? 'misconfigured' : 'ok';
 
   const status =
-    database === 'fail' ? 'down' : aiState.ai !== 'ok' || aiState.budget === 'exhausted' ? 'degraded' : 'ok';
+    database === 'fail'
+      ? 'down'
+      : aiState.ai !== 'ok' || aiState.budget === 'exhausted' || authCaptcha !== 'ok'
+        ? 'degraded'
+        : 'ok';
 
   return NextResponse.json(
     {
       status,
-      checks: { database, ai: aiState.ai, ai_budget: aiState.budget },
+      checks: { database, ai: aiState.ai, ai_budget: aiState.budget, auth_captcha: authCaptcha },
       time: new Date().toISOString(),
     },
     { status: status === 'down' ? 503 : 200, headers: { 'Cache-Control': 'no-store' } },

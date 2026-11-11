@@ -5,7 +5,8 @@ import { createServiceClient } from '@/lib/supabase/client';
 import { getClientIP, RATE_LIMITS } from '@/lib/rate-limit';
 import { checkSharedRateLimit } from '@/lib/rate-limit-shared';
 import { assessSignup, normalizeEmail } from '@/lib/email-hygiene';
-import { verifyCaptchaForSupabaseAuth } from '@/lib/turnstile';
+import { captchaMisconfigHint, upstreamCaptchaMisconfig, verifyCaptchaForSupabaseAuth } from '@/lib/turnstile';
+import { sendOpsAlert } from '@/lib/ops-alert';
 import { botSignalMessage, checkBotSignals, HONEYPOT_FIELD } from '@/lib/bot-check';
 import { sanitizeString } from '@/lib/validation';
 import { safeNextPath } from '@/lib/safe-redirect';
@@ -178,6 +179,10 @@ export async function POST(request: NextRequest) {
       formStartedAt,
       minFillMs: MIN_FORM_FILL_MS,
       requireTiming: true,
+      // Autofill echoing the person's own email/password/name into the hidden
+      // field is not a bot — a decoy here would leave a real person waiting
+      // for a verification email that never comes.
+      ownValues: [rawEmail, password, rawFirstName],
     });
     if (!bot.ok) {
       console.warn('[Signup] Bot signal', { reason: bot.reason, ip: clientIP });
@@ -259,6 +264,22 @@ export async function POST(request: NextRequest) {
 
     if (signUpError) {
       console.error('[Signup] Supabase signUp failed:', signUpError.code, signUpError.message);
+      const isCaptcha = signUpError.code === 'captcha_failed' || /captcha/i.test(signUpError.message);
+      const misconfig = isCaptcha ? upstreamCaptchaMisconfig(captcha, captchaToken) : null;
+      if (misconfig) {
+        // Our configuration, not the visitor (see lib/turnstile.ts).
+        const hint = captchaMisconfigHint(misconfig);
+        console.error(`[Signup] CAPTCHA misconfigured (${misconfig}): ${hint}`);
+        after(() =>
+          sendOpsAlert({
+            key: `captcha-misconfigured:${misconfig}`,
+            subject: 'Sign-in is broken: CAPTCHA misconfigured',
+            body: `Supabase rejected a signup for CAPTCHA reasons that come from our configuration, not the visitor (${misconfig}).\n\n${hint}\n\nUntil this is fixed, nobody can log in, sign up or reset a password.`,
+            dedupeSeconds: 3600,
+          }),
+        );
+        return errorResponse('Sign-up is temporarily unavailable on our side. We’re on it, so please try again a little later.', 503);
+      }
       if (signUpError.code === 'user_already_exists' || /already registered/i.test(signUpError.message)) {
         return accountExists();
       }

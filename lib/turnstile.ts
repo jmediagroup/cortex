@@ -41,6 +41,57 @@ export function isCaptchaVerifiedBySupabase(): boolean {
   return process.env.SUPABASE_CAPTCHA_ENABLED === 'true';
 }
 
+/**
+ * Turnstile settings that can never work together, as far as this server can
+ * tell from its own env. Returns null when nothing is visibly wrong.
+ *
+ * `site_key_missing`: something requires a token (Supabase CAPTCHA, or our own
+ * secret key) but the widget has no site key, so no browser can ever produce
+ * one and every sign-in, signup and password reset is rejected. Note that
+ * `NEXT_PUBLIC_*` values are baked into the browser bundle at BUILD time:
+ * after adding or changing the key in Vercel you must redeploy.
+ *
+ * Public-safe: names a state, never a value.
+ */
+export type CaptchaConfigProblem = 'site_key_missing';
+
+export function captchaConfigProblem(env: Record<string, string | undefined> = process.env): CaptchaConfigProblem | null {
+  const siteKey = env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+  const tokenRequired = env.SUPABASE_CAPTCHA_ENABLED === 'true' || Boolean(env.TURNSTILE_SECRET_KEY);
+  if (tokenRequired && !siteKey) return 'site_key_missing';
+  return null;
+}
+
+/**
+ * Why Supabase Auth rejected a request with `captcha_failed`, when the cause
+ * is our configuration rather than the visitor:
+ *
+ *  - `no_token`    — Supabase CAPTCHA protection is on but the request carried
+ *                    no token: the widget isn't rendering (site key missing
+ *                    from the build, or never set).
+ *  - `token_not_forwarded` — the browser sent a token but our server didn't
+ *                    pass it on (it redeemed the single-use token itself, or
+ *                    had no secret key and dropped it): Supabase CAPTCHA is on
+ *                    but SUPABASE_CAPTCHA_ENABLED isn't "true".
+ *
+ * Returns null when a token did reach Supabase and it still failed — that is
+ * an ordinary expired/invalid token, the visitor's to retry.
+ */
+export type UpstreamCaptchaMisconfig = 'no_token' | 'token_not_forwarded';
+
+export function upstreamCaptchaMisconfig(captcha: AuthCaptchaResult, tokenFromClient: unknown): UpstreamCaptchaMisconfig | null {
+  if (captcha.tokenForSupabase) return null;
+  const hadToken = typeof tokenFromClient === 'string' && tokenFromClient !== '';
+  return hadToken ? 'token_not_forwarded' : 'no_token';
+}
+
+/** Plain-English fix for the server log / ops alert. Names env vars only. */
+export function captchaMisconfigHint(kind: UpstreamCaptchaMisconfig): string {
+  return kind === 'no_token'
+    ? 'Supabase CAPTCHA protection is on, but the request carried no Turnstile token. NEXT_PUBLIC_TURNSTILE_SITE_KEY is missing from this build: set it in Vercel (Production) and REDEPLOY, or turn CAPTCHA off in Supabase until it is.'
+    : 'Supabase CAPTCHA protection is on, but our server did not pass the visitor’s Turnstile token on to Supabase. Set SUPABASE_CAPTCHA_ENABLED=true in Vercel and redeploy.';
+}
+
 export interface AuthCaptchaResult extends TurnstileResult {
   /** The token to hand to Supabase (`options.captchaToken`), or undefined. */
   tokenForSupabase?: string;

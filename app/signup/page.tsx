@@ -650,7 +650,13 @@ function SignupForm() {
             name="mgm_hp"
             type="text"
             tabIndex={-1}
+            // Browsers ignore "off" on some fields, so also opt out of the
+            // common password managers explicitly. Filling this marks a bot.
             autoComplete="off"
+            data-1p-ignore="true"
+            data-lpignore="true"
+            data-bwignore="true"
+            data-form-type="other"
             value={honeypot}
             onChange={(e) => setHoneypot(e.target.value)}
           />

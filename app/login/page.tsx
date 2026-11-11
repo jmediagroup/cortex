@@ -41,6 +41,18 @@ function isNonFieldError(e: { message?: string; code?: string }): boolean {
   );
 }
 
+/**
+ * Supabase rejected the call for CAPTCHA, but this build has no Turnstile
+ * widget, so no retry can ever pass. Our configuration, not the person's.
+ */
+function isUnfixableCaptchaError(e: { message?: string; code?: string }): boolean {
+  const isCaptcha = e.code === 'captcha_failed' || /captcha/i.test(e.message ?? '');
+  return isCaptcha && !isTurnstileEnabled();
+}
+
+const CAPTCHA_UNAVAILABLE_COPY =
+  'This is temporarily unavailable on our side. We’re on it, so please try again a little later.';
+
 /** Which fields a failed sign-in is about. Generic/credential failures mark both. */
 function loginErrorFields(e: { message?: string; code?: string }): LoginField[] {
   if (e.code === 'email_not_confirmed' || /email not confirmed/i.test(e.message ?? '')) return ['email'];
@@ -220,7 +232,8 @@ function AuthForm() {
       setResendMsg({ ok: true, text: 'Verification email sent — check your inbox (and spam).' });
       await trackEvent('resend_verification_requested', { context: 'login' }, true);
     } catch (err: unknown) {
-      setResendMsg({ ok: false, text: friendlySignupError(err as { message?: string; code?: string }) });
+      const e = err as { message?: string; code?: string };
+      setResendMsg({ ok: false, text: isUnfixableCaptchaError(e) ? CAPTCHA_UNAVAILABLE_COPY : friendlySignupError(e) });
     } finally {
       resetCaptcha();
       setResendLoading(false);
@@ -245,8 +258,8 @@ function AuthForm() {
       await trackEvent('password_reset_requested', {}, true);
     } catch (err: unknown) {
       const e = err as { message?: string; code?: string };
-      console.error('Password reset error:', err);
-      setError(friendlySignupError(e));
+      console.error('Password reset error:', e.code ?? 'unknown');
+      setError(isUnfixableCaptchaError(e) ? CAPTCHA_UNAVAILABLE_COPY : friendlySignupError(e));
       fields.fail(isNonFieldError(e) ? [] : ['email']);
       resetCaptcha();
     } finally {
@@ -620,7 +633,13 @@ function AuthForm() {
             name="mgm_hp"
             type="text"
             tabIndex={-1}
+            // Browsers ignore "off" on some fields, so also opt out of the
+            // common password managers explicitly. Filling this marks a bot.
             autoComplete="off"
+            data-1p-ignore="true"
+            data-lpignore="true"
+            data-bwignore="true"
+            data-form-type="other"
             value={honeypot}
             onChange={(e) => setHoneypot(e.target.value)}
           />
