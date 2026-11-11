@@ -28,6 +28,13 @@
 -- that app. Audit them with it.
 --
 -- Idempotent: safe to re-run.
+--
+-- APPLIED to production (pehteunyustvnxmxjcfk) on 2026-11-11 at Drew's
+-- instruction, after a dry run in a rolled-back transaction. Nothing else in
+-- the database references either function except the on_auth_user_confirmed
+-- trigger. Verified after applying: anon/authenticated cannot EXECUTE either
+-- function, service_role can; advisor lints 0028/0029 went from 11 to 9
+-- findings each (both functions gone); every other advisor count unchanged.
 -- ============================================================
 
 REVOKE EXECUTE ON FUNCTION public.get_user_event_summary(uuid) FROM PUBLIC, anon, authenticated;
