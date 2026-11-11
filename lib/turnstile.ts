@@ -69,26 +69,27 @@ export function captchaConfigProblem(env: Record<string, string | undefined> = p
  *  - `no_token`    — Supabase CAPTCHA protection is on but the request carried
  *                    no token: the widget isn't rendering (site key missing
  *                    from the build, or never set).
- *  - `token_spent` — we redeemed the single-use token ourselves before
- *                    Supabase saw it: Supabase CAPTCHA is on but
- *                    SUPABASE_CAPTCHA_ENABLED isn't "true".
+ *  - `token_not_forwarded` — the browser sent a token but our server didn't
+ *                    pass it on (it redeemed the single-use token itself, or
+ *                    had no secret key and dropped it): Supabase CAPTCHA is on
+ *                    but SUPABASE_CAPTCHA_ENABLED isn't "true".
  *
  * Returns null when a token did reach Supabase and it still failed — that is
  * an ordinary expired/invalid token, the visitor's to retry.
  */
-export type UpstreamCaptchaMisconfig = 'no_token' | 'token_spent';
+export type UpstreamCaptchaMisconfig = 'no_token' | 'token_not_forwarded';
 
 export function upstreamCaptchaMisconfig(captcha: AuthCaptchaResult, tokenFromClient: unknown): UpstreamCaptchaMisconfig | null {
   if (captcha.tokenForSupabase) return null;
   const hadToken = typeof tokenFromClient === 'string' && tokenFromClient !== '';
-  return hadToken && !captcha.skipped ? 'token_spent' : 'no_token';
+  return hadToken ? 'token_not_forwarded' : 'no_token';
 }
 
 /** Plain-English fix for the server log / ops alert. Names env vars only. */
 export function captchaMisconfigHint(kind: UpstreamCaptchaMisconfig): string {
   return kind === 'no_token'
     ? 'Supabase CAPTCHA protection is on, but the request carried no Turnstile token. NEXT_PUBLIC_TURNSTILE_SITE_KEY is missing from this build: set it in Vercel (Production) and REDEPLOY, or turn CAPTCHA off in Supabase until it is.'
-    : 'Supabase CAPTCHA protection is on, but our server already redeemed the single-use token. Set SUPABASE_CAPTCHA_ENABLED=true in Vercel and redeploy.';
+    : 'Supabase CAPTCHA protection is on, but our server did not pass the visitor’s Turnstile token on to Supabase. Set SUPABASE_CAPTCHA_ENABLED=true in Vercel and redeploy.';
 }
 
 export interface AuthCaptchaResult extends TurnstileResult {

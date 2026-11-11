@@ -77,8 +77,11 @@ test('upstreamCaptchaMisconfig: no token ever reached Supabase', () => {
   );
 });
 
-test('upstreamCaptchaMisconfig: we spent the single-use token ourselves', () => {
-  assert.equal(upstreamCaptchaMisconfig({ success: true }, 'tok'), 'token_spent');
+test('upstreamCaptchaMisconfig: browser sent a token but we did not forward it', () => {
+  // We verified (spent) it ourselves.
+  assert.equal(upstreamCaptchaMisconfig({ success: true }, 'tok'), 'token_not_forwarded');
+  // No secret key and not in Supabase mode: we silently dropped it.
+  assert.equal(upstreamCaptchaMisconfig({ success: true, skipped: true }, 'tok'), 'token_not_forwarded');
 });
 
 test('upstreamCaptchaMisconfig: token reached Supabase → the visitor’s to retry', () => {
@@ -86,7 +89,7 @@ test('upstreamCaptchaMisconfig: token reached Supabase → the visitor’s to re
 });
 
 test('misconfig hints name env vars only and say to redeploy', () => {
-  for (const kind of ['no_token', 'token_spent']) {
+  for (const kind of ['no_token', 'token_not_forwarded']) {
     const hint = captchaMisconfigHint(kind);
     assert.match(hint, /redeploy/i);
     assert.doesNotMatch(hint, /0x4/);
